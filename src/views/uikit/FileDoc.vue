@@ -19,7 +19,14 @@ function onUpload() {
         <div class="col-span-full lg:col-span-6">
             <div class="card">
                 <div class="font-semibold text-xl mb-4">Advanced</div>
-                <FileUpload name="demo[]" @uploader="onUpload" :multiple="true" accept="image/*" :maxFileSize="1000000" customUpload />
+                <FileUpload
+                    name="demo[]"
+                    @uploader="onUpload"
+                    :multiple="true"
+                    accept="image/*"
+                    :maxFileSize="1000000"
+                    customUpload
+                />
             </div>
         </div>
         <div class="col-span-full lg:col-span-6">

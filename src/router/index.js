@@ -10,6 +10,11 @@ const router = createRouter({
             children: [
                 {
                     path: '/',
+                    name: 'home',
+                    component: () => import('@/views/pages/Landing.vue')
+                },
+                {
+                    path: '/dashboard',
                     name: 'dashboard',
                     component: () => import('@/views/Dashboard.vue')
                 },
@@ -103,7 +108,22 @@ const router = createRouter({
                     path: '/documentation',
                     name: 'documentation',
                     component: () => import('@/views/pages/Documentation.vue')
-                }
+                },
+                {
+                    path: '/pages/apartments/add',
+                    name: 'addApartments',
+                    component: () => import('@/views/pages/apartments/Add.vue')
+                },
+                {
+                    path: '/pages/apartments',
+                    name: 'apartments',
+                    component: () => import('@/views/pages/apartments/List.vue')
+                },
+                {
+                    path: '/pages/apartments/edit/:id',
+                    name: 'editApartments',
+                    component: () => import('@/views/pages/apartments/Edit.vue')
+                },
             ]
         },
         {
@@ -131,7 +151,7 @@ const router = createRouter({
             path: '/auth/error',
             name: 'error',
             component: () => import('@/views/pages/auth/Error.vue')
-        }
+        },
     ]
 });
 

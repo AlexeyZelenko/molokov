@@ -5,8 +5,168 @@ import AppMenuItem from './AppMenuItem.vue';
 
 const model = ref([
     {
-        label: 'Home',
-        items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/' }]
+        label: 'Головна',
+        items: [{ label: 'Головна', icon: 'pi pi-fw pi-home', to: '/landing' }]
+    },
+    {
+        label: 'Нерухомість',
+        icon: 'pi pi-fw pi-briefcase',
+        to: '/pages',
+        items: [
+            {
+                label: 'Квартири',
+                icon: 'pi pi-fw pi-briefcase',
+                to: '/pages',
+                items: [
+                    {
+                        label: 'Додати',
+                        icon: 'pi pi-fw pi-plus',
+                        to: '/pages/apartments/add'
+                    },
+                    {
+                        label: 'Список',
+                        icon: 'pi pi-fw pi-list',
+                        to: '/pages/apartments'
+                    }
+                ]
+            },
+            {
+                label: 'Будинки',
+                icon: 'pi pi-fw pi-briefcase',
+                to: '/pages',
+                items: [
+                    {
+                        label: 'Додати',
+                        icon: 'pi pi-fw pi-plus',
+                        to: '/pages/apartments/add'
+                    },
+                    {
+                        label: 'Список',
+                        icon: 'pi pi-fw pi-list',
+                        to: '/pages/apartments'
+                    }
+                ]
+            },
+            {
+                label: 'Офіси',
+                icon: 'pi pi-fw pi-briefcase',
+                to: '/pages',
+                items: [
+                    {
+                        label: 'Додати',
+                        icon: 'pi pi-fw pi-plus',
+                        to: '/pages/apartments/add'
+                    },
+                    {
+                        label: 'Список',
+                        icon: 'pi pi-fw pi-list',
+                        to: '/pages/apartments'
+                    }
+                ]
+            },
+            {
+                label: 'Склади',
+                icon: 'pi pi-fw pi-briefcase',
+                to: '/pages',
+                items: [
+                    {
+                        label: 'Додати',
+                        icon: 'pi pi-fw pi-plus',
+                        to: '/pages/apartments/add'
+                    },
+                    {
+                        label: 'Список',
+                        icon: 'pi pi-fw pi-list',
+                        to: '/pages/apartments'
+                    }
+                ]
+            },
+            {
+                label: 'Комерційна нерухомість',
+                icon: 'pi pi-fw pi-briefcase',
+                to: '/pages',
+                items: [
+                    {
+                        label: 'Додати',
+                        icon: 'pi pi-fw pi-plus',
+                        to: '/pages/apartments/add'
+                    },
+                    {
+                        label: 'Список',
+                        icon: 'pi pi-fw pi-list',
+                        to: '/pages/apartments'
+                    }
+                ]
+            },
+            {
+                label: 'Земельні ділянки',
+                icon: 'pi pi-fw pi-briefcase',
+                to: '/pages',
+                items: [
+                    {
+                        label: 'Додати',
+                        icon: 'pi pi-fw pi-plus',
+                        to: '/pages/apartments/add'
+                    },
+                    {
+                        label: 'Список',
+                        icon: 'pi pi-fw pi-list',
+                        to: '/pages/apartments'
+                    }
+                ]
+            },
+            {
+                label: 'Гаражи',
+                icon: 'pi pi-fw pi-briefcase',
+                to: '/pages',
+                items: [
+                    {
+                        label: 'Додати',
+                        icon: 'pi pi-fw pi-plus',
+                        to: '/pages/apartments/add'
+                    },
+                    {
+                        label: 'Список',
+                        icon: 'pi pi-fw pi-list',
+                        to: '/pages/apartments'
+                    }
+                ]
+            },
+            {
+                label: 'Дачи',
+                icon: 'pi pi-fw pi-briefcase',
+                to: '/pages',
+                items: [
+                    {
+                        label: 'Додати',
+                        icon: 'pi pi-fw pi-plus',
+                        to: '/pages/apartments/add'
+                    },
+                    {
+                        label: 'Список',
+                        icon: 'pi pi-fw pi-list',
+                        to: '/pages/apartments'
+                    }
+                ]
+            },
+            {
+                label: 'Приміщення для бізнесу',
+                icon: 'pi pi-fw pi-briefcase',
+                to: '/pages',
+                items: [
+                    {
+                        label: 'Додати',
+                        icon: 'pi pi-fw pi-plus',
+                        to: '/pages/apartments/add'
+                    },
+                    {
+                        label: 'Список',
+                        icon: 'pi pi-fw pi-list',
+                        to: '/pages/apartments'
+                    }
+                ]
+            },
+        ]
     },
     {
         label: 'UI Components',
