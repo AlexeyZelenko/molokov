@@ -265,9 +265,9 @@ export const useApartmentsStore = defineStore('apartments', {
                 }
             ],
             subcategory: [
-                { name: 'Продаж', code: '1' },
-                { name: 'Довгострокова оренда', code: '2' },
-                { name: 'Короткострокова оренда', code: '3' },
+                { name: 'Продаж', code: 'SALE' },
+                { name: 'Довгострокова оренда', code: 'LONG_TERM_RENTAL' },
+                { name: 'Короткострокова оренда', code: 'SHORT_TERM_RENTAL' },
             ]
         },
         saving: false,
