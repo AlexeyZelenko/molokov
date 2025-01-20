@@ -37,7 +37,6 @@ export const useAreasStore = defineStore('areas', {
     }),
     actions: {
         setSelectedArea(area) {
-            console.log('Setting selected area:', area); // Логируем, что метод срабатывает
             this.selectedArea = area;
         },
     },

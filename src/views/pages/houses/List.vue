@@ -324,24 +324,18 @@ onMounted(async () => {
             orderBy('createdAt', 'desc')
         );
 
-        console.log('Executing query for all properties...'); // Логирование запроса
-
         const querySnapshot = await getDocs(q);
-        console.log('Data fetched from Firestore:', querySnapshot.docs); // Логируем полученные данные
 
         properties.value = querySnapshot.docs.map(doc => ({
             id: doc.id,
             ...doc.data()
         }));
 
-        console.log('Properties data mapped:', properties.value); // Логируем обработанные данные
-
     } catch (error) {
         console.error('Error fetching properties:', error); // Логируем ошибку при получении данных
         toast.add({ severity: 'error', summary: 'Помилка', detail: 'Помилка завантаження даних', life: 3000 });
     } finally {
         loading.value = false;
-        console.log('Loading complete, loading status:', loading.value); // Логируем завершение загрузки
     }
 });
 

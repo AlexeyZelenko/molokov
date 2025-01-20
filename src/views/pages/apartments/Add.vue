@@ -194,8 +194,13 @@
 
                 <div class="card flex flex-col gap-4">
                     <div class="font-semibold text-xl">Готовність об'єкта</div>
-                    <DatePicker :showIcon="true" :showButtonBar="true" v-model="property.facilityReadiness"></DatePicker>
+                    <DatePicker
+                        :showIcon="true"
+                        :showButtonBar="true"
+                        v-model="property.facilityReadiness"
+                    ></DatePicker>
                 </div>
+                {{property.facilityReadiness}}
             </div>
         </Fluid>
 
@@ -266,7 +271,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onBeforeMount, reactive } from 'vue';
 import { db, storage } from '@/firebase/config';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
@@ -337,11 +342,10 @@ const property = ref({
     }
 });
 
-const dropdowns = ref([]);
+let dropdowns = reactive([]);
 
-onMounted(() => {
-    dropdowns.value = store.dropdowns;
-    console.log(dropdowns.value);
+onBeforeMount(async () => {
+    dropdowns = store.dropdowns;
 });
 
 const onFileSelect = async (event) => {
@@ -386,7 +390,6 @@ const onFileSelect = async (event) => {
 };
 
 const updateMarkerPosition = (position) => {
-    console.log('position:', position);
     property.address.markerPosition = position;
 };
 

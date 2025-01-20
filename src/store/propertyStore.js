@@ -53,7 +53,6 @@ export const usePropertyStore = defineStore('property', () => {
     ];
 
     const getProperty = async (propertyId) => {
-        console.log('Fetching property:', propertyId);
         loading.value = true;
         try {
             const docRef = doc(db, 'properties', propertyId);
@@ -61,7 +60,6 @@ export const usePropertyStore = defineStore('property', () => {
 
             if (docSnap.exists()) {
                 property.value = { id: docSnap.id, ...docSnap.data() };
-                console.log('Property fetched:', property.value);
             } else {
                 throw new Error('Property not found');
             }
@@ -69,7 +67,6 @@ export const usePropertyStore = defineStore('property', () => {
             console.error('Error fetching property:', error);
         } finally {
             loading.value = false;
-            console.log('Property loaded:', loading.value);
         }
     };
 

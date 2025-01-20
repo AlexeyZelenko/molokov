@@ -91,6 +91,7 @@ export const useApartmentsStore = defineStore('apartments', {
                 { name: 'Місце для паркування', code: 'PARKING_SPACE' }
             ],
             regions: [
+                { name: 'Черкаська', code: 'CHK' },
                 { name: 'Вінницька', code: 'VIN' },
                 { name: 'Волинська', code: 'VOL' },
                 { name: 'Дніпропетровська', code: 'DNE' },
@@ -112,7 +113,6 @@ export const useApartmentsStore = defineStore('apartments', {
                 { name: 'Харківська', code: 'KH' },
                 { name: 'Херсонська', code: 'KHE' },
                 { name: 'Хмельницька', code: 'KM' },
-                { name: 'Черкаська', code: 'CHK' },
                 { name: 'Чернівецька', code: 'CHV' },
                 { name: 'Чернігівська', code: 'CHG' },
                 { name: 'Івано-Франківська', code: 'IVF' }

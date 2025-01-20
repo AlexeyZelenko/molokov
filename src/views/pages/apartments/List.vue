@@ -40,10 +40,14 @@
                     <Column field="district" header="Район" />
                     <Column field="wallMaterial" header="Матеріал стін" :body="getWallMaterialName" />
                     <Column field="condition" header="Стан" :body="getConditionName" />
-                    <Column field="images" header="Фото" :body="renderImages" />
                     <Column field="createdAt" header="Дата додавання" :body="formatDate" />
-                    <Column header="Дії" :exportable="false" style="min-width: 8rem">
+                    <Column header="Дії" :exportable="false" style="min-width: 12rem">
                         <template #body="slotProps">
+                            <Button
+                                icon="pi pi-eye"
+                                class="p-button-rounded p-button-info mr-2"
+                                @click="showProperty(slotProps.data)"
+                            />
                             <Button
                                 icon="pi pi-pencil"
                                 class="p-button-rounded p-button-success mr-2"
@@ -146,6 +150,7 @@ import InputText from 'primevue/inputtext';
 import InputNumber from 'primevue/inputnumber';
 import Button from 'primevue/button';
 import Toast from 'primevue/toast';
+import { formatFirebaseTimestamp } from '@/utils/dateUtils';
 
 const route = useRoute();
 const router = useRouter();
@@ -182,7 +187,6 @@ const conditions = [
     { name: 'Від забудовника', value: 'developer' }
 ];
 
-// Обработка удаления
 const confirmDelete = (property) => {
     propertyToDelete.value = property;
     deleteDialog.value = true;
@@ -227,14 +231,7 @@ const selectedFiltersCount = computed(() => {
 const formatDate = (timestamp) => {
     console.log('Formatting date:', timestamp);
     if (!timestamp) return '';
-    const date = timestamp.toDate(); // Преобразуем Timestamp в объект Date
-    return new Intl.DateTimeFormat('uk-UA', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-    }).format(date);
+    return formatFirebaseTimestamp(timestamp);
 };
 
 
@@ -299,6 +296,10 @@ const editProperty = (property) => {
     router.push(`/pages/apartments/edit/${property.id}`);
 };
 
+const showProperty = (property) => {
+    router.push(`/pages/apartments/view/${property.id}`);
+};
+
 // Получение имени материала стены
 const getWallMaterialName = (value) => {
     return wallMaterials.find(m => m.value === value)?.name || value;
@@ -314,7 +315,6 @@ const formatCurrency = (value) => {
 };
 
 onMounted(async () => {
-    console.log('Fetching all properties data...');
     loading.value = true;
 
     try {
@@ -324,24 +324,18 @@ onMounted(async () => {
             orderBy('createdAt', 'desc')
         );
 
-        console.log('Executing query for all properties...'); // Логирование запроса
-
         const querySnapshot = await getDocs(q);
-        console.log('Data fetched from Firestore:', querySnapshot.docs); // Логируем полученные данные
 
         properties.value = querySnapshot.docs.map(doc => ({
             id: doc.id,
             ...doc.data()
         }));
 
-        console.log('Properties data mapped:', properties.value); // Логируем обработанные данные
-
     } catch (error) {
         console.error('Error fetching properties:', error); // Логируем ошибку при получении данных
         toast.add({ severity: 'error', summary: 'Помилка', detail: 'Помилка завантаження даних', life: 3000 });
     } finally {
         loading.value = false;
-        console.log('Loading complete, loading status:', loading.value); // Логируем завершение загрузки
     }
 });
 

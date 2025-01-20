@@ -124,6 +124,11 @@ const router = createRouter({
                     name: 'editApartments',
                     component: () => import('@/views/pages/apartments/Edit.vue')
                 },
+                {
+                    path: '/pages/apartments/view/:id',
+                    name: 'viewApartments',
+                    component: () => import('@/views/pages/apartments/View.vue')
+                },
             ]
         },
         {

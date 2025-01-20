@@ -196,11 +196,7 @@
 
                 <div class="card flex flex-col gap-4">
                     <div class="font-semibold text-xl">Готовність об'єкта</div>
-                    <DatePicker
-                        :showIcon="true"
-                        :showButtonBar="true"
-                        v-model="property.facilityReadiness"
-                    ></DatePicker>
+                    <DatePicker :showIcon="true" :showButtonBar="true" v-model="formattedFacilityReadiness" />
                 </div>
             </div>
         </Fluid>
@@ -271,15 +267,30 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onBeforeMount, computed, reactive } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { db } from '@/firebase/config';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import {db, storage} from '@/firebase/config';
+import { doc, getDoc, updateDoc, addDoc, collection } from 'firebase/firestore';
 import { useToast } from 'primevue/usetoast';
 import Toast from 'primevue/toast';
 import { useApartmentsStore } from '@/store/apartments';
 import Select from "primevue/select";
 import GoogleMapAddApartment from "@/components/googleMap/AddApartment.vue";
+import { formatFirebaseTimestamp } from '@/utils/dateUtils';
+import compressWithCompressor from "@/service/Compressor";
+
+// Стейт для дата-пикера
+const formattedFacilityReadiness = computed({
+    get() {
+        return property.value.facilityReadiness
+            ? formatFirebaseTimestamp(property.value.facilityReadiness)
+            : '';
+    },
+    set(newValue) {
+        const timestamp = new Date(newValue).getTime() / 1000;
+        property.value.facilityReadiness = { seconds: timestamp, nanoseconds: 0 };
+    }
+});
 
 const toast = useToast();
 const store = useApartmentsStore();
@@ -327,46 +338,37 @@ const property = ref({
     public: false,
     address: {
         region: '',
-        area: {
-            code: null,
-            name: null
-        },
+        area: { code: null, name: null },
         street: '',
         city: '',
         markerPosition: null
     },
-    owner: {
-        username: '',
-        phone: '',
-        message: ''
-    }
+    owner: { username: '', phone: '', message: '' }
 });
 
-const dropdowns = ref([]);
+let dropdowns = reactive([]);
 const route = useRoute();
 const router = useRouter();
-const propertyId = route.params.id;  // Получаем ID объекта из маршрута
+const propertyId = route.params.id;
 
-onMounted(async () => {
-    dropdowns.value = store.dropdowns;
+onBeforeMount(async () => {
+    dropdowns = store.dropdowns;
 
-    // Если есть ID в URL, то это режим редактирования
     if (propertyId) {
         isEdit.value = true;
-        await loadPropertyData(propertyId);  // Загружаем данные объекта из базы
+        await loadPropertyData(propertyId); // Асинхронная операция для загрузки данных
     } else {
         isEdit.value = false;
     }
 });
 
 const loadPropertyData = async (id) => {
-    console.log('Loading property data:', id);
     try {
         const propertyRef = doc(db, 'properties', id);
         const propertyDoc = await getDoc(propertyRef);
 
         if (propertyDoc.exists()) {
-            property.value = propertyDoc.data();  // Заполняем форму данными объекта
+            property.value = propertyDoc.data(); // Заполняем форму данными объекта
         } else {
             console.error('Об\'єкт не знайдений!');
         }
@@ -384,7 +386,7 @@ const saveProperty = async () => {
         saving.value = true;
         const propertyData = {
             ...property.value,
-            updatedAt: new Date()  // Обновляем время
+            updatedAt: new Date() // Обновляем время
         };
 
         if (isEdit.value) {
@@ -397,8 +399,7 @@ const saveProperty = async () => {
             toast.add({ severity: 'success', summary: 'Успішно', detail: 'Об\'єкт додано', life: 3000 });
         }
 
-        router.push('/properties');  // Перенаправляем на страницу списка объектов
-
+        router.push('/properties'); // Перенаправляем на страницу списка объектов
     } catch (error) {
         console.error('Ошибка при сохранении объекта:', error);
         toast.add({ severity: 'error', summary: 'Помилка', detail: 'Помилка збереження об\'єкту', life: 3000 });
@@ -406,7 +407,48 @@ const saveProperty = async () => {
         saving.value = false;
     }
 };
+
+const onFileSelect = async (event) => {
+    try {
+        const files = event.files;
+        if (!files || files.length === 0) {
+            throw new Error("No files selected");
+        }
+
+        for (let file of files) {
+            if (file) {
+                try {
+                    // Перевірка типу та розміру файлів перед стисненням
+                    if (file.size > 10 * 1024 * 1024) { // Приклад: перевірка на максимальний розмір 10 MB
+                        throw new Error('File size exceeds limit of 10MB');
+                    }
+
+                    // Стиснення зображення
+                    const compressedFile = await compressWithCompressor(file);
+
+                    // Зберігаємо файл у Firebase Storage
+                    const storageReference = storageRef(storage, `properties/${Date.now()}_${file.name}`);
+                    const snapshot = await uploadBytes(storageReference, compressedFile); // Завантажуємо стиснуте зображення
+                    const downloadURL = await getDownloadURL(snapshot.ref); // Отримуємо URL стиснутого зображення
+
+                    // Додаємо URL в масив зображень
+                    property.value.images.push(downloadURL);
+                } catch (error) {
+                    console.error('Ошибка сжатия или загрузки файла:', error);
+                    toast.add({ severity: 'error', summary: 'Помилка', detail: `Помилка стиснення або завантаження: ${error.message}`, life: 3000 });
+                }
+            }
+        }
+
+        // Успішне завантаження
+        toast.add({ severity: 'success', summary: 'Успішно', detail: 'Фото завантажено', life: 3000 });
+    } catch (error) {
+        console.error('Error during file selection or upload:', error);
+        toast.add({ severity: 'error', summary: 'Помилка', detail: 'Помилка завантаження фото: ' + error.message, life: 3000 });
+    }
+};
 </script>
+
 
 <style scoped>
 .location-picker {
