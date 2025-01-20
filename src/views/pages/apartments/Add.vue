@@ -295,7 +295,6 @@ const property = ref({
         bathrooms: null,
         kitchens: null
     },
-    totalFloors: null,
     heatingType: null,
     condition: null,
     balconyCount: 0,
@@ -415,7 +414,6 @@ const saveProperty = async () => {
                 bathrooms: null,
                 kitchens: null
             },
-            totalFloors: null,
             houseNumber: '',
             constructionYear: null,
             heatingType: null,

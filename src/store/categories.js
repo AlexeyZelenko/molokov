@@ -14,8 +14,7 @@ export const useCategoriesStore = defineStore('categories', {
                     {type: 'exchange', label: 'Обмін', icon: 'pi pi-sync'},
                     {type: 'daily', label: 'Подобово', icon: 'pi pi-clock'}
                 ],
-            },
-            // Add more categories as needed
+            }
         ]
     }),
     getters: {

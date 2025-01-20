@@ -305,7 +305,6 @@ const property = ref({
         bathrooms: null,
         kitchens: null
     },
-    totalFloors: null,
     houseNumber: '',
     constructionYear: null,
     heatingType: null,
