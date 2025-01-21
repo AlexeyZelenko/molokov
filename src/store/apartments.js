@@ -69,7 +69,7 @@ export const useApartmentsStore = defineStore('apartments', {
                 { name: 'Нечаївка', code: '33' },
             ],
             category: [
-                { name: 'Квартира', code: 'APT' },
+                { name: 'Квартира', code: 'apartments' },
             ],
             purposeOfUses: [
                 { name: 'Продаж', code: 'SALE' },
@@ -265,9 +265,10 @@ export const useApartmentsStore = defineStore('apartments', {
                 }
             ],
             subcategory: [
-                { name: 'Продаж', code: 'SALE' },
-                { name: 'Довгострокова оренда', code: 'LONG_TERM_RENTAL' },
-                { name: 'Короткострокова оренда', code: 'SHORT_TERM_RENTAL' },
+                { name: 'Продаж', code: 'sell' },
+                { name: 'Довгострокова оренда', code: 'rent' },
+                { name: 'Короткострокова оренда', code: 'daily' },
+                { name: 'Обмін', code: 'exchange' },
             ]
         },
         saving: false,

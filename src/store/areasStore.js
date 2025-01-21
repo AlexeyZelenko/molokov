@@ -1,4 +1,4 @@
-// stores/areasStore.js
+// store/areasStore.js
 
 import { defineStore } from 'pinia';
 
@@ -34,6 +34,68 @@ export const useAreasStore = defineStore('areas', {
             { name: 'Шкільна', code: 'SHK', position: { lat: 49.41011721110426, lng: 32.055765689692656 }, radius: 1000, color: '#50bf5f' },
             { name: 'Інше', code: 'UNK' }
         ],
+        realEstateItems: [
+            {
+                id: 1,
+                title: 'Квартири',
+                key: 'apartments',
+                image: '/images/apartments.jpg',
+                actions: [
+                    {type: 'sell', label: 'Продаж', icon: 'pi pi-home'},
+                    {type: 'rent', label: 'Оренда', icon: 'pi pi-key'},
+                    {type: 'exchange', label: 'Обмін', icon: 'pi pi-sync'},
+                    {type: 'daily', label: 'Подобово', icon: 'pi pi-clock'}
+                ],
+            },
+            {
+                id: 2,
+                title: 'Приватний сектор',
+                key: 'buildings',
+                image: '/images/houses.jpg',
+                actions: [
+                    {type: 'sell', label: 'Продаж', icon: 'pi pi-home'},
+                    {type: 'rent', label: 'Оренда', icon: 'pi pi-key'},
+                    {type: 'exchange', label: 'Обмін', icon: 'pi pi-sync'},
+                    {type: 'daily', label: 'Подобово', icon: 'pi pi-clock'}
+                ],
+            },
+            {
+                id: 3,
+                title: 'Приміщення',
+                key: 'commercial',
+                image: '/images/commercial.jpg',
+                actions: [
+                    {type: 'sell', label: 'Продаж', icon: 'pi pi-home'},
+                    {type: 'rent', label: 'Оренда', icon: 'pi pi-key'},
+                    {type: 'exchange', label: 'Обмін', icon: 'pi pi-sync'},
+                    {type: 'daily', label: 'Подобово', icon: 'pi pi-clock'}
+                ],
+            },
+            {
+                id: 4,
+                title: 'Будівлі',
+                key: 'houses',
+                image: '/images/buildings.jpg',
+                actions: [
+                    {type: 'sell', label: 'Продаж', icon: 'pi pi-home'},
+                    {type: 'rent', label: 'Оренда', icon: 'pi pi-key'},
+                    {type: 'exchange', label: 'Обмін', icon: 'pi pi-sync'},
+                    {type: 'daily', label: 'Подобово', icon: 'pi pi-clock'}
+                ],
+            },
+            {
+                id: 5,
+                title: 'Земельні ділянки',
+                key: 'land',
+                image: '/images/land.jpg',
+                actions: [
+                    {type: 'sell', label: 'Продаж', icon: 'pi pi-home'},
+                    {type: 'rent', label: 'Оренда', icon: 'pi pi-key'},
+                    {type: 'exchange', label: 'Обмін', icon: 'pi pi-sync'},
+                    {type: 'daily', label: 'Подобово', icon: 'pi pi-clock'}
+                ],
+            }
+        ]
     }),
     actions: {
         setSelectedArea(area) {

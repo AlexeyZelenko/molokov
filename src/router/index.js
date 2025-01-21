@@ -1,18 +1,19 @@
 import AppLayout from '@/layout/AppLayout.vue';
 import { createRouter, createWebHistory } from 'vue-router';
+import AppCategoryLayout from "@/layout/AppCategoryLayout.vue";
 
 const router = createRouter({
     history: createWebHistory(),
     routes: [
         {
             path: '/',
+            name: 'home',
+            component: () => import('@/views/pages/Landing.vue')
+        },
+        {
+            path: '/',
             component: AppLayout,
             children: [
-                {
-                    path: '/',
-                    name: 'home',
-                    component: () => import('@/views/pages/Landing.vue')
-                },
                 {
                     path: '/dashboard',
                     name: 'dashboard',
@@ -115,9 +116,14 @@ const router = createRouter({
                     component: () => import('@/views/pages/apartments/Add.vue')
                 },
                 {
-                    path: '/pages/apartments',
-                    name: 'apartments',
+                    path: '/pages/apartments/list',
+                    name: 'apartmentsList',
                     component: () => import('@/views/pages/apartments/List.vue')
+                },
+                {
+                    path: '/pages/apartments/table',
+                    name: 'apartmentsTable',
+                    component: () => import('@/views/pages/apartments/Table.vue')
                 },
                 {
                     path: '/pages/apartments/edit/:id',
@@ -156,6 +162,18 @@ const router = createRouter({
             path: '/auth/error',
             name: 'error',
             component: () => import('@/views/pages/auth/Error.vue')
+        },
+
+        {
+            path: '/',
+            component: AppCategoryLayout,
+            children: [
+                {
+                    path: '/properties',
+                    name: 'properties',
+                    component: () => import('@/views/pages/categories/index.vue')
+                }
+            ]
         },
     ]
 });

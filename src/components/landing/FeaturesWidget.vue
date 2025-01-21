@@ -33,70 +33,12 @@
 </template>
 
 <script setup>
-import {ref} from 'vue';
+import {computed} from 'vue';
+import  { useAreasStore } from '@/store/areasStore';
 
-const realEstateItems = ref([
-    {
-        id: 1,
-        title: 'Квартири',
-        key: 'apartments',
-        image: '/images/apartments.jpg',
-        actions: [
-            {type: 'sell', label: 'Продаж', icon: 'pi pi-home'},
-            {type: 'rent', label: 'Оренда', icon: 'pi pi-key'},
-            {type: 'exchange', label: 'Обмін', icon: 'pi pi-sync'},
-            {type: 'daily', label: 'Подобово', icon: 'pi pi-clock'}
-        ],
-    },
-    {
-        id: 2,
-        title: 'Приватний сектор',
-        key: 'buildings',
-        image: '/images/houses.jpg',
-        actions: [
-            {type: 'sell', label: 'Продаж', icon: 'pi pi-home'},
-            {type: 'rent', label: 'Оренда', icon: 'pi pi-key'},
-            {type: 'exchange', label: 'Обмін', icon: 'pi pi-sync'},
-            {type: 'daily', label: 'Подобово', icon: 'pi pi-clock'}
-        ],
-    },
-    {
-        id: 3,
-        title: 'Приміщення',
-        key: 'commercial',
-        image: '/images/commercial.jpg',
-        actions: [
-            {type: 'sell', label: 'Продаж', icon: 'pi pi-home'},
-            {type: 'rent', label: 'Оренда', icon: 'pi pi-key'},
-            {type: 'exchange', label: 'Обмін', icon: 'pi pi-sync'},
-            {type: 'daily', label: 'Подобово', icon: 'pi pi-clock'}
-        ],
-    },
-    {
-        id: 4,
-        title: 'Будівлі',
-        key: 'houses',
-        image: '/images/buildings.jpg',
-        actions: [
-            {type: 'sell', label: 'Продаж', icon: 'pi pi-home'},
-            {type: 'rent', label: 'Оренда', icon: 'pi pi-key'},
-            {type: 'exchange', label: 'Обмін', icon: 'pi pi-sync'},
-            {type: 'daily', label: 'Подобово', icon: 'pi pi-clock'}
-        ],
-    },
-    {
-        id: 5,
-        title: 'Земельні ділянки',
-        key: 'land',
-        image: '/images/land.jpg',
-        actions: [
-            {type: 'sell', label: 'Продаж', icon: 'pi pi-home'},
-            {type: 'rent', label: 'Оренда', icon: 'pi pi-key'},
-            {type: 'exchange', label: 'Обмін', icon: 'pi pi-sync'},
-            {type: 'daily', label: 'Подобово', icon: 'pi pi-clock'}
-        ],
-    }
-]);
+const store = useAreasStore();
+
+const realEstateItems = computed(() => store.realEstateItems);
 
 const handleAction = (itemId, actionType) => {
     console.log(`Action ${actionType} for item ${itemId}`);

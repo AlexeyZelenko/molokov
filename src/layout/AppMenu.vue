@@ -24,9 +24,14 @@ const model = ref([
                         to: '/pages/apartments/add'
                     },
                     {
+                        label: 'Таблиця',
+                        icon: 'pi pi-fw pi-list',
+                        to: '/pages/apartments/table'
+                    },
+                    {
                         label: 'Список',
                         icon: 'pi pi-fw pi-list',
-                        to: '/pages/apartments'
+                        to: '/pages/apartments/list'
                     }
                 ]
             },
@@ -160,7 +165,7 @@ const model = ref([
                         to: '/pages/apartments/add'
                     },
                     {
-                        label: 'Список',
+                        label: 'Таблиця',
                         icon: 'pi pi-fw pi-list',
                         to: '/pages/apartments'
                     }
