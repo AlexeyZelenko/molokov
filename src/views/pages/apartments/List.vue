@@ -152,7 +152,7 @@ import { collection, query, where, orderBy, getDocs, deleteDoc, doc } from 'fire
 import { ref as storageRef, deleteObject } from 'firebase/storage';
 import Dialog from 'primevue/dialog';
 import { useToast } from 'primevue/usetoast';
-import { useCategoriesStore } from '@/store/categories';
+import { useAreasStore } from '@/store/areasStore';
 import InputText from 'primevue/inputtext';
 import InputNumber from 'primevue/inputnumber';
 import Button from 'primevue/button';
@@ -171,7 +171,7 @@ onBeforeMount(async () => {
 const route = useRoute();
 const router = useRouter();
 const toast = useToast();
-const categoriesStore = useCategoriesStore();
+const categoriesStore = useAreasStore();
 const properties = ref([]);
 const loading = ref(true);
 const deleteDialog = ref(false);
@@ -237,7 +237,7 @@ const formatDate = (timestamp) => {
 };
 
 const categoryTitle = computed(() => {
-    const category = categoriesStore.categories.find(c => c.key === route.query.category || '');
+    const category = categoriesStore.realEstateItems.find(c => c.key === route.query.category || '');
     if (!category) return '';
     const action = category.actions.find(a => a.type === route.query.subcategory || '');
     return `${category.title} - ${action?.label || ''}`;
