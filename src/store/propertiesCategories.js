@@ -67,6 +67,48 @@ export const usePropertiesStore = defineStore('properties', {
                         console.log(`Price match for maxPrice: ${isMatch}`);
                     }
 
+                    // Проверка на минимальную этажность
+                    if (key === 'minFloor' && value !== null && value !== undefined) {
+                        isMatch = property.floors.floor >= Number(value);
+                    }
+
+                    // Проверка на максимальную этажность
+                    if (key === 'maxFloor' && value !== null && value !== undefined) {
+                        isMatch = property.floors.floor <= Number(value);
+                    }
+
+                    // Проверка на минимальную площадь - общая площадь
+                    if (key === 'minArea' && value !== null && value !== undefined) {
+                        isMatch = property.apartmentArea.totalArea >= Number(value);
+                    }
+
+                    // Проверка на максимальную площадь - общая площадь
+                    if (key === 'maxArea' && value !== null && value !== undefined) {
+                        isMatch = property.apartmentArea.totalArea <= Number(value);
+                    }
+
+                    // Проверка на минимальную площадь - жилая площадь
+                    if (key === 'minAreaLiving' && value !== null && value !== undefined) {
+                        isMatch = property.apartmentArea.livingArea >= Number(value);
+                    }
+
+                    // Проверка на максимальную площадь - жилая площадь
+                    if (key === 'maxAreaLiving' && value !== null && value !== undefined) {
+                        isMatch = property.apartmentArea.livingArea <= Number(value);
+                    }
+
+                    // Проверка на минимальную площадь - кухня
+                    if (key === 'minAreaKitchen' && value !== null && value !== undefined) {
+                        isMatch = property.apartmentArea.kitchenArea >= Number(value);
+                    }
+
+                    // Проверка на максимальную площадь - кухня
+                    if (key === 'maxAreaKitchen' && value !== null && value !== undefined) {
+                        isMatch = property.apartmentArea.kitchenArea <= Number(value);
+                    }
+
+
+
                     // Если после проверки цены объект не подходит, мы прекращаем дальнейшие проверки
                     if (!isMatch) return;
 
