@@ -1,28 +1,44 @@
 <template>
-    <h1>Додати об'єкт нерухомості</h1>
-    <Form v-slot="$form" @submit="saveProperty">
+    <h1 class="mb-4">Додати об'єкт нерухомості</h1>
+    <Form v-slot="$form" :initialValues :resolver="resolver" @submit="saveProperty">
         <Fluid class="flex flex-col md:flex-row gap-8">
             <div class="md:w-1/2">
                 <div class="card flex flex-col gap-4"  >
                     <div class="font-semibold text-xl">Назва</div>
                     <FloatLabel>
-                        <InputText id="username" type="text" v-model="property.title" required />
-                        <label for="username">Назва оголошення</label>
+                        <InputText id="nameProperty" name="nameProperty" type="text" v-model="property.title" required />
+                        <label for="nameProperty">Назва оголошення</label>
                         <Message
-                            v-if="$form.username?.invalid"
+                            v-if="$form.nameProperty?.invalid"
                             severity="error" size="small"
                             variant="simple">
-                            {{ $form.username.error?.message }}
+                            {{ $form.nameProperty.error?.message }}
                         </Message>
                     </FloatLabel>
                     <div class="font-semibold text-xl">Тип нерухомості</div>
-                    <Select v-model="property.category" :options="dropdowns.category" optionLabel="name" placeholder="Select" />
-                    <div class="font-semibold text-xl">Мета використання</div>
-                    <Select v-model="property.subcategory" :options="dropdowns.subcategory" optionLabel="name" placeholder="Select" />
+                    <Select id="categoryProperty" name="categoryProperty" v-model="property.category" :options="dropdowns.category" optionLabel="name" placeholder="Select" required/>
+                    <Message
+                        v-if="$form.categoryProperty?.invalid"
+                        severity="error" size="small"
+                        variant="simple">
+                        {{ $form.categoryProperty.error?.message }}
+                    </Message>
 
-                    <div v-if="property.subcategory && property.subcategory.code === 'SALE'" class="font-semibold text-xl">Ціна USD</div>
-                    <InputGroup v-if="property.subcategory && property.subcategory.code === 'SALE'">
+                    <div class="font-semibold text-xl">Мета використання</div>
+                    <Select name="subcategoryProperty" v-model="property.subcategory" :options="dropdowns.subcategory" optionLabel="name" placeholder="Select" required/>
+                    <Message
+                        v-if="$form.subcategoryProperty?.invalid"
+                        severity="error" size="small"
+                        variant="simple">
+                        {{ $form.subcategoryProperty.error?.message }}
+                    </Message>
+
+
+                    <div v-if="property.subcategory && property.subcategory.code === 'sell' && property.subcategory.code !== 'exchange'" required class="font-semibold text-xl">Ціна USD</div>
+                    <InputGroup v-if="property.subcategory && property.subcategory.code === 'sell' && property.subcategory.code !== 'exchange'">
                         <InputNumber
+                            id="priceUSDProperty"
+                            name="priceUSDProperty"
                             v-model="property.priceUSD"
                             showButtons mode="decimal"
                             currency="UAH"
@@ -32,23 +48,42 @@
                         <InputGroupAddon>$</InputGroupAddon>
                         <InputGroupAddon>.00</InputGroupAddon>
                     </InputGroup>
+                    <Message
+                        v-if="$form.priceUSDProperty?.invalid"
+                        severity="error" size="small"
+                        variant="simple">
+                        {{ $form.priceUSDProperty.error?.message }}
+                    </Message>
 
-                    <div v-if="property.subcategory && property.subcategory.code !== 'SALE'" class="font-semibold text-xl">Вартість оренди</div>
-                    <InputGroup v-if="property.subcategory && property.subcategory.code !== 'SALE'">
+                    <div v-if="property.subcategory && property.subcategory.code !== 'sell' && property.subcategory.code !== 'exchange'" class="font-semibold text-xl">Вартість оренди</div>
+                    <InputGroup v-if="property.subcategory && property.subcategory.code !== 'sell' && property.subcategory.code !== 'exchange'">
                         <InputNumber
+                            name="priceProperty"
                             v-model="property.priceUSD"
                             showButtons mode="decimal"
                             currency="UAH" locale="uk-UA" required
                         ></InputNumber>
-                        <InputGroupAddon>$</InputGroupAddon>
+                        <InputGroupAddon>грн</InputGroupAddon>
                         <InputGroupAddon>.00</InputGroupAddon>
                     </InputGroup>
+                    <Message
+                        v-if="$form.priceProperty?.invalid"
+                        severity="error" size="small"
+                        variant="simple">
+                        {{ $form.priceProperty.error?.message }}
+                    </Message>
                 </div>
 
                 <div class="card flex flex-col gap-4">
                     <div class="font-semibold text-xl">Розташування</div>
                     <div class="font-semibold text-sm">Область</div>
-                    <Select v-model="property.address.region" :options="dropdowns.regions" optionLabel="name" placeholder="Select" />
+                    <Select name="addressRegionProperty" v-model="property.address.region" :options="dropdowns.regions" optionLabel="name" placeholder="Select" required/>
+                    <Message
+                        v-if="$form.addressRegionProperty?.invalid"
+                        severity="error" size="small"
+                        variant="simple">
+                        {{ $form.addressRegionProperty.error?.message }}
+                    </Message>
 
                     <div class="font-semibold text-sm">Місто</div>
                     <Select
@@ -200,7 +235,6 @@
                         v-model="property.facilityReadiness"
                     ></DatePicker>
                 </div>
-                {{property.facilityReadiness}}
             </div>
         </Fluid>
 
@@ -392,88 +426,129 @@ const updateMarkerPosition = (position) => {
     property.address.markerPosition = position;
 };
 
-const saveProperty = async () => {
+const saveProperty = async ({ valid }) => {
+    if (valid) {
+        const utilitiesObject = property.value.utilities.reduce((acc, current) => {
+            acc[current.key] = current;  // Используем `key` как ключ, а объект как значение
+            return acc;
+        }, {});
+        console.log(utilitiesObject);
+        console.log(property.value);
 
-    const utilitiesObject = property.value.utilities.reduce((acc, current) => {
-        acc[current.key] = current;  // Используем `key` как ключ, а объект как значение
-        return acc;
-    }, {});
-    console.log(utilitiesObject);
-    console.log(property.value);
+        try {
+            saving.value = true;
+            const propertyData = {
+                ...property.value,
+                utilities: utilitiesObject,
+                createdAt: serverTimestamp(),
+                updatedAt: serverTimestamp()
+            };
 
-    try {
-        saving.value = true;
-        const propertyData = {
-            ...property.value,
-            utilities: utilitiesObject,
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp()
-        };
+            await addDoc(collection(db, 'properties'), propertyData);
+            toast.add({ severity: 'success', summary: 'Успішно', detail: 'Об\'єкт додано', life: 3000 });
 
-        await addDoc(collection(db, 'properties'), propertyData);
-        toast.add({ severity: 'success', summary: 'Успішно', detail: 'Об\'єкт додано', life: 3000 });
-
-        // Reset form
-        property.value = {
-            title: '',
-            priceUSD: null,
-            rooms: {
-                all: null,
-                bedrooms: null,
-                bathrooms: null,
-                kitchens: null
-            },
-            houseNumber: '',
-            constructionYear: null,
-            heatingType: null,
-            condition: null,
-            balconyCount: 0,
-            description: '',
-            images: [],
-            category: null,
-            subcategory: null,
-            createdAt: null,
-            updatedAt: null,
-            apartmentArea: {
-                totalArea: null,
-                livingArea: null,
-                kitchenArea: null
-            },
-            floors : {
-                floor: null,
-                totalFloors: null,
-                totalFloorsBuilding: null
-            },
-            reconditioning: null,
-            buildingType: null,
-            furniture: null,
-            parking: null,
-            balconyTerrace: null,
-            objectClass: null,
-            animal: false,
-            facilityReadiness: null,
-            public: false,
-            address: {
-                region: '',
-                area: {
-                    code: null,
-                    name: null
+            // Reset form
+            property.value = {
+                title: '',
+                priceUSD: null,
+                rooms: {
+                    all: null,
+                    bedrooms: null,
+                    bathrooms: null,
+                    kitchens: null
                 },
-                street: '',
-                city: '',
-                markerPosition: null
-            },
-            owner: {
-                username: '',
-                phone: '',
-                message: ''
-            }
-        };
-    } catch (error) {
-        console.error('Error saving property:', error);
-        toast.add({ severity: 'error', summary: 'Помилка', detail: 'Помилка збереження об\'єкту', life: 3000 });
-    } finally {
-        saving.value = false;
+                houseNumber: '',
+                constructionYear: null,
+                heatingType: null,
+                condition: null,
+                balconyCount: 0,
+                description: '',
+                images: [],
+                category: null,
+                subcategory: null,
+                createdAt: null,
+                updatedAt: null,
+                apartmentArea: {
+                    totalArea: null,
+                    livingArea: null,
+                    kitchenArea: null
+                },
+                floors : {
+                    floor: null,
+                    totalFloors: null,
+                    totalFloorsBuilding: null
+                },
+                reconditioning: null,
+                buildingType: null,
+                furniture: null,
+                parking: null,
+                balconyTerrace: null,
+                objectClass: null,
+                animal: false,
+                facilityReadiness: null,
+                public: false,
+                address: {
+                    region: '',
+                    area: {
+                        code: null,
+                        name: null
+                    },
+                    street: '',
+                    city: '',
+                    markerPosition: null
+                },
+                owner: {
+                    username: '',
+                    phone: '',
+                    message: ''
+                }
+            };
+        } catch (error) {
+            console.error('Error saving property:', error);
+            toast.add({ severity: 'error', summary: 'Помилка', detail: 'Помилка збереження об\'єкту', life: 3000 });
+        } finally {
+            saving.value = false;
+        }
+    } else {
+        toast.add({ severity: 'error', summary: 'Form is invalid.', life: 3000 });
     }
 };
+
+const initialValues = reactive({
+    nameProperty: '',
+    categoryProperty: '',
+});
+
+const resolver = ({ values }) => {
+    const errors = {};
+
+    if (!values.nameProperty) {
+        errors.nameProperty = [{ message: 'Додайте назву!' }];
+    }
+
+    if (!values.categoryProperty) {
+        errors.categoryProperty = [{ message: 'Додайте категорію!' }];
+    }
+
+    if (!values.subcategoryProperty) {
+        errors.subcategoryProperty = [{ message: 'Додайте мету використання!' }];
+    }
+
+    if (!values.priceUSDProperty) {
+        errors.priceUSDProperty = [{ message: 'Додайте ціну!' }];
+    }
+
+    if (!values.priceProperty) {
+        errors.priceProperty = [{ message: 'Додайте ціну!' }];
+    }
+
+    if (!values.addressRegionProperty) {
+        errors.addressRegionProperty = [{ message: 'Додайте Область!' }];
+    }
+
+    return {
+        errors
+    };
+};
+
 </script>
