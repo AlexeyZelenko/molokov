@@ -76,6 +76,7 @@
 
                 <div class="card flex flex-col gap-4">
                     <div class="font-semibold text-xl">Розташування</div>
+
                     <div class="font-semibold text-sm">Область</div>
                     <Select name="addressRegionProperty" v-model="property.address.region" :options="dropdowns.regions" optionLabel="name" placeholder="Select" required/>
                     <Message
@@ -86,13 +87,22 @@
                     </Message>
 
                     <div class="font-semibold text-sm">Місто</div>
-                    <Select
-                        v-if="property.address.region && property.address.region.code === 'CHK'"
-                        v-model="property.address.city"
-                        :options="dropdowns.cities"
-                        optionLabel="name"
-                        placeholder="Виберіть місто"
-                    />
+                    <div v-if="property.address.region && property.address.region.code === 'CHK'">
+                        <Select
+                            name="propertyAddressCity"
+                            v-model="property.address.city"
+                            :options="dropdowns.cities"
+                            optionLabel="name"
+                            placeholder="Виберіть місто"
+                        />
+                        <Message
+                            v-if="$form.propertyAddressCity?.invalid"
+                            severity="error" size="small"
+                            variant="simple">
+                            {{ $form.propertyAddressCity.error?.message }}
+                        </Message>
+                    </div>
+
                     <InputText
                         v-else
                         v-model="property.address.city"
@@ -102,9 +112,16 @@
                     <div class="font-semibold text-sm">Вулиця</div>
                     <InputText v-model="property.address.street" placeholder="Вулиця" />
 
+
                     <template v-if="property.address.city && property.address.city.code === '1'">
                         <div class="font-semibold text-sm">Мікрорайон міста Черкаси</div>
-                        <Select v-model="property.address.area" :options="dropdowns.areas" optionLabel="name" placeholder="Select" />
+                        <Select name="propertyAddressArea" v-model="property.address.area" :options="dropdowns.areas" optionLabel="name" placeholder="Select" />
+                        <Message
+                            v-if="$form.propertyAddressArea?.invalid"
+                            severity="error" size="small"
+                            variant="simple">
+                            {{ $form.propertyAddressArea.error?.message }}
+                        </Message>
                     </template>
 
                     <GoogleMapAddApartment
@@ -114,10 +131,17 @@
                     ></GoogleMapAddApartment>
 
                 </div>
+
                 <div class="card flex flex-col gap-4">
                     <div class="font-semibold text-xl">Площа(м²)</div>
                     <div class="font-semibold text-sm">Загальна площа</div>
-                    <InputNumber v-model="property.apartmentArea.totalArea"  showButtons mode="decimal" required></InputNumber>
+                    <InputNumber name="propertyApartmentAreaTotalArea" v-model="property.apartmentArea.totalArea"  showButtons mode="decimal" required></InputNumber>
+                    <Message
+                        v-if="$form.propertyApartmentAreaTotalArea?.invalid"
+                        severity="error" size="small"
+                        variant="simple">
+                        {{ $form.propertyApartmentAreaTotalArea.error?.message }}
+                    </Message>
 
                     <div class="font-semibold text-sm">Жила площа квартири</div>
                     <InputNumber v-model="property.apartmentArea.livingArea"  showButtons mode="decimal" required></InputNumber>
@@ -177,7 +201,13 @@
                 <div class="card flex flex-col gap-4">
                     <div class="font-semibold text-xl">Поверховість</div>
                     <div class="font-semibold text-sm">Поверх</div>
-                    <InputNumber v-model="property.floors.floor"  showButtons mode="decimal" required></InputNumber>
+                    <InputNumber name="propertyFloorsFloor" v-model="property.floors.floor"  showButtons mode="decimal" required></InputNumber>
+                    <Message
+                        v-if="$form.propertyFloorsFloor?.invalid"
+                        severity="error" size="small"
+                        variant="simple">
+                        {{ $form.propertyFloorsFloor.error?.message }}
+                    </Message>
 
                     <div class="font-semibold text-sm">Поверховість будівлі</div>
                     <InputNumber v-model="property.floors.totalFloorsBuilding"  showButtons mode="decimal" required></InputNumber>
@@ -189,13 +219,17 @@
                 <div class="card flex flex-col gap-4">
                     <div class="font-semibold text-xl">Кількість кімнат</div>
                     <div class="font-semibold text-sm">Кількість кімнат</div>
-                    <InputNumber v-model="property.rooms.all"  showButtons mode="decimal" required></InputNumber>
+                    <InputNumber name="propertyRoomsAll" v-model="property.rooms.all"  showButtons mode="decimal" required></InputNumber>
+                    <Message
+                        v-if="$form.propertyRoomsAll?.invalid"
+                        severity="error" size="small"
+                        variant="simple">
+                        {{ $form.propertyRoomsAll.error?.message }}
+                    </Message>
 
                     <div class="font-semibold text-sm">Кількість спалень</div>
                     <InputNumber v-model="property.rooms.bedrooms"  showButtons mode="decimal" required></InputNumber>
 
-                    <div class="font-semibold text-sm">Кількість санвузлів</div>
-                    <InputNumber v-model="property.rooms.bathrooms"  showButtons mode="decimal" required></InputNumber>
 
                     <div class="font-semibold text-sm">Кількість ванних кімнат</div>
                     <InputNumber v-model="property.rooms.bathrooms"  showButtons mode="decimal" required></InputNumber>
@@ -517,6 +551,14 @@ const saveProperty = async ({ valid }) => {
 const initialValues = reactive({
     nameProperty: '',
     categoryProperty: '',
+    subcategoryProperty: '',
+    priceUSDProperty: '',
+    priceProperty: '',
+    addressRegionProperty: '',
+    propertyAddressCity: '',
+    propertyAddressArea: '',
+    propertyApartmentAreaTotalArea: '',
+    propertyFloorsFloor: '',
 });
 
 const resolver = ({ values }) => {
@@ -525,25 +567,32 @@ const resolver = ({ values }) => {
     if (!values.nameProperty) {
         errors.nameProperty = [{ message: 'Додайте назву!' }];
     }
-
     if (!values.categoryProperty) {
         errors.categoryProperty = [{ message: 'Додайте категорію!' }];
     }
-
     if (!values.subcategoryProperty) {
         errors.subcategoryProperty = [{ message: 'Додайте мету використання!' }];
     }
-
     if (!values.priceUSDProperty) {
         errors.priceUSDProperty = [{ message: 'Додайте ціну!' }];
     }
-
     if (!values.priceProperty) {
         errors.priceProperty = [{ message: 'Додайте ціну!' }];
     }
-
     if (!values.addressRegionProperty) {
-        errors.addressRegionProperty = [{ message: 'Додайте Область!' }];
+        errors.addressRegionProperty = [{ message: 'Обов\'язкове поле!' }];
+    }
+    if (!values.propertyAddressCity) {
+        errors.propertyAddressCity = [{ message: 'Обов\'язкове поле!' }];
+    }
+    if (!values.propertyAddressArea) {
+        errors.propertyAddressArea = [{ message: 'Обов\'язкове поле!' }];
+    }
+    if (!values.propertyApartmentAreaTotalArea) {
+        errors.propertyApartmentAreaTotalArea = [{ message: 'Обов\'язкове поле!' }];
+    }
+    if (!values.propertyFloorsFloor) {
+        errors.propertyFloorsFloor = [{ message: 'Обов\'язкове поле!' }];
     }
 
     return {
