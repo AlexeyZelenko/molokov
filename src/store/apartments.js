@@ -221,12 +221,13 @@ export const useApartmentsStore = defineStore('apartments', {
                 }
             ],
             utilities: [
-                { name: 'Електрика', code: 'ELEC' },
-                { name: 'Вода', code: 'WTR' },
-                { name: 'Каналізація', code: 'SWR' },
-                { name: 'Газ', code: 'GAS' },
-                { name: 'Інтернет', code: 'INT' },
-                { name: 'Телебачення', code: 'TV' }
+                { name: 'Електрика', code: 'ELEC' , key: 'electricity'},
+                { name: 'Вода', code: 'WTR', key: 'water' },
+                { name: 'Каналізація', code: 'SWR', key: 'sewerage' },
+                { name: 'Газ', code: 'GAS', key: 'gas' },
+                { name: 'Опалення', code: 'HTG', key: 'heating' },
+                { name: 'Інтернет', code: 'INT', key: 'internet' },
+                { name: 'Телебачення', code: 'TV', key: 'TV' }
             ],
             heatingTypes: [
                 {

@@ -393,10 +393,19 @@ const updateMarkerPosition = (position) => {
 };
 
 const saveProperty = async () => {
+
+    const utilitiesObject = property.value.utilities.reduce((acc, current) => {
+        acc[current.key] = current;  // Используем `key` как ключ, а объект как значение
+        return acc;
+    }, {});
+    console.log(utilitiesObject);
+    console.log(property.value);
+
     try {
         saving.value = true;
         const propertyData = {
             ...property.value,
+            utilities: utilitiesObject,
             createdAt: serverTimestamp(),
             updatedAt: serverTimestamp()
         };
