@@ -1,7 +1,19 @@
 <template>
-    <h1>Деталі об'єкта нерухомості</h1>
+    <h1 class="my-2">Деталі об'єкта нерухомості</h1>
+
     <Fluid class="flex flex-col md:flex-row gap-8">
         <div class="md:w-1/2">
+            <div v-if="property.images?.length" class="card">
+                <Galleria :value="property.images" :responsiveOptions="galleriaResponsiveOptions" :numVisible="5" containerStyle="max-width: 640px">
+                    <template #item="slotProps">
+                        <Image :src="slotProps.item" :alt="slotProps.item.title" preview style="width: 100%" />
+                    </template>
+                    <template #thumbnail="slotProps">
+                        <img :src="slotProps.item" :alt="slotProps.item.title" width="100"/>
+                    </template>
+                </Galleria>
+            </div>
+
             <div class="card flex flex-col gap-4">
                 <div class="font-semibold text-xl">Назва</div>
                 <div>{{ property.title }}</div>
@@ -134,6 +146,25 @@ onMounted(async () => {
     await loadPropertyData(propertyId);
 });
 
+const galleriaResponsiveOptions = ref([
+    {
+        breakpoint: '1024px',
+        numVisible: 5
+    },
+    {
+        breakpoint: '960px',
+        numVisible: 4
+    },
+    {
+        breakpoint: '768px',
+        numVisible: 3
+    },
+    {
+        breakpoint: '560px',
+        numVisible: 1
+    }
+]);
+
 const loadPropertyData = async (id) => {
     try {
         const propertyRef = doc(db, 'properties', id);
@@ -150,7 +181,7 @@ const loadPropertyData = async (id) => {
 };
 
 const goBack = () => {
-    router.push('/pages/apartments'); // Перенаправляем на страницу списка объектов
+    router.go(-1); // Переход на предыдущую страницу
 };
 </script>
 

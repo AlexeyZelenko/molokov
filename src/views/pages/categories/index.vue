@@ -2,9 +2,11 @@
 import { onMounted, ref, watch, computed } from 'vue';
 import { usePropertiesStore } from '@/store/propertiesCategories';
 import  { useAreasStore } from '@/store/areasStore';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
+import Button from "primevue/button";
 
 const route = useRoute();
+const router = useRouter();
 const products = ref([]);
 const options = ref(['list', 'grid']);
 const layout = ref('list');
@@ -20,6 +22,10 @@ const subcategory = route.query.subcategory;
 // Пагинация
 const currentPage = ref(1);
 const pageSize = 2;
+
+const showProperty = (property) => {
+    router.push(`/pages/apartments/view/${property.id}`);
+};
 
 const filters = ref({
     category: category,
@@ -73,7 +79,25 @@ watch(() => store.properties, (newProperties) => {
     <div class="flex flex-col">
         <div class="card">
             <div class="font-semibold text-xl">{{categoryName}} / {{subcategoryName}}</div>
-            <div v-if="store.loading">Завантаження...</div>
+            <div v-if="store.loading">
+                <div class="card">
+                    <div class="rounded border border-surface-200 dark:border-surface-700 p-6 bg-surface-0 dark:bg-surface-900">
+                        <div class="flex mb-4">
+                            <Skeleton shape="circle" size="4rem" class="mr-2"></Skeleton>
+                            <div>
+                                <Skeleton width="10rem" class="mb-2"></Skeleton>
+                                <Skeleton width="5rem" class="mb-2"></Skeleton>
+                                <Skeleton height=".5rem"></Skeleton>
+                            </div>
+                        </div>
+                        <Skeleton width="100%" height="150px"></Skeleton>
+                        <div class="flex justify-between mt-4">
+                            <Skeleton width="4rem" height="2rem"></Skeleton>
+                            <Skeleton width="4rem" height="2rem"></Skeleton>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <DataView v-else :value="paginatedProducts" :layout="layout">
                 <template #header>
                     <div class="flex justify-end">
@@ -95,16 +119,15 @@ watch(() => store.properties, (newProperties) => {
                                 <div class="flex flex-col md:flex-row justify-between md:items-center flex-1 gap-6">
                                     <div class="flex flex-row md:flex-col justify-between items-start gap-2">
                                         <div>
-                                            <span class="font-medium text-surface-500 dark:text-surface-400 text-sm">{{ item.category.name }}</span>
+                                            <span class="font-medium text-surface-500 dark:text-surface-400 text-sm">{{ item.category.name }} / {{ item.subcategory.name }}</span>
                                             <div class="text-lg font-medium mt-2">{{ item.title }}</div>
                                         </div>
-                                        <div class="text-lg font-medium mt-2">{{ item.subcategory.name }}</div>
+                                        <div class="text-lg font-medium mt-2"></div>
                                     </div>
                                     <div class="flex flex-col md:items-end gap-8">
                                         <span class="text-xl font-semibold">${{ item.priceUSD }}</span>
                                         <div class="flex flex-row-reverse md:flex-row gap-2">
-                                            <Button icon="pi pi-heart" outlined></Button>
-                                            <Button icon="pi pi-shopping-cart" label="Buy Now" :disabled="item.inventoryStatus === 'OUTOFSTOCK'" class="flex-auto md:flex-initial whitespace-nowrap"></Button>
+                                            <Button label="Детальніше" raised @click="showProperty(item)"/>
                                         </div>
                                     </div>
                                 </div>
@@ -133,8 +156,7 @@ watch(() => store.properties, (newProperties) => {
                                     <div class="flex flex-col gap-6 mt-6">
                                         <span class="text-2xl font-semibold">${{ item.priceUSD }}</span>
                                         <div class="flex gap-2">
-                                            <Button icon="pi pi-shopping-cart" label="Buy Now" :disabled="item.inventoryStatus === 'OUTOFSTOCK'" class="flex-auto whitespace-nowrap"></Button>
-                                            <Button icon="pi pi-heart" outlined></Button>
+                                            <Button label="Детальніше" raised @click="showProperty(item)"/>
                                         </div>
                                     </div>
                                 </div>

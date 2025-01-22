@@ -1,7 +1,10 @@
 <template>
-    <div class="layout-sidebar">
+    <div>
         <div class="flex flex-col">
-            <div class="font-semibold text-xl mb-4">Фільтри</div>
+            <div class="flex justify-between font-semibold text-xl mb-4">
+                <div>Фільтри</div>
+                <Button icon="pi pi-times" severity="help" rounded variant="outlined" aria-label="Cancel" @click="handleClose"/>
+            </div>
             <div class="flex flex-col gap-3">
 
                 <Accordion value="0">
@@ -275,7 +278,6 @@ import { usePropertiesStore } from '@/store/propertiesCategories';
 import Select from "primevue/select";
 import ToggleSwitch from 'primevue/toggleswitch';
 
-
 const storeCategories = usePropertiesStore();
 
 // Фильтры
@@ -307,6 +309,11 @@ const filters = ref({
     'balconyTerrace.code': null,
     'furniture.code': null
 });
+
+const emit = defineEmits(['closeFilters']);
+const handleClose = () => {
+    emit('closeFilters');
+};
 
 // Функция для установки фильтров
 const setFilters = () => {
