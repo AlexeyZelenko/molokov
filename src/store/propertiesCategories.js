@@ -20,7 +20,8 @@ export const usePropertiesStore = defineStore('properties', {
         properties: [],
         loading: false,
         error: null,
-        filters: {}
+        filters: {},
+        currentComponent: 'ApartmentsSell'
     }),
 
     getters: {
@@ -142,9 +143,69 @@ export const usePropertiesStore = defineStore('properties', {
     },
 
     actions: {
+        componentMap: {
+            'apartments': {
+                'sell': 'ApartmentsSell',
+                'rent': 'ApartmentsRent'
+            },
+            'house': {
+                'sell': 'HousesSell',
+                'rent': 'HousesRent'
+            }
+        },
+
+        determineComponent(category, subcategory) {
+            const componentMap = {
+                'apartments': {
+                    'sell': 'ApartmentsSell',
+                    'rent': 'ApartmentsRent'
+                },
+                'house': {
+                    'sell': 'HousesSell',
+                    'rent': 'HousesRent'
+                }
+            };
+
+            console.log('Raw input:', { category, subcategory });
+
+            // Normalize and trim inputs
+            const normalizedCategory = (category || '').toString().toLowerCase().trim();
+            const normalizedSubcategory = (subcategory || '').toString().toLowerCase().trim();
+
+            console.log('Normalized:', { normalizedCategory, normalizedSubcategory });
+
+            console.log('Available categories:', Object.keys(componentMap));
+            console.log('Component map:', componentMap);
+
+            // Check for exact match and nested access
+            const component = componentMap[normalizedCategory]?.[normalizedSubcategory];
+
+            if (component) {
+                this.currentComponent = component;
+                console.log('Found component:', component);
+                return component;
+            }
+
+            // Fallback strategies
+            console.log('No matching component found. Falling back to default.');
+            this.currentComponent = 'ApartmentsSell';
+            return 'ApartmentsSell';
+        },
+
+        getComponentFilters(filters = {}) {
+            const { category = 'apartments', subcategory = 'sell' } = filters;
+            console.log('Filters received:', { category, subcategory });
+
+            return this.determineComponent(category, subcategory);
+        },
+
         async getProperties(filters = {}) {
             try {
                 this.loading = true;
+                console.log('Fetching properties with filters:', filters);
+
+                this.getComponentFilters(filters);
+
                 let q = collection(db, 'properties');
                 const constraints = [];
 

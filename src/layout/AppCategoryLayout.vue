@@ -166,8 +166,8 @@ function handleSidebarClick(event) {
 <style scoped>
 .filters-button {
     position: fixed;
-    right: 5px;
-    top: 60px;
+    right: 45px;
+    top: 100px;
     z-index: 999;
     display: flex;
     align-items: center;
