@@ -20,7 +20,7 @@
                         id="categoryProperty"
                         name="categoryProperty"
                         v-model="property.category"
-                        :options="dropdowns.category.filter(item => item.code === 'apartments')"
+                        :options="dropdowns.category.filter(item => item.code === 'other')"
                         optionLabel="name"
                         placeholder="Select" required
                     />
@@ -171,22 +171,22 @@
                         placeholder="Комунальні послуги"
                         :filter="true"
                     >
-                    <template #value="slotProps">
-                        <div class="inline-flex items-center py-1 px-2 bg-primary text-primary-contrast rounded-border mr-2" v-for="option of slotProps.value" :key="option.code">
-                            <span :class="'mr-2 flag flag-' + option.code.toLowerCase()" style="width: 18px; height: 12px" />
-                            <div>{{ option.name }}</div>
-                        </div>
-                        <template v-if="!slotProps.value || slotProps.value.length === 0">
-                            <div class="p-1">Вибрати комунальні послуги</div>
+                        <template #value="slotProps">
+                            <div class="inline-flex items-center py-1 px-2 bg-primary text-primary-contrast rounded-border mr-2" v-for="option of slotProps.value" :key="option.code">
+                                <span :class="'mr-2 flag flag-' + option.code.toLowerCase()" style="width: 18px; height: 12px" />
+                                <div>{{ option.name }}</div>
+                            </div>
+                            <template v-if="!slotProps.value || slotProps.value.length === 0">
+                                <div class="p-1">Вибрати комунальні послуги</div>
+                            </template>
                         </template>
-                    </template>
-                    <template #option="slotProps">
-                        <div class="flex items-center">
-                            <span :class="'mr-2 flag flag-' + slotProps.option.code.toLowerCase()" style="width: 18px; height: 12px" />
-                            <div>{{ slotProps.option.name }}</div>
-                        </div>
-                    </template>
-                </MultiSelect>
+                        <template #option="slotProps">
+                            <div class="flex items-center">
+                                <span :class="'mr-2 flag flag-' + slotProps.option.code.toLowerCase()" style="width: 18px; height: 12px" />
+                                <div>{{ slotProps.option.name }}</div>
+                            </div>
+                        </template>
+                    </MultiSelect>
                 </div>
 
                 <div class="card flex flex-col gap-4">

@@ -11,164 +11,272 @@ const model = ref([
     {
         label: 'Нерухомість',
         icon: 'pi pi-fw pi-briefcase',
-        to: '/pages',
         items: [
             {
                 label: 'Квартири',
                 icon: 'pi pi-fw pi-briefcase',
-                to: '/pages',
                 items: [
                     {
-                        label: 'Додати',
+                        label: 'Продаж',
                         icon: 'pi pi-fw pi-plus',
-                        to: '/pages/apartments/add'
+                        to: 'properties',
+                        query: { category: 'apartments', subcategory: 'sell' }
                     },
                     {
-                        label: 'Таблиця',
+                        label: 'Оренда',
                         icon: 'pi pi-fw pi-list',
-                        to: '/pages/apartments/table'
+                        to: 'properties',
+                        disabled: false,
+                        query: { category: 'apartments', subcategory: 'rent' }
                     },
                     {
-                        label: 'Список',
+                        label: 'Обмін',
                         icon: 'pi pi-fw pi-list',
-                        to: '/pages/apartments/list'
+                        to: 'properties?category=apartments&subcategory=exchange'
+                    },
+                    {
+                        label: 'Подобово',
+                        icon: 'pi pi-fw pi-list',
+                        to: 'properties?category=apartments&subcategory=daily'
                     }
                 ]
             },
             {
                 label: 'Будинки',
                 icon: 'pi pi-fw pi-briefcase',
-                to: '/pages',
                 items: [
                     {
-                        label: 'Додати',
+                        label: 'Продаж',
                         icon: 'pi pi-fw pi-plus',
-                        to: '/pages/houses/add'
+                        to: 'properties?category=houses&subcategory=sell'
                     },
                     {
-                        label: 'Список',
+                        label: 'Оренда',
                         icon: 'pi pi-fw pi-list',
-                        to: '/pages/houses/table'
+                        to: 'properties?category=houses&subcategory=rent'
+                    },
+                    {
+                        label: 'Обмін',
+                        icon: 'pi pi-fw pi-list',
+                        to: 'properties?category=houses&subcategory=exchange'
+                    },
+                    {
+                        label: 'Подобово',
+                        icon: 'pi pi-fw pi-list',
+                        to: 'properties?category=houses&subcategory=daily'
                     }
                 ]
             },
             {
-                label: 'Офіси',
+                label: 'Приміщення',
                 icon: 'pi pi-fw pi-briefcase',
-                to: '/pages',
                 items: [
                     {
-                        label: 'Додати',
+                        label: 'Продаж',
                         icon: 'pi pi-fw pi-plus',
-                        to: '/pages/offices/add'
+                        to: 'properties?category=offices&subcategory=sell'
                     },
                     {
-                        label: 'Список',
+                        label: 'Оренда',
                         icon: 'pi pi-fw pi-list',
-                        to: '/pages/offices/table'
+                        to: 'properties?category=offices&subcategory=rent'
+                    },
+                    {
+                        label: 'Обмін',
+                        icon: 'pi pi-fw pi-list',
+                        to: 'properties?category=offices&subcategory=exchange'
+                    },
+                    {
+                        label: 'Подобово',
+                        icon: 'pi pi-fw pi-list',
+                        to: 'properties?category=offices&subcategory=daily'
                     }
                 ]
             },
             {
-                label: 'Склади',
+                label: 'Будівлі',
                 icon: 'pi pi-fw pi-briefcase',
-                to: '/pages',
                 items: [
                     {
-                        label: 'Додати',
+                        label: 'Продаж',
                         icon: 'pi pi-fw pi-plus',
-                        to: '/pages/fold/add'
+                        to: 'properties?category=commercial&subcategory=sell'
                     },
                     {
-                        label: 'Список',
+                        label: 'Оренда',
                         icon: 'pi pi-fw pi-list',
-                        to: '/pages/fold/table'
-                    }
-                ]
-            },
-            {
-                label: 'Комерційна нерухомість',
-                icon: 'pi pi-fw pi-briefcase',
-                to: '/pages',
-                items: [
-                    {
-                        label: 'Додати',
-                        icon: 'pi pi-fw pi-plus',
-                        to: '/pages/commercial/add'
+                        to: 'properties?category=commercial&subcategory=rent'
                     },
                     {
-                        label: 'Список',
+                        label: 'Обмін',
                         icon: 'pi pi-fw pi-list',
-                        to: '/pages/commercial/table'
+                        to: 'properties?category=commercial&subcategory=exchange'
+                    },
+                    {
+                        label: 'Подобово',
+                        icon: 'pi pi-fw pi-list',
+                        to: 'properties?category=commercial&subcategory=daily'
                     }
                 ]
             },
             {
                 label: 'Земельні ділянки',
                 icon: 'pi pi-fw pi-briefcase',
-                to: '/pages',
+                items: [
+                    {
+                        label: 'Продаж',
+                        icon: 'pi pi-fw pi-plus',
+                        to: 'properties?category=land&subcategory=sell'
+                    },
+                    {
+                        label: 'Оренда',
+                        icon: 'pi pi-fw pi-list',
+                        to: 'properties?category=land&subcategory=rent'
+                    },
+                    {
+                        label: 'Обмін',
+                        icon: 'pi pi-fw pi-list',
+                        to: 'properties?category=land&subcategory=exchange'
+                    },
+                    {
+                        label: 'Подобово',
+                        icon: 'pi pi-fw pi-list',
+                        to: 'properties?category=land&subcategory=daily'
+                    }
+                ]
+            },
+            {
+                label: 'Інше',
+                icon: 'pi pi-fw pi-briefcase',
+                items: [
+                    {
+                        label: 'Продаж',
+                        icon: 'pi pi-fw pi-plus',
+                        to: 'properties',
+                        query: { category: 'other', subcategory: 'sell' }
+                    },
+                    {
+                        label: 'Оренда',
+                        icon: 'pi pi-fw pi-list',
+                        to: 'properties?category=other&subcategory=rent'
+                    },
+                    {
+                        label: 'Обмін',
+                        icon: 'pi pi-fw pi-list',
+                        to: 'properties?category=other&subcategory=exchange'
+                    },
+                    {
+                        label: 'Подобово',
+                        icon: 'pi pi-fw pi-list',
+                        to: 'properties?category=other&subcategory=daily'
+                    }
+                ]
+            },
+        ]
+    },
+    {
+        label: 'Нерухомість (admin)',
+        icon: 'pi pi-fw pi-briefcase',
+        items: [
+            {
+                label: 'Квартири',
+                icon: 'pi pi-fw pi-briefcase',
+                items: [
+                    {
+                        label: 'Додати',
+                        icon: 'pi pi-fw pi-plus',
+                        to: '/pages/apartments/add'
+                    },
+                    // {
+                    //     label: 'Таблиця',
+                    //     icon: 'pi pi-fw pi-list',
+                    //     to: '/pages/apartments/table'
+                    // },
+                    // {
+                    //     label: 'Список',
+                    //     icon: 'pi pi-fw pi-list',
+                    //     to: '/pages/apartments/list'
+                    // }
+                ]
+            },
+            {
+                label: 'Будинки',
+                icon: 'pi pi-fw pi-briefcase',
+                items: [
+                    {
+                        label: 'Додати',
+                        icon: 'pi pi-fw pi-plus',
+                        to: '/pages/houses/add'
+                    },
+                    // {
+                    //     label: 'Список',
+                    //     icon: 'pi pi-fw pi-list',
+                    //     to: '/pages/houses/table'
+                    // }
+                ]
+            },
+            {
+                label: 'Приміщення',
+                icon: 'pi pi-fw pi-briefcase',
+                items: [
+                    {
+                        label: 'Додати',
+                        icon: 'pi pi-fw pi-plus',
+                        to: '/pages/offices/add'
+                    },
+                    // {
+                    //     label: 'Список',
+                    //     icon: 'pi pi-fw pi-list',
+                    //     to: '/pages/offices/table'
+                    // }
+                ]
+            },
+            {
+                label: 'Будівлі',
+                icon: 'pi pi-fw pi-briefcase',
+                items: [
+                    {
+                        label: 'Додати',
+                        icon: 'pi pi-fw pi-plus',
+                        to: '/pages/commercial/add'
+                    },
+                    // {
+                    //     label: 'Список',
+                    //     icon: 'pi pi-fw pi-list',
+                    //     to: '/pages/commercial/table'
+                    // }
+                ]
+            },
+            {
+                label: 'Земельні ділянки',
+                icon: 'pi pi-fw pi-briefcase',
                 items: [
                     {
                         label: 'Додати',
                         icon: 'pi pi-fw pi-plus',
                         to: '/pages/land/add'
                     },
-                    {
-                        label: 'Список',
-                        icon: 'pi pi-fw pi-list',
-                        to: '/pages/land/table'
-                    }
+                    // {
+                    //     label: 'Список',
+                    //     icon: 'pi pi-fw pi-list',
+                    //     to: '/pages/land/table'
+                    // }
                 ]
             },
             {
-                label: 'Гаражи',
+                label: 'Інше',
                 icon: 'pi pi-fw pi-briefcase',
-                to: '/pages',
                 items: [
                     {
                         label: 'Додати',
                         icon: 'pi pi-fw pi-plus',
-                        to: '/pages/garages/add'
+                        to: '/pages/other/add'
                     },
-                    {
-                        label: 'Список',
-                        icon: 'pi pi-fw pi-list',
-                        to: '/pages/garages/table'
-                    }
-                ]
-            },
-            {
-                label: 'Дачи',
-                icon: 'pi pi-fw pi-briefcase',
-                to: '/pages',
-                items: [
-                    {
-                        label: 'Додати',
-                        icon: 'pi pi-fw pi-plus',
-                        to: '/pages/cottages/add'
-                    },
-                    {
-                        label: 'Список',
-                        icon: 'pi pi-fw pi-list',
-                        to: '/pages/cottages/table'
-                    }
-                ]
-            },
-            {
-                label: 'Приміщення для бізнесу',
-                icon: 'pi pi-fw pi-briefcase',
-                to: '/pages',
-                items: [
-                    {
-                        label: 'Додати',
-                        icon: 'pi pi-fw pi-plus',
-                        to: '/pages/business/add'
-                    },
-                    {
-                        label: 'Таблиця',
-                        icon: 'pi pi-fw pi-list',
-                        to: '/pages/business/table'
-                    }
+                    // {
+                    //     label: 'Таблиця',
+                    //     icon: 'pi pi-fw pi-list',
+                    //     to: '/pages/other/table'
+                    // }
                 ]
             },
         ]

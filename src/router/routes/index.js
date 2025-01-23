@@ -2,6 +2,10 @@ import authRoutes from './auth';
 import propertyRoutes from './properties';
 import housesRoutes from './houses';
 import apartmentsRoutes from './apartments';
+import officesRoutes from './offices';
+import commercialRoutes from './commercial';
+import landRoutes from './land';
+import otherRoutes from './other';
 import dashboardRoutes from './dashboard';
 import uikitRoutes from './uikit';
 
@@ -18,7 +22,11 @@ export default [
             ...dashboardRoutes,
             ...uikitRoutes,
             ...housesRoutes,
-            ...apartmentsRoutes
+            ...apartmentsRoutes,
+            ...officesRoutes,
+            ...commercialRoutes,
+            ...landRoutes,
+            ...otherRoutes
         ]
     },
     ...propertyRoutes,

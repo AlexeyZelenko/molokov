@@ -88,6 +88,9 @@
         >
             <div class="p-grid">
                 <div class="p-col-12 p-md-6">
+                    <InputText v-model="filters.title" placeholder="Фільтрувати за назвою" class="p-column-filter" />
+                </div>
+                <div class="p-col-12 p-md-6">
                     <InputNumber v-model="filters.priceUSD" placeholder="Фільтрувати за ціною" class="p-column-filter" />
                 </div>
                 <div class="p-col-12 p-md-6">

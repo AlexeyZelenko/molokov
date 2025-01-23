@@ -71,15 +71,22 @@ export const useApartmentsStore = defineStore('apartments', {
             category: [
                 { name: 'Квартира', code: 'apartments' },
                 { name: 'Будинок', code: 'houses' },
-                { name: 'Комерційна нерухомість', code: 'commercial' },
+                { name: 'Приміщення', code: 'offices' },
+                { name: 'Будівлі', code: 'commercial' },
                 { name: 'Земельна ділянка', code: 'land' },
-                { name: 'Гараж', code: 'garage' },
                 { name: 'Інше', code: 'other' }
             ],
+            subcategory: [
+                { name: 'Продаж', code: 'sell' },
+                { name: 'Довгострокова оренда', code: 'rent' },
+                { name: 'Короткострокова оренда', code: 'daily' },
+                { name: 'Обмін', code: 'exchange' },
+            ],
             purposeOfUses: [
-                { name: 'Продаж', code: 'SALE' },
-                { name: 'Оренда', code: 'LTD' },
-                { name: 'Короткострокова оренда', code: 'STL' }
+                { name: 'Продаж', code: 'sell' },
+                { name: 'Оренда', code: 'rent' },
+                { name: 'Короткострокова оренда', code: 'daily' },
+                { name: 'Обмін', code: 'exchange' }
             ],
             furnitureOptions: [
                 { name: 'З меблями', code: 'FURN' },
@@ -270,12 +277,6 @@ export const useApartmentsStore = defineStore('apartments', {
                     value: 'secondaryMarket'
                 }
             ],
-            subcategory: [
-                { name: 'Продаж', code: 'sell' },
-                { name: 'Довгострокова оренда', code: 'rent' },
-                { name: 'Короткострокова оренда', code: 'daily' },
-                { name: 'Обмін', code: 'exchange' },
-            ]
         },
         saving: false,
     })

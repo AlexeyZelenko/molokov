@@ -17,8 +17,8 @@ const realEstateItems = computed(() => storeAreas.realEstateItems);
 const categoryName = computed(() => storeAreas.realEstateItems.find(item => item.key === route.query.category)?.title);
 const subcategoryName = computed(() => storeAreas.realEstateItems.find(item => item.key === route.query.category)?.actions.find(subcategory => subcategory.type === route.query.subcategory)?.label);
 
-const category = route.query.category;
-const subcategory = route.query.subcategory;
+const category = ref(route.query.category || 'houses');
+const subcategory = ref(route.query.subcategory || 'rent');
 // Пагинация
 const currentPage = ref(1);
 const pageSize = 2;
@@ -70,11 +70,11 @@ onMounted(() => {
 });
 
 onBeforeMount(() => {
-    console.log("route.query", route.query);
+    console.log("category", category.value);
+    console.log("subcategory", subcategory.value);
 });
 
 watch(() => store.properties, (newProperties) => {
-    console.log('newProperties', newProperties);
     products.value = newProperties;
 });
 </script>
