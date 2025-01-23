@@ -13,11 +13,11 @@ const layout = ref('list');
 const store = usePropertiesStore();
 
 const storeAreas = useAreasStore();
-const categoryName = computed(() => storeAreas.realEstateItems.find(item => item.key === 'houses')?.title);
-const subcategoryName = computed(() => storeAreas.realEstateItems.find(item => item.key === 'houses')?.actions.find(subcategory => subcategory.type === 'rent')?.label);
+const categoryName = computed(() => storeAreas.realEstateItems.find(item => item.key === 'commercial')?.title);
+const subcategoryName = computed(() => storeAreas.realEstateItems.find(item => item.key === 'commercial')?.actions.find(subcategory => subcategory.type === 'sell')?.label);
 
-const category = computed(() => route.query.category || 'houses');
-const subcategory = computed(() => route.query.subcategory || 'rent');
+const category = computed(() => route.query.category || 'commercial');
+const subcategory = computed(() => route.query.subcategory || 'sell');
 // Пагинация
 const currentPage = ref(1);
 const pageSize = 2;

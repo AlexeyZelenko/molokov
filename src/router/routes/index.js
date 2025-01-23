@@ -8,6 +8,7 @@ import landRoutes from './land';
 import otherRoutes from './other';
 import dashboardRoutes from './dashboard';
 import uikitRoutes from './uikit';
+import categoriesRoutes from './categories';
 
 export default [
     {
@@ -26,9 +27,10 @@ export default [
             ...officesRoutes,
             ...commercialRoutes,
             ...landRoutes,
-            ...otherRoutes
+            ...otherRoutes,
         ]
     },
+    ...categoriesRoutes,
     ...propertyRoutes,
     ...authRoutes,
     {

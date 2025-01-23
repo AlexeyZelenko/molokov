@@ -19,25 +19,22 @@ const model = ref([
                     {
                         label: 'Продаж',
                         icon: 'pi pi-fw pi-plus',
-                        to: 'properties',
-                        query: { category: 'apartments', subcategory: 'sell' }
+                        to: '/categories/apartments/sell'
                     },
                     {
                         label: 'Оренда',
                         icon: 'pi pi-fw pi-list',
-                        to: 'properties',
-                        disabled: false,
-                        query: { category: 'apartments', subcategory: 'rent' }
+                        to: '/categories/apartments/rent'
                     },
                     {
                         label: 'Обмін',
                         icon: 'pi pi-fw pi-list',
-                        to: 'properties?category=apartments&subcategory=exchange'
+                        to: '/categories/apartments/exchange'
                     },
                     {
                         label: 'Подобово',
                         icon: 'pi pi-fw pi-list',
-                        to: 'properties?category=apartments&subcategory=daily'
+                        to: '/categories/apartments/daily'
                     }
                 ]
             },
@@ -48,22 +45,22 @@ const model = ref([
                     {
                         label: 'Продаж',
                         icon: 'pi pi-fw pi-plus',
-                        to: 'properties?category=houses&subcategory=sell'
+                        to: '/categories/houses/sell'
                     },
                     {
                         label: 'Оренда',
                         icon: 'pi pi-fw pi-list',
-                        to: 'properties?category=houses&subcategory=rent'
+                        to: '/categories/houses/rent'
                     },
                     {
                         label: 'Обмін',
                         icon: 'pi pi-fw pi-list',
-                        to: 'properties?category=houses&subcategory=exchange'
+                        to: '/categories/houses/exchange'
                     },
                     {
                         label: 'Подобово',
                         icon: 'pi pi-fw pi-list',
-                        to: 'properties?category=houses&subcategory=daily'
+                        to: '/categories/houses/daily'
                     }
                 ]
             },
@@ -74,22 +71,22 @@ const model = ref([
                     {
                         label: 'Продаж',
                         icon: 'pi pi-fw pi-plus',
-                        to: 'properties?category=offices&subcategory=sell'
+                        to: '/categories/offices/sell'
                     },
                     {
                         label: 'Оренда',
                         icon: 'pi pi-fw pi-list',
-                        to: 'properties?category=offices&subcategory=rent'
+                        to: '/categories/offices/rent'
                     },
                     {
                         label: 'Обмін',
                         icon: 'pi pi-fw pi-list',
-                        to: 'properties?category=offices&subcategory=exchange'
+                        to: '/categories/offices/exchange'
                     },
                     {
                         label: 'Подобово',
                         icon: 'pi pi-fw pi-list',
-                        to: 'properties?category=offices&subcategory=daily'
+                        to: '/categories/offices/daily'
                     }
                 ]
             },
@@ -100,22 +97,22 @@ const model = ref([
                     {
                         label: 'Продаж',
                         icon: 'pi pi-fw pi-plus',
-                        to: 'properties?category=commercial&subcategory=sell'
+                        to: '/categories/commercial/sell'
                     },
                     {
                         label: 'Оренда',
                         icon: 'pi pi-fw pi-list',
-                        to: 'properties?category=commercial&subcategory=rent'
+                        to: '/categories/commercial/rent'
                     },
                     {
                         label: 'Обмін',
                         icon: 'pi pi-fw pi-list',
-                        to: 'properties?category=commercial&subcategory=exchange'
+                        to: '/categories/commercial/exchange'
                     },
                     {
                         label: 'Подобово',
                         icon: 'pi pi-fw pi-list',
-                        to: 'properties?category=commercial&subcategory=daily'
+                        to: '/categories/commercial/daily'
                     }
                 ]
             },
@@ -126,22 +123,22 @@ const model = ref([
                     {
                         label: 'Продаж',
                         icon: 'pi pi-fw pi-plus',
-                        to: 'properties?category=land&subcategory=sell'
+                        to: '/categories/land/sell'
                     },
                     {
                         label: 'Оренда',
                         icon: 'pi pi-fw pi-list',
-                        to: 'properties?category=land&subcategory=rent'
+                        to: '/categories/land/rent'
                     },
                     {
                         label: 'Обмін',
                         icon: 'pi pi-fw pi-list',
-                        to: 'properties?category=land&subcategory=exchange'
+                        to: '/categories/land/exchange'
                     },
                     {
                         label: 'Подобово',
                         icon: 'pi pi-fw pi-list',
-                        to: 'properties?category=land&subcategory=daily'
+                        to: '/categories/land/daily'
                     }
                 ]
             },
@@ -152,23 +149,22 @@ const model = ref([
                     {
                         label: 'Продаж',
                         icon: 'pi pi-fw pi-plus',
-                        to: 'properties',
-                        query: { category: 'other', subcategory: 'sell' }
+                        to: '/categories/other/sell'
                     },
                     {
                         label: 'Оренда',
                         icon: 'pi pi-fw pi-list',
-                        to: 'properties?category=other&subcategory=rent'
+                        to: '/categories/other/rent'
                     },
                     {
                         label: 'Обмін',
                         icon: 'pi pi-fw pi-list',
-                        to: 'properties?category=other&subcategory=exchange'
+                        to: '/categories/other/exchange'
                     },
                     {
                         label: 'Подобово',
                         icon: 'pi pi-fw pi-list',
-                        to: 'properties?category=other&subcategory=daily'
+                        to: '/categories/other/daily'
                     }
                 ]
             },
