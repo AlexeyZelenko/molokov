@@ -20,6 +20,7 @@
                     paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                     currentPageReportTemplate="Показано {first} по {last} з {totalRecords}"
                     responsiveLayout="scroll"
+                    showGridlines
                 >
                     <template #header>
                         <div class="flex justify-content-between">
@@ -33,17 +34,34 @@
 
                     <!-- Колонки с данными -->
                     <Column field="title" header="Назва" />
-                    <Column field="price" header="Ціна" sortable :body="formatCurrency" />
-                    <Column field="area" header="Площа" sortable :body="slotProps => `${slotProps.data.area} м²`" />
+                    <Column field="formattedPrice" header="Ціна" sortable />
+                    <Column field="apartmentArea" header="Площа" sortable :body="slotProps => `${slotProps.data.apartmentArea} м²`" />
                     <Column field="rooms" header="Кімнати" sortable/>
-                    <Column field="floor" header="Поверх" :body="slotProps => `${slotProps.data.floor}/${slotProps.data.totalFloors}`" />
-                    <Column field="district" header="Район" />
-                    <Column field="wallMaterial" header="Матеріал стін" :body="getWallMaterialName" />
-                    <Column field="condition" header="Стан" :body="getConditionName" />
-                    <Column field="images" header="Фото" :body="renderImages" />
-                    <Column field="createdAt" header="Дата додавання" :body="formatDate" />
-                    <Column header="Дії" :exportable="false" style="min-width: 8rem">
+                    <Column field="floor" header="Поверх" :body="slotProps => `${slotProps.data.floor}/${slotProps.data.floor}`" />
+                    <Column field="area" header="Район" />
+                    <Column field="reconditioning" header="Стан" :body="getConditionName" />
+                    <Column header="Дата додавання" filterField="createdAt" dataType="date" style="min-width: 10rem">
+                        <template #body="{ data }">
+                            <!-- Форматируем дату с использованием функции formatDate -->
+                            {{ formatDate(data.createdAt) }}
+                        </template>
+                        <template #filter="{ filterModel }">
+                            <!-- Используем DatePicker для фильтрации -->
+                            <DatePicker
+                                v-model="filterModel.value"
+                                dateFormat="mm/dd/yy"
+                                placeholder="mm/dd/yyyy"
+                            />
+                        </template>
+                    </Column>
+
+                    <Column header="Дії" :exportable="false" style="min-width: 12rem">
                         <template #body="slotProps">
+                            <Button
+                                icon="pi pi-eye"
+                                class="p-button-rounded p-button-info mr-2"
+                                @click="showProperty(slotProps.data)"
+                            />
                             <Button
                                 icon="pi pi-pencil"
                                 class="p-button-rounded p-button-success mr-2"
@@ -73,7 +91,7 @@
                     <InputText v-model="filters.title" placeholder="Фільтрувати за назвою" class="p-column-filter" />
                 </div>
                 <div class="p-col-12 p-md-6">
-                    <InputNumber v-model="filters.price" placeholder="Фільтрувати за ціною" class="p-column-filter" />
+                    <InputNumber v-model="filters.priceUSD" placeholder="Фільтрувати за ціною" class="p-column-filter" />
                 </div>
                 <div class="p-col-12 p-md-6">
                     <InputNumber v-model="filters.area" placeholder="Фільтрувати за площею" class="p-column-filter" />
@@ -85,13 +103,7 @@
                     <InputNumber v-model="filters.floor" placeholder="Фільтрувати за поверхом" class="p-column-filter" />
                 </div>
                 <div class="p-col-12 p-md-6">
-                    <InputText v-model="filters.district" placeholder="Фільтрувати за районом" class="p-column-filter" />
-                </div>
-                <div class="p-col-12 p-md-6">
-                    <Dropdown v-model="filters.wallMaterial" :options="wallMaterials" optionLabel="name" optionValue="value" placeholder="Матеріал стін" class="p-column-filter" />
-                </div>
-                <div class="p-col-12 p-md-6">
-                    <Dropdown v-model="filters.condition" :options="conditions" optionLabel="name" optionValue="value" placeholder="Стан" class="p-column-filter" />
+                    <InputText v-model="filters.area" placeholder="Фільтрувати за районом" class="p-column-filter" />
                 </div>
                 <div class="p-col-12">
                     <Button label="Застосувати фільтри" icon="pi pi-check" @click="applyFilters" class="p-button-success" />
@@ -133,29 +145,38 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import {ref, onMounted, computed, reactive, onBeforeMount} from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { db, storage } from '@/firebase/config';
 import { collection, query, where, orderBy, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { ref as storageRef, deleteObject } from 'firebase/storage';
-import Dropdown from 'primevue/dropdown';
 import Dialog from 'primevue/dialog';
 import { useToast } from 'primevue/usetoast';
-import { useCategoriesStore } from '@/store/categories';
+import { useAreasStore } from '@/store/areasStore';
 import InputText from 'primevue/inputtext';
 import InputNumber from 'primevue/inputnumber';
 import Button from 'primevue/button';
 import Toast from 'primevue/toast';
+import { formatFirebaseTimestamp } from '@/utils/dateUtils';
+import { useApartmentsStore } from '@/store/apartments';
+import formatCurrency from '@/utils/formattedPrice';
+import { format } from 'date-fns';
+
+const store = useApartmentsStore();
+let dropdowns = reactive([]);
+onBeforeMount(async () => {
+    dropdowns = store.dropdowns;
+});
 
 const route = useRoute();
 const router = useRouter();
 const toast = useToast();
-const categoriesStore = useCategoriesStore();
+const categoriesStore = useAreasStore();
 const properties = ref([]);
 const loading = ref(true);
 const deleteDialog = ref(false);
 const propertyToDelete = ref(null);
-const showFiltersDialog = ref(false); // Управление видимостью окна с фильтрами
+const showFiltersDialog = ref(false);
 const globalFilter = ref('');
 const filters = ref({
     title: '',
@@ -164,25 +185,10 @@ const filters = ref({
     rooms: null,
     floor: null,
     district: '',
-    wallMaterial: null,
     condition: null
 });
 
-const wallMaterials = [
-    { name: 'Цегла', value: 'brick' },
-    { name: 'Панель', value: 'panel' },
-    { name: 'Моноліт', value: 'monolith' },
-    { name: 'Піноблок', value: 'foamBlock' }
-];
 
-const conditions = [
-    { name: 'Євроремонт', value: 'euro' },
-    { name: 'Житловий стан', value: 'living' },
-    { name: 'Потребує ремонту', value: 'needsRepair' },
-    { name: 'Від забудовника', value: 'developer' }
-];
-
-// Обработка удаления
 const confirmDelete = (property) => {
     propertyToDelete.value = property;
     deleteDialog.value = true;
@@ -225,21 +231,13 @@ const selectedFiltersCount = computed(() => {
 });
 
 const formatDate = (timestamp) => {
-    console.log('Formatting date:', timestamp);
     if (!timestamp) return '';
-    const date = timestamp.toDate(); // Преобразуем Timestamp в объект Date
-    return new Intl.DateTimeFormat('uk-UA', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-    }).format(date);
+    const date = new Date(timestamp.seconds * 1000); // Преобразуем timestamp от Firebase
+    return date.toLocaleDateString('uk-UA'); // Возвращаем отформатированную дату
 };
 
-
 const categoryTitle = computed(() => {
-    const category = categoriesStore.categories.find(c => c.key === route.query.category || '');
+    const category = categoriesStore.realEstateItems.find(c => c.key === route.query.category || '');
     if (!category) return '';
     const action = category.actions.find(a => a.type === route.query.subcategory || '');
     return `${category.title} - ${action?.label || ''}`;
@@ -254,7 +252,7 @@ const filteredProperties = computed(() => {
                 property.title,
                 property.district,
                 property.street,
-                property.description
+                property.area
             ];
             if (!searchableFields.some(field => field?.toLowerCase().includes(searchValue))) {
                 return false;
@@ -280,9 +278,6 @@ const filteredProperties = computed(() => {
         if (filters.value.district && !property.district.toLowerCase().includes(filters.value.district.toLowerCase())) {
             return false;
         }
-        if (filters.value.wallMaterial && property.wallMaterial !== filters.value.wallMaterial) {
-            return false;
-        }
         if (filters.value.condition && property.condition !== filters.value.condition) {
             return false;
         }
@@ -299,9 +294,8 @@ const editProperty = (property) => {
     router.push(`/pages/apartments/edit/${property.id}`);
 };
 
-// Получение имени материала стены
-const getWallMaterialName = (value) => {
-    return wallMaterials.find(m => m.value === value)?.name || value;
+const showProperty = (property) => {
+    router.push(`/pages/apartments/view/${property.id}`);
 };
 
 // Получение состояния
@@ -309,12 +303,7 @@ const getConditionName = (value) => {
     return conditions.find(c => c.value === value)?.name || value;
 };
 
-const formatCurrency = (value) => {
-    return new Intl.NumberFormat('uk-UA', { style: 'currency', currency: 'UAH' }).format(value);
-};
-
 onMounted(async () => {
-    console.log('Fetching all properties data...');
     loading.value = true;
 
     try {
@@ -330,6 +319,19 @@ onMounted(async () => {
             id: doc.id,
             ...doc.data()
         }));
+        console.log('Properties:', properties.value);
+
+        properties.value = properties.value.map(property => {
+            return {
+                ...property,
+                rooms: property?.rooms.all,
+                floor: property?.floors.floor,
+                area: property?.address.area.code,
+                apartmentArea: property?.apartmentArea.totalArea,
+                formattedPrice: formatCurrency(property?.priceUSD, 'USD'),
+                reconditioning: property?.reconditioning?.name,
+            };
+        });
 
     } catch (error) {
         console.error('Error fetching properties:', error); // Логируем ошибку при получении данных

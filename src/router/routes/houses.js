@@ -5,11 +5,6 @@ export default [
         component: () => import('@/views/pages/houses/Add.vue')
     },
     {
-        path: '/pages/houses/list',
-        name: 'housesList',
-        component: () => import('@/views/pages/houses/List.vue')
-    },
-    {
         path: '/pages/houses/table',
         name: 'housesTable',
         component: () => import('@/views/pages/houses/Table.vue')
