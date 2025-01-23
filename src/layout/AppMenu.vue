@@ -43,12 +43,12 @@ const model = ref([
                     {
                         label: 'Додати',
                         icon: 'pi pi-fw pi-plus',
-                        to: '/pages/apartments/add'
+                        to: '/pages/houses/add'
                     },
                     {
                         label: 'Список',
                         icon: 'pi pi-fw pi-list',
-                        to: '/pages/apartments'
+                        to: '/pages/houses/table'
                     }
                 ]
             },
@@ -60,12 +60,12 @@ const model = ref([
                     {
                         label: 'Додати',
                         icon: 'pi pi-fw pi-plus',
-                        to: '/pages/apartments/add'
+                        to: '/pages/offices/add'
                     },
                     {
                         label: 'Список',
                         icon: 'pi pi-fw pi-list',
-                        to: '/pages/apartments'
+                        to: '/pages/offices/table'
                     }
                 ]
             },
@@ -77,12 +77,12 @@ const model = ref([
                     {
                         label: 'Додати',
                         icon: 'pi pi-fw pi-plus',
-                        to: '/pages/apartments/add'
+                        to: '/pages/fold/add'
                     },
                     {
                         label: 'Список',
                         icon: 'pi pi-fw pi-list',
-                        to: '/pages/apartments'
+                        to: '/pages/fold/table'
                     }
                 ]
             },
@@ -94,12 +94,12 @@ const model = ref([
                     {
                         label: 'Додати',
                         icon: 'pi pi-fw pi-plus',
-                        to: '/pages/apartments/add'
+                        to: '/pages/commercial/add'
                     },
                     {
                         label: 'Список',
                         icon: 'pi pi-fw pi-list',
-                        to: '/pages/apartments'
+                        to: '/pages/commercial/table'
                     }
                 ]
             },
@@ -111,12 +111,12 @@ const model = ref([
                     {
                         label: 'Додати',
                         icon: 'pi pi-fw pi-plus',
-                        to: '/pages/apartments/add'
+                        to: '/pages/land/add'
                     },
                     {
                         label: 'Список',
                         icon: 'pi pi-fw pi-list',
-                        to: '/pages/apartments'
+                        to: '/pages/land/table'
                     }
                 ]
             },
@@ -128,12 +128,12 @@ const model = ref([
                     {
                         label: 'Додати',
                         icon: 'pi pi-fw pi-plus',
-                        to: '/pages/apartments/add'
+                        to: '/pages/garages/add'
                     },
                     {
                         label: 'Список',
                         icon: 'pi pi-fw pi-list',
-                        to: '/pages/apartments'
+                        to: '/pages/garages/table'
                     }
                 ]
             },
@@ -145,12 +145,12 @@ const model = ref([
                     {
                         label: 'Додати',
                         icon: 'pi pi-fw pi-plus',
-                        to: '/pages/apartments/add'
+                        to: '/pages/cottages/add'
                     },
                     {
                         label: 'Список',
                         icon: 'pi pi-fw pi-list',
-                        to: '/pages/apartments'
+                        to: '/pages/cottages/table'
                     }
                 ]
             },
@@ -162,12 +162,12 @@ const model = ref([
                     {
                         label: 'Додати',
                         icon: 'pi pi-fw pi-plus',
-                        to: '/pages/apartments/add'
+                        to: '/pages/business/add'
                     },
                     {
                         label: 'Таблиця',
                         icon: 'pi pi-fw pi-list',
-                        to: '/pages/apartments'
+                        to: '/pages/business/table'
                     }
                 ]
             },

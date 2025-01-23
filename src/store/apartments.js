@@ -70,6 +70,11 @@ export const useApartmentsStore = defineStore('apartments', {
             ],
             category: [
                 { name: 'Квартира', code: 'apartments' },
+                { name: 'Будинок', code: 'houses' },
+                { name: 'Комерційна нерухомість', code: 'commercial' },
+                { name: 'Земельна ділянка', code: 'land' },
+                { name: 'Гараж', code: 'garage' },
+                { name: 'Інше', code: 'other' }
             ],
             purposeOfUses: [
                 { name: 'Продаж', code: 'SALE' },

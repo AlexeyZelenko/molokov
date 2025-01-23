@@ -354,7 +354,7 @@ const toast = useToast();
 const store = useApartmentsStore();
 const saving = ref(false);
 
-const property = ref({
+const property = reactive({
     title: '',
     priceUSD: null,
     rooms: {
