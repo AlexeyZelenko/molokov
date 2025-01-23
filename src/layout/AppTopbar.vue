@@ -1,6 +1,21 @@
 <script setup>
 import { useLayout } from '@/layout/composables/layout';
 import AppConfigurator from './AppConfigurator.vue';
+import { useAuthStore } from '@/store/authFirebase';
+import { useRouter } from 'vue-router';
+
+const authStore = useAuthStore();
+const router = useRouter();
+const user = authStore.user;
+
+const handleLogout = async () => {
+    try {
+        await authStore.logout();
+        router.push('/auth/login');
+    } catch (error) {
+        console.error('Ошибка при выходе:', error);
+    }
+};
 
 const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
 </script>
@@ -71,6 +86,10 @@ const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
                     <button type="button" class="layout-topbar-action">
                         <i class="pi pi-user"></i>
                         <span>Profile</span>
+                    </button>
+                    <button v-if="user" @click="handleLogout" type="button" class="layout-topbar-action">
+                        <i class="pi pi-sign-out"></i>
+                        <span>Вихід</span>
                     </button>
                 </div>
             </div>

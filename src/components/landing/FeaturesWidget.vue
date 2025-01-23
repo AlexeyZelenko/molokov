@@ -1,5 +1,5 @@
 <template>
-    <div class="features flex flex-nowrap gap-4 justify-center mt-6">
+    <div id="features" class="features flex flex-nowrap gap-4 justify-center mt-6">
         <Card
             v-for="item in realEstateItems"
             :key="item.id"

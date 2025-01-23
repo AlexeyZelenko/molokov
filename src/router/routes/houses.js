@@ -2,17 +2,20 @@ export default [
     {
         path: '/pages/houses/add',
         name: 'addHouse',
-        component: () => import('@/views/pages/houses/Add.vue')
+        component: () => import('@/views/pages/houses/Add.vue'),
+        meta: { requiresAuth: true }
     },
     {
         path: '/pages/houses/table',
         name: 'housesTable',
-        component: () => import('@/views/pages/houses/Table.vue')
+        component: () => import('@/views/pages/houses/Table.vue'),
+        meta: { requiresAuth: true }
     },
     {
         path: '/pages/houses/edit/:id',
         name: 'editHouse',
-        component: () => import('@/views/pages/houses/Edit.vue')
+        component: () => import('@/views/pages/houses/Edit.vue'),
+        meta: { requiresAuth: true }
     },
     {
         path: '/pages/houses/view/:id',

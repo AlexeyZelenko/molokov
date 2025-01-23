@@ -1,21 +1,13 @@
-import { useAuthStore } from '@/store/auth';
+// import { useAuthStore } from '@/store/auth';
+import { useAuthStore } from '@/store/authFirebase';
 
 export const authGuard = (to, from, next) => {
     const authStore = useAuthStore();
 
-    // Check if route requires authentication
-    if (to.meta.requiresAuth) {
-        if (authStore.isAuthenticated) {
-            // Check user roles/permissions
-            if (to.meta.roles && !to.meta.roles.includes(authStore.userRole)) {
-                next('/auth/access');
-                return;
-            }
-            next();
-        } else {
-            next('/auth/login');
-        }
+    if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+        next('/auth/login');
     } else {
         next();
     }
+
 };
