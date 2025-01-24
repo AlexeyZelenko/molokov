@@ -10,25 +10,33 @@ const toast = useToast();
 
 const email = ref('');
 const password = ref('');
+const name = ref('');
 const error = ref('');
 const router = useRouter();
 const authStore = useAuthStore();
 const checked = ref(false);
 
-const handleLogin = async () => {
-    if (!email.value || !password.value) {
-        error.value = 'Please fill in all fields';
+const handleRegister = async () => {
+    if (!email.value || !password.value || !name.value) {
+        error.value = 'Будь ласка, заповніть усі поля';
         return;
     }
 
-    const sumbit = {
-        email: email.value,
-        password: password.value,
-        checked: checked.value
-    };
-
     try {
-        await authStore.login(sumbit, toast);
+        await authStore.register({
+            email: email.value,
+            password: password.value,
+            name: name.value,
+            role: 'customer'
+        });
+
+        toast.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Реєстрація успішна',
+            life: 3000
+        });
+
         router.push('/dashboard');
     } catch (err) {
         error.value = err.message;
@@ -42,7 +50,6 @@ const handleForgotPassword = async () => {
     }
     try {
         await authStore.resetPassword(email.value);
-
     } catch (err) {
         error.value = err.message;
     }
@@ -72,14 +79,38 @@ const handleForgotPassword = async () => {
 
                     <!-- Форма входа -->
                     <div>
+                        <label for="name1" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Name</label>
+                        <InputText
+                            id="name1"
+                            type="name"
+                            placeholder="Name"
+                            class="w-full md:w-[30rem] mb-8"
+                            v-model="name"
+                            @keyup.enter="handleRegister"
+                        />
+
                         <label for="email1" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Email</label>
-                        <InputText id="email1" type="email" placeholder="Email address" class="w-full md:w-[30rem] mb-8"
-                                   v-model="email" @keyup.enter="handleLogin"/>
+                        <InputText
+                            id="email1"
+                            type="email"
+                            placeholder="Email address"
+                            class="w-full md:w-[30rem] mb-8"
+                            v-model="email"
+                            @keyup.enter="handleRegister"
+                        />
 
                         <label for="password1"
                                class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Password</label>
-                        <Password id="password1" v-model="password" placeholder="Password" :toggleMask="true"
-                                  class="mb-4" fluid :feedback="false" @keyup.enter="handleLogin"/>
+                        <Password
+                            id="password1"
+                            v-model="password"
+                            placeholder="Password"
+                            :toggleMask="true"
+                            class="mb-4"
+                            fluid
+                            :feedback="true"
+                            @keyup.enter="handleRegister"
+                        />
 
                         <div v-if="error" class="error mb-4">{{ error }}</div>
 
@@ -88,17 +119,18 @@ const handleForgotPassword = async () => {
                                 <Checkbox v-model="checked" id="rememberme1" binary class="mr-2"></Checkbox>
                                 <label for="rememberme1">Запам'ятай мене</label>
                             </div>
-                            <span @click="handleForgotPassword" class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">Забули пароль?</span>
+<!--                            <span-->
+<!--                                class="font-medium no-underline ml-2 text-right cursor-pointer text-primary"-->
+<!--                                @click="handleForgotPassword"-->
+<!--                            >-->
+<!--                                Забули пароль?-->
+<!--                            </span>-->
                         </div>
 
-                        <Button label="Увійти" class="w-full" @click="handleLogin"
-                                :loading="authStore.loading"></Button>
+                        <Button label="Зареєструватись" class="w-full" @click="handleRegister"></Button>
 
-                        <router-link to="/auth/register" class="flex justify-center mt-4">
-                            Немає облікового запису?
-                            <div class="text-blue-500 hover:text-blue-600 dark:hover:text-blue-400 ml-2">
-                                 Зареєструватися
-                            </div>
+                        <router-link to="/auth/login" class="flex justify-center mt-4">
+                        	<div class="text-blue-500 dark:hover:text-blue-500-darker">Увійти</div>
                         </router-link>
                     </div>
                 </div>
