@@ -93,6 +93,7 @@ export const useApartmentsStore = defineStore('apartments', {
                 { name: 'Без меблів', code: 'NO_FURN' }
             ],
             parking: [
+                { name: 'Немає', code: 'NULL' },
                 { name: 'Паркінг', code: 'PARK' },
                 { name: 'Гараж', code: 'GARAGE' },
                 { name: 'Паркінг на території', code: 'PARK_AREA' },
@@ -187,15 +188,21 @@ export const useApartmentsStore = defineStore('apartments', {
                 {
                     name: 'Без обробки',
                     value: 'withoutFinishing'
+                },
+                {
+                    name: 'Інше',
+                    value: 'other'
                 }
             ],
             furniture: [
                 { name: 'З меблями', code: 'FURN' },
                 { name: 'Без меблів', code: 'NO_FURN' },
                 { name: 'Частково мебльоване', code: 'PART_FURN' },
-                { name: 'Меблі на замовлення', code: 'CUST_FURN' }
+                { name: 'Меблі на замовлення', code: 'CUST_FURN' },
+                { name: 'Інше', code: 'OTHER' }
             ],
             balconyTerrace: [
+                { name: 'Немає', code: 'NULL' },
                 { name: 'Балкон', code: 'BALCONY' },
                 { name: 'Лоджія', code: 'LOGGIA' },
                 { name: 'Тераса', code: 'TERRACE' },
@@ -230,6 +237,10 @@ export const useApartmentsStore = defineStore('apartments', {
                 {
                     name: 'Соціальний',
                     value: 'social'
+                },
+                {
+                    name: 'Інше',
+                    value: 'other'
                 }
             ],
             utilities: [
@@ -239,7 +250,14 @@ export const useApartmentsStore = defineStore('apartments', {
                 { name: 'Газ', code: 'GAS', key: 'gas' },
                 { name: 'Опалення', code: 'HTG', key: 'heating' },
                 { name: 'Інтернет', code: 'INT', key: 'internet' },
-                { name: 'Телебачення', code: 'TV', key: 'TV' }
+                { name: 'Телебачення', code: 'TV', key: 'TV' },
+                { name: 'Телефон', code: 'TEL', key: 'phone' },
+                { name: 'Сигналізація', code: 'ALR', key: 'alarm' },
+                { name: 'Кондиціонування', code: 'AC', key: 'conditioning' },
+                { name: 'Вентиляція', code: 'VENT', key: 'ventilation' },
+                { name: 'Відеоспостереження', code: 'VDO', key: 'video' },
+                { name: 'Домофон', code: 'PHN', key: 'intercom' },
+                { name: 'Система "розумний будинок"', code: 'SMART', key: 'smartHouse' },
             ],
             heatingTypes: [
                 {
@@ -275,7 +293,57 @@ export const useApartmentsStore = defineStore('apartments', {
                 {
                     name: 'Вторинний ринок',
                     value: 'secondaryMarket'
+                },
+                {
+                    name: 'Будинок в процесі будівництва',
+                    value: 'buildingProcess'
                 }
+            ],
+            householdAppliances: {
+                kitchen: [
+                    { name: 'Плита', code: 'STV' },
+                    { name: 'Духовка', code: 'OVN' },
+                    { name: 'Витяжка', code: 'HOD' },
+                    { name: 'Холодильник', code: 'FRZ' },
+                    { name: 'Посудомийна машина', code: 'DW' },
+                    { name: 'Мікрохвильова піч', code: 'MW' },
+                    { name: 'Кавоварка', code: 'COF' },
+                    { name: 'Чайник', code: 'KTL' },
+                    { name: 'Інше', code: 'OTH' }
+                ],
+                bathroom: [
+                    { name: 'Ванна', code: 'BTH' },
+                    { name: 'Душова кабіна', code: 'SHW' },
+                    { name: 'Унітаз', code: 'WC' },
+                    { name: 'Біде', code: 'BID' },
+                    { name: 'Умивальник', code: 'SNK' },
+                    { name: 'Підігрів підлоги', code: 'UFH' },
+                    { name: 'Інше', code: 'OTH' }
+                ],
+                livingRoom: [
+                    { name: 'Телевізор', code: 'TV' },
+                    { name: 'Камін', code: 'FRP' },
+                    { name: 'Музичний центр', code: 'HIF' },
+                    { name: 'Інше', code: 'OTH' }
+                ],
+                bedroom: [
+                    { name: 'Ліжко', code: 'BD' },
+                    { name: 'Шафа', code: 'WRD' },
+                    { name: 'Комод', code: 'DRS' },
+                    { name: 'Тумбочка', code: 'NTS' },
+                    { name: 'Інше', code: 'OTH' }
+                ],
+            },
+            planning: [
+                { name: 'Кімнати ізольовані', code: 'ROOMS' },
+                { name: 'Кімнати суміжні', code: 'ADJACENT' },
+                { name: 'Студія', code: 'STUDIO' },
+                { name: 'Інше', code: 'OTHER' }
+            ],
+            bathroom: [
+                { name: 'Роздільний', code: 'SEPARATE' },
+                { name: 'Разом', code: 'TOGETHER' },
+                { name: 'Інше', code: 'OTHER' }
             ],
         },
         saving: false,

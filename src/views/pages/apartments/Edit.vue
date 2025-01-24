@@ -212,16 +212,37 @@
             <div class="field col-12">
                 <label>Фотографії</label>
                 <FileUpload
+                    ref="fileUpload"
                     name="advanced"
                     @uploader="onFileSelect"
                     :multiple="true"
                     accept="image/*"
-                    :maxFileSize="1000000"
+                    :maxFileSize="10000000"
                     customUpload
                     chooseLabel="Обрати"
                     uploadLabel="Завантажити"
                     cancelLabel="Скасувати"
                 />
+
+                <div v-if="images.length" class="flex flex-wrap">
+                    <div
+                        v-for="(imageUrl, index) in images"
+                        :key="imageUrl"
+                        class="col-3 relative m-4"
+                    >
+                        <img
+                            :src="imageUrl"
+                            class="w-full h-auto object-cover"
+                            style="height: 100px; width: 100px"
+                        />
+                        <Button
+                            icon="pi pi-trash"
+                            class="absolute top-0 right-0 p-button-danger p-button-rounded"
+                            @click="removeImage(imageUrl)"
+                            style="margin-top: -25px"
+                        />
+                    </div>
+                </div>
             </div>
         </Fluid>
 
@@ -270,7 +291,13 @@
 import { ref, onBeforeMount, computed, reactive } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import {db, storage} from '@/firebase/config';
-import { doc, getDoc, updateDoc, addDoc, collection } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, addDoc, collection, arrayRemove } from 'firebase/firestore';
+import {
+    ref as storageRef,
+    uploadBytes,
+    getDownloadURL,
+    deleteObject
+} from 'firebase/storage';
 import { useToast } from 'primevue/usetoast';
 import Toast from 'primevue/toast';
 import { useApartmentsStore } from '@/store/apartments';
@@ -350,14 +377,55 @@ const route = useRoute();
 const router = useRouter();
 const propertyId = route.params.id;
 
+const images = computed(() => property.value.images);
+const fileUpload = ref(null)
+
+const removeImage = async (imageUrl) => {
+    try {
+        // Extract the image path from the full URL
+        const imagePath = decodeURIComponent(new URL(imageUrl).pathname)
+            .split('/o/')[1]
+            .split('?')[0];
+
+        const imageRef = storageRef(storage, imagePath);
+
+        // Delete from Firebase Storage
+        await deleteObject(imageRef);
+
+        // Remove from Firestore document
+        if (propertyId) {
+            const propertyDocRef = doc(db, 'properties', propertyId);
+            await updateDoc(propertyDocRef, {
+                images: arrayRemove(imageUrl)
+            });
+        }
+
+        // Remove from local array
+        property.value.images = property.value.images.filter(url => url !== imageUrl);
+
+        toast.add({
+            severity: 'success',
+            summary: 'Видалено',
+            detail: 'Фото успішно видалено',
+            life: 3000
+        });
+    } catch (error) {
+        console.error('Помилка видалення фото:', error);
+        toast.add({
+            severity: 'error',
+            summary: 'Помилка',
+            detail: 'Не вдалося видалити фото',
+            life: 3000
+        });
+    }
+};
+
 onBeforeMount(async () => {
-    dropdowns = store.dropdowns;
+    Object.assign(dropdowns, store.dropdowns);
 
     if (propertyId) {
         isEdit.value = true;
-        await loadPropertyData(propertyId); // Асинхронная операция для загрузки данных
-    } else {
-        isEdit.value = false;
+        await loadPropertyData(propertyId);
     }
 });
 
@@ -367,12 +435,23 @@ const loadPropertyData = async (id) => {
         const propertyDoc = await getDoc(propertyRef);
 
         if (propertyDoc.exists()) {
-            property.value = propertyDoc.data(); // Заполняем форму данными объекта
+            property.value = propertyDoc.data();
         } else {
-            console.error('Об\'єкт не знайдений!');
+            toast.add({
+                severity: 'error',
+                summary: 'Помилка',
+                detail: 'Об\'єкт не знайдений',
+                life: 3000
+            });
         }
     } catch (error) {
-        console.error('Ошибка при загрузке объекта:', error);
+        console.error('Помилка при завантаженні об\'єкту:', error);
+        toast.add({
+            severity: 'error',
+            summary: 'Помилка',
+            detail: 'Не вдалося завантажити об\'єкт',
+            life: 3000
+        });
     }
 };
 
@@ -385,65 +464,113 @@ const saveProperty = async () => {
         saving.value = true;
         const propertyData = {
             ...property.value,
-            updatedAt: new Date() // Обновляем время
+            updatedAt: new Date()
         };
 
         if (isEdit.value) {
-            // Обновляем данные объекта в Firebase, если редактируем
             await updateDoc(doc(db, 'properties', propertyId), propertyData);
-            toast.add({ severity: 'success', summary: 'Успішно', detail: 'Об\'єкт оновлено', life: 3000 });
+            toast.add({
+                severity: 'success',
+                summary: 'Успішно',
+                detail: 'Об\'єкт оновлено',
+                life: 3000
+            });
         } else {
-            // Сохраняем новый объект в Firebase
             await addDoc(collection(db, 'properties'), propertyData);
-            toast.add({ severity: 'success', summary: 'Успішно', detail: 'Об\'єкт додано', life: 3000 });
+            toast.add({
+                severity: 'success',
+                summary: 'Успішно',
+                detail: 'Об\'єкт додано',
+                life: 3000
+            });
         }
 
-        router.push('/properties'); // Перенаправляем на страницу списка объектов
+        router.push('/properties');
     } catch (error) {
-        console.error('Ошибка при сохранении объекта:', error);
-        toast.add({ severity: 'error', summary: 'Помилка', detail: 'Помилка збереження об\'єкту', life: 3000 });
+        console.error('Помилка при збереженні об\'єкту:', error);
+        toast.add({
+            severity: 'error',
+            summary: 'Помилка',
+            detail: 'Помилка збереження об\'єкту',
+            life: 3000
+        });
     } finally {
         saving.value = false;
     }
 };
 
 const onFileSelect = async (event) => {
+    const startTime = Date.now();
+    const uploadLogs = [];
+
     try {
         const files = event.files;
         if (!files || files.length === 0) {
-            throw new Error("No files selected");
+            throw new Error("Файли не вибрані");
         }
 
-        for (let file of files) {
-            if (file) {
-                try {
-                    // Перевірка типу та розміру файлів перед стисненням
-                    if (file.size > 10 * 1024 * 1024) { // Приклад: перевірка на максимальний розмір 10 MB
-                        throw new Error('File size exceeds limit of 10MB');
-                    }
+        const validFiles = files.filter(file => {
+            const isValidType = ['image/jpeg', 'image/png', 'image/webp'].includes(file.type);
+            const isValidSize = file.size <= 10 * 1024 * 1024;
 
-                    // Стиснення зображення
-                    const compressedFile = await compressWithCompressor(file);
+            if (!isValidType) uploadLogs.push(`Невірний тип файлу: ${file.name}`);
+            if (!isValidSize) uploadLogs.push(`Файл занадто великий: ${file.name}`);
 
-                    // Зберігаємо файл у Firebase Storage
-                    const storageReference = storageRef(storage, `properties/${Date.now()}_${file.name}`);
-                    const snapshot = await uploadBytes(storageReference, compressedFile); // Завантажуємо стиснуте зображення
-                    const downloadURL = await getDownloadURL(snapshot.ref); // Отримуємо URL стиснутого зображення
+            return isValidType && isValidSize;
+        });
 
-                    // Додаємо URL в масив зображень
-                    property.value.images.push(downloadURL);
-                } catch (error) {
-                    console.error('Ошибка сжатия или загрузки файла:', error);
-                    toast.add({ severity: 'error', summary: 'Помилка', detail: `Помилка стиснення або завантаження: ${error.message}`, life: 3000 });
-                }
+        if (validFiles.length === 0) {
+            throw new Error('Немає файлів для завантаження');
+        }
+
+        const uploadPromises = validFiles.map(async (file) => {
+            try {
+                const fileStartTime = Date.now();
+                const compressedFile = await compressWithCompressor(file);
+
+                const storageReference = storageRef(storage, `properties/${Date.now()}_${file.name}`);
+                const snapshot = await uploadBytes(storageReference, compressedFile);
+                const downloadURL = await getDownloadURL(snapshot.ref);
+
+                uploadLogs.push(`Завантаження успішне: ${file.name}`);
+                return downloadURL;
+            } catch (error) {
+                uploadLogs.push(`Помилка завантаження: ${file.name} - ${error.message}`);
+                throw error;
             }
-        }
+        });
 
-        // Успішне завантаження
-        toast.add({ severity: 'success', summary: 'Успішно', detail: 'Фото завантажено', life: 3000 });
+        const uploadedUrls = await Promise.allSettled(uploadPromises);
+
+        const successfulUploads = uploadedUrls
+            .filter(result => result.status === 'fulfilled')
+            .map(result => result.value);
+
+        property.value.images.push(...successfulUploads);
+
+        const totalTime = Date.now() - startTime;
+        const successCount = successfulUploads.length;
+        const totalFiles = files.length;
+
+        toast.add({
+            severity: successCount === totalFiles ? 'success' : 'warn',
+            summary: 'Завантаження файлів',
+            detail: `Завантажено ${successCount}/${totalFiles} файлів за ${totalTime}ms`,
+            life: 5000
+        });
+
+        console.group('Деталі завантаження');
+        console.log('Журнал завантаження:', uploadLogs);
+        console.groupEnd();
+
     } catch (error) {
-        console.error('Error during file selection or upload:', error);
-        toast.add({ severity: 'error', summary: 'Помилка', detail: 'Помилка завантаження фото: ' + error.message, life: 3000 });
+        console.error('Помилка завантаження файлів:', error);
+        toast.add({
+            severity: 'error',
+            summary: 'Помилка завантаження',
+            detail: `Деталі: ${error.message}`,
+            life: 5000
+        });
     }
 };
 </script>

@@ -361,7 +361,7 @@ const toast = useToast();
 const store = useApartmentsStore();
 const saving = ref(false);
 
-const property = reactive({
+let property = reactive({
     title: '',
     priceUSD: null,
     rooms: {
@@ -469,17 +469,17 @@ const updateMarkerPosition = (position) => {
 
 const saveProperty = async ({ valid }) => {
     if (valid) {
-        const utilitiesObject = property.value.utilities.reduce((acc, current) => {
+        const utilitiesObject = property.utilities.reduce((acc, current) => {
             acc[current.key] = current;  // Используем `key` как ключ, а объект как значение
             return acc;
         }, {});
         console.log(utilitiesObject);
-        console.log(property.value);
+        console.log(property);
 
         try {
             saving.value = true;
             const propertyData = {
-                ...property.value,
+                ...property,
                 utilities: utilitiesObject,
                 createdAt: serverTimestamp(),
                 updatedAt: serverTimestamp()
@@ -489,7 +489,7 @@ const saveProperty = async ({ valid }) => {
             toast.add({ severity: 'success', summary: 'Успішно', detail: 'Об\'єкт додано', life: 3000 });
 
             // Reset form
-            property.value = {
+            property = {
                 title: '',
                 priceUSD: null,
                 rooms: {

@@ -4,6 +4,7 @@ import { usePropertiesStore } from '@/store/propertiesCategories';
 import  { useAreasStore } from '@/store/areasStore';
 import { useRoute, useRouter } from 'vue-router';
 import Button from "primevue/button";
+import { formatFirebaseTimestamp } from '@/utils/dateUtils';
 
 const route = useRoute();
 const router = useRouter();
@@ -122,11 +123,9 @@ watch(() => store.properties, (newProperties) => {
                                 </div>
                                 <div class="flex flex-col md:flex-row justify-between md:items-center flex-1 gap-6">
                                     <div class="flex flex-row md:flex-col justify-between items-start gap-2">
-                                        <div>
-                                            <span class="font-medium text-surface-500 dark:text-surface-400 text-sm">{{ item.category.name }} / {{ item.subcategory.name }}</span>
-                                            <div class="text-lg font-medium mt-2">{{ item.title }}</div>
-                                        </div>
-                                        <div class="text-lg font-medium mt-2"></div>
+                                        <div class="text-lg font-medium mb-4">{{ item.title }}</div>
+                                        <div class="font-small text-surface-500 dark:text-surface-400 text-sm">{{ item.apartmentArea.totalArea }} m2</div>
+                                        <div class="font-small text-surface-500 dark:text-surface-400 text-sm">{{ item.address.city.name }} / {{ item.address.area.name }} - {{ formatFirebaseTimestamp(item.createdAt) }}</div>
                                     </div>
                                     <div class="flex flex-col md:items-end gap-8">
                                         <span class="text-xl font-semibold">${{ item.priceUSD }}</span>

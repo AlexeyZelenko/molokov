@@ -6,10 +6,16 @@
             <div v-if="property.images?.length" class="card">
                 <Galleria :value="property.images" :responsiveOptions="galleriaResponsiveOptions" :numVisible="5" containerStyle="max-width: 640px">
                     <template #item="slotProps">
-                        <Image :src="slotProps.item" :alt="slotProps.item.title" preview style="width: 100%" />
+                        <Image
+                            :src="slotProps.item"
+                            :alt="slotProps.item.title"
+                            preview
+                            style="margin: 0 auto;
+                            max-height: 400px"
+                        />
                     </template>
                     <template #thumbnail="slotProps">
-                        <img :src="slotProps.item" :alt="slotProps.item.title" width="100"/>
+                        <img :src="slotProps.item" :alt="slotProps.item.title" width="100" style="height: 65px; padding: 0 5px"/>
                     </template>
                 </Galleria>
             </div>
@@ -85,6 +91,12 @@
             <div class="card flex flex-col gap-4">
                 <div class="font-semibold text-xl">Паркування</div>
                 <div>{{ property.parking?.name }}</div>
+            </div>
+
+            <div class="card flex flex-col gap-4">
+                <div class="font-semibold text-xl">Контакти</div>
+                <div>{{ property.owner?.username }}</div>
+                <div v-if="property.owner?.message" class="mt-2">{{ property.owner?.message }}</div>
             </div>
         </div>
     </Fluid>
@@ -186,6 +198,10 @@ const goBack = () => {
 </script>
 
 <style scoped>
+img {
+    max-width: 100%;
+    margin: 0 auto;
+}
 .location-picker {
     width: 100%;
 }
