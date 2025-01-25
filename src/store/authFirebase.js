@@ -234,6 +234,56 @@ export const useAuthStore = defineStore('auth', () => {
         });
     }
 
+    async function getCurrentUser() {
+        const auth = getAuth(); // Получение инстанса Firebase Auth
+        const currentUser = auth.currentUser; // Текущий пользователь
+
+        console.log("Current user:", currentUser);
+
+        if (!currentUser) {
+            console.warn("No authenticated user found.");
+            return null; // Возвращаем null, если пользователь не авторизован
+        }
+
+        try {
+            // Получение документа пользователя из Firestore
+            const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+
+            // Обновляем данные, если документ существует
+            if (userDoc.exists()) {
+                const userData = {
+                    uid: currentUser.uid,
+                    email: currentUser.email,
+                    displayName: currentUser.displayName || "",
+                    username: currentUser.displayName || "",
+                    role: userDoc.data().role || "customer",
+                    phones: userDoc.data().phones || [],
+                    emailVerified: currentUser.emailVerified,
+                };
+                user.value = userData; // Обновляем реактивные данные
+                return userData; // Возвращаем объект
+            }
+
+            // Если документа нет, создаем базовые данные пользователя
+            const defaultUser = {
+                uid: currentUser.uid,
+                email: currentUser.email,
+                displayName: currentUser.displayName || "",
+                username: currentUser.displayName || "",
+                role: "customer",
+                phones: [],
+                emailVerified: currentUser.emailVerified,
+            };
+            user.value = defaultUser; // Обновляем реактивные данные
+            return defaultUser; // Возвращаем объект
+
+        } catch (error) {
+            console.error("Error fetching user data from Firestore:", error);
+            user.value = null; // Сбрасываем пользователя в случае ошибки
+            return null;
+        }
+    }
+
     return {
         user,
         error,
@@ -245,6 +295,7 @@ export const useAuthStore = defineStore('auth', () => {
         logout,
         resetPassword,
         initializeAuth,
-        checkAuthPersistence
+        checkAuthPersistence,
+        getCurrentUser
     }
 })

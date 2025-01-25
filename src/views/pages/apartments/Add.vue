@@ -460,7 +460,7 @@
 <script setup>
 import {ref, onBeforeMount, reactive, computed} from 'vue';
 import { db, storage } from '@/firebase/config';
-import { addDoc, collection } from 'firebase/firestore';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import {
     ref as storageRef,
     uploadBytes,
@@ -537,10 +537,6 @@ let property = reactive({
         message: ''
     },
     creator: {
-        id: contacts.value?.uid || null,
-        username: contacts.value?.displayName || null,
-        email: contacts.value?.email || null,
-        phones: contacts.value?.phones || null,
         message: ''
     },
     planning: null,
@@ -556,6 +552,7 @@ let dropdowns = reactive([]);
 
 onBeforeMount(async () => {
     dropdowns = store.dropdowns;
+    await authStore.getCurrentUser();
 });
 
 const images = computed(() => property.images);
@@ -677,8 +674,6 @@ const saveProperty = async ({ valid }) => {
             acc[current.key] = current;  // Используем `key` как ключ, а объект как значение
             return acc;
         }, {});
-        console.log(utilitiesObject);
-        console.log(property);
 
         try {
             saving.value = true;
