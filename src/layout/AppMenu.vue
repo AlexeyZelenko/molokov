@@ -1,5 +1,6 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+import { useAuthStore } from '@/store/authFirebase';
 
 import AppMenuItem from './AppMenuItem.vue';
 
@@ -406,9 +407,20 @@ const model = ref([
         ]
     }
 ]);
+
+const store = useAuthStore();
+const user = computed(() => store.user);
+
+onMounted(() => {
+    console.log('user', user);
+})
 </script>
 
 <template>
+    <div v-if="user" class="text-green-500">
+        <i class="pi pi-user mr-2"></i>
+        {{user?.displayName}}
+    </div>
     <ul class="layout-menu">
         <template v-for="(item, i) in model" :key="item">
             <app-menu-item v-if="!item.separator" :item="item" :index="i"></app-menu-item>

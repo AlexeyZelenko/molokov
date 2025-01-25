@@ -289,17 +289,41 @@
 
             <div class="field col-12">
                 <label>Фотографії</label>
-                <FileUpload
-                    name="advanced"
-                    @uploader="onFileSelect"
-                    :multiple="true"
-                    accept="image/*"
-                    :maxFileSize="1000000"
-                    customUpload
-                    chooseLabel="Обрати"
-                    uploadLabel="Завантажити"
-                    cancelLabel="Скасувати"
-                />
+                <div class="field col-12">
+                    <label>Фотографії</label>
+                    <FileUpload
+                        ref="fileUpload"
+                        name="advanced"
+                        @uploader="onFileSelect"
+                        :multiple="true"
+                        accept="image/*"
+                        :maxFileSize="10000000"
+                        customUpload
+                        chooseLabel="Обрати"
+                        uploadLabel="Завантажити"
+                        cancelLabel="Скасувати"
+                    />
+
+                    <div v-if="images?.length" class="flex flex-wrap">
+                        <div
+                            v-for="(imageUrl, index) in images"
+                            :key="imageUrl"
+                            class="col-3 relative m-4"
+                        >
+                            <img
+                                :src="imageUrl"
+                                class="w-full h-auto object-cover"
+                                style="height: 100px; width: 100px"
+                            />
+                            <Button
+                                icon="pi pi-trash"
+                                class="absolute top-0 right-0 p-button-danger p-button-rounded"
+                                @click="removeImage(imageUrl)"
+                                style="margin-top: -25px"
+                            />
+                        </div>
+                    </div>
+                </div>
             </div>
         </Fluid>
 
@@ -312,7 +336,7 @@
 
         <Fluid class="flex mt-8">
             <div class="card flex flex-col gap-4 w-full">
-                <div class="font-semibold text-xl">Власник</div>
+                <div class="font-semibold text-xl">Власник нерухомості</div>
                 <div class="flex flex-col md:flex-row gap-4">
                     <InputGroup>
                         <InputGroupAddon>
@@ -346,19 +370,27 @@
 </template>
 
 <script setup>
-import { ref, onBeforeMount, reactive } from 'vue';
+import {ref, onBeforeMount, reactive, computed} from 'vue';
 import { db, storage } from '@/firebase/config';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { addDoc, collection } from 'firebase/firestore';
+import {
+    ref as storageRef,
+    uploadBytes,
+    getDownloadURL,
+    deleteObject
+} from 'firebase/storage';
 import { useToast } from 'primevue/usetoast';
 import Toast from 'primevue/toast';
 import Select from "primevue/select";
 import compressWithCompressor from '@/service/Compressor';
 import { useApartmentsStore } from '@/store/apartments';
 import GoogleMapAddApartment from '@/components/googleMap/AddApartment.vue';
+import { useAuthStore } from '@/store/authFirebase';
 
 const toast = useToast();
 const store = useApartmentsStore();
+const authStore = useAuthStore();
+
 const saving = ref(false);
 
 let property = reactive({
@@ -413,53 +445,127 @@ let property = reactive({
         username: '',
         phone: '',
         message: ''
+    },
+    creator: {
+        id: null,
+        username: null,
+        email: null
     }
 });
 
 let dropdowns = reactive([]);
 
 onBeforeMount(async () => {
+    console.log('authStore', authStore.user);
     dropdowns = store.dropdowns;
 });
 
+const images = computed(() => property.images);
+const fileUpload = ref(null)
+
+const removeImage = async (imageUrl) => {
+    try {
+        // Extract the image path from the full URL
+        const imagePath = decodeURIComponent(new URL(imageUrl).pathname)
+            .split('/o/')[1]
+            .split('?')[0];
+
+        const imageRef = storageRef(storage, imagePath);
+
+        // Delete from Firebase Storage
+        await deleteObject(imageRef);
+
+        // Remove from local array
+        property.images = property.images.filter(url => url !== imageUrl);
+
+        toast.add({
+            severity: 'success',
+            summary: 'Видалено',
+            detail: 'Фото успішно видалено',
+            life: 3000
+        });
+    } catch (error) {
+        console.error('Помилка видалення фото:', error);
+        toast.add({
+            severity: 'error',
+            summary: 'Помилка',
+            detail: 'Не вдалося видалити фото',
+            life: 3000
+        });
+    }
+};
 const onFileSelect = async (event) => {
+    const startTime = Date.now();
+    const uploadLogs = [];
+
     try {
         const files = event.files;
         if (!files || files.length === 0) {
-            throw new Error("No files selected");
+            throw new Error("Файли не вибрані");
         }
 
-        for (let file of files) {
-            if (file) {
-                try {
-                    // Перевірка типу та розміру файлів перед стисненням
-                    if (file.size > 10 * 1024 * 1024) { // Приклад: перевірка на максимальний розмір 10 MB
-                        throw new Error('File size exceeds limit of 10MB');
-                    }
+        const validFiles = files.filter(file => {
+            const isValidType = ['image/jpeg', 'image/png', 'image/webp'].includes(file.type);
+            const isValidSize = file.size <= 10 * 1024 * 1024;
 
-                    // Стиснення зображення
-                    const compressedFile = await compressWithCompressor(file);
-                    console.log(compressedFile); // Виводимо стиснуте зображення
+            if (!isValidType) uploadLogs.push(`Невірний тип файлу: ${file.name}`);
+            if (!isValidSize) uploadLogs.push(`Файл занадто великий: ${file.name}`);
 
-                    // Зберігаємо файл у Firebase Storage
-                    const storageReference = storageRef(storage, `properties/${Date.now()}_${file.name}`);
-                    const snapshot = await uploadBytes(storageReference, compressedFile); // Завантажуємо стиснуте зображення
-                    const downloadURL = await getDownloadURL(snapshot.ref); // Отримуємо URL стиснутого зображення
+            return isValidType && isValidSize;
+        });
 
-                    // Додаємо URL в масив зображень
-                    property.value.images.push(downloadURL);
-                } catch (error) {
-                    console.error('Ошибка сжатия или загрузки файла:', error);
-                    toast.add({ severity: 'error', summary: 'Помилка', detail: `Помилка стиснення або завантаження: ${error.message}`, life: 3000 });
-                }
+        if (validFiles.length === 0) {
+            throw new Error('Немає файлів для завантаження');
+        }
+
+        const uploadPromises = validFiles.map(async (file) => {
+            try {
+                const fileStartTime = Date.now();
+                const compressedFile = await compressWithCompressor(file);
+
+                const storageReference = storageRef(storage, `properties/${Date.now()}_${file.name}`);
+                const snapshot = await uploadBytes(storageReference, compressedFile);
+                const downloadURL = await getDownloadURL(snapshot.ref);
+
+                uploadLogs.push(`Завантаження успішне: ${file.name}`);
+                return downloadURL;
+            } catch (error) {
+                uploadLogs.push(`Помилка завантаження: ${file.name} - ${error.message}`);
+                throw error;
             }
-        }
+        });
 
-        // Успішне завантаження
-        toast.add({ severity: 'success', summary: 'Успішно', detail: 'Фото завантажено', life: 3000 });
+        const uploadedUrls = await Promise.allSettled(uploadPromises);
+
+        const successfulUploads = uploadedUrls
+            .filter(result => result.status === 'fulfilled')
+            .map(result => result.value);
+
+        property.images.push(...successfulUploads);
+
+        const totalTime = Date.now() - startTime;
+        const successCount = successfulUploads.length;
+        const totalFiles = files.length;
+
+        toast.add({
+            severity: successCount === totalFiles ? 'success' : 'warn',
+            summary: 'Завантаження файлів',
+            detail: `Завантажено ${successCount}/${totalFiles} файлів за ${totalTime}ms`,
+            life: 5000
+        });
+
+        console.group('Деталі завантаження');
+        console.log('Журнал завантаження:', uploadLogs);
+        console.groupEnd();
+
     } catch (error) {
-        console.error('Error during file selection or upload:', error);
-        toast.add({ severity: 'error', summary: 'Помилка', detail: 'Помилка завантаження фото: ' + error.message, life: 3000 });
+        console.error('Помилка завантаження файлів:', error);
+        toast.add({
+            severity: 'error',
+            summary: 'Помилка завантаження',
+            detail: `Деталі: ${error.message}`,
+            life: 5000
+        });
     }
 };
 
@@ -482,7 +588,12 @@ const saveProperty = async ({ valid }) => {
                 ...property,
                 utilities: utilitiesObject,
                 createdAt: serverTimestamp(),
-                updatedAt: serverTimestamp()
+                updatedAt: serverTimestamp(),
+                creator: {
+                    id: authStore.user.uid,
+                    username: authStore.user.displayName,
+                    email: authStore.user.email
+                }
             };
 
             await addDoc(collection(db, 'properties'), propertyData);
@@ -542,6 +653,11 @@ const saveProperty = async ({ valid }) => {
                     username: '',
                     phone: '',
                     message: ''
+                },
+                creator: {
+                    id: null,
+                    username: null,
+                    email: null
                 }
             };
         } catch (error) {

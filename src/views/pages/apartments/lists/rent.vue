@@ -1,25 +1,37 @@
 <script setup>
 import { onMounted, ref, watch, computed, onBeforeMount } from 'vue';
 import { usePropertiesStore } from '@/store/propertiesCategories';
-import  { useAreasStore } from '@/store/areasStore';
+import { useAreasStore } from '@/store/areasStore';
 import { useRoute, useRouter } from 'vue-router';
+import { useToast } from 'primevue/usetoast';
+import { db, storage } from '@/firebase/config';
+import { doc, deleteDoc } from 'firebase/firestore';
+import { ref as storageRef, deleteObject } from 'firebase/storage';
 import Button from "primevue/button";
+import ConfirmDialog from 'primevue/confirmdialog';
+import { useConfirm } from "primevue/useconfirm";
 import { formatFirebaseTimestamp } from '@/utils/dateUtils';
+import { useAuthStore } from '@/store/authFirebase';
 
 const route = useRoute();
 const router = useRouter();
+const toast = useToast();
+const confirm = useConfirm();
+
 const products = ref([]);
 const options = ref(['list', 'grid']);
 const layout = ref('list');
-const store = usePropertiesStore();
 
+const authStore = useAuthStore();
+const store = usePropertiesStore();
 const storeAreas = useAreasStore();
+
 const categoryName = computed(() => storeAreas.realEstateItems.find(item => item.key === 'apartments')?.title);
 const subcategoryName = computed(() => storeAreas.realEstateItems.find(item => item.key === 'apartments')?.actions.find(subcategory => subcategory.type === 'rent')?.label);
 
 const category = computed(() => route.query.category || 'apartments');
 const subcategory = computed(() => route.query.subcategory || 'rent');
-// Пагинация
+
 const currentPage = ref(1);
 const pageSize = 2;
 
@@ -81,10 +93,83 @@ onBeforeMount(() => {
 watch(() => store.properties, (newProperties) => {
     products.value = newProperties;
 });
+
+const canDeleteProperty = (property) => {
+    // Check if current user is the owner of the property
+    return property.owner?.username === authStore.user?.username;
+};
+const deleteProperty = (property) => {
+    confirm.require({
+        message: 'Ви впевнені, що хочете видалити цей об\'єкт?',
+        header: 'Підтвердження видалення',
+        icon: 'pi pi-exclamation-triangle',
+        accept: async () => {
+            try {
+                // Delete images from storage
+                if (property.images && property.images.length > 0) {
+                    const deleteImagePromises = property.images.map(async (imageUrl) => {
+                        try {
+                            const imagePath = decodeURIComponent(new URL(imageUrl).pathname)
+                                .split('/o/')[1]
+                                .split('?')[0];
+
+                            const imageRef = storageRef(storage, imagePath);
+                            await deleteObject(imageRef);
+                        } catch (error) {
+                            console.error('Помилка видалення фото:', error);
+                        }
+                    });
+
+                    await Promise.allSettled(deleteImagePromises);
+                }
+
+                // Delete Firestore document
+                await deleteDoc(doc(db, 'properties', property.id));
+
+                // Reload properties
+                await store.getProperties();
+
+                toast.add({
+                    severity: 'success',
+                    summary: 'Успішно',
+                    detail: 'Об\'єкт видалено',
+                    life: 3000
+                });
+            } catch (error) {
+                console.error('Помилка видалення об\'єкту:', error);
+                toast.add({
+                    severity: 'error',
+                    summary: 'Помилка',
+                    detail: 'Не вдалося видалити об\'єкт',
+                    life: 3000
+                });
+            }
+        }
+    });
+};
 </script>
 
 <template>
     <div class="flex flex-col">
+        <ConfirmDialog
+            :breakpoints="{'960px': '75vw', '640px': '100vw'}"
+            :style="{ width: '450px' }"
+        >
+            <template #message="slotProps">
+                <div class="flex flex-column align-items-center p-3">
+                    <i
+                        :class="slotProps.message.icon"
+                        class="text-6xl text-primary mr-2 pt-4"
+                    ></i>
+                    <h4 class="text-xl font-bold mb-3 p-2">
+                        {{ slotProps.message.header }}
+                    </h4>
+                    <p class="text-center p-2">
+                        {{ slotProps.message.message }}
+                    </p>
+                </div>
+            </template>
+        </ConfirmDialog>
         <div class="card">
             <div class="font-semibold text-xl">{{categoryName}} / {{subcategoryName}}</div>
             <div v-if="store.loading">
@@ -133,11 +218,20 @@ watch(() => store.properties, (newProperties) => {
                                     <div class="flex flex-col md:items-end gap-8">
                                         <span class="text-xl font-semibold">{{ item.priceUSD }} грн</span>
                                         <div class="flex flex-row-reverse md:flex-row gap-2">
-                                            <Button label="Детальніше" raised @click="showProperty(item)"/>
+                                            <Button
+                                                icon="pi pi-eye"
+                                                class="p-button-info mr-2"
+                                                @click="showProperty(item)"
+                                            />
                                             <Button
                                                 icon="pi pi-pencil"
-                                                class="p-button-rounded p-button-success mr-2"
+                                                class="p-button-warning mr-2"
                                                 @click="editProperty(item)"
+                                            />
+                                            <Button
+                                                icon="pi pi-trash"
+                                                class="p-button-danger"
+                                                @click="deleteProperty(item)"
                                             />
                                         </div>
                                     </div>
@@ -157,17 +251,33 @@ watch(() => store.properties, (newProperties) => {
                                     </div>
                                 </div>
                                 <div class="pt-6">
-                                    <div class="flex flex-row justify-between items-start gap-2">
-                                        <div>
-                                            <span class="font-medium text-surface-500 dark:text-surface-400 text-sm">{{ item.category.name }}</span>
-                                            <div class="text-lg font-medium mt-1">{{ item.title }}</div>
-                                            <span class="font-medium text-surface-500 dark:text-surface-400 text-sm">{{ item.subcategory.name }}</span>
+                                    <div class="flex flex-col justify-between items-start gap-2">
+                                        <div class="text-lg font-medium mb-4">{{ item.title }}</div>
+                                        <div class="font-small text-surface-500 dark:text-surface-400 text-sm">
+                                            {{ item.apartmentArea.totalArea }} m2
+                                        </div>
+                                        <div class="font-small text-surface-500 dark:text-surface-400 text-sm">
+                                            {{ item.address.city.name }} / {{ item.address.area.name }} - {{ formatFirebaseTimestamp(item.createdAt) }}
                                         </div>
                                     </div>
                                     <div class="flex flex-col gap-6 mt-6">
-                                        <span class="text-2xl font-semibold">${{ item.priceUSD }}</span>
+                                        <span class="text-2xl font-semibold">{{ item.priceUSD }} грн</span>
                                         <div class="flex gap-2">
-                                            <Button label="Детальніше" raised @click="showProperty(item)"/>
+                                            <Button
+                                                icon="pi pi-eye"
+                                                class="p-button-info mr-2"
+                                                @click="showProperty(item)"
+                                            />
+                                            <Button
+                                                icon="pi pi-pencil"
+                                                class="p-button-warning mr-2"
+                                                @click="editProperty(item)"
+                                            />
+                                            <Button
+                                                icon="pi pi-trash"
+                                                class="p-button-danger"
+                                                @click="deleteProperty(item)"
+                                            />
                                         </div>
                                     </div>
                                 </div>

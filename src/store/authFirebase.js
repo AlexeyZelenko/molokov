@@ -7,6 +7,7 @@ import {
     signOut,
     sendPasswordResetEmail,
     setPersistence,
+    updateProfile,
     browserLocalPersistence,
     browserSessionPersistence
 } from 'firebase/auth'
@@ -27,6 +28,12 @@ export const useAuthStore = defineStore('auth', () => {
         try {
             loading.value = true
             const { user: authUser } = await createUserWithEmailAndPassword(auth, email, password)
+
+            await updateProfile(authUser, {
+                displayName: name // Задаем имя пользователя
+            });
+
+            console.log("User registered with display name:", authUser.displayName);
 
             await setDoc(doc(db, 'users', authUser.uid), {
                 name,
