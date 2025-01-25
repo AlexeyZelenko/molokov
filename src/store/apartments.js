@@ -291,11 +291,11 @@ export const useApartmentsStore = defineStore('apartments', {
                     value: 'newBuilding'
                 },
                 {
-                    name: 'Вторинний ринок',
+                    name: 'Вторинний',
                     value: 'secondaryMarket'
                 },
                 {
-                    name: 'Будинок в процесі будівництва',
+                    name: 'В процесі будівництва',
                     value: 'buildingProcess'
                 }
             ],
@@ -345,6 +345,12 @@ export const useApartmentsStore = defineStore('apartments', {
                 { name: 'Разом', code: 'TOGETHER' },
                 { name: 'Інше', code: 'OTHER' }
             ],
+            typeOwner: [
+                { name: 'Власник', code: 'PRIVATE' },
+                { name: 'Агенція', code: 'AGENT' },
+                { name: 'Забудовник', code: 'DEVELOPER' },
+                { name: 'Інше', code: 'OTHER' }
+            ]
         },
         saving: false,
     })
