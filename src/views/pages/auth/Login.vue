@@ -13,7 +13,7 @@ const password = ref('');
 const error = ref('');
 const router = useRouter();
 const authStore = useAuthStore();
-const checked = ref(false);
+const remember = ref(false);
 
 const handleLogin = async () => {
     if (!email.value || !password.value) {
@@ -24,7 +24,7 @@ const handleLogin = async () => {
     const sumbit = {
         email: email.value,
         password: password.value,
-        checked: checked.value
+        remember: remember.value
     };
 
     try {
@@ -85,7 +85,7 @@ const handleForgotPassword = async () => {
 
                         <div class="flex items-center justify-between mt-2 mb-8 gap-8">
                             <div class="flex items-center">
-                                <Checkbox v-model="checked" id="rememberme1" binary class="mr-2"></Checkbox>
+                                <Checkbox v-model="remember" id="rememberme1" binary class="mr-2"></Checkbox>
                                 <label for="rememberme1">Запам'ятай мене</label>
                             </div>
                             <span @click="handleForgotPassword" class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">Забули пароль?</span>

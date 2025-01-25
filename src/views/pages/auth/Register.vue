@@ -14,7 +14,7 @@ const name = ref('');
 const error = ref('');
 const router = useRouter();
 const authStore = useAuthStore();
-const checked = ref(false);
+const remember = ref(false);
 
 const handleRegister = async () => {
     if (!email.value || !password.value || !name.value) {
@@ -27,7 +27,8 @@ const handleRegister = async () => {
             email: email.value,
             password: password.value,
             name: name.value,
-            role: 'customer'
+            role: 'customer',
+            remember: false
         });
 
         toast.add({
@@ -35,21 +36,9 @@ const handleRegister = async () => {
             summary: 'Success',
             detail: 'Реєстрація успішна',
             life: 3000
-        });
+        }, toast);
 
-        router.push('/dashboard');
-    } catch (err) {
-        error.value = err.message;
-    }
-};
-
-const handleForgotPassword = async () => {
-    if (!email.value) {
-        error.value = 'Будь ласка, введіть адресу електронної пошти';
-        return;
-    }
-    try {
-        await authStore.resetPassword(email.value);
+        await router.push('/dashboard');
     } catch (err) {
         error.value = err.message;
     }
@@ -116,7 +105,7 @@ const handleForgotPassword = async () => {
 
                         <div class="flex items-center justify-between mt-2 mb-8 gap-8">
                             <div class="flex items-center">
-                                <Checkbox v-model="checked" id="rememberme1" binary class="mr-2"></Checkbox>
+                                <Checkbox v-model="remember" id="rememberme1" binary class="mr-2"></Checkbox>
                                 <label for="rememberme1">Запам'ятай мене</label>
                             </div>
 <!--                            <span-->
