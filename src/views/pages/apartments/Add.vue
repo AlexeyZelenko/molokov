@@ -624,7 +624,6 @@ const show = () => {
 onBeforeMount(async () => {
     dropdowns = store.dropdowns;
     await authStore.getCurrentUser();
-    console.log('contacts:', contacts.value);
 });
 
 onUnmounted(() => {

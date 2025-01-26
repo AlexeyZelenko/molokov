@@ -1,7 +1,6 @@
 // src/utils/dateUtils.js
 
 export const formatFirebaseTimestamp = (timestamp) => {
-    console.log('timestamp', timestamp); // Выводим в консоль, чтобы увидеть, что приходит
     // Преобразуем в Date объект
     const date = new Date(timestamp.seconds * 1000); // Умножаем на 1000, потому что Firebase возвращает секунды, а JavaScript ожидает миллисекунды
 

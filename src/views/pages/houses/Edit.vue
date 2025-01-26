@@ -176,12 +176,10 @@ const loadingProperties = computed(() => store.loading);
 const { property, loading, saving, getProperty, updateProperty, onFileSelect, removeImage } = store;
 
 onMounted(async () => {
-    console.log('route', route);
     const propertyId = route.params.id;
     if (!propertyId) {
         await router.push('/pages/products');
     } else {
-        console.log('propertyId', propertyId);
         await getProperty(propertyId);
     }
 });

@@ -439,7 +439,6 @@ const onFileSelect = async (event) => {
 
                     // Стиснення зображення
                     const compressedFile = await compressWithCompressor(file);
-                    console.log(compressedFile); // Виводимо стиснуте зображення
 
                     // Зберігаємо файл у Firebase Storage
                     const storageReference = storageRef(storage, `properties/${Date.now()}_${file.name}`);

@@ -74,7 +74,6 @@ onBeforeMount(() => {
 });
 
 watch(() => store.properties, (newProperties) => {
-    console.log('newProperties', newProperties);
     products.value = newProperties;
 });
 </script>

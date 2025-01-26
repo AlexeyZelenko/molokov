@@ -39,11 +39,7 @@ export const usePropertiesStore = defineStore('properties', {
         getFilteredProperties: (state) => {
             const { filters, properties } = state;
 
-            console.log('Current filters:', filters); // Логируем текущие фильтры
-            console.log('All properties:', properties); // Логируем все объекты недвижимости
-
             if (Object.keys(filters).length === 0) {
-                console.log('No filters applied. Returning all properties.');
                 return properties; // Если нет фильтров, возвращаем все объекты
             }
 
@@ -52,20 +48,14 @@ export const usePropertiesStore = defineStore('properties', {
                 let isMatch = true;
 
                 Object.entries(filters).forEach(([key, value]) => {
-                    // Логирование для каждого свойства
-                    console.log(`Checking property: ${property.id}`);
-                    console.log(`Checking key: ${key}, value: ${value}`);
-
                     // Проверка на минимальную цену
                     if (key === 'minPrice' && value !== null && value !== undefined) {
                         isMatch = property.priceUSD >= Number(value);
-                        console.log(`Price match for minPrice: ${isMatch}`);
                     }
 
                     // Проверка на максимальную цену
                     if (key === 'maxPrice' && value !== null && value !== undefined) {
                         isMatch = property.priceUSD <= Number(value);
-                        console.log(`Price match for maxPrice: ${isMatch}`);
                     }
 
                     // Проверка на минимальную этажность
@@ -122,21 +112,17 @@ export const usePropertiesStore = defineStore('properties', {
                         });
 
                         isMatch = fieldValue === value;
-                        console.log(`Match result for ${key}: ${isMatch}`);
                     }
 
                     // Обычные фильтры (не вложенные и не объекты)
                     if (isMatch && key && property[key] !== undefined) {
                         isMatch = property[key] === value;
-                        console.log(`Match result for ${key}: ${isMatch}`);
                     }
                 });
 
                 // Возвращаем объект, если он прошел все фильтры
                 return isMatch;
             });
-
-            console.log('Filtered properties:', filteredProperties); // Логируем отфильтрованные объекты
 
             return filteredProperties;
         }
@@ -166,35 +152,25 @@ export const usePropertiesStore = defineStore('properties', {
                 }
             };
 
-            console.log('Raw input:', { category, subcategory });
-
             // Normalize and trim inputs
             const normalizedCategory = (category || '').toString().toLowerCase().trim();
             const normalizedSubcategory = (subcategory || '').toString().toLowerCase().trim();
-
-            console.log('Normalized:', { normalizedCategory, normalizedSubcategory });
-
-            console.log('Available categories:', Object.keys(componentMap));
-            console.log('Component map:', componentMap);
 
             // Check for exact match and nested access
             const component = componentMap[normalizedCategory]?.[normalizedSubcategory];
 
             if (component) {
                 this.currentComponent = component;
-                console.log('Found component:', component);
                 return component;
             }
 
             // Fallback strategies
-            console.log('No matching component found. Falling back to default.');
             this.currentComponent = 'ApartmentsSell';
             return 'ApartmentsSell';
         },
 
         getComponentFilters(filters = {}) {
             const { category = 'apartments', subcategory = 'sell' } = filters;
-            console.log('Filters received:', { category, subcategory });
 
             return this.determineComponent(category, subcategory);
         },
@@ -202,7 +178,6 @@ export const usePropertiesStore = defineStore('properties', {
         async getProperties(filters = {}) {
             try {
                 this.loading = true;
-                console.log('Fetching properties with filters:', filters);
 
                 this.getComponentFilters(filters);
 
@@ -254,7 +229,6 @@ export const usePropertiesStore = defineStore('properties', {
         },
 
         setFilters(filters) {
-            console.log('setFilters', filters);
             this.filters = filters;
         },
     },

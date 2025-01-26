@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, watch, computed, onBeforeMount } from 'vue';
+import { onMounted, ref, watch, computed } from 'vue';
 import { usePropertiesStore } from '@/store/propertiesCategories';
 import  { useAreasStore } from '@/store/areasStore';
 import { useRoute, useRouter } from 'vue-router';
@@ -83,11 +83,6 @@ const subcategory2 = computed(() => route.params.subcategory);
 // Загрузка данных при монтировании компонента
 onMounted(() => {
     loadPage();
-});
-
-onBeforeMount(() => {
-    console.log("category2", category2.value);
-    console.log("subcategory2", subcategory2.value);
 });
 
 watch(() => store.properties, (newProperties) => {

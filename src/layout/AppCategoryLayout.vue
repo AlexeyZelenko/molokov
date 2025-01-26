@@ -100,9 +100,6 @@ function bindFiltersOutsideClickListener() {
             const filtersSidebar = document.querySelector('.filters-sidebar');
             const filtersButton = document.querySelector('.filters-button');
 
-            console.log('click', event.target);
-            console.log('filtersSidebar', filtersSidebar);
-
             // Если клик внутри фильтров - игнорируем
             if (filtersSidebar) {
                 return;

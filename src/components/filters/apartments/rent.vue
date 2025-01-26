@@ -345,50 +345,24 @@ const clearFilters = () => {
 
 const properties = computed(() => storeCategories.properties);
 
-const reconditioning = computed(() => {
-    // Если 'property.reconditioning' является объектом, сравниваем по нужному ключу
-    const reconditioningValues = storeCategories.properties
-        .map(property => property.reconditioning)
-        .filter(value => value !== null && value !== undefined);
+const getUniqueValues = (propertyKey) => computed(() =>
+    [...new Map(
+        storeCategories.properties
+            .map(property => property[propertyKey]) // Извлекаем значения по ключу
+            .filter(value => value !== null && value !== undefined) // Исключаем null и undefined
+            .map(item => [item.name + item.value, item]) // Создаем уникальный ключ на основе name и value
+    ).values()]
+);
 
-    // Убираем дубликаты с учетом того, что reconditioning может быть объектом
-    const uniqueReconditioning = reconditioningValues.filter((value, index, self) =>
-            index === self.findIndex((t) => (
-                t.name === value.name && t.value === value.value // Сравниваем объекты по полям
-            ))
-    );
-
-    return uniqueReconditioning;
-});
-
-
-const heatingTypes = computed(() => {
-    return [...new Set(storeCategories.properties.map(property => property.heatingType))];
-});
-
-const balconyTerrace = computed(() => {
-    return [...new Set(storeCategories.properties.map(property => property.balconyTerrace))];
-});
-
-const furniture = computed(() => {
-    return [...new Set(storeCategories.properties.map(property => property.furniture))];
-});
-
-const buildingType = computed(() => {
-    return [...new Set(storeCategories.properties.map(property => property.buildingType))];
-});
-
-const condition = computed(() => {
-    return [...new Set(storeCategories.properties.map(property => property.condition))];
-});
-
-const objectClass = computed(() => {
-    return [...new Set(storeCategories.properties.map(property => property.objectClass))];
-});
-
-const parking = computed(() => {
-    return [...new Set(storeCategories.properties.map(property => property.parking))];
-});
+// Используем универсальную функцию для создания вычисляемых свойств
+const furniture = getUniqueValues('furniture');
+const buildingType = getUniqueValues('buildingType');
+const condition = getUniqueValues('condition');
+const objectClass = getUniqueValues('objectClass');
+const parking = getUniqueValues('parking');
+const balconyTerrace = getUniqueValues('balconyTerrace');
+const heatingTypes = getUniqueValues('heatingType');
+const reconditioning = getUniqueValues('reconditioning');
 
 const roomsAll = computed(() => {
     // Функция для обработки и исключения дубликатов

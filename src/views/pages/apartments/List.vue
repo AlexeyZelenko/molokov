@@ -319,7 +319,6 @@ onMounted(async () => {
             id: doc.id,
             ...doc.data()
         }));
-        console.log('Properties:', properties.value);
 
         properties.value = properties.value.map(property => {
             return {
