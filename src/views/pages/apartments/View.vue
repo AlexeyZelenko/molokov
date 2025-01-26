@@ -56,9 +56,9 @@
                     {{ property.category?.name }} / {{ property.subcategory?.name }}
                 </div>
 
-                <div v-if="property.subcategory && property.subcategory.code === 'SALE'">{{ property.priceUSD }} $</div>
+                <div v-if="property.subcategory && property.subcategory.code === 'sell'">{{ property.priceUSD }} $</div>
 
-                <div v-if="property.subcategory && property.subcategory.code !== 'SALE'">{{ property.priceUSD }} $</div>
+                <div v-if="property.subcategory && property.subcategory.code !== 'sell'">{{ property.priceUSD }} грн</div>
             </div>
 
             <div class="card flex flex-col gap-4">

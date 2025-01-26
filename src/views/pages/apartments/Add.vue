@@ -41,15 +41,13 @@
                     </Message>
 
 
-                    <div v-if="property.subcategory && property.subcategory.code === 'sell' && property.subcategory.code !== 'exchange'" required class="font-semibold text-xl">Ціна USD</div>
+                    <div v-if="property.subcategory && property.subcategory.code === 'sell' && property.subcategory.code !== 'exchange'" class="font-semibold text-xl">Ціна</div>
                     <InputGroup v-if="property.subcategory && property.subcategory.code === 'sell' && property.subcategory.code !== 'exchange'">
                         <InputNumber
                             id="priceUSDProperty"
                             name="priceUSDProperty"
                             v-model="property.priceUSD"
-                            showButtons mode="decimal"
-                            currency="UAH"
-                            locale="uk-UA"
+                            mode="decimal"
                             required
                         ></InputNumber>
                         <InputGroupAddon>$</InputGroupAddon>
@@ -67,8 +65,10 @@
                         <InputNumber
                             name="priceProperty"
                             v-model="property.priceUSD"
-                            showButtons mode="decimal"
-                            currency="UAH" locale="uk-UA" required
+                            showButtons
+                            mode="decimal"
+                            currency="UAH" locale="uk-UA"
+                            required
                         ></InputNumber>
                         <InputGroupAddon>грн</InputGroupAddon>
                         <InputGroupAddon>.00</InputGroupAddon>
@@ -142,7 +142,13 @@
                 <div class="card flex flex-col gap-4">
                     <div class="font-semibold text-xl">Площа(м²)</div>
                     <div class="font-semibold text-sm">Загальна площа</div>
-                    <InputNumber name="propertyApartmentAreaTotalArea" v-model="property.apartmentArea.totalArea"  showButtons mode="decimal" required></InputNumber>
+                    <InputNumber
+                        name="propertyApartmentAreaTotalArea"
+                        v-model="property.apartmentArea.totalArea"
+                        showButtons
+                        inputId="minmaxfraction" :minFractionDigits="1" :maxFractionDigits="2" fluid
+                        required
+                    ></InputNumber>
                     <Message
                         v-if="$form.propertyApartmentAreaTotalArea?.invalid"
                         severity="error" size="small"
@@ -151,10 +157,20 @@
                     </Message>
 
                     <div class="font-semibold text-sm">Жила площа квартири</div>
-                    <InputNumber v-model="property.apartmentArea.livingArea"  showButtons mode="decimal" required></InputNumber>
+                    <InputNumber
+                        v-model="property.apartmentArea.livingArea"
+                        showButtons
+                        inputId="minmaxfraction" :minFractionDigits="1" :maxFractionDigits="2" fluid
+                        required
+                    ></InputNumber>
 
                     <div class="font-semibold text-sm">Площа кухні</div>
-                    <InputNumber v-model="property.apartmentArea.kitchenArea"  showButtons mode="decimal" required></InputNumber>
+                    <InputNumber
+                        v-model="property.apartmentArea.kitchenArea"
+                        showButtons
+                        inputId="minmaxfraction" :minFractionDigits="1" :maxFractionDigits="2" fluid
+                        required
+                    ></InputNumber>
                 </div>
 
                 <div class="card flex flex-col gap-4">
@@ -343,7 +359,11 @@
                         chooseLabel="Обрати"
                         uploadLabel="Завантажити"
                         cancelLabel="Скасувати"
-                    />
+                    >
+                        <template #empty>
+                            <span>Перетягніть файли сюди, щоб завантажити.</span>
+                        </template>
+                    </FileUpload>
 
                     <div v-if="images?.length" class="flex flex-wrap">
                         <div
@@ -409,7 +429,14 @@
                         <InputGroupAddon>
                             <i class="pi pi-phone"></i>
                         </InputGroupAddon>
-                        <InputNumber v-model="property.owner.phone" placeholder="Телефон" />
+                        <InputMask
+                            id="phone"
+                            v-model="property.owner.phone"
+                            type="phones"
+                            mask="+38(0**) 999-99-99"
+                            class="mb-4" fluid
+                            placeholder="+38(999) 999-9999"
+                        />
                     </InputGroup>
                 </div>
 
@@ -427,7 +454,7 @@
                         <InputGroupAddon>
                             <i class="pi pi-user"></i>
                         </InputGroupAddon>
-                        <InputText v-model="contacts.displayName" placeholder="Username" disabled />
+                        <InputText :value="contacts.displayName" placeholder="Username" disabled />
                     </InputGroup>
                     <div v-for="(phone, index) in contacts.phones" :key="index" class="phone-item">
                         <InputGroup>
@@ -455,10 +482,27 @@
 
     <Toast />
 
+    <div class="card flex justify-center">
+        <Toast position="top-center" group="headless" @close="visible = false">
+            <template #container="{ message }">
+                <section class="flex flex-col p-4 gap-4 w-full bg-primary/70 rounded-xl">
+                    <div class="flex items-center gap-5">
+                        <i class="pi pi-cloud-upload text-white dark:text-black text-2xl"></i>
+                        <span class="font-bold text-base text-white dark:text-black">{{ message.summary }}</span>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <ProgressBar :value="progress" :showValue="false" :style="{ height: '4px' }" pt:value:class="!bg-primary-50 dark:!bg-primary-900" class="!bg-primary/80"></ProgressBar>
+                        <label class="text-sm font-bold text-white dark:text-black">{{ progress }}% завантаження</label>
+                    </div>
+                </section>
+            </template>
+        </Toast>
+    </div>
+
 </template>
 
 <script setup>
-import {ref, onBeforeMount, reactive, computed} from 'vue';
+import {ref, onBeforeMount, reactive, computed, onUnmounted} from 'vue';
 import { db, storage } from '@/firebase/config';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import {
@@ -549,11 +593,45 @@ let property = reactive({
 
 let dropdowns = reactive([]);
 
+const visible = ref(false);
+const progress = ref(0);
+const interval = ref();
+
+const show = () => {
+    if (!visible.value) {
+        toast.add({ severity: 'custom', summary: 'Uploading your files.', group: 'headless', styleClass: 'backdrop-blur-lg rounded-2xl' });
+        visible.value = true;
+        progress.value = 0;
+
+        if (interval.value) {
+            clearInterval(interval.value);
+        }
+
+        interval.value = setInterval(() => {
+            if (progress.value <= 100) {
+                progress.value = progress.value + 20;
+            }
+
+            if (progress.value >= 100) {
+                progress.value = 100;
+                clearInterval(interval.value);
+            }
+        }, 1000);
+    }
+};
+
 
 onBeforeMount(async () => {
     dropdowns = store.dropdowns;
     await authStore.getCurrentUser();
+    console.log('contacts:', contacts.value);
 });
+
+onUnmounted(() => {
+    if (interval.value) {
+        clearInterval(interval.value);
+    }
+})
 
 const images = computed(() => property.images);
 const fileUpload = ref(null)
@@ -613,6 +691,8 @@ const onFileSelect = async (event) => {
             throw new Error('Немає файлів для завантаження');
         }
 
+        show();
+
         const uploadPromises = validFiles.map(async (file) => {
             try {
                 const fileStartTime = Date.now();
@@ -642,6 +722,8 @@ const onFileSelect = async (event) => {
         const successCount = successfulUploads.length;
         const totalFiles = files.length;
 
+        toast.removeGroup('headless');
+
         toast.add({
             severity: successCount === totalFiles ? 'success' : 'warn',
             summary: 'Завантаження файлів',
@@ -654,6 +736,7 @@ const onFileSelect = async (event) => {
         console.groupEnd();
 
     } catch (error) {
+        toast.removeGroup('headless');
         console.error('Помилка завантаження файлів:', error);
         toast.add({
             severity: 'error',
@@ -683,13 +766,15 @@ const saveProperty = async ({ valid }) => {
                 createdAt: serverTimestamp(),
                 updatedAt: serverTimestamp(),
                 creator: {
-                    id: contacts.id || null,
-                    username: contacts.name || null,
-                    email: contacts.email || null,
-                    phone: contacts.phones || null,
+                    id: contacts.value.uid,
+                    username: contacts.value.displayName,
+                    email: contacts.value.email,
+                    phone: contacts.value.phones,
                     message: property.creator.message
                 }
             };
+
+            console.log('Property data:', propertyData);
 
             await addDoc(collection(db, 'properties'), propertyData);
             toast.add({ severity: 'success', summary: 'Успішно', detail: 'Об\'єкт додано', life: 3000 });

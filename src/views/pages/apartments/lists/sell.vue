@@ -21,7 +21,7 @@ const category = computed(() => route.query.category || 'apartments');
 const subcategory = computed(() => route.query.subcategory || 'sell');
 // Пагинация
 const currentPage = ref(1);
-const pageSize = 2;
+const pageSize = 3;
 
 const showProperty = (property) => {
     router.push(`/pages/apartments/view/${property.id}`);
@@ -62,6 +62,10 @@ const prevPage = () => {
         currentPage.value--;
     }
 };
+
+watch(() => store.properties, () => {
+    currentPage.value = 1; // Сброс текущей страницы
+});
 
 const category2 = computed(() => route.params.category);
 const subcategory2 = computed(() => route.params.subcategory);
@@ -186,7 +190,6 @@ watch(() => store.properties, (newProperties) => {
                 label="Наступна"
                 icon="pi pi-chevron-right"
                 @click="nextPage"
-                :disabled="!store.hasMore"
                 class="pagination--btn"
             />
         </div>
