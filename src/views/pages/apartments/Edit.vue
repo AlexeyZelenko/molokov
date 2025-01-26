@@ -485,7 +485,7 @@ const saveProperty = async () => {
             });
         }
 
-        router.push('/properties');
+        router.push(`/categories/apartments/${property.value.subcategory.code}`);
     } catch (error) {
         console.error('Помилка при збереженні об\'єкту:', error);
         toast.add({

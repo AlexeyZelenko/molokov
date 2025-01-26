@@ -5,6 +5,11 @@ import  { useAreasStore } from '@/store/areasStore';
 import { useRoute, useRouter } from 'vue-router';
 import Button from "primevue/button";
 import { formatFirebaseTimestamp } from '@/utils/dateUtils';
+import {deleteObject, ref as storageRef} from "firebase/storage";
+import {db, storage} from "@/firebase/config";
+import {deleteDoc, doc} from "firebase/firestore";
+import ConfirmDialog from "primevue/confirmdialog";
+import {useConfirm} from "primevue/useconfirm";
 
 const route = useRoute();
 const router = useRouter();
@@ -12,6 +17,8 @@ const products = ref([]);
 const options = ref(['list', 'grid']);
 const layout = ref('list');
 const store = usePropertiesStore();
+
+const confirm = useConfirm();
 
 const storeAreas = useAreasStore();
 const categoryName = computed(() => storeAreas.realEstateItems.find(item => item.key === 'apartments')?.title);
@@ -25,6 +32,10 @@ const pageSize = 3;
 
 const showProperty = (property) => {
     router.push(`/pages/apartments/view/${property.id}`);
+};
+
+const editProperty = (property) => {
+    router.push(`/pages/apartments/edit/${property.id}`);
 };
 
 const filters = ref({
@@ -82,10 +93,79 @@ onBeforeMount(() => {
 watch(() => store.properties, (newProperties) => {
     products.value = newProperties;
 });
+
+const deleteProperty = (property) => {
+    confirm.require({
+        message: 'Ви впевнені, що хочете видалити цей об\'єкт?',
+        header: 'Підтвердження видалення',
+        icon: 'pi pi-exclamation-triangle',
+        accept: async () => {
+            try {
+                // Delete images from storage
+                if (property.images && property.images.length > 0) {
+                    const deleteImagePromises = property.images.map(async (imageUrl) => {
+                        try {
+                            const imagePath = decodeURIComponent(new URL(imageUrl).pathname)
+                                .split('/o/')[1]
+                                .split('?')[0];
+
+                            const imageRef = storageRef(storage, imagePath);
+                            await deleteObject(imageRef);
+                        } catch (error) {
+                            console.error('Помилка видалення фото:', error);
+                        }
+                    });
+
+                    await Promise.allSettled(deleteImagePromises);
+                }
+
+                // Delete Firestore document
+                await deleteDoc(doc(db, 'properties', property.id));
+
+                // Reload properties
+                await store.getProperties();
+
+                toast.add({
+                    severity: 'success',
+                    summary: 'Успішно',
+                    detail: 'Об\'єкт видалено',
+                    life: 3000
+                });
+            } catch (error) {
+                console.error('Помилка видалення об\'єкту:', error);
+                toast.add({
+                    severity: 'error',
+                    summary: 'Помилка',
+                    detail: 'Не вдалося видалити об\'єкт',
+                    life: 3000
+                });
+            }
+        }
+    });
+};
 </script>
 
 <template>
     <div class="flex flex-col">
+        <ConfirmDialog
+            :breakpoints="{'960px': '75vw', '640px': '100vw'}"
+            :style="{ width: '450px' }"
+        >
+            <template #message="slotProps">
+                <div class="flex flex-column align-items-center p-3">
+                    <i
+                        :class="slotProps.message.icon"
+                        class="text-6xl text-primary mr-2 pt-4"
+                    ></i>
+                    <h4 class="text-xl font-bold mb-3 p-2">
+                        {{ slotProps.message.header }}
+                    </h4>
+                    <p class="text-center p-2">
+                        {{ slotProps.message.message }}
+                    </p>
+                </div>
+            </template>
+        </ConfirmDialog>
         <div class="card">
             <div class="font-semibold text-xl">{{categoryName}} / {{subcategoryName}}</div>
             <div v-if="store.loading">
@@ -136,7 +216,21 @@ watch(() => store.properties, (newProperties) => {
                                     <div class="flex flex-col md:items-end gap-8">
                                         <span class="text-xl font-semibold">${{ item.priceUSD }}</span>
                                         <div class="flex flex-row-reverse md:flex-row gap-2">
-                                            <Button label="Детальніше" raised @click="showProperty(item)"/>
+                                            <Button
+                                                icon="pi pi-eye"
+                                                class="p-button-info mr-2"
+                                                @click="showProperty(item)"
+                                            />
+                                            <Button
+                                                icon="pi pi-pencil"
+                                                class="p-button-warning mr-2"
+                                                @click="editProperty(item)"
+                                            />
+                                            <Button
+                                                icon="pi pi-trash"
+                                                class="p-button-danger"
+                                                @click="deleteProperty(item)"
+                                            />
                                         </div>
                                     </div>
                                 </div>
@@ -165,7 +259,21 @@ watch(() => store.properties, (newProperties) => {
                                     <div class="flex flex-col gap-6 mt-6">
                                         <span class="text-2xl font-semibold">${{ item.priceUSD }}</span>
                                         <div class="flex gap-2">
-                                            <Button label="Детальніше" raised @click="showProperty(item)"/>
+                                            <Button
+                                                icon="pi pi-eye"
+                                                class="p-button-info mr-2"
+                                                @click="showProperty(item)"
+                                            />
+                                            <Button
+                                                icon="pi pi-pencil"
+                                                class="p-button-warning mr-2"
+                                                @click="editProperty(item)"
+                                            />
+                                            <Button
+                                                icon="pi pi-trash"
+                                                class="p-button-danger"
+                                                @click="deleteProperty(item)"
+                                            />
                                         </div>
                                     </div>
                                 </div>

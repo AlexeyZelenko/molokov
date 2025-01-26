@@ -133,7 +133,7 @@
             <div class="card flex flex-col gap-2">
                 <div class="font-semibold text-xl">Контакти ріелтора</div>
                 <div>{{ property.creator?.username }}</div>
-                <div>Телефон: {{ property.creator?.phone }}</div>
+                <div v-for="phone in property.creator?.phone">Телефон: {{ phone }}</div>
                 <div v-if="property.creator?.message">
                     {{ property.creator?.message }}
                 </div>
