@@ -14,7 +14,12 @@ export default [
     {
         path: '/',
         name: 'home',
-        component: () => import('@/views/pages/Landing.vue')
+        component: () => import('@/views/pages/Landing.vue'),
+        meta: {
+            breadcrumb: [
+                { name: 'Головна', route: '/', icon: 'pi pi-home' }
+            ]
+        }
     },
     {
         path: '/',

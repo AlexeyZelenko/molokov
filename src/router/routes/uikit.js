@@ -5,7 +5,13 @@ export default [
         path: '/dashboard',
         name: 'dashboard',
         component: () => import('@/views/Dashboard.vue'),
-        meta: { requiresAuth: true }
+        meta: {
+            requiresAuth: true,
+            breadcrumb: [
+                { name: 'Головна', route: '/', icon: 'pi pi-home' },
+                { name: 'Dashboard', route: '/dashboard' }
+            ]
+        }
     },
     {
         path: '/uikit/formlayout',

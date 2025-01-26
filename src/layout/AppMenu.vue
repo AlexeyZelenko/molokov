@@ -417,7 +417,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <div v-if="user" class="text-green-500">
+    <div v-if="user" class="text-green-500 my-4">
         <i class="pi pi-user mr-2"></i>
         {{user?.displayName}}
     </div>

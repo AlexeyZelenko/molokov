@@ -5,6 +5,7 @@ import AppTopbar from './AppTopbar.vue';
 import {computed, ref, watch} from "vue";
 import {useLayout} from "@/layout/composables/layout";
 import AppSidebar from "@/layout/AppSidebar.vue";
+import Breadcrumb from "@/components/Breadcrumb.vue";
 
 const { layoutConfig, layoutState, isSidebarActive } = useLayout();
 const isFiltersActive = ref(false);
@@ -152,6 +153,7 @@ function handleSidebarClick(event) {
                         ></app-categories-menu>
                     </slot>
                 </div>
+                <Breadcrumb />
                 <router-view></router-view>
             </div>
             <app-footer></app-footer>

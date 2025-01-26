@@ -1,5 +1,4 @@
 <template>
-    <h1 class="mb-4">Додати об'єкт нерухомості</h1>
     <Form v-slot="$form" :initialValues :resolver="resolver" @submit="saveProperty">
         <Fluid class="flex flex-col md:flex-row gap-8">
             <div class="md:w-1/2">

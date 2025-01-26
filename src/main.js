@@ -1,6 +1,7 @@
-import { createApp } from 'vue';
+import { createApp, nextTick } from 'vue';
 import App from './App.vue';
 import router from './router';
+import { useBreadcrumbStore } from '@/store/breadcrumb';
 import { createPinia } from 'pinia';
 
 import Aura from '@primevue/themes/aura';
@@ -29,3 +30,11 @@ app.use(ToastService);
 app.use(ConfirmationService);
 
 app.mount('#app');
+
+router.afterEach((to) => {
+    const breadcrumbStore = useBreadcrumbStore();
+
+    nextTick(() => {
+        breadcrumbStore.setBreadcrumb(to.meta.breadcrumb || []);
+    });
+});
