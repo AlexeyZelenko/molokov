@@ -12,12 +12,12 @@
                 <h3 class="text-md font-bold mb-2">{{ item.title }}</h3>
             </template>
             <template #content>
-                <div class="flex flex-col gap-2">
+                <div class="flex flex-col">
                     <router-link
                         v-for="subcategory in item.actions"
                         :key="subcategory.type"
-                        :to="`/properties?category=${item.key}&subcategory=${subcategory.type}`"
-                        class="p-2 hover:bg-gray-100 text-blue-600 no-underline"
+                        :to="`/categories/${item.key}/${subcategory.type}`"
+                        class="p-1 text-blue-900 no-underline"
                     >
                         <Button
                             :label="subcategory.label"
