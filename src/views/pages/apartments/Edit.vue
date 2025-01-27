@@ -375,7 +375,9 @@ const property = ref({
 let dropdowns = reactive([]);
 const route = useRoute();
 const router = useRouter();
-const propertyId = route.params.id;
+const category = route.query.category;
+const subcategory = route.query.subcategory;
+const id = route.params.id;
 
 const images = computed(() => property.value.images);
 const fileUpload = ref(null)
@@ -393,8 +395,9 @@ const removeImage = async (imageUrl) => {
         await deleteObject(imageRef);
 
         // Remove from Firestore document
-        if (propertyId) {
-            const propertyDocRef = doc(db, 'properties', propertyId);
+        if (id) {
+            const propertyDocRef = doc(db, `properties/${category}/${subcategory}`, id);
+            console.log('Видалення фото з Firestore:', imageUrl);
             await updateDoc(propertyDocRef, {
                 images: arrayRemove(imageUrl)
             });
@@ -423,15 +426,16 @@ const removeImage = async (imageUrl) => {
 onBeforeMount(async () => {
     Object.assign(dropdowns, store.dropdowns);
 
-    if (propertyId) {
+    if (id) {
         isEdit.value = true;
-        await loadPropertyData(propertyId);
+        await loadPropertyData(id, category, subcategory);
     }
 });
 
-const loadPropertyData = async (id) => {
+const loadPropertyData = async (id, category, subcategory) => {
+    console.log('Загрузка об\'єкта...', category, subcategory, id);
     try {
-        const propertyRef = doc(db, 'properties', id);
+        const propertyRef = doc(db, `properties/${category}/${subcategory}`, id);
         const propertyDoc = await getDoc(propertyRef);
 
         if (propertyDoc.exists()) {
@@ -468,7 +472,7 @@ const saveProperty = async () => {
         };
 
         if (isEdit.value) {
-            await updateDoc(doc(db, 'properties', propertyId), propertyData);
+            await updateDoc(doc(db, `properties/${category}/${subcategory}`, id), propertyData);
             toast.add({
                 severity: 'success',
                 summary: 'Успішно',
@@ -476,7 +480,7 @@ const saveProperty = async () => {
                 life: 3000
             });
         } else {
-            await addDoc(collection(db, 'properties'), propertyData);
+            await addDoc(collection(db, `properties/${propertyData.category}/${propertyData.subcategory}`), propertyData);
             toast.add({
                 severity: 'success',
                 summary: 'Успішно',
@@ -485,7 +489,7 @@ const saveProperty = async () => {
             });
         }
 
-        router.push(`/categories/apartments/${property.value.subcategory.code}`);
+        // router.push(`/categories/apartments/${property.value.subcategory.code}`);
     } catch (error) {
         console.error('Помилка при збереженні об\'єкту:', error);
         toast.add({

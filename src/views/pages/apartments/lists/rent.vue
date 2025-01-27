@@ -36,7 +36,7 @@ const currentPage = ref(1);
 const pageSize = 2;
 
 const showProperty = (property) => {
-    router.push(`/pages/apartments/view/${property.id}`);
+    router.push(`/pages/apartments/view/${property.id}?category=${property.category.code}&subcategory=${property.subcategory.code}`);
 };
 const editProperty = (property) => {
     router.push(`/pages/apartments/edit/${property.id}`);

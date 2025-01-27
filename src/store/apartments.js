@@ -1,5 +1,6 @@
 // stores/apartments.js
 import { defineStore } from 'pinia';
+import { getFirestore, doc, getDoc, updateDoc } from 'firebase/firestore';
 
 export const useApartmentsStore = defineStore('apartments', {
     state: () => ({
@@ -353,5 +354,38 @@ export const useApartmentsStore = defineStore('apartments', {
             ]
         },
         saving: false,
-    })
+    }),
+    getters: {
+        getDropdowns: (state) => state.dropdowns,
+        getSaving: (state) => state.saving,
+        async getLastPropertyId() {
+            const db = getFirestore();
+            const configDocRef = doc(db, 'config', 'NSrSG9Ujs2YYYjPgWsF1'); // Укажите путь к документу
+            const configDoc = await getDoc(configDocRef);
+
+            if (configDoc.exists()) {
+                const data = configDoc.data();
+                return data.lastPropertyId; // Возвращает значение поля
+            } else {
+                console.error('Документ не найден!');
+                return null;
+            }
+        },
+    },
+    actions: {
+        async updateLastPropertyId(newId) {
+            console.log('Обновление lastPropertyId...', newId);
+            const db = getFirestore();
+            const configDocRef = doc(db, 'config', 'NSrSG9Ujs2YYYjPgWsF1'); // Укажите путь к документу
+
+            try {
+                await updateDoc(configDocRef, {
+                    lastPropertyId: Number(newId)
+                });
+                console.log(`lastPropertyId обновлен до ${newId}`);
+            } catch (error) {
+                console.error('Ошибка обновления lastPropertyId:', error);
+            }
+        }
+    }
 });

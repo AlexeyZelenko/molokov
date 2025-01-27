@@ -4,7 +4,7 @@ import { usePropertiesStore } from '@/store/propertiesCategories';
 import  { useAreasStore } from '@/store/areasStore';
 import { useRoute, useRouter } from 'vue-router';
 import Button from "primevue/button";
-import { formatFirebaseTimestamp } from '@/utils/dateUtils';
+import { formatFirebaseTimestampToTime } from '@/utils/dateUtils';
 import {deleteObject, ref as storageRef} from "firebase/storage";
 import {db, storage} from "@/firebase/config";
 import {deleteDoc, doc} from "firebase/firestore";
@@ -31,11 +31,11 @@ const currentPage = ref(1);
 const pageSize = 3;
 
 const showProperty = (property) => {
-    router.push(`/pages/apartments/view/${property.id}`);
+    router.push(`/pages/apartments/view/${property.id}?category=${property.category.code}&subcategory=${property.subcategory.code}`);
 };
 
 const editProperty = (property) => {
-    router.push(`/pages/apartments/edit/${property.id}`);
+    router.push(`/pages/apartments/edit/${property.id}?category=${property.category.code}&subcategory=${property.subcategory.code}`);
 };
 
 const filters = ref({
@@ -78,8 +78,6 @@ watch(() => store.properties, () => {
     currentPage.value = 1; // Сброс текущей страницы
 });
 
-const category2 = computed(() => route.params.category);
-const subcategory2 = computed(() => route.params.subcategory);
 // Загрузка данных при монтировании компонента
 onMounted(() => {
     loadPage();
@@ -115,10 +113,10 @@ const deleteProperty = (property) => {
                 }
 
                 // Delete Firestore document
-                await deleteDoc(doc(db, 'properties', property.id));
+                await deleteDoc(doc(db, `properties/${property.category.code}/${property.subcategory.code}`, property.id));
 
                 // Reload properties
-                await store.getProperties();
+                await store.getProperties(property.category.code, property.subcategory.code, property.id);
 
                 toast.add({
                     severity: 'success',
@@ -205,7 +203,9 @@ const deleteProperty = (property) => {
                                         <div class="flex flex-col justify-between gap-1">
                                             <div class="text-lg font-medium mb-4">{{ item.title }}</div>
                                             <div class="font-small text-surface-500 dark:text-surface-400 text-sm">{{ item.apartmentArea.totalArea }} m2</div>
-                                            <div class="font-small text-surface-500 dark:text-surface-400 text-sm">{{ item.address.city.name }} / {{ item.address.area.name }} - {{ formatFirebaseTimestamp(item.createdAt) }}</div>
+                                            <div class="font-small text-surface-500 dark:text-surface-400 text-sm">{{ item.address.city.name }} / {{ item.address.area.name }}</div>
+                                            <div class="font-small text-surface-500 dark:text-surface-400 text-sm">{{ formatFirebaseTimestampToTime(item.createdAt) }}</div>
+                                            <div class="font-small text-surface-500 dark:text-surface-400 text-sm">{{ item.idProperty }}</div>
                                         </div>
                                     </div>
                                     <div class="flex flex-col md:items-end gap-8">
@@ -260,15 +260,16 @@ const deleteProperty = (property) => {
                             <div class="p-6 border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-900 rounded flex flex-col">
                                 <div class="bg-surface-50 flex justify-center rounded p-4">
                                     <div class="relative mx-auto">
-                                        <img class="rounded w-full" :src="item.images[0]" :alt="item.name" style="max-width: 300px" />
+                                        <img class="rounded w-full" :src="item.images[0]" :alt="item.name" style="max-width: 300px; height: 150px" />
                                     </div>
                                 </div>
                                 <div class="pt-6">
                                     <div class="flex flex-row justify-between items-start gap-2">
                                         <div style="width: 100%">
-                                            <span class="font-medium text-surface-500 dark:text-surface-400 text-sm">{{ item.category.name }}</span>
+                                            <span class="font-medium text-surface-500 dark:text-surface-400 text-sm">{{ item.category.name }} / {{ item.subcategory.name }}</span>
                                             <div class="text-lg font-medium mt-1">{{ item.title }}</div>
-                                            <span class="font-medium text-surface-500 dark:text-surface-400 text-sm">{{ item.subcategory.name }}</span>
+                                            <div class="font-medium text-surface-500 dark:text-surface-400 text-sm">{{ formatFirebaseTimestampToTime(item.createdAt) }}</div>
+                                            <div class="font-medium text-surface-500 dark:text-surface-400 text-sm">Номер оголошення: {{ item.idProperty }}</div>
 
                                             <Accordion value="1" expandIcon="pi pi-plus" collapseIcon="pi pi-minus">
                                                 <AccordionPanel value="0">

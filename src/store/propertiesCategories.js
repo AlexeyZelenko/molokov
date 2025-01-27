@@ -43,7 +43,7 @@ export const usePropertiesStore = defineStore('properties', {
                 return properties; // Если нет фильтров, возвращаем все объекты
             }
 
-            const filteredProperties = properties.filter((property) => {
+            return properties.filter((property) => {
                 // Переменная для отслеживания, нужно ли продолжать проверку
                 let isMatch = true;
 
@@ -123,8 +123,6 @@ export const usePropertiesStore = defineStore('properties', {
                 // Возвращаем объект, если он прошел все фильтры
                 return isMatch;
             });
-
-            return filteredProperties;
         }
     },
 
@@ -178,50 +176,111 @@ export const usePropertiesStore = defineStore('properties', {
         async getProperties(filters = {}) {
             try {
                 this.loading = true;
+                this.error = null;
+
+                // Проверяем обязательные фильтры
+                if (!filters.category || !filters.subcategory) {
+                    throw new Error('Category and subcategory are required');
+                }
 
                 this.getComponentFilters(filters);
 
-                let q = collection(db, 'properties');
+                // Получаем базовую коллекцию
+                const collectionPath = `properties/${filters.category}/${filters.subcategory}`;
+                let q = collection(db, collectionPath);
                 const constraints = [];
 
-                // Применение фильтров
-                Object.entries(filters).forEach(([key, value]) => {
-                    if (value !== undefined && value !== null && value !== '') {
-                        if (key === 'category') {
-                            constraints.push(where('category.code', '==', value)); // Применяем фильтр для category.code
-                        } else if (key === 'subcategory') {
-                            constraints.push(where('subcategory.code', '==', value)); // Применяем фильтр для subcategory.code
-                        } else if (Array.isArray(value)) {
-                            constraints.push(where(key, 'array-contains-any', value)); // Применяем фильтр для массивов
-                        } else {
-                            constraints.push(where(key, '==', value)); // Применяем фильтр для обычных значений
-                        }
+                // Обработка фильтров
+                for (const [key, value] of Object.entries(filters)) {
+                    // Пропускаем служебные поля и пустые значения
+                    if (['category', 'subcategory'].includes(key) ||
+                        value === undefined ||
+                        value === null ||
+                        value === '') {
+                        continue;
                     }
-                });
 
-                constraints.push(orderBy('createdAt', 'desc')); // Сортировка по дате создания
+                    // Обработка вложенных объектов
+                    if (typeof value === 'object' && !Array.isArray(value)) {
+                        for (const [nestedKey, nestedValue] of Object.entries(value)) {
+                            if (nestedValue !== undefined && nestedValue !== null && nestedValue !== '') {
+                                constraints.push(where(`${key}.${nestedKey}`, '==', nestedValue));
+                            }
+                        }
+                        continue;
+                    }
 
-                // Запрос в Firestore без пагинации
-                q = query(q, ...constraints);
-                const querySnapshot = await getDocs(q);
+                    // Обработка массивов
+                    if (Array.isArray(value) && value.length > 0) {
+                        constraints.push(where(key, 'array-contains-any', value));
+                        continue;
+                    }
 
-                const newProperties = querySnapshot.docs.map((doc) => ({
-                    id: doc.id,
-                    ...doc.data(),
-                }));
-
-                // Сохраняем все свойства в store
-                this.properties = newProperties;
-
-            } catch (error) {
-                // Обработка ошибки, если нужно создать индекс
-                if (error.message.includes('The query requires an index')) {
-                    alert('Создайте индекс для этого запроса. Подробнее: ' + error.message);
+                    // Обработка обычных значений
+                    if (typeof value !== 'object') {
+                        constraints.push(where(key, '==', value));
+                    }
                 }
 
-                // Логирование ошибки
-                console.error('Error fetching properties:', error);
-                this.error = error.message;
+                // Добавляем сортировку
+                constraints.push(orderBy('createdAt', 'desc'));
+
+                // Ограничиваем количество результатов для производительности
+                constraints.push(limit(100));
+
+                // Применяем все ограничения к запросу
+                q = query(q, ...constraints);
+
+                // Выполняем запрос
+                const querySnapshot = await getDocs(q);
+
+                // Обрабатываем результаты
+                this.properties = querySnapshot.docs.map((doc) => {
+                    const data = doc.data();
+
+                    // Преобразуем временные метки Firestore в объекты Date
+                    const timestamps = ['createdAt', 'updatedAt'];
+                    timestamps.forEach(field => {
+                        if (data[field] && typeof data[field].toDate === 'function') {
+                            data[field] = data[field].toDate();
+                        }
+                    });
+
+                    return {
+                        id: doc.id,
+                        ...data,
+                    };
+                });
+
+                // Логируем успешное выполнение
+                console.log(`Retrieved ${this.properties.length} properties from ${collectionPath}`);
+
+            } catch (error) {
+                this.error = null;
+                this.properties = [];
+
+                // Обработка специфических ошибок Firestore
+                if (error.code === 'permission-denied') {
+                    this.error = 'У вас нет прав доступа к этим данным';
+                } else if (error.code === 'not-found') {
+                    this.error = 'Данные не найдены';
+                } else if (error.message.includes('The query requires an index')) {
+                    const indexUrl = error.message.match(/https:\/\/console\.firebase\.google\.com[^\s]*/)?.[0];
+                    this.error = `Необходимо создать индекс для этого запроса. ${indexUrl ? `\nСоздать индекс: ${indexUrl}` : ''}`;
+                } else {
+                    this.error = 'Произошла ошибка при загрузке данных';
+                }
+
+                // Логируем ошибку для отладки
+                console.error('Error fetching properties:', {
+                    code: error.code,
+                    message: error.message,
+                    filters,
+                    collectionPath: filters.category?.code && filters.subcategory?.code ?
+                        `properties/${filters.category.code}/${filters.subcategory.code}` :
+                        'unknown'
+                });
+
                 throw error;
             } finally {
                 this.loading = false;

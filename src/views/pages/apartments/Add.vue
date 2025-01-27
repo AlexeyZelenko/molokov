@@ -472,7 +472,7 @@
         </Fluid>
 
 
-        <Fluid class="flex mt-8">
+        <Fluid class="flex my-8">
             <div class="field max-w-60">
                 <Button type="submit" label="Зберегти" icon="pi pi-check" :loading="saving" />
             </div>
@@ -526,7 +526,8 @@ const contacts = computed(() => authStore.user);
 
 const saving = ref(false);
 
-let property = reactive({
+// Создаем функцию для получения начального состояния
+const getInitialState = () => ({
     title: '',
     priceUSD: null,
     rooms: {
@@ -549,7 +550,7 @@ let property = reactive({
         livingArea: null,
         kitchenArea: null
     },
-    floors : {
+    floors: {
         floor: null,
         totalFloors: null,
         totalFloorsBuilding: null
@@ -589,6 +590,43 @@ let property = reactive({
     typeOwner: null,
     landscape: null
 });
+
+// Создаем property как реактивный объект с начальным состоянием
+const property = reactive(getInitialState());
+// Функция для сброса формы
+const resetForm = () => {
+    const initialState = getInitialState();
+
+    // Рекурсивная функция для глубокого сброса объекта
+    const resetObject = (current, initial) => {
+        if (!current || !initial) return;
+
+        Object.keys(initial).forEach(key => {
+            // Если значение - массив, создаем новый пустой массив
+            if (Array.isArray(initial[key])) {
+                current[key] = [];
+            }
+            // Если значение - объект (но не null), рекурсивно сбрасываем его
+            else if (initial[key] !== null && typeof initial[key] === 'object') {
+                if (!current[key]) {
+                    current[key] = {};
+                }
+                resetObject(current[key], initial[key]);
+            }
+            // Иначе просто присваиваем начальное значение
+            else {
+                current[key] = initial[key];
+            }
+        });
+    };
+
+    try {
+        resetObject(property, initialState);
+        console.log('Form reset successful');
+    } catch (error) {
+        console.error('Error resetting form:', error);
+    }
+};
 
 let dropdowns = reactive([]);
 
@@ -751,101 +789,37 @@ const updateMarkerPosition = (position) => {
 
 const saveProperty = async ({ valid }) => {
     if (valid) {
-        const utilitiesObject = property.utilities.reduce((acc, current) => {
-            acc[current.key] = current;  // Используем `key` как ключ, а объект как значение
-            return acc;
-        }, {});
-
         try {
             saving.value = true;
+            const utilitiesObject = property.utilities.reduce((acc, current) => {
+                acc[current.key] = current;
+                return acc;
+            }, {});
+
+            const lastPropertyId = await store.getLastPropertyId;
+
             const propertyData = {
                 ...property,
                 utilities: utilitiesObject,
                 createdAt: serverTimestamp(),
                 updatedAt: serverTimestamp(),
+                idProperty: Number(lastPropertyId) + 1,
                 creator: {
-                    id: contacts.value.uid,
-                    username: contacts.value.displayName,
-                    email: contacts.value.email,
+                    id: contacts.value.id || contacts.value.uid || null,
+                    username: contacts.value.displayName || null,
+                    email: contacts.value.email || null,
                     phone: contacts.value.phones,
                     message: property.creator.message
                 }
             };
 
-            console.log('Property data:', propertyData);
+            await addDoc(collection(db, `properties/apartments/${property.subcategory.code}`), propertyData);
+            await store.updateLastPropertyId(lastPropertyId + 1);
 
-            await addDoc(collection(db, 'properties'), propertyData);
+            // Сбрасываем форму используя новую функцию
+            resetForm();
+
             toast.add({ severity: 'success', summary: 'Успішно', detail: 'Об\'єкт додано', life: 3000 });
-
-            // Reset form
-            property = {
-                title: '',
-                priceUSD: null,
-                rooms: {
-                    all: null,
-                    bedrooms: null,
-                    bathrooms: null,
-                    kitchens: null
-                },
-                houseNumber: '',
-                constructionYear: null,
-                heatingType: null,
-                condition: null,
-                balconyCount: 0,
-                description: '',
-                images: [],
-                category: null,
-                subcategory: null,
-                createdAt: null,
-                updatedAt: null,
-                apartmentArea: {
-                    totalArea: null,
-                    livingArea: null,
-                    kitchenArea: null
-                },
-                floors : {
-                    floor: null,
-                    totalFloors: null,
-                    totalFloorsBuilding: null
-                },
-                reconditioning: null,
-                buildingType: null,
-                furniture: null,
-                parking: null,
-                balconyTerrace: null,
-                objectClass: null,
-                animal: false,
-                facilityReadiness: null,
-                public: false,
-                address: {
-                    region: '',
-                    area: {
-                        code: null,
-                        name: null
-                    },
-                    street: '',
-                    city: '',
-                    markerPosition: null
-                },
-                owner: {
-                    username: '',
-                    phone: '',
-                    message: ''
-                },
-                creator: {
-                    id: null,
-                    username: null,
-                    email: null,
-                    phone: '',
-                    message: ''
-                },
-                planning: null,
-                bathroom: null,
-                communications: null,
-                infrastructure: null,
-                typeOwner: null,
-                landscape: null
-            };
         } catch (error) {
             console.error('Error saving property:', error);
             toast.add({ severity: 'error', summary: 'Помилка', detail: 'Помилка збереження об\'єкту', life: 3000 });

@@ -1,5 +1,5 @@
 <template>
-    <h1 class="font-semibold text-xl mb-2">{{ property.title }}</h1>
+    <h1 class="font-semibold text-xl mb-2">{{ property.title }} {{ property.idProperty }}</h1>
 
     <Fluid class="flex flex-col md:flex-row gap-8">
         <div class="md:w-1/2">
@@ -123,7 +123,7 @@
     <Fluid class="flex flex-col mt-8">
         <div class="card flex flex-col gap-4 w-full">
             <div class="font-semibold text-xl">Додадковий опис об'єкта</div>
-            <div>{{ property.description }}</div>
+            <div v-text="property.description"></div>
         </div>
     </Fluid>
 
@@ -178,6 +178,8 @@ const router = useRouter();
 const route = useRoute();
 
 const propertyId = route.params.id;
+const category = route.query.category;
+const subcategory = route.query.subcategory;
 const property = ref({
     title: '',
     priceUSD: null,
@@ -207,7 +209,7 @@ const property = ref({
 });
 
 onMounted(async () => {
-    await loadPropertyData(propertyId);
+    await loadPropertyData(category, subcategory, propertyId);
 });
 
 const galleriaResponsiveOptions = ref([
@@ -229,9 +231,10 @@ const galleriaResponsiveOptions = ref([
     }
 ]);
 
-const loadPropertyData = async (id) => {
+const loadPropertyData = async (category, subcategory, id) => {
     try {
-        const propertyRef = doc(db, 'properties', id);
+        console.log('Загрузка объекта...', category, subcategory, id);
+        const propertyRef = doc(db, `properties/${category}/${subcategory}`, id);
         const propertyDoc = await getDoc(propertyRef);
 
         if (propertyDoc.exists()) {
