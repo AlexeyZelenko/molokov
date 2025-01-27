@@ -9,7 +9,7 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 // https://vitejs.dev/config/
 export default defineConfig({
     optimizeDeps: {
-        include: ['tiny-case', 'property-expr'],
+        include: ['tiny-case', 'property-expr', 'quill'],
         noDiscovery: true
     },
     plugins: [

@@ -204,7 +204,7 @@
             <div class="card flex flex-col gap-4 w-full">
                 <div class="flex flex-col md:flex-row gap-4">
                     <div class="font-semibold text-xl">Додадковий опис об'єкта</div>
-                    <Textarea v-model="property.description" placeholder="Додадковий опис об'єкта" :autoResize="true" rows="7" cols="50" />
+                    <Editor v-model="property.description" editorStyle="height: 320px" />
                 </div>
             </div>
 
@@ -468,11 +468,18 @@ const updateMarkerPosition = (position) => {
     property.value.address.markerPosition = position;
 };
 
+const formattedDescription = computed(() => {
+    return property.value.description
+        .replace(/\n/g, '<br>')
+        .replace(/ {2,}/g, match => '&nbsp;'.repeat(match.length));
+});
+
 const saveProperty = async () => {
     try {
         saving.value = true;
         const propertyData = {
             ...property.value,
+            description: formattedDescription.value,
             updatedAt: new Date()
         };
 

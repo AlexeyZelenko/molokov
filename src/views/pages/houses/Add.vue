@@ -283,7 +283,13 @@
             <div class="card flex flex-col gap-4 w-full">
                 <div class="flex flex-col md:flex-row gap-4">
                     <div class="font-semibold text-xl">Додадковий опис об'єкта</div>
-                    <Textarea v-model="property.description" placeholder="Додадковий опис об'єкта" :autoResize="true" rows="7" cols="50" />
+                    <Textarea
+                        v-model="property.description"
+                        placeholder="Додадковий опис об'єкта"
+                        :autoResize="true"
+                        rows="7"
+                        cols="50"
+                    />
                 </div>
             </div>
 
