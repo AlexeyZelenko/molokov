@@ -10,7 +10,7 @@ import { ref as storageRef, deleteObject } from 'firebase/storage';
 import Button from "primevue/button";
 import ConfirmDialog from 'primevue/confirmdialog';
 import { useConfirm } from "primevue/useconfirm";
-import { formatFirebaseTimestamp } from '@/utils/dateUtils';
+import { formatFirebaseTimestampToTime } from '@/utils/dateUtils';
 import { useAuthStore } from '@/store/authFirebase';
 
 const route = useRoute();
@@ -36,10 +36,11 @@ const currentPage = ref(1);
 const pageSize = 2;
 
 const showProperty = (property) => {
+    console.log('property', property);
     router.push(`/pages/apartments/view/${property.id}?category=${property.category.code}&subcategory=${property.subcategory.code}`);
 };
 const editProperty = (property) => {
-    router.push(`/pages/apartments/edit/${property.id}`);
+    router.push(`/pages/apartments/edit/${property.id}?category=${property.category.code}&subcategory=${property.subcategory.code}`);
 };
 
 const filters = ref({
@@ -213,7 +214,9 @@ const deleteProperty = (property) => {
                                     <div class="flex flex-row md:flex-col justify-between items-start gap-2">
                                         <div class="text-lg font-medium mb-4">{{ item.title }}</div>
                                         <div class="font-small text-surface-500 dark:text-surface-400 text-sm">{{ item.apartmentArea.totalArea }} m2</div>
-                                        <div class="font-small text-surface-500 dark:text-surface-400 text-sm">{{ item.address.city.name }} / {{ item.address.area.name }} - {{ formatFirebaseTimestamp(item.createdAt) }}</div>
+                                        <div class="font-small text-surface-500 dark:text-surface-400 text-sm">{{ item.address.city.name }} / {{ item.address.area.name }}</div>
+                                        <div class="font-small text-surface-500 dark:text-surface-400 text-sm">{{ formatFirebaseTimestampToTime(item.createdAt) }}</div>
+                                        <div class="font-small text-surface-500 dark:text-surface-400 text-sm">id: {{ item.idProperty }}</div>
                                     </div>
                                     <div class="flex flex-col md:items-end gap-8">
                                         <span class="text-xl font-semibold">{{ item.priceUSD }} грн</span>
@@ -257,7 +260,13 @@ const deleteProperty = (property) => {
                                             {{ item.apartmentArea.totalArea }} m2
                                         </div>
                                         <div class="font-small text-surface-500 dark:text-surface-400 text-sm">
-                                            {{ item.address.city.name }} / {{ item.address.area.name }} - {{ formatFirebaseTimestamp(item.createdAt) }}
+                                            {{ item.address.city.name }} / {{ item.address.area.name }}
+                                        </div>
+                                        <div class="font-small text-surface-500 dark:text-surface-400 text-sm">
+                                            {{ formatFirebaseTimestampToTime(item.createdAt) }}
+                                        </div>
+                                        <div class="font-small text-surface-500 dark:text-surface-400 text-sm">
+                                            id: {{ item.idProperty }}
                                         </div>
                                     </div>
                                     <div class="flex flex-col gap-6 mt-6">
@@ -302,7 +311,6 @@ const deleteProperty = (property) => {
                 label="Наступна"
                 icon="pi pi-chevron-right"
                 @click="nextPage"
-                :disabled="!store.hasMore"
                 class="pagination--btn"
             />
         </div>

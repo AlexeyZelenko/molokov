@@ -76,9 +76,8 @@
                         style="width: 100%; height: 500px"
                         :area="property.address.area"
                         :center="property.address.markerPosition"
-                        @update-marker-position="updateMarkerPosition"
-                    ></GoogleMapAddApartment>
-                    {{property.address}}
+                        :disabled="true"
+                    />
 
                 </div>
                 <div class="card flex flex-col gap-4">
@@ -267,7 +266,14 @@
                         <InputGroupAddon>
                             <i class="pi pi-phone"></i>
                         </InputGroupAddon>
-                        <InputNumber v-model="property.owner.phone" placeholder="Телефон" />
+                        <InputMask
+                            id="phone"
+                            v-model="property.owner.phone"
+                            type="phones"
+                            mask="+38(0**) 999-99-99"
+                            class="mb-4" fluid
+                            placeholder="+38(999) 999-9999"
+                        />
                     </InputGroup>
                 </div>
                 <div class="flex flex-col md:flex-row gap-4">
@@ -363,10 +369,9 @@ const property = ref({
     facilityReadiness: null,
     public: false,
     address: {
-        region: '',
-        area: { code: null, name: null },
-        street: '',
+        region: null,
         city: '',
+        street: '',
         markerPosition: null
     },
     owner: { username: '', phone: '', message: '' }
