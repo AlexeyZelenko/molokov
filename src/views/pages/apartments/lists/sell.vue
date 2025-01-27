@@ -205,7 +205,7 @@ const deleteProperty = (property) => {
                                             <div class="font-small text-surface-500 dark:text-surface-400 text-sm">{{ item.apartmentArea.totalArea }} m2</div>
                                             <div class="font-small text-surface-500 dark:text-surface-400 text-sm">{{ item.address.city.name }} / {{ item.address.area.name }}</div>
                                             <div class="font-small text-surface-500 dark:text-surface-400 text-sm">{{ formatFirebaseTimestampToTime(item.createdAt) }}</div>
-                                            <div class="font-small text-surface-500 dark:text-surface-400 text-sm">{{ item.idProperty }}</div>
+                                            <div class="font-small text-surface-500 dark:text-surface-400 text-sm">id: {{ item.idProperty }}</div>
                                         </div>
                                     </div>
                                     <div class="flex flex-col md:items-end gap-8">
