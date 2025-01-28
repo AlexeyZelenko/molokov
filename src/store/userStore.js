@@ -8,13 +8,18 @@ import {
     addDoc,
     query,
     where,
-    getDocs
+    getDocs,
+    serverTimestamp,
+    getFirestore,
 } from 'firebase/firestore';
 
 export const useUserStore = defineStore('user', {
     state: () => ({
         profile: null,
-        propertyLists: []
+        propertyLists: [],
+        user: null,
+        clients: [],
+        loading: false,
     }),
 
     actions: {
@@ -76,6 +81,170 @@ export const useUserStore = defineStore('user', {
                     });
                 }
             }
-        }
+        },
+
+        async fetchUserAndClients() {
+            this.loading = true;
+            try {
+                const userId = auth.currentUser?.uid;
+
+                if (!userId) throw new Error('Користувач не авторизований');
+
+                const db = getFirestore();
+
+                // Отримати дані користувача
+                const userRef = doc(db, 'users', userId);
+                const userDoc = await getDoc(userRef);
+
+                if (userDoc.exists()) {
+                    this.user = { id: userDoc.id, ...userDoc.data() };
+                }
+
+                // Отримати дані клієнтів
+                const clientsRef = collection(db, 'users', userId, 'clients');
+                const querySnapshot = await getDocs(clientsRef);
+
+                const clients = [];
+                querySnapshot.forEach((doc) => {
+                    clients.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
+
+                this.clients = clients;
+
+                console.log('user:', this.user);
+                console.log('clients:', clients);
+
+                return { user: this.user, clients };
+            } catch (error) {
+                console.error('Помилка при отриманні даних:', error);
+                throw error;
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        async fetchUser() {
+            this.loading = true;
+            const userId = auth.currentUser?.uid;
+
+            if (!userId) throw new Error('Користувач не авторизований');
+
+            const db = getFirestore();
+            const userRef = doc(db, 'users', userId);
+            const userDoc = await getDoc(userRef);
+
+            if (userDoc.exists()) {
+                this.user = { id: userDoc.id, ...userDoc.data() };
+            }
+
+            this.loading = false;
+        },
+
+        async getClients() {
+            try {
+                const userId = auth.currentUser?.uid;
+                if (!userId) {
+                    throw new Error('Користувач не авторизований');
+                }
+
+                // Отримати посилання на колекцію 'clients' для поточного користувача
+                const clientsRef = collection(db, 'users', userId, 'clients');
+
+                // Отримати всі документи з колекції 'clients'
+                const querySnapshot = await getDocs(clientsRef);
+
+                // Створити масив клієнтів
+                const clients = [];
+                querySnapshot.forEach((doc) => {
+                    // Додати дані клієнта разом з його ID
+                    clients.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
+
+                console.log('clients:', clients);
+                return clients;
+            } catch (error) {
+                console.error('Помилка при отриманні клієнтів:', error);
+                throw error;
+            }
+        },
+
+        async addClient(client) {
+            try {
+                const userId = auth.currentUser?.uid;
+                if (!userId) {
+                    throw new Error('Користувач не авторизований');
+                }
+
+                console.log('client:', client);
+
+                // Create a new document in 'clients' subcollection
+                const clientsRef = collection(db, 'users', userId, 'clients');
+
+                const clientWithMetadata = {
+                    ...client,
+                    createdAt: serverTimestamp(),
+                    updatedAt: serverTimestamp()
+                };
+
+                const docRef = await addDoc(clientsRef, clientWithMetadata);
+
+                // Add the ID to the client object
+                const newClient = {
+                    ...clientWithMetadata,
+                    id: docRef.id
+                };
+
+                console.log('newClient:', newClient);
+
+                this.clients.push(newClient);
+                return newClient;
+            } catch (error) {
+                console.error('Помилка при додаванні клієнта:', error);
+                throw error;
+            }
+        },
+
+        async updateClient(clientId, updatedData) {
+            console.log('clientId:', clientId, 'updatedData:', updatedData);
+            const userId = auth.currentUser?.uid;
+
+            if (!userId) throw new Error('Користувач не авторизований');
+
+            const userRef = doc(db, 'users', userId);
+
+            // Оновлюємо клієнта в масиві
+            const updatedClients = this.clients.map((client) =>
+                client.id === clientId ? { ...client, ...updatedData } : client
+            );
+
+            await updateDoc(userRef, {
+                clients: updatedClients,
+            });
+
+            this.clients = updatedClients; // Оновлюємо локальний стан
+        },
+
+        async deleteClient(clientId) {
+            const userId = auth.currentUser?.uid;
+
+            if (!userId) throw new Error('Користувач не авторизований');
+
+            const userRef = doc(db, 'users', userId);
+
+            // Видаляємо клієнта з масиву
+            const updatedClients = this.clients.filter((client) => client.id !== clientId);
+
+            await updateDoc(userRef, {
+                clients: updatedClients,
+            });
+
+            this.clients = updatedClients; // Оновлюємо локальний стан
+        },
     }
 });

@@ -300,7 +300,7 @@ const model = ref([
                     {
                         label: 'Таблиця клієнтів',
                         icon: 'pi pi-fw pi-list',
-                        to: '/categories/houses/sell'
+                        to: '/users/user/clients'
                     },
                     {
                         label: 'Виборка для клієнтів',

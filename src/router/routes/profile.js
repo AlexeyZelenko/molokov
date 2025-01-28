@@ -12,8 +12,8 @@ export default [
         }
     },
     {
-        path: '/users/user/ListClients.vue',
-        name: 'editUserProfile',
+        path: '/users/user/clients',
+        name: 'userProfileClients',
         component: () => import('@/views/users/user/ListClients.vue'),
         meta: {
             requiresAuth: true,
