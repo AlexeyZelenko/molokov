@@ -89,24 +89,24 @@ export const useUserStore = defineStore('user', {
             try {
                 const userId = auth.currentUser?.uid;
 
-                if (!userId) throw new Error('Користувач не авторизований');
+                if (!userId) {
+                    throw new Error('Користувач не авторизований');
+                }
 
-                const db = getFirestore();
-
-                // Отримати дані користувача
-                const userRef = doc(db, 'users', userId);
-                const userDoc = await getDoc(userRef);
+                // Отримати дані користувача та клієнтів паралельно
+                const [userDoc, clientsSnapshot] = await Promise.all([
+                    getDoc(doc(db, 'users', userId)),
+                    getDocs(collection(db, 'users', userId, 'clients'))
+                ]);
 
                 if (userDoc.exists()) {
                     this.user = { id: userDoc.id, ...userDoc.data() };
+                } else {
+                    throw new Error('Дані користувача не знайдено');
                 }
 
-                // Отримати дані клієнтів
-                const clientsRef = collection(db, 'users', userId, 'clients');
-                const querySnapshot = await getDocs(clientsRef);
-
                 const clients = [];
-                querySnapshot.forEach((doc) => {
+                clientsSnapshot.forEach((doc) => {
                     clients.push({
                         id: doc.id,
                         ...doc.data()
@@ -115,8 +115,8 @@ export const useUserStore = defineStore('user', {
 
                 this.clients = clients;
 
-                console.log('user:', this.user);
-                console.log('clients:', clients);
+                console.log('Дані користувача:', this.user);
+                console.log('Дані клієнтів:', clients);
 
                 return { user: this.user, clients };
             } catch (error) {
@@ -167,7 +167,6 @@ export const useUserStore = defineStore('user', {
                     });
                 });
 
-                console.log('clients:', clients);
                 return clients;
             } catch (error) {
                 console.error('Помилка при отриманні клієнтів:', error);
@@ -213,39 +212,56 @@ export const useUserStore = defineStore('user', {
 
         async updateClient(clientId, updatedData) {
             console.log('clientId:', clientId, 'updatedData:', updatedData);
+
             const userId = auth.currentUser?.uid;
 
-            if (!userId) throw new Error('Користувач не авторизований');
+            if (!userId) {
+                throw new Error('Користувач не авторизований');
+            }
 
-            const userRef = doc(db, 'users', userId);
+            // Посилання на документ клієнта в Firestore
+            const clientRef = doc(db, 'users', userId, 'clients', clientId);
 
-            // Оновлюємо клієнта в масиві
-            const updatedClients = this.clients.map((client) =>
-                client.id === clientId ? { ...client, ...updatedData } : client
-            );
+            try {
+                // Оновлюємо документ клієнта в Firestore
+                await updateDoc(clientRef, updatedData);
 
-            await updateDoc(userRef, {
-                clients: updatedClients,
-            });
+                // Оновлюємо локальний стан клієнтів
+                const updatedClients = this.clients.map((client) =>
+                    client.id === clientId ? { ...client, ...updatedData } : client
+                );
 
-            this.clients = updatedClients; // Оновлюємо локальний стан
+                this.clients = updatedClients; // Оновлюємо локальний стан
+                console.log('Клієнт успішно оновлено. Оновлені клієнти:', updatedClients);
+            } catch (error) {
+                console.error('Помилка при оновленні клієнта:', error);
+                throw error; // Передаємо помилку далі для обробки
+            }
         },
 
         async deleteClient(clientId) {
             const userId = auth.currentUser?.uid;
 
-            if (!userId) throw new Error('Користувач не авторизований');
+            if (!userId) {
+                throw new Error('Користувач не авторизований');
+            }
 
-            const userRef = doc(db, 'users', userId);
+            // Посилання на документ клієнта в Firestore
+            const clientRef = doc(db, 'users', userId, 'clients', clientId);
 
-            // Видаляємо клієнта з масиву
-            const updatedClients = this.clients.filter((client) => client.id !== clientId);
+            try {
+                // Видаляємо документ клієнта з Firestore
+                await deleteDoc(clientRef);
 
-            await updateDoc(userRef, {
-                clients: updatedClients,
-            });
+                // Оновлюємо локальний стан клієнтів
+                const updatedClients = this.clients.filter((client) => client.id !== clientId);
+                this.clients = updatedClients; // Оновлюємо локальний стан
 
-            this.clients = updatedClients; // Оновлюємо локальний стан
+                console.log('Клієнт успішно видалено. Оновлені клієнти:', updatedClients);
+            } catch (error) {
+                console.error('Помилка при видаленні клієнта:', error);
+                throw error; // Передаємо помилку далі для обробки
+            }
         },
 
         async addPropertyToList(listId, propertyId) {

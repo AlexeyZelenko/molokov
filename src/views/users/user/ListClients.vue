@@ -4,110 +4,191 @@
 
         <div>
             <div class="flex justify-between items-center mb-6">
-                <h1 class="text-2xl font-bold">Клієнти</h1>
-                <Button label="Додати клієнта" icon="pi pi-plus" @click="openAddDialog" />
+                <h1 class="text-2xl font-bold text-gray-800">Клієнти</h1>
+                <Button
+                    label="Додати клієнта"
+                    icon="pi pi-plus"
+                    @click="openAddDialog"
+                    class="p-button-raised p-button-primary shadow-md hover:shadow-lg transition-shadow duration-200"
+                    iconClass="mr-2"
+                />
             </div>
         </div>
 
         <!-- Desktop версія -->
         <DataTable
             :value="clients"
-            :loading="loading"
             stripedRows
             paginator
             :rows="10"
             :rowsPerPageOptions="[5, 10, 20]"
             tableStyle="min-width: 60rem"
-            class="hidden md:block"
+            class="hidden md:block p-datatable-hoverable-rows shadow-sm rounded-lg"
             dataKey="id"
             :expandedRows="expandedRows"
             @rowToggle="onRowToggle"
             v-model:filters="filters"
             filterDisplay="row"
         >
-            <template #empty> Нічого не знайдено. </template>
-            <template #loading> Завантаження даних. Будь ласка, зачекайте.  </template>
+            <template #empty>
+                <div class="text-gray-500 p-4">Нічого не знайдено.</div>
+            </template>
             <Column :expander="true" headerStyle="width: 3rem" />
             <Column field="name" header="Name" style="min-width: 12rem">
                 <template #body="{ data }">
-                    {{ data.name }}
+                    <span class="font-medium">{{ data.name }}</span>
                 </template>
                 <template #filter="{ filterModel, filterCallback }">
-                    <InputText v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by name" />
+                    <InputText
+                        v-model="filterModel.value"
+                        type="text"
+                        @input="filterCallback()"
+                        placeholder="Search by name"
+                        class="p-inputtext-sm w-full"
+                    />
                 </template>
             </Column>
-            <Column field="wishes.propertyType" header="Тип нерухомості" sortable></Column>
-            <Column field="wishes.rooms" header="Кількість кімнат" sortable></Column>
-            <Column field="wishes.priceRange.from" header="Min" sortable></Column>
-            <Column field="wishes.priceRange.to" header="Max" sortable></Column>
+            <Column field="wishes.propertyType" header="Тип нерухомості" sortable>
+                <template #body="{ data }">
+                    <Tag :value="data.wishes.propertyType" :severity="getPropertyTypeSeverity(data.wishes.propertyType)" />
+                </template>
+            </Column>
+            <Column field="wishes.rooms" header="Кімнати" sortable>
+                <template #body="{ data }">
+                    <Badge
+                        :value="data.wishes.rooms"
+                        size="xlarge"
+                        :severity="getSeverity(data.wishes.rooms)"
+                    />
+                </template>
+            </Column>
+            <Column field="wishes.priceRange.from" header="Min" sortable>
+                <template #body="{ data }">
+                    {{ formatPrice(data.wishes.priceRange.from) }}
+                </template>
+            </Column>
+            <Column field="wishes.priceRange.to" header="Max" sortable>
+                <template #body="{ data }">
+                    {{ formatPrice(data.wishes.priceRange.to) }}
+                </template>
+            </Column>
             <Column header="Дії" :exportable="false" style="min-width:8rem">
                 <template #body="{ data }">
-                    <Button icon="pi pi-pencil" class="p-button-text" @click="openEditDialog(data)" />
-                    <Button icon="pi pi-trash" class="p-button-text p-button-danger" @click="deleteClient(data.id)" />
+                    <div class="flex gap-2">
+                        <Button
+                            icon="pi pi-pencil"
+                            class="p-button-rounded p-button-text p-button-info hover:bg-blue-50"
+                            @click="openEditDialog(data)"
+                            v-tooltip.top="'Редагувати'"
+                        />
+                        <Button
+                            icon="pi pi-trash"
+                            class="p-button-rounded p-button-text p-button-danger hover:bg-red-50"
+                            @click="confirmDelete(data)"
+                            v-tooltip.top="'Видалити'"
+                        />
+                    </div>
                 </template>
             </Column>
             <template #expansion="slotProps">
-                <div class="p-3">
-                    <div class="mb-3">
-                        <strong>Телефони:</strong>
-                        <div v-for="(phone, index) in slotProps.data.contacts.phones" :key="index">
-                            {{ phone }}
+                <div class="p-4 bg-gray-50 rounded-lg shadow-inner">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-3">
+                            <div>
+                                <div class="font-semibold text-gray-700 mb-1">Телефони:</div>
+                                <div v-for="(phone, index) in slotProps.data.contacts.phones" :key="index"
+                                     class="flex items-center gap-2">
+                                    <i class="pi pi-phone text-gray-500"></i>
+                                    <a :href="'tel:' + phone" class="text-blue-600 hover:text-blue-800">{{ phone }}</a>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="font-semibold text-gray-700 mb-1">Telegram:</div>
+                                <div class="flex items-center gap-2">
+                                    <i class="pi pi-telegram text-blue-500"></i>
+                                    <a :href="'https://t.me/' + slotProps.data.contacts.telegram"
+                                       target="_blank"
+                                       class="text-blue-600 hover:text-blue-800">
+                                        {{ slotProps.data.contacts.telegram }}
+                                    </a>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="mb-3">
-                        <strong>Telegram:</strong> {{ slotProps.data.contacts.telegram }}
-                    </div>
-                    <div class="mb-3">
-                        <strong>Побажання:</strong> {{ slotProps.data.wishes.text }}
-                    </div>
-                    <div class="mb-3">
-                        <strong>Тип нерухомості:</strong> {{ slotProps.data.wishes.propertyType }}
-                    </div>
-                    <div class="mb-3">
-                        <strong>Ціна:</strong> {{ slotProps.data.wishes.priceRange.from }} - {{ slotProps.data.wishes.priceRange.to }}
-                    </div>
-                    <div v-if="slotProps.data.wishes.propertyType === 'квартира'">
-                        <strong>Кімнати:</strong> {{ slotProps.data.wishes.rooms }}
+                        <div class="space-y-3">
+                            <div>
+                                <div class="font-semibold text-gray-700 mb-1">Побажання:</div>
+                                <p class="text-gray-600" style="word-wrap: break-word;">{{ slotProps.data.wishes.text }}</p>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <div class="font-semibold text-gray-700">Тип нерухомості:</div>
+                                    <Tag :value="slotProps.data.wishes.propertyType"
+                                         :severity="getPropertyTypeSeverity(slotProps.data.wishes.propertyType)" />
+                                </div>
+                                <div>
+                                    <div class="font-semibold text-gray-700">Ціна:</div>
+                                    <span class="text-gray-600">
+                                        {{ formatPrice(slotProps.data.wishes.priceRange.from) }} -
+                                        {{ formatPrice(slotProps.data.wishes.priceRange.to) }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </template>
         </DataTable>
 
         <!-- Mobile версія -->
-        <div class="md:hidden">
-            <div v-for="client in clients" :key="client.id" class="card mb-3 p-3 border rounded-lg">
-                <div class="flex justify-between items-center">
-                    <h3 class="text-lg font-bold">{{ client.name }}</h3>
-                    <div>
-                        <Button icon="pi pi-pencil" class="p-button-text" @click="openEditDialog(client)" />
-                        <Button icon="pi pi-trash" class="p-button-text p-button-danger" @click="deleteClient(client.id)" />
+        <div class="md:hidden space-y-4">
+            <div v-for="client in clients" :key="client.id"
+                 class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden">
+                <div class="p-4">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-bold text-gray-800">{{ client.name }}</h3>
+                        <div class="flex gap-2">
+                            <Button
+                                icon="pi pi-pencil"
+                                class="p-button-rounded p-button-text p-button-info"
+                                @click="openEditDialog(client)"
+                            />
+                            <Button
+                                icon="pi pi-trash"
+                                class="p-button-rounded p-button-text p-button-danger"
+                                @click="confirmDelete(client)"
+                            />
+                        </div>
                     </div>
-                </div>
-                <div class="mt-3">
-                    <Panel :toggleable="true" :collapsed="true" class="mb-2">
+                    <Panel :toggleable="true" :collapsed="true" class="border-none">
                         <template #header>
-                            <span class="font-bold">Деталі</span>
-                        </template>
-                        <div class="mb-2">
-                            <strong>Телефони:</strong>
-                            <div v-for="(phone, index) in client.contacts.phones" :key="index">
-                                {{ phone }}
+                            <div class="flex items-center gap-2">
+                                <i class="pi pi-info-circle text-blue-500"></i>
+                                <span class="font-semibold text-gray-700">Деталі</span>
                             </div>
-                        </div>
-                        <div class="mb-2">
-                            <strong>Telegram:</strong> {{ client.contacts.telegram }}
-                        </div>
-                        <div class="mb-2">
-                            <strong>Побажання:</strong> {{ client.wishes.text }}
-                        </div>
-                        <div class="mb-2">
-                            <strong>Тип нерухомості:</strong> {{ client.wishes.propertyType }}
-                        </div>
-                        <div class="mb-2">
-                            <strong>Ціна:</strong> {{ client.wishes.priceRange.from }} - {{ client.wishes.priceRange.to }}
-                        </div>
-                        <div v-if="client.wishes.propertyType === 'квартира'">
-                            <strong>Кімнати:</strong> {{ client.wishes.rooms }}
+                        </template>
+                        <div class="space-y-4 pt-3">
+                            <div class="mb-2">
+                                <strong>Телефони:</strong>
+                                <div v-for="(phone, index) in client.contacts.phones" :key="index">
+                                    {{ phone }}
+                                </div>
+                            </div>
+                            <div class="mb-2">
+                                <strong>Telegram:</strong> {{ client.contacts.telegram }}
+                            </div>
+                            <div class="mb-2">
+                                <strong>Побажання:</strong>
+                                <p style="word-wrap: break-word;" v-text="client.wishes.text"></p>
+                            </div>
+                            <div class="mb-2">
+                                <strong>Тип нерухомості:</strong> {{ client.wishes.propertyType }}
+                            </div>
+                            <div class="mb-2">
+                                <strong>Ціна:</strong> {{ client.wishes.priceRange.from }} - {{ client.wishes.priceRange.to }}
+                            </div>
+                            <div v-if="client.wishes.propertyType === 'квартира'">
+                                <strong>Кімнати:</strong> {{ client.wishes.rooms }}
+                            </div>
                         </div>
                     </Panel>
                 </div>
@@ -228,9 +309,11 @@
             </div>
             <template #footer>
                 <Button label="Скасувати" icon="pi pi-times" @click="closeEditDialog" class="p-button-text p-button-danger" />
-                <Button label="Зберегти" icon="pi pi-check" @click="saveClient" class="p-button-success" />
+                <Button label="Зберегти" icon="pi pi-check" @click="saveClient(selectedClient.id)" class="p-button-success" />
             </template>
         </Dialog>
+
+        <ConfirmDialog />
     </div>
 </template>
 
@@ -238,6 +321,7 @@
 import { ref, onMounted } from 'vue';
 import { useUserStore } from '@/store/userStore';
 import { useToast } from 'primevue/usetoast';
+import { useConfirm } from 'primevue/useconfirm';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Button from 'primevue/button';
@@ -248,8 +332,12 @@ import Dropdown from 'primevue/dropdown';
 import InputNumber from 'primevue/inputnumber';
 import Toast from 'primevue/toast';
 import Panel from 'primevue/panel';
+import Tag from 'primevue/tag';
+import Badge from 'primevue/badge';
+import ConfirmDialog from 'primevue/confirmdialog';
 import { FilterMatchMode } from '@primevue/core/api';
 
+const confirm = useConfirm();
 const userStore = useUserStore();
 const toast = useToast();
 const clients = ref([]);
@@ -270,6 +358,44 @@ const emptyClient = {
 
 const newClient = ref({ ...emptyClient });
 const selectedClient = ref({ ...emptyClient });
+
+const getPropertyTypeSeverity = (type: string) => {
+    const map: { [key: string]: string } = {
+        'квартира': 'info',
+        'дім': 'success',
+        'комерція': 'warning',
+        'земля': 'help'
+    };
+    return map[type] || 'info';
+};
+
+const getSeverity = (rooms: number) => {
+    if (rooms === 1) return 'success';
+    if (rooms === 2) return 'info';
+    if (rooms === 3) return 'warning';
+    if (rooms >= 4) return 'danger';
+    return 'info';
+};
+
+const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('uk-UA', {
+        style: 'currency',
+        currency: 'USD',
+        maximumFractionDigits: 0
+    }).format(price);
+};
+
+const confirmDelete = (client: any) => {
+    confirm.require({
+        message: `Ви впевнені, що хочете видалити клієнта "${client.name}"?`,
+        header: 'Підтвердження видалення',
+        icon: 'pi pi-exclamation-triangle',
+        accept: () => deleteClient(client.id),
+        reject: () => {
+            toast.add({ severity: 'info', summary: 'Скасовано', detail: 'Видалення скасовано', life: 3000 });
+        }
+    });
+};
 
 const propertyTypes = [
     { label: 'Квартира', value: 'квартира' },
@@ -325,7 +451,7 @@ const addClient = async () => {
     }
 };
 
-const saveClient = async () => {
+const saveClient = async (id: string) => {
     try {
         if (!selectedClient.value.name.trim()) {
             toast.add({ severity: 'error', summary: 'Помилка', detail: "Ім'я обов'язкове", life: 3000 });
@@ -333,7 +459,7 @@ const saveClient = async () => {
         }
 
         loading.value = true;
-        await userStore.updateClient(selectedClient.value.id, selectedClient.value);
+        await userStore.updateClient(id, selectedClient.value);
         toast.add({ severity: 'success', summary: 'Успішно', detail: 'Дані оновлено', life: 3000 });
 
         displayEditDialog.value = false;
@@ -370,3 +496,25 @@ const deleteClient = async (id: string) => {
     }
 };
 </script>
+
+
+<style scoped>
+.p-datatable .p-datatable-tbody > tr > td {
+    padding: 1rem;
+}
+
+.p-button {
+    transition: all 0.2s ease;
+}
+
+.p-panel .p-panel-header {
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+.p-panel .p-panel-content {
+    border: none;
+    background: transparent;
+}
+</style>
