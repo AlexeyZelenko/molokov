@@ -35,5 +35,19 @@ export default [
                 { name: 'Список нерухомості', route: '/pages/users/user/propertyList' }
             ]
         }
+    },
+    {
+        path: '/users/user/property-list/:id',
+        name: 'userProfileClientsPropertiesListsId',
+        component: () => import('@/views/users/user/propertyListId.vue'),
+        meta: {
+            requiresAuth: true,
+            breadcrumb: [
+                { name: 'Головна', route: '/', icon: 'pi pi-home' },
+                { name: 'Клієнти', route: '/pages/users/user/ListClients' },
+                { name: 'Список нерухомості', route: '/pages/users/user/propertyList' },
+                { name: 'Деталі', route: '/pages/users/user/propertyListId' }
+            ]
+        }
     }
 ]

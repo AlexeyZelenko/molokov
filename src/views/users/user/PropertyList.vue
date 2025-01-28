@@ -155,10 +155,6 @@ const getTableData = (list) => {
         return 'Формат не визначено';
     }).join(', ');
 };
-
-const viewList = (listId) => {
-    router.push(`/users/property-list/${listId}`);
-};
 </script>
 
 <template>
@@ -202,7 +198,7 @@ const viewList = (listId) => {
                     <Button
                         icon="pi pi-eye"
                         class="p-button-rounded p-button-info mr-2"
-                        @click="$router.push(`/users/property-list/${slotProps.data.id}`)"
+                        @click="$router.push(`/categories/user/property-list/${slotProps.data.id}`)"
                         tooltip="Переглянути список"
                     />
                     <Button
