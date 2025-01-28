@@ -24,8 +24,8 @@ export default [
         }
     },
     {
-        path: '/pages/users/user/propertyList.vue',
-        name: 'editUserProfile',
+        path: '/users/user/propertyLists',
+        name: 'userProfileClientsPropertiesLists',
         component: () => import('@/views/users/user/propertyList.vue'),
         meta: {
             requiresAuth: true,
@@ -35,18 +35,5 @@ export default [
                 { name: 'Список нерухомості', route: '/pages/users/user/propertyList' }
             ]
         }
-    },
-    {
-        path: '/pages/users/user/propertyList.vue',
-        name: 'editUserProfile',
-        component: () => import('@/views/users/user/propertyList.vue'),
-        meta: {
-            requiresAuth: true,
-            breadcrumb: [
-                { name: 'Головна', route: '/', icon: 'pi pi-home' },
-                { name: 'Клієнти', route: '/pages/users/user/profile' },
-                { name: 'Список нерухомості', route: '/pages/users/user/propertyList' }
-            ]
-        }
-    },
+    }
 ]

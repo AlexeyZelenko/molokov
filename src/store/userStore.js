@@ -39,13 +39,14 @@ export const useUserStore = defineStore('user', {
             this.profile = { ...this.profile, ...data };
         },
 
-        async createPropertyList(name, clientName) {
+        async createPropertyList(name, clientName, id) {
             if (!auth.currentUser) return;
 
             const newList = {
                 userId: auth.currentUser.uid,
                 name,
                 clientName,
+                clientId: id,
                 properties: [],
                 createdAt: new Date()
             };
@@ -67,20 +68,6 @@ export const useUserStore = defineStore('user', {
                 id: doc.id,
                 ...doc.data()
             }));
-        },
-
-        async addPropertyToList(listId, propertyId) {
-            const listRef = doc(db, 'propertyLists', listId);
-            const listDoc = await getDoc(listRef);
-
-            if (listDoc.exists()) {
-                const properties = listDoc.data().properties || [];
-                if (!properties.includes(propertyId)) {
-                    await updateDoc(listRef, {
-                        properties: [...properties, propertyId]
-                    });
-                }
-            }
         },
 
         async fetchUserAndClients() {
@@ -246,5 +233,49 @@ export const useUserStore = defineStore('user', {
 
             this.clients = updatedClients; // Оновлюємо локальний стан
         },
+
+        async addPropertyToList(listId, propertyId) {
+            const listRef = doc(db, 'propertyLists', listId);
+            const listDoc = await getDoc(listRef);
+
+            if (listDoc.exists()) {
+                const properties = listDoc.data().properties || [];
+                if (!properties.includes(propertyId)) {
+                    await updateDoc(listRef, {
+                        properties: [...properties, propertyId]
+                    });
+                }
+            }
+        },
+
+        async addAdToPropertyList(listId, propertyId, ad) {
+            console.log('listId:', listId, 'ad:', ad);
+            const listRef = doc(db, 'propertyLists', listId);
+            const listDoc = await getDoc(listRef);
+
+            // Create property object with additional data
+            const propertyObject = {
+                propertyId,
+                category: ad.category,
+                subcategory: ad.subcategory
+            };
+
+            if (listDoc.exists()) {
+                const properties = listDoc.data().properties || [];
+
+                // Check if property already exists using propertyId
+                const propertyExists = properties.some(
+                    prop => typeof prop === 'object'
+                        ? prop.propertyId === propertyId
+                        : prop === propertyId
+                );
+
+                if (!propertyExists) {
+                    await updateDoc(listRef, {
+                        properties: [...properties, propertyObject]
+                    });
+                }
+            }
+        }
     }
 });

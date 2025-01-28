@@ -305,13 +305,7 @@ const model = ref([
                     {
                         label: 'Виборка для клієнтів',
                         icon: 'pi pi-fw pi-list',
-                        items: [
-                            {
-                                label: 'Списки',
-                                icon: 'pi pi-fw pi-list',
-                                to: '/categories/offices/sell'
-                            },
-                        ]
+                        to: '/users/user/propertyLists'
                     },
                 ]
             },

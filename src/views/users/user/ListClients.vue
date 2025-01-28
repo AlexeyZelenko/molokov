@@ -273,7 +273,7 @@ const selectedClient = ref({ ...emptyClient });
 
 const propertyTypes = [
     { label: 'Квартира', value: 'квартира' },
-    { label: 'Будинок', value: 'дом' },
+    { label: 'Будинок', value: 'дім' },
     { label: 'Комерція', value: 'комерція' },
     { label: 'Земля', value: 'земля' },
 ];

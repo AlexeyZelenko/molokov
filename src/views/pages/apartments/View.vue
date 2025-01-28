@@ -1,5 +1,8 @@
 <template>
-    <h1 class="font-semibold text-xl mb-2">{{ property.title }} {{ property.idProperty }}</h1>
+    <div class="flex items-center">
+        <h1 class="font-semibold text-xl mb-2 mr-4">{{ property.title }}</h1>
+    </div>
+
 
     <Fluid class="flex flex-col md:flex-row gap-8">
         <div class="md:w-1/2">
@@ -154,13 +157,11 @@
 
     </Fluid>
 
-    <Fluid class="flex mt-8">
-        <div class="field max-w-60">
-            <Button label="Назад" icon="pi pi-arrow-left" @click="goBack" />
-        </div>
-    </Fluid>
-
     <Toast />
+    <AddToListModal
+        :ad="property"
+        :propertyId="propertyId"
+    />
 </template>
 
 <script setup>
@@ -172,6 +173,7 @@ import { useToast } from 'primevue/usetoast';
 import Toast from 'primevue/toast';
 import GoogleMapAddApartment from '@/components/googleMap/AddApartment.vue';
 import { formatFirebaseTimestamp } from '@/utils/dateUtils';
+import AddToListModal from '@/components/AddToListModal.vue';
 
 const toast = useToast();
 const router = useRouter();
@@ -247,9 +249,6 @@ const loadPropertyData = async (category, subcategory, id) => {
     }
 };
 
-const goBack = () => {
-    router.go(-1); // Переход на предыдущую страницу
-};
 </script>
 
 <style scoped>
