@@ -1,11 +1,17 @@
 <template>
-    <Button label="Додати до списку" @click="openModal" />
+    <Button
+        label="Додати до списку"
+        @click.stop="openModal"
+        :loading="loading"
+    />
 
     <Dialog
         v-model:visible="isModalVisible"
         header="Додати до списку"
         :modal="true"
         :style="{ width: '90vw', maxWidth: '500px' }"
+        :closable="!isSubmitting"
+        :closeOnEscape="!isSubmitting"
         class="p-dialog-lg"
     >
         <div class="p-fluid">
@@ -17,6 +23,7 @@
                     :options="userStore.clients"
                     optionLabel="name"
                     placeholder="Оберіть клієнта"
+                    :disabled="isSubmitting"
                     class="w-full"
                 />
             </div>
@@ -31,6 +38,7 @@
                                 inputId="existingList"
                                 name="listOption"
                                 value="existing"
+                                :disabled="isSubmitting"
                             />
                             <label for="existingList" class="ml-2">Додати до існуючого списку</label>
                         </div>
@@ -40,6 +48,7 @@
                                 inputId="newList"
                                 name="listOption"
                                 value="new"
+                                :disabled="isSubmitting"
                             />
                             <label for="newList" class="ml-2">Створити новий список</label>
                         </div>
@@ -55,6 +64,7 @@
                         optionLabel="name"
                         placeholder="Оберіть список"
                         class="w-full"
+                        :disabled="isSubmitting"
                     />
                 </div>
 
@@ -67,11 +77,13 @@
                                 v-model="newListName"
                                 placeholder="Введіть назву списку"
                                 class="w-full mb-2"
+                                :disabled="isSubmitting"
                             />
                             <Button
                                 label="Створити список"
                                 @click="createNewList"
-                                :disabled="!newListName.trim()"
+                                :disabled="!newListName.trim() || isSubmitting"
+                                :loading="isSubmitting"
                                 class="w-full"
                             />
                         </div>
@@ -93,12 +105,14 @@
                 icon="pi pi-times"
                 @click="closeModal"
                 class="p-button-text"
+                :disabled="isSubmitting"
             />
             <Button
                 label="Додати до списку"
                 icon="pi pi-check"
                 @click="addToSelectedList"
-                :disabled="!canAdd"
+                :disabled="!canAdd || isSubmitting"
+                :loading="isSubmitting"
                 class="p-button-success"
             />
         </template>
@@ -130,11 +144,12 @@ const selectedClient = ref(null);
 const newListName = ref('');
 const loading = ref(false);
 const listOption = ref('existing'); // 'existing' або 'new'
+const isSubmitting = ref(false);
 
 // Computed properties
 const filteredLists = computed(() => {
     if (!selectedClient.value) return [];
-    return userStore.propertyLists.filter(list => list.clientId === selectedClient.value.id);
+    return userStore.propertyLists.filter(list => list.client.id === selectedClient.value.id);
 });
 
 const canAdd = computed(() => {
@@ -142,6 +157,14 @@ const canAdd = computed(() => {
 });
 
 // Methods
+const resetForm = () => {
+    selectedList.value = null;
+    selectedClient.value = null;
+    newListName.value = '';
+    listOption.value = 'existing';
+    isSubmitting.value = false;
+};
+
 const openModal = () => {
     isModalVisible.value = true;
 };
@@ -157,16 +180,19 @@ const closeModal = () => {
 const createNewList = async () => {
     if (!newListName.value.trim() || !selectedClient.value) return;
 
+    isSubmitting.value = true;
+
     try {
-        const list = await userStore.createPropertyList({
+        await userStore.createPropertyList({
             name: newListName.value.trim(),
-            clientId: selectedClient.value.id,
-            clientName: selectedClient.value.name,
+            client: selectedClient.value,
             properties: []
         });
+        await userStore.fetchPropertyLists();
 
-        selectedList.value = list;
+        listOption.value = 'existing';
         newListName.value = '';
+
         toast.add({
             severity: 'success',
             summary: 'Успішно',
@@ -180,22 +206,26 @@ const createNewList = async () => {
             detail: 'Не вдалося створити список',
             life: 3000
         });
+    } finally {
+        isSubmitting.value = false;
     }
 };
 
 const addToSelectedList = async () => {
+    if (!canAdd.value || isSubmitting.value) return;
+
+    isSubmitting.value = true;
     try {
         if (listOption.value === 'existing' && selectedList.value) {
-            console.log('Adding to existing list:', selectedList.value.id, props.ad);
             await userStore.addAdToPropertyList(selectedList.value.id, props.propertyId, props.ad);
         } else if (listOption.value === 'new' && newListName.value.trim()) {
-            const list = await userStore.createPropertyList({
+            await userStore.createPropertyList({
                 name: newListName.value.trim(),
                 clientId: selectedClient.value.id,
-                clientName: selectedClient.value.name,
+                client: selectedClient.value,
                 properties: [props.ad]
             });
-            selectedList.value = list;
+            await userStore.fetchPropertyLists();
         }
 
         toast.add({
@@ -212,12 +242,13 @@ const addToSelectedList = async () => {
             detail: 'Не вдалося додати оголошення до списку',
             life: 3000
         });
+    } finally {
+        isSubmitting.value = false;
     }
 };
 
 onMounted(async () => {
     loading.value = true;
-    console.log('Загрузка даних...', props.propertyId);
     try {
         await userStore.fetchUserAndClients();
         await userStore.fetchPropertyLists();

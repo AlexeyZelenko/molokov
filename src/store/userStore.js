@@ -11,6 +11,7 @@ import {
     getDocs,
     serverTimestamp,
     getFirestore,
+    deleteDoc
 } from 'firebase/firestore';
 
 export const useUserStore = defineStore('user', {
@@ -39,20 +40,33 @@ export const useUserStore = defineStore('user', {
             this.profile = { ...this.profile, ...data };
         },
 
-        async createPropertyList(name, clientName, id) {
+        async createPropertyList({name, client, properties}) {
+            console.log('name:', name, 'client:', client, 'properties:', properties);
             if (!auth.currentUser) return;
 
             const newList = {
                 userId: auth.currentUser.uid,
                 name,
-                clientName,
-                clientId: id,
-                properties: [],
+                client,
+                properties: properties || [],
                 createdAt: new Date()
             };
 
             const docRef = await addDoc(collection(db, 'propertyLists'), newList);
             this.propertyLists.push({ id: docRef.id, ...newList });
+        },
+
+        async deletePropertyList(listId) {
+            console.log('listId:', listId);
+            try {
+                const listRef = doc(db, 'propertyLists', listId);
+                await deleteDoc(listRef);
+                // Обновляем локальный список
+                this.propertyLists = this.propertyLists.filter(list => list.id !== listId);
+            } catch (error) {
+                console.error('Error deleting property list:', error);
+                throw error;
+            }
         },
 
         async fetchPropertyLists() {
