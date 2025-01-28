@@ -9,6 +9,7 @@ import otherRoutes from './other';
 import dashboardRoutes from './dashboard';
 import uikitRoutes from './uikit';
 import categoriesRoutes from './categories';
+import profileRoutes from './profile';
 
 export default [
     {
@@ -33,6 +34,7 @@ export default [
             ...commercialRoutes,
             ...landRoutes,
             ...otherRoutes,
+            ...profileRoutes
         ]
     },
     ...categoriesRoutes,

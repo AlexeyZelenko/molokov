@@ -279,6 +279,45 @@ const model = ref([
         ]
     },
     {
+        label: 'Профіль',
+        icon: 'pi pi-fw pi-briefcase',
+        items: [
+            {
+                label: 'Налаштування',
+                icon: 'pi pi-fw pi-cog',
+                items: [
+                    {
+                        label: 'Мій профіль',
+                        icon: 'pi pi-fw pi-user',
+                        to: '/users/user/profile'
+                    },
+                ]
+            },
+            {
+                label: 'Клієнти',
+                icon: 'pi pi-fw pi-users',
+                items: [
+                    {
+                        label: 'Таблиця клієнтів',
+                        icon: 'pi pi-fw pi-list',
+                        to: '/categories/houses/sell'
+                    },
+                    {
+                        label: 'Виборка для клієнтів',
+                        icon: 'pi pi-fw pi-list',
+                        items: [
+                            {
+                                label: 'Списки',
+                                icon: 'pi pi-fw pi-list',
+                                to: '/categories/offices/sell'
+                            },
+                        ]
+                    },
+                ]
+            },
+        ]
+    },
+    {
         label: 'UI Components',
         items: [
             { label: 'Form Layout', icon: 'pi pi-fw pi-id-card', to: '/uikit/formlayout' },
