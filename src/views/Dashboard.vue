@@ -10,7 +10,7 @@ import StatsWidget2 from '@/components/dashboard/StatsWidget2.vue';
 <template>
     <div class="grid grid-cols-12 gap-8">
         <StatsWidget />
-        <StatsWidget2 />
+<!--        <StatsWidget2 />-->
 
         <div class="col-span-12 xl:col-span-6">
             <RecentSalesWidget />
