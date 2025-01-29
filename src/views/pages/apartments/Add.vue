@@ -622,7 +622,6 @@ const resetForm = () => {
 
     try {
         resetObject(property, initialState);
-        console.log('Form reset successful');
     } catch (error) {
         console.error('Error resetting form:', error);
     }

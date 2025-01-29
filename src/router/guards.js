@@ -3,6 +3,7 @@ import { auth } from '@/firebase/config'
 import {
     onAuthStateChanged,
 } from 'firebase/auth'
+import { storeToRefs } from 'pinia'
 
 export const authGuard = async (to, from, next) => {
     const authStore = useAuthStore();
@@ -21,6 +22,7 @@ export const authGuard = async (to, from, next) => {
                     (user) => {
                         if (user) {
                             authStore.user = {
+                                ...authStore.user,
                                 uid: user.uid,
                                 email: user.email,
                                 displayName: user.displayName
@@ -38,6 +40,17 @@ export const authGuard = async (to, from, next) => {
             localStorage.removeItem('userRemembered');
             localStorage.removeItem('userEmail');
         }
+    }
+
+    // Для отладки
+    // const { user } = storeToRefs(authStore)
+    // console.log('Component user data:', authStore.userRole)
+    // authStore.debugUserState()
+
+
+    if (to.meta.requiresAdmin && authStore.userRole !== 'admin') {
+        next('/');
+        return;
     }
 
     // Standard authentication check

@@ -10,6 +10,7 @@ import dashboardRoutes from './dashboard';
 import uikitRoutes from './uikit';
 import categoriesRoutes from './categories';
 import profileRoutes from './profile';
+import adminRoutes from './admin';
 
 export default [
     {
@@ -34,7 +35,8 @@ export default [
             ...commercialRoutes,
             ...landRoutes,
             ...otherRoutes,
-            ...profileRoutes
+            ...profileRoutes,
+            ...adminRoutes
         ]
     },
     ...categoriesRoutes,

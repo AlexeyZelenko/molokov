@@ -402,7 +402,6 @@ const removeImage = async (imageUrl) => {
         // Remove from Firestore document
         if (id) {
             const propertyDocRef = doc(db, `properties/${category}/${subcategory}`, id);
-            console.log('Видалення фото з Firestore:', imageUrl);
             await updateDoc(propertyDocRef, {
                 images: arrayRemove(imageUrl)
             });

@@ -4,8 +4,8 @@ import { useAuthStore } from '@/store/authFirebase';
 
 const authStore = useAuthStore();
 
-onMounted(() => {
-    authStore.checkAuthPersistence();
+onMounted(async () => {
+    await authStore.checkAuthPersistence();
 });
 </script>
 

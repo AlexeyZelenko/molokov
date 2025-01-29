@@ -189,8 +189,6 @@ const viewList = async (list) => {
             properties: getTableData(list), // Предполагаем, что getTableData определена
         };
 
-        console.log('Данные для отображения:', data);
-
         // Извлекаем propertyIds
         const propertyIds = properties.map(prop => prop.propertyId).filter(Boolean);
 

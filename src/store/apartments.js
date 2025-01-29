@@ -374,7 +374,6 @@ export const useApartmentsStore = defineStore('apartments', {
     },
     actions: {
         async updateLastPropertyId(newId) {
-            console.log('Обновление lastPropertyId...', newId);
             const db = getFirestore();
             const configDocRef = doc(db, 'config', 'NSrSG9Ujs2YYYjPgWsF1'); // Укажите путь к документу
 
@@ -382,7 +381,6 @@ export const useApartmentsStore = defineStore('apartments', {
                 await updateDoc(configDocRef, {
                     lastPropertyId: Number(newId)
                 });
-                console.log(`lastPropertyId обновлен до ${newId}`);
             } catch (error) {
                 console.error('Ошибка обновления lastPropertyId:', error);
             }

@@ -36,7 +36,6 @@ const currentPage = ref(1);
 const pageSize = 2;
 
 const showProperty = (property) => {
-    console.log('property', property);
     router.push(`/pages/apartments/view/${property.id}?category=${property.category.code}&subcategory=${property.subcategory.code}`);
 };
 const editProperty = (property) => {
@@ -79,16 +78,9 @@ const prevPage = () => {
     }
 };
 
-const category2 = computed(() => route.params.category);
-const subcategory2 = computed(() => route.params.subcategory);
 // Загрузка данных при монтировании компонента
 onMounted(() => {
     loadPage();
-});
-
-onBeforeMount(() => {
-    console.log("category2", category2.value);
-    console.log("subcategory2", subcategory2.value);
 });
 
 watch(() => store.properties, (newProperties) => {

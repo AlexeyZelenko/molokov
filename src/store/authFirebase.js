@@ -24,7 +24,10 @@ export const useAuthStore = defineStore('auth', () => {
     const toast = useToast()
 
     const isAuthenticated = computed(() => auth.currentUser)
-    const userRole = computed(() => auth.currentUser?.role || 'guest')
+    const userRole = computed(() => {
+        if (!user.value) return 'guest'
+        return user.value.role || 'guest'
+    })
 
     async function register({ email, password, name, phones, role = 'customer', remember = false }) {
         try {
@@ -93,7 +96,11 @@ export const useAuthStore = defineStore('auth', () => {
             const { user: authUser } = await signInWithEmailAndPassword(auth, email, password);
 
             const userDoc = await getDoc(doc(db, 'users', authUser.uid));
-            console.log(userDoc.data());
+
+            if (!userDoc.exists()) {
+                console.error('User document not found in Firestore');
+                return;
+            }
 
             // Enhanced user object with additional details
             user.value = {
@@ -102,7 +109,8 @@ export const useAuthStore = defineStore('auth', () => {
                 displayName: authUser.displayName,
                 emailVerified: authUser.emailVerified,
                 role: userDoc.data().role || 'customer',
-                phoneNumbers: userDoc.data().phones || null
+                phoneNumbers: userDoc.data().phones || null,
+                avatar: userDoc.data().avatar || null
             };
 
             // Store user info in localStorage for persistence
@@ -141,7 +149,6 @@ export const useAuthStore = defineStore('auth', () => {
                     try {
                         // Fetch full user data from Firestore
                         const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
-                        console.log(">>>", currentUser.uid, userDoc.data());
 
                         if (userDoc.exists()) {
                             user.value = {
@@ -150,7 +157,8 @@ export const useAuthStore = defineStore('auth', () => {
                                 displayName: currentUser.displayName,
                                 emailVerified: currentUser.emailVerified,
                                 role: userDoc.data().role || 'customer',
-                                phones: userDoc.data().phones || null
+                                phones: userDoc.data().phones || null,
+                                avatar: userDoc.data().avatar || null
                             };
                         }
                     } catch (error) {
@@ -197,41 +205,75 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     async function initializeAuth() {
+        console.log('Initializing auth...');
         const auth = getAuth();
-        onAuthStateChanged(auth, async (currentUser) => {
-            if (currentUser) {
-                try {
-                    const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
 
-                    if (userDoc.exists()) {
-                        user.value = {
-                            uid: currentUser.uid,
-                            email: currentUser.email,
-                            displayName: currentUser.displayName,
-                            username: currentUser.displayName,
-                            role: userDoc.data().role || 'customer',
-                            phones: userDoc.data().phones || null,
-                            emailVerified: currentUser.emailVerified
-                        };
-                    } else {
-                        // Fallback if no Firestore document exists
-                        user.value = {
-                            uid: currentUser.uid,
-                            email: currentUser.email,
-                            displayName: currentUser.displayName,
-                            username: currentUser.displayName,
-                            role: 'customer',
-                            emailVerified: currentUser.emailVerified
-                        };
+        return new Promise((resolve) => {
+            onAuthStateChanged(auth, async (currentUser) => {
+                console.log('Auth state changed. Current user:', currentUser);
+
+                if (currentUser) {
+                    try {
+                        const userDocRef = doc(db, 'users', currentUser.uid);
+                        console.log('Fetching user document for:', currentUser.uid);
+
+                        const userDoc = await getDoc(userDocRef);
+                        console.log('Firestore user data:', userDoc.data());
+
+                        if (userDoc.exists()) {
+                            const userData = {
+                                uid: currentUser.uid,
+                                email: currentUser.email,
+                                displayName: currentUser.displayName,
+                                username: currentUser.displayName,
+                                role: userDoc.data().role || 'customer',
+                                phones: userDoc.data().phones || null,
+                                emailVerified: currentUser.emailVerified
+                            };
+
+                            console.log('!!!Setting user data:', userData);
+                            user.value = userData;
+                            resolve(userData);
+                        } else {
+                            console.warn('No Firestore document exists for user:', currentUser.uid);
+                            // Создаем базовый документ пользователя если его нет
+                            const basicUserData = {
+                                uid: currentUser.uid,
+                                email: currentUser.email,
+                                displayName: currentUser.displayName,
+                                role: 'customer',
+                                phones: [],
+                                createdAt: serverTimestamp(),
+                                lastLogin: serverTimestamp()
+                            };
+
+                            await setDoc(doc(db, 'users', currentUser.uid), basicUserData);
+                            user.value = basicUserData;
+                            resolve(basicUserData);
+                        }
+                    } catch (error) {
+                        console.error('Error in initializeAuth:', error);
+                        user.value = null;
+                        resolve(null);
                     }
-                } catch (error) {
-                    console.error('Error initializing auth:', error);
+                } else {
+                    console.log('No authenticated user');
                     user.value = null;
+                    resolve(null);
                 }
-            } else {
-                user.value = null;
-            }
+            });
         });
+    }
+
+    function debugUserState() {
+        console.log('Current user state:', user.value);
+        console.log('Current auth user:', auth.currentUser);
+        if (auth.currentUser) {
+            getDoc(doc(db, 'users', auth.currentUser.uid))
+                .then(doc => {
+                    console.log('Current Firestore data:', doc.data());
+                });
+        }
     }
 
     async function getCurrentUser() {
@@ -296,6 +338,7 @@ export const useAuthStore = defineStore('auth', () => {
         resetPassword,
         initializeAuth,
         checkAuthPersistence,
-        getCurrentUser
+        getCurrentUser,
+        debugUserState
     }
 })

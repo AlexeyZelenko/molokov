@@ -174,6 +174,7 @@ const model = ref([
     {
         label: 'Нерухомість (admin)',
         icon: 'pi pi-fw pi-briefcase',
+        roles: ['admin', 'customer'],
         items: [
             {
                 label: 'Квартири',
@@ -281,6 +282,7 @@ const model = ref([
     {
         label: 'Профіль',
         icon: 'pi pi-fw pi-briefcase',
+        roles: ['admin', 'customer'],
         items: [
             {
                 label: 'Налаштування',
@@ -312,7 +314,26 @@ const model = ref([
         ]
     },
     {
+        label: 'Admin',
+        icon: 'pi pi-fw pi-briefcase',
+        roles: ['admin'],
+        items: [
+            {
+                label: 'Користувачи',
+                icon: 'pi pi-fw pi-users',
+                items: [
+                    {
+                        label: 'Таблиця',
+                        icon: 'pi pi-fw pi-list',
+                        to: '/users/admin/customers'
+                    },
+                ]
+            },
+        ]
+    },
+    {
         label: 'UI Components',
+        roles: ['admin'],
         items: [
             { label: 'Form Layout', icon: 'pi pi-fw pi-id-card', to: '/uikit/formlayout' },
             { label: 'Input', icon: 'pi pi-fw pi-check-square', to: '/uikit/input' },
@@ -334,6 +355,7 @@ const model = ref([
     {
         label: 'Pages',
         icon: 'pi pi-fw pi-briefcase',
+        roles: ['admin'],
         to: '/pages',
         items: [
             {
@@ -381,6 +403,7 @@ const model = ref([
     },
     {
         label: 'Hierarchy',
+        roles: ['admin'],
         items: [
             {
                 label: 'Submenu 1',
@@ -425,6 +448,7 @@ const model = ref([
     },
     {
         label: 'Get Started',
+        roles: ['admin'],
         items: [
             {
                 label: 'Documentation',
@@ -443,20 +467,35 @@ const model = ref([
 
 const store = useAuthStore();
 const user = computed(() => store.user);
-
-onMounted(() => {
-    console.log('user', user);
-})
 </script>
 
 <template>
-    <div v-if="user" class="text-green-500 my-4">
-        <i class="pi pi-user mr-2"></i>
-        {{user?.displayName}}
+    <div v-if="user" class="flex text-green-500 my-4">
+        <div class="flex flex-col justify-center items-center space-x-6 mb-2">
+            <div class="relative">
+                <img
+                    v-if="user.avatar"
+                    :src="user.avatar"
+                    alt="Аватар"
+                    class="w-24 h-24 rounded-full object-cover border-4 border-blue-100"
+                />
+                <div v-else class="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center border-4 border-blue-100">
+                    <span class="text-gray-500 text-xl">👤</span>
+                </div>
+            </div>
+            <div>
+                <p class="text-lg font-semibold">{{ user.displayName }}</p>
+            </div>
+        </div>
     </div>
     <ul class="layout-menu">
         <template v-for="(item, i) in model" :key="item">
-            <app-menu-item v-if="!item.separator" :item="item" :index="i"></app-menu-item>
+            <app-menu-item
+                v-if="!item.separator"
+                :item="item"
+                :index="i"
+                :user="user"
+            ></app-menu-item>
             <li v-if="item.separator" class="menu-separator"></li>
         </template>
     </ul>

@@ -478,8 +478,6 @@ const saveProperty = async ({ valid }) => {
             acc[current.key] = current;  // Используем `key` как ключ, а объект как значение
             return acc;
         }, {});
-        console.log(utilitiesObject);
-        console.log(property.value);
 
         try {
             saving.value = true;

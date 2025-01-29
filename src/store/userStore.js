@@ -11,7 +11,8 @@ import {
     getDocs,
     serverTimestamp,
     getFirestore,
-    deleteDoc
+    deleteDoc,
+    setDoc
 } from 'firebase/firestore';
 
 export const useUserStore = defineStore('user', {
@@ -21,6 +22,8 @@ export const useUserStore = defineStore('user', {
         user: null,
         clients: [],
         loading: false,
+        error: null,
+        users: []
     }),
 
     actions: {
@@ -314,6 +317,57 @@ export const useUserStore = defineStore('user', {
                         properties: [...properties, propertyObject]
                     });
                 }
+            }
+        },
+
+        async fetchUsers(){
+            try {
+                this.loading = true;
+                this.error = null;
+                const querySnapshot = await getDocs(collection(db, 'users'));
+                this.users = querySnapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+            } catch (err) {
+                console.error('Failed to fetch users:', err);
+                this.error = err.message;
+                throw err;
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        async updateUserRole(userId, newRole) {
+            try {
+                this.loading = true;
+                this.error = null;
+
+                // First check if the user document exists
+                const userRef = doc(db, 'users', userId);
+                const userDoc = await getDoc(userRef);
+
+                if (!userDoc.exists()) {
+                    // If the document doesn't exist, create it with the new role
+                    await setDoc(userRef, {
+                        role: newRole,
+                        email: this.users.find(u => u.id === userId)?.email || ''
+                    });
+                } else {
+                    // Update the existing document
+                    await updateDoc(userRef, {
+                        role: newRole
+                    });
+                }
+
+                // Refresh the users list
+                await this.fetchUsers();
+            } catch (err) {
+                console.error('Failed to update role:', err);
+                this.error = err.message;
+                throw new Error(err.message || 'Failed to update user role');
+            } finally {
+                this.loading = false;
             }
         }
     }

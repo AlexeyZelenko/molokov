@@ -522,8 +522,4 @@ const utilities = computed(() => {
     return { electricity, water, sewerage, gas, heating, internet, TV };
 });
 
-onMounted(() => {
-    console.log('properties', properties.value);
-});
-
 </script>
