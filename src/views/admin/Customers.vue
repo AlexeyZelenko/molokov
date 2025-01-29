@@ -32,8 +32,10 @@
                             class="border rounded px-2 py-1"
                             :disabled="updating"
                         >
-                            <option value="user">User</option>
-                            <option value="admin">Admin</option>
+                            <option value="user">user</option>
+                            <option value="admin">admin</option>
+                            <option value="admin">customer</option>
+                            <option value="admin">manager</option>
                         </select>
                     </td>
                 </tr>

@@ -6,7 +6,6 @@ export default [
         name: 'dashboard',
         component: () => import('@/views/Dashboard.vue'),
         meta: {
-            requiresAuth: true,
             breadcrumb: [
                 { name: 'Головна', route: '/', icon: 'pi pi-home' },
                 { name: 'Dashboard', route: '/dashboard' }

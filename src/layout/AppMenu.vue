@@ -7,7 +7,10 @@ import AppMenuItem from './AppMenuItem.vue';
 const model = ref([
     {
         label: 'Головна',
-        items: [{ label: 'Головна', icon: 'pi pi-fw pi-home', to: '/landing' }]
+        items: [
+            { label: 'Головна', icon: 'pi pi-fw pi-home', to: '/landing' },
+            { label: 'Аналітика', icon: 'pi pi-fw pi-home', to: '/dashboard' }
+        ]
     },
     {
         label: 'Нерухомість',

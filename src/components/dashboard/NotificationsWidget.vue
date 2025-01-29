@@ -1,78 +1,179 @@
 <script setup>
-import { ref } from 'vue';
+import { useLayout } from '@/layout/composables/layout';
+import { computed, onMounted, ref, watch } from 'vue';
+import { useAnalyticsStore } from '@/store/analytics';
 
-const menu = ref(null);
+const analyticsStore = useAnalyticsStore();
+const { getPrimary, getSurface, isDarkTheme } = useLayout();
 
-const items = ref([
-    { label: 'Add New', icon: 'pi pi-fw pi-plus' },
-    { label: 'Remove', icon: 'pi pi-fw pi-trash' }
-]);
+const chartData = ref(null);
+const chartOptions = ref(null);
+
+const sell = computed(() => analyticsStore.properties['sell'] || []);
+
+const priceStats = computed(() => {
+    const stats = {
+        1: { min: Infinity, max: 0, avg: 0, count: 0, sum: 0},
+        2: {min: Infinity, max: 0, avg: 0, count: 0, sum: 0},
+        3: {min: Infinity, max: 0, avg: 0, count: 0, sum: 0},
+        4: {min: Infinity, max: 0, avg: 0, count: 0, sum: 0}
+    };
+
+    if (!sell.value) return stats;
+
+    sell.value.forEach(apartment => {
+        const rooms = apartment.rooms?.all;
+        const price = apartment.priceUSD;
+
+        if (rooms >= 1 && rooms <= 4 && price) {
+            stats[rooms].min = Math.min(stats[rooms].min, price);
+            stats[rooms].max = Math.max(stats[rooms].max, price);
+            stats[rooms].sum += price;
+            stats[rooms].count++;
+        }
+    });
+
+    Object.keys(stats).forEach(rooms => {
+        if (stats[rooms].count > 0) {
+            stats[rooms].avg = Math.round(stats[rooms].sum / stats[rooms].count);
+        }
+        if (stats[rooms].min === Infinity) {
+            stats[rooms].min = 0;
+        }
+    });
+
+    return stats;
+});
+
+function setChartData() {
+    return {
+        labels: ['1 кімната', '2 кімнати', '3 кімнати', '4 кімнати'],
+        datasets: [
+            {
+                type: 'bar',
+                label: 'Мінімальна ціна',
+                backgroundColor: '#2ECC71', // Яркий зеленый
+                data: [
+                    priceStats.value[1].min,
+                    priceStats.value[2].min,
+                    priceStats.value[3].min,
+                    priceStats.value[4].min
+                ],
+                barThickness: 20
+            },
+            {
+                type: 'bar',
+                label: 'Середня ціна',
+                backgroundColor: '#3498DB', // Яркий синий
+                data: [
+                    priceStats.value[1].avg,
+                    priceStats.value[2].avg,
+                    priceStats.value[3].avg,
+                    priceStats.value[4].avg
+                ],
+                barThickness: 20
+            },
+            {
+                type: 'bar',
+                label: 'Максимальна ціна',
+                backgroundColor: '#E74C3C', // Яркий красный
+                data: [
+                    priceStats.value[1].max,
+                    priceStats.value[2].max,
+                    priceStats.value[3].max,
+                    priceStats.value[4].max
+                ],
+                borderRadius: {
+                    topLeft: 8,
+                    topRight: 8
+                },
+                barThickness: 20
+            }
+        ]
+    };
+}
+
+function setChartOptions() {
+    const documentStyle = getComputedStyle(document.documentElement);
+    const textColor = documentStyle.getPropertyValue('--text-color');
+    const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
+    const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
+
+    return {
+        maintainAspectRatio: false,
+        aspectRatio: 0.8,
+        plugins: {
+            legend: {
+                display: true,
+                position: 'bottom',
+                labels: {
+                    color: textColor,
+                    usePointStyle: true,
+                    font: {
+                        weight: 500
+                    }
+                }
+            },
+            tooltip: {
+                callbacks: {
+                    label: function (context) {
+                        return `${context.dataset.label}: $${context.raw.toLocaleString()}`;
+                    }
+                }
+            }
+        },
+        scales: {
+            x: {
+                stacked: false,
+                ticks: {
+                    color: textColorSecondary,
+                    font: {
+                        weight: 500
+                    }
+                },
+                grid: {
+                    display: false,
+                    drawBorder: false
+                }
+            },
+            y: {
+                stacked: false,
+                ticks: {
+                    color: textColorSecondary,
+                    font: {
+                        weight: 500
+                    },
+                    callback: function (value) {
+                        return '$' + value.toLocaleString();
+                    }
+                },
+                grid: {
+                    color: surfaceBorder,
+                    drawBorder: false
+                }
+            }
+        }
+    };
+}
+
+watch([getPrimary, getSurface, isDarkTheme], () => {
+    chartData.value = setChartData();
+    chartOptions.value = setChartOptions();
+});
+
+watch(priceStats, () => {
+    chartData.value = setChartData();
+}, {deep: true});
+
+onMounted(() => {
+    chartData.value = setChartData();
+    chartOptions.value = setChartOptions();
+});
 </script>
 
 <template>
-    <div class="card">
-        <div class="flex items-center justify-between mb-6">
-            <div class="font-semibold text-xl">Notifications</div>
-            <div>
-                <Button icon="pi pi-ellipsis-v" class="p-button-text p-button-plain p-button-rounded" @click="$refs.menu.toggle($event)"></Button>
-                <Menu ref="menu" popup :model="items" class="!min-w-40"></Menu>
-            </div>
-        </div>
-
-        <span class="block text-muted-color font-medium mb-4">TODAY</span>
-        <ul class="p-0 mx-0 mt-0 mb-6 list-none">
-            <li class="flex items-center py-2 border-b border-surface">
-                <div class="w-12 h-12 flex items-center justify-center bg-blue-100 dark:bg-blue-400/10 rounded-full mr-4 shrink-0">
-                    <i class="pi pi-dollar !text-xl text-blue-500"></i>
-                </div>
-                <span class="text-surface-900 dark:text-surface-0 leading-normal"
-                    >Richard Jones
-                    <span class="text-surface-700 dark:text-surface-100">has purchased a blue t-shirt for <span class="text-primary font-bold">$79.00</span></span>
-                </span>
-            </li>
-            <li class="flex items-center py-2">
-                <div class="w-12 h-12 flex items-center justify-center bg-orange-100 dark:bg-orange-400/10 rounded-full mr-4 shrink-0">
-                    <i class="pi pi-download !text-xl text-orange-500"></i>
-                </div>
-                <span class="text-surface-700 dark:text-surface-100 leading-normal">Your request for withdrawal of <span class="text-primary font-bold">$2500.00</span> has been initiated.</span>
-            </li>
-        </ul>
-
-        <span class="block text-muted-color font-medium mb-4">YESTERDAY</span>
-        <ul class="p-0 m-0 list-none mb-6">
-            <li class="flex items-center py-2 border-b border-surface">
-                <div class="w-12 h-12 flex items-center justify-center bg-blue-100 dark:bg-blue-400/10 rounded-full mr-4 shrink-0">
-                    <i class="pi pi-dollar !text-xl text-blue-500"></i>
-                </div>
-                <span class="text-surface-900 dark:text-surface-0 leading-normal"
-                    >Keyser Wick
-                    <span class="text-surface-700 dark:text-surface-100">has purchased a black jacket for <span class="text-primary font-bold">$59.00</span></span>
-                </span>
-            </li>
-            <li class="flex items-center py-2 border-b border-surface">
-                <div class="w-12 h-12 flex items-center justify-center bg-pink-100 dark:bg-pink-400/10 rounded-full mr-4 shrink-0">
-                    <i class="pi pi-question !text-xl text-pink-500"></i>
-                </div>
-                <span class="text-surface-900 dark:text-surface-0 leading-normal"
-                    >Jane Davis
-                    <span class="text-surface-700 dark:text-surface-100">has posted a new questions about your product.</span>
-                </span>
-            </li>
-        </ul>
-        <span class="block text-muted-color font-medium mb-4">LAST WEEK</span>
-        <ul class="p-0 m-0 list-none">
-            <li class="flex items-center py-2 border-b border-surface">
-                <div class="w-12 h-12 flex items-center justify-center bg-green-100 dark:bg-green-400/10 rounded-full mr-4 shrink-0">
-                    <i class="pi pi-arrow-up !text-xl text-green-500"></i>
-                </div>
-                <span class="text-surface-900 dark:text-surface-0 leading-normal">Your revenue has increased by <span class="text-primary font-bold">%25</span>.</span>
-            </li>
-            <li class="flex items-center py-2 border-b border-surface">
-                <div class="w-12 h-12 flex items-center justify-center bg-purple-100 dark:bg-purple-400/10 rounded-full mr-4 shrink-0">
-                    <i class="pi pi-heart !text-xl text-purple-500"></i>
-                </div>
-                <span class="text-surface-900 dark:text-surface-0 leading-normal"><span class="text-primary font-bold">12</span> users have added your products to their wishlist.</span>
-            </li>
-        </ul>
+    <div v-if="sell.length" class="card">
+        <div class="font-semibold text-xl mb-4">Аналіз цін квартир</div>
+        <Chart type="bar" :data="chartData" :options="chartOptions" class="h-80"/>
     </div>
 </template>

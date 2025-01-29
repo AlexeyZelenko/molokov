@@ -77,15 +77,15 @@ const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
                 <div class="layout-topbar-menu-content">
                     <button type="button" class="layout-topbar-action">
                         <i class="pi pi-calendar"></i>
-                        <span>Calendar</span>
+                        <span>Календар</span>
                     </button>
                     <button type="button" class="layout-topbar-action">
                         <i class="pi pi-inbox"></i>
-                        <span>Messages</span>
+                        <span>Сповіщення</span>
                     </button>
-                    <button type="button" class="layout-topbar-action">
+                    <button @click="handleLogout" type="button" class="layout-topbar-action">
                         <i class="pi pi-user"></i>
-                        <span>Profile</span>
+                        <span>Профіль</span>
                     </button>
                     <button v-if="user" @click="handleLogout" type="button" class="layout-topbar-action">
                         <i class="pi pi-sign-out"></i>
