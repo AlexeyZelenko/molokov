@@ -1,18 +1,29 @@
-<script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
+<script setup>
+import {ref, onMounted, watch, reactive} from 'vue';
 import { useUserStore } from '@/store/userStore';
+import { useApartmentsStore } from '@/store/apartments';
+import { usePropertiesStore } from '@/store/propertiesCategories';
 import { useToast } from 'primevue/usetoast';
+import Select from "primevue/select";
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const toast = useToast();
 const loading = ref(false);
 const userStore = useUserStore();
+const apartmentsStore = useApartmentsStore();
+const propertiesStore = usePropertiesStore();
 const displayModal = ref(false);
 const newList = ref({
     name: '',
     client: '',
+    category: '',
+    subcategory: ''
 });
 const clients = ref([]);
 const selectedClient = ref(null);
+
+let dropdowns = reactive([]);
 
 // Table columns configuration
 const columns = [
@@ -48,6 +59,7 @@ onMounted(async () => {
     try {
         await userStore.fetchUserAndClients();
         await userStore.fetchPropertyLists();
+        dropdowns = apartmentsStore.dropdowns;
         clients.value = userStore.clients;
     } catch (error) {
         toast.add({
@@ -63,17 +75,19 @@ onMounted(async () => {
 
 // Create new list
 const createNewList = async () => {
-    if (!newList.value.name || !newList.value.client) return;
+    if (!newList.value.name || !newList.value.client || !newList.value.category || !newList.value.subcategory) return;
 
     try {
         await userStore.createPropertyList({
             name: newList.value.name,
             client: newList.value.client,
-            properties: []
+            properties: [],
+            category: newList.value.category,
+            subcategory: newList.value.subcategory
         });
 
         displayModal.value = false;
-        newList.value = { name: '', client: '' };
+        newList.value = { name: '', client: '', category: '', subcategory: '' };
 
         toast.add({
             severity: 'success',
@@ -125,13 +139,13 @@ const deleteList = async () => {
 
 const openModal = () => {
     displayModal.value = true;
-    newList.value = { name: '', client: '' };
+    newList.value = { name: '', client: '', category: '', subcategory: '' };
     selectedClient.value = null;
 };
 
 const closeModal = () => {
     displayModal.value = false;
-    newList.value = { name: '', client: '' };
+    newList.value = { name: '', client: '', category: '', subcategory: '' };
     selectedClient.value = null;
 };
 
@@ -154,6 +168,48 @@ const getTableData = (list) => {
         }
         return 'Формат не визначено';
     }).join(', ');
+};
+
+const viewList = async (list) => {
+    try {
+        // Деструктуризация объекта list
+        const { client, name, category, subcategory, properties } = list;
+
+        // Проверка наличия обязательных данных
+        if (!client || !category || !subcategory || !properties) {
+            throw new Error('Недостаточно данных для отображения списка');
+        }
+
+        // Формируем объект data
+        const data = {
+            client: client.name,
+            name,
+            category,
+            subcategory,
+            properties: getTableData(list), // Предполагаем, что getTableData определена
+        };
+
+        console.log('Данные для отображения:', data);
+
+        // Извлекаем propertyIds
+        const propertyIds = properties.map(prop => prop.propertyId).filter(Boolean);
+
+        // Проверяем, есть ли propertyIds для запроса
+        if (propertyIds.length > 0) {
+            await propertiesStore.getProperties({
+                category: category.code,
+                subcategory: subcategory.code
+            }, propertyIds);
+        } else {
+            console.warn('Список propertyIds пуст, запрос не выполнен');
+        }
+
+        // Переход на страницу категории и субкатегории
+        router.push(`/categories/${category.code}/${subcategory.code}?listId=${list.id}`);
+    } catch (error) {
+        console.error('Ошибка при отображении списка:', error.message);
+        // Можно добавить уведомление пользователю об ошибке
+    }
 };
 </script>
 
@@ -180,13 +236,12 @@ const getTableData = (list) => {
         >
             <Column field="client.name" header="Клієнт" sortable />
             <Column field="name" header="Назва списку" sortable />
+            <Column field="category.name" header="Категорія" sortable />
+            <Column field="subcategory.name" header="Тип" sortable />
             <Column header="Об'єкти">
                 <template #body="slotProps">
                     <div v-if="slotProps.data.properties?.length > 0">
-                        {{ slotProps.data.properties.length }} об'єктів:
-                        <div class="text-sm text-gray-600 mt-1">
-                            {{ getTableData(slotProps.data) }}
-                        </div>
+                        {{ slotProps.data.properties.length }} об'єкта(-ів)
                     </div>
                     <div v-else>
                         Немає об'єктів
@@ -198,7 +253,7 @@ const getTableData = (list) => {
                     <Button
                         icon="pi pi-eye"
                         class="p-button-rounded p-button-info mr-2"
-                        @click="$router.push(`/categories/user/property-list/${slotProps.data.id}`)"
+                        @click="viewList(slotProps.data)"
                         tooltip="Переглянути список"
                     />
                     <Button
@@ -243,6 +298,25 @@ const getTableData = (list) => {
                         required
                     />
                 </div>
+
+                <div class="font-semibold text-xl">Тип нерухомості</div>
+                <Select
+                    id="categoryProperty"
+                    name="categoryProperty"
+                    v-model="newList.category"
+                    :options="dropdowns.category"
+                    optionLabel="name"
+                    placeholder="Select" required
+                />
+
+                <div class="font-semibold text-xl">Мета використання</div>
+                <Select
+                    name="subcategoryProperty"
+                    v-model="newList.subcategory"
+                    :options="dropdowns.subcategory"
+                    optionLabel="name"
+                    placeholder="Select"
+                    required/>
 
                 <!-- Client details accordion -->
                 <div v-if="selectedClient" class="mt-4">

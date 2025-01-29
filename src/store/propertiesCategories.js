@@ -2,17 +2,12 @@ import { defineStore } from 'pinia';
 import { db } from '@/firebase/config';
 import {
     collection,
-    addDoc,
     query,
     where,
     getDocs,
-    updateDoc,
-    deleteDoc,
-    doc,
     orderBy,
     limit,
-    startAfter,
-    increment,
+    documentId
 } from 'firebase/firestore';
 
 export const usePropertiesStore = defineStore('properties', {
@@ -173,7 +168,7 @@ export const usePropertiesStore = defineStore('properties', {
             return this.determineComponent(category, subcategory);
         },
 
-        async getProperties(filters = {}) {
+        async getProperties(filters = {}, specificIds = []) {
             try {
                 this.loading = true;
                 this.error = null;
@@ -184,107 +179,129 @@ export const usePropertiesStore = defineStore('properties', {
                 }
 
                 this.getComponentFilters(filters);
-
-                // Получаем базовую коллекцию
                 const collectionPath = `properties/${filters.category}/${filters.subcategory}`;
-                let q = collection(db, collectionPath);
                 const constraints = [];
 
-                // Обработка фильтров
-                for (const [key, value] of Object.entries(filters)) {
-                    // Пропускаем служебные поля и пустые значения
-                    if (['category', 'subcategory'].includes(key) ||
-                        value === undefined ||
-                        value === null ||
-                        value === '') {
-                        continue;
+                // Если переданы конкретные ID, используем их для фильтрации
+                if (specificIds && specificIds.length > 0) {
+                    const BATCH_SIZE = 10;
+                    const batches = [];
+
+                    // Разбиваем массив ID на группы
+                    for (let i = 0; i < specificIds.length; i += BATCH_SIZE) {
+                        batches.push(specificIds.slice(i, i + BATCH_SIZE));
                     }
 
-                    // Обработка вложенных объектов
-                    if (typeof value === 'object' && !Array.isArray(value)) {
-                        for (const [nestedKey, nestedValue] of Object.entries(value)) {
-                            if (nestedValue !== undefined && nestedValue !== null && nestedValue !== '') {
-                                constraints.push(where(`${key}.${nestedKey}`, '==', nestedValue));
-                            }
+                    // Выполняем запросы для каждой группы ID
+                    const results = await Promise.all(
+                        batches.map(async (batchIds) => {
+                            const q = query(
+                                collection(db, collectionPath),
+                                where(documentId(), 'in', batchIds),
+                                orderBy('createdAt', 'desc')
+                            );
+                            const snapshot = await getDocs(q);
+                            return snapshot.docs;
+                        })
+                    );
+
+                    // Обрабатываем результаты
+                    this.properties = results.flat().map(doc => ({
+                        id: doc.id,
+                        ...this.processDocumentData(doc.data())
+                    }));
+
+                } else {
+                    // Обычный поиск с фильтрами
+                    for (const [key, value] of Object.entries(filters)) {
+                        if (['category', 'subcategory'].includes(key) ||
+                            value === undefined ||
+                            value === null ||
+                            value === '') {
+                            continue;
                         }
-                        continue;
+
+                        if (typeof value === 'object' && !Array.isArray(value)) {
+                            for (const [nestedKey, nestedValue] of Object.entries(value)) {
+                                if (nestedValue !== undefined && nestedValue !== null && nestedValue !== '') {
+                                    constraints.push(where(`${key}.${nestedKey}`, '==', nestedValue));
+                                }
+                            }
+                            continue;
+                        }
+
+                        if (Array.isArray(value) && value.length > 0) {
+                            constraints.push(where(key, 'array-contains-any', value));
+                            continue;
+                        }
+
+                        if (typeof value !== 'object') {
+                            constraints.push(where(key, '==', value));
+                        }
                     }
 
-                    // Обработка массивов
-                    if (Array.isArray(value) && value.length > 0) {
-                        constraints.push(where(key, 'array-contains-any', value));
-                        continue;
-                    }
+                    constraints.push(orderBy('createdAt', 'desc'));
+                    constraints.push(limit(100));
 
-                    // Обработка обычных значений
-                    if (typeof value !== 'object') {
-                        constraints.push(where(key, '==', value));
-                    }
+                    const q = query(collection(db, collectionPath), ...constraints);
+                    const querySnapshot = await getDocs(q);
+
+                    this.properties = querySnapshot.docs.map(doc => ({
+                        id: doc.id,
+                        ...this.processDocumentData(doc.data())
+                    }));
                 }
 
-                // Добавляем сортировку
-                constraints.push(orderBy('createdAt', 'desc'));
-
-                // Ограничиваем количество результатов для производительности
-                constraints.push(limit(100));
-
-                // Применяем все ограничения к запросу
-                q = query(q, ...constraints);
-
-                // Выполняем запрос
-                const querySnapshot = await getDocs(q);
-
-                // Обрабатываем результаты
-                this.properties = querySnapshot.docs.map((doc) => {
-                    const data = doc.data();
-
-                    // Преобразуем временные метки Firestore в объекты Date
-                    const timestamps = ['createdAt', 'updatedAt'];
-                    timestamps.forEach(field => {
-                        if (data[field] && typeof data[field].toDate === 'function') {
-                            data[field] = data[field].toDate();
-                        }
-                    });
-
-                    return {
-                        id: doc.id,
-                        ...data,
-                    };
+                console.log(`Retrieved ${this.properties.length} properties from ${collectionPath}`, {
+                    withSpecificIds: !!specificIds.length,
+                    totalIds: specificIds.length || 0
                 });
-
-                // Логируем успешное выполнение
-                console.log(`Retrieved ${this.properties.length} properties from ${collectionPath}`);
 
             } catch (error) {
-                this.error = null;
-                this.properties = [];
-
-                // Обработка специфических ошибок Firestore
-                if (error.code === 'permission-denied') {
-                    this.error = 'У вас нет прав доступа к этим данным';
-                } else if (error.code === 'not-found') {
-                    this.error = 'Данные не найдены';
-                } else if (error.message.includes('The query requires an index')) {
-                    const indexUrl = error.message.match(/https:\/\/console\.firebase\.google\.com[^\s]*/)?.[0];
-                    this.error = `Необходимо создать индекс для этого запроса. ${indexUrl ? `\nСоздать индекс: ${indexUrl}` : ''}`;
-                } else {
-                    this.error = 'Произошла ошибка при загрузке данных';
-                }
-
-                // Логируем ошибку для отладки
-                console.error('Error fetching properties:', {
-                    code: error.code,
-                    message: error.message,
-                    filters,
-                    collectionPath: filters.category?.code && filters.subcategory?.code ?
-                        `properties/${filters.category.code}/${filters.subcategory.code}` :
-                        'unknown'
-                });
-
-                throw error;
+                this.handleError(error, filters, specificIds);
             } finally {
                 this.loading = false;
             }
+        },
+
+// Вспомогательный метод для обработки данных документа
+        processDocumentData(data) {
+            const timestamps = ['createdAt', 'updatedAt'];
+            timestamps.forEach(field => {
+                if (data[field]?.toDate) {
+                    data[field] = data[field].toDate();
+                }
+            });
+            return data;
+        },
+
+// Вспомогательный метод для обработки ошибок
+        handleError(error, filters, specificIds = []) {
+            this.error = null;
+            this.properties = [];
+
+            if (error.code === 'permission-denied') {
+                this.error = 'У вас нет прав доступа к этим данным';
+            } else if (error.code === 'not-found') {
+                this.error = 'Данные не найдены';
+            } else if (error.message.includes('The query requires an index')) {
+                const indexUrl = error.message.match(/https:\/\/console\.firebase\.google\.com[^\s]*/)?.[0];
+                this.error = `Необходимо создать индекс для этого запроса. ${indexUrl ? `\nСоздать индекс: ${indexUrl}` : ''}`;
+            } else {
+                this.error = 'Произошла ошибка при загрузке данных';
+            }
+
+            console.error('Error fetching properties:', {
+                code: error.code,
+                message: error.message,
+                filters,
+                specificIds,
+                collectionPath: filters.category && filters.subcategory ?
+                    `properties/${filters.category}/${filters.subcategory}` :
+                    'unknown'
+            });
+
+            throw error;
         },
 
         setFilters(filters) {

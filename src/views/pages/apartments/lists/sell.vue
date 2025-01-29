@@ -80,7 +80,10 @@ watch(() => store.properties, () => {
 
 // Загрузка данных при монтировании компонента
 onMounted(() => {
-    loadPage();
+    // Проверяем, есть ли параметр listId в query
+    if (!route.query.listId) {
+        loadPage();
+    }
 });
 
 watch(() => store.properties, (newProperties) => {

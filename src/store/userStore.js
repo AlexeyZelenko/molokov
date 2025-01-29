@@ -40,8 +40,15 @@ export const useUserStore = defineStore('user', {
             this.profile = { ...this.profile, ...data };
         },
 
-        async createPropertyList({name, client, properties}) {
-            console.log('name:', name, 'client:', client, 'properties:', properties);
+        async createPropertyList({name, client, properties, category, subcategory}) {
+            console.log(
+                '%cData:', 'color: blue; font-weight: bold;',
+                '\nName:', name,
+                '\nClient:', client,
+                '\nProperties:', properties,
+                '\nCategory:', category,
+                '\nSubcategory:', subcategory
+            );
             if (!auth.currentUser) return;
 
             const newList = {
@@ -49,7 +56,9 @@ export const useUserStore = defineStore('user', {
                 name,
                 client,
                 properties: properties || [],
-                createdAt: new Date()
+                createdAt: new Date(),
+                category,
+                subcategory
             };
 
             const docRef = await addDoc(collection(db, 'propertyLists'), newList);

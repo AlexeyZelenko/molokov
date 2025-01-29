@@ -79,12 +79,35 @@
                                 class="w-full mb-2"
                                 :disabled="isSubmitting"
                             />
+
+                            <label class="block mb-2">Тип нерухомості:</label>
+                            <Select
+                                id="categoryProperty"
+                                name="categoryProperty"
+                                v-model="newListCategory"
+                                :options="dropdowns.category"
+                                optionLabel="name"
+                                placeholder="Вибрати" required
+                                class="w-full mb-2"
+                            />
+
+                            <label class="block mb-2">Мета використання:</label>
+                            <Select
+                                name="subcategoryProperty"
+                                v-model="newListSubcategory"
+                                :options="dropdowns.subcategory"
+                                optionLabel="name"
+                                placeholder="Вибрати"
+                                required
+                                class="w-full mb-2"
+                            />
+
                             <Button
                                 label="Створити список"
                                 @click="createNewList"
                                 :disabled="!newListName.trim() || isSubmitting"
                                 :loading="isSubmitting"
-                                class="w-full"
+                                class="w-full mt-2"
                             />
                         </div>
                     </Panel>
@@ -119,12 +142,15 @@
     </Dialog>
 </template>
 
-<script setup lang="ts">
-import {ref, computed, onMounted} from 'vue';
+<script setup>
+import {ref, computed, onMounted, reactive} from 'vue';
 import { useUserStore } from '@/store/userStore';
+import { useApartmentsStore } from '@/store/apartments';
 import { useToast } from 'primevue/usetoast';
+import Select from "primevue/select";
 
 const userStore = useUserStore();
+const apartmentsStore = useApartmentsStore();
 const toast = useToast();
 
 const props = defineProps({
@@ -138,10 +164,14 @@ const props = defineProps({
     }
 });
 
+let dropdowns = reactive([]);
+
 const isModalVisible = ref(false);
 const selectedList = ref(null);
 const selectedClient = ref(null);
 const newListName = ref('');
+const newListCategory = ref('');
+const newListSubcategory = ref('');
 const loading = ref(false);
 const listOption = ref('existing'); // 'existing' або 'new'
 const isSubmitting = ref(false);
@@ -161,6 +191,8 @@ const resetForm = () => {
     selectedList.value = null;
     selectedClient.value = null;
     newListName.value = '';
+    newListCategory.value = '';
+    newListSubcategory.value = '';
     listOption.value = 'existing';
     isSubmitting.value = false;
 };
@@ -174,6 +206,8 @@ const closeModal = () => {
     selectedList.value = null;
     selectedClient.value = null;
     newListName.value = '';
+    newListCategory.value = '';
+    newListSubcategory.value = '';
     listOption.value = 'existing';
 };
 
@@ -186,12 +220,16 @@ const createNewList = async () => {
         await userStore.createPropertyList({
             name: newListName.value.trim(),
             client: selectedClient.value,
-            properties: []
+            properties: [],
+            category: newListCategory.value,
+            subcategory: newListSubcategory.value,
         });
         await userStore.fetchPropertyLists();
 
         listOption.value = 'existing';
         newListName.value = '';
+        newListCategory.value = '';
+        newListSubcategory.value = '';
 
         toast.add({
             severity: 'success',
@@ -223,7 +261,9 @@ const addToSelectedList = async () => {
                 name: newListName.value.trim(),
                 clientId: selectedClient.value.id,
                 client: selectedClient.value,
-                properties: [props.ad]
+                properties: [props.ad],
+                category: newListCategory.value,
+                subcategory: newListSubcategory.value,
             });
             await userStore.fetchPropertyLists();
         }
@@ -252,6 +292,7 @@ onMounted(async () => {
     try {
         await userStore.fetchUserAndClients();
         await userStore.fetchPropertyLists();
+        dropdowns = apartmentsStore.dropdowns;
     } catch (error) {
         toast.add({ severity: 'error', summary: 'Помилка', detail: 'Не вдалося завантажити дані', life: 3000 });
     } finally {
