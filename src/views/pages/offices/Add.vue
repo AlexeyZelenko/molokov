@@ -1,5 +1,4 @@
 <template>
-    <h1 class="mb-4">Додати об'єкт нерухомості</h1>
     <Form v-slot="$form" :initialValues :resolver="resolver" @submit="saveProperty">
         <Fluid class="flex flex-col md:flex-row gap-8">
             <div class="md:w-1/2">
@@ -16,12 +15,13 @@
                         </Message>
                     </FloatLabel>
                     <div class="font-semibold text-xl">Тип нерухомості</div>
-                    <Select
+                    <InputText
                         id="categoryProperty"
                         name="categoryProperty"
-                        v-model="property.category"
-                        :options="dropdowns.category.filter(item => item.code === 'offices')"
-                        optionLabel="name" placeholder="Select" required/>
+                        :value="selectedCategoryName"
+                        required
+                        disabled
+                    />
                     <Message
                         v-if="$form.categoryProperty?.invalid"
                         severity="error" size="small"
@@ -30,7 +30,15 @@
                     </Message>
 
                     <div class="font-semibold text-xl">Мета використання</div>
-                    <Select name="subcategoryProperty" v-model="property.subcategory" :options="dropdowns.subcategory" optionLabel="name" placeholder="Select" required/>
+                    <Select
+                        name="subcategoryProperty"
+                        v-model="property.subcategory"
+                        :options="dropdowns.subcategory"
+                        optionLabel="name"
+                        placeholder="Select"
+                        required
+                        @change="selectPropertySubcategory(property)"
+                    />
                     <Message
                         v-if="$form.subcategoryProperty?.invalid"
                         severity="error" size="small"
@@ -39,15 +47,13 @@
                     </Message>
 
 
-                    <div v-if="property.subcategory && property.subcategory.code === 'sell' && property.subcategory.code !== 'exchange'" required class="font-semibold text-xl">Ціна USD</div>
+                    <div v-if="property.subcategory && property.subcategory.code === 'sell' && property.subcategory.code !== 'exchange'" class="font-semibold text-xl">Ціна</div>
                     <InputGroup v-if="property.subcategory && property.subcategory.code === 'sell' && property.subcategory.code !== 'exchange'">
                         <InputNumber
                             id="priceUSDProperty"
                             name="priceUSDProperty"
                             v-model="property.priceUSD"
-                            showButtons mode="decimal"
-                            currency="UAH"
-                            locale="uk-UA"
+                            mode="decimal"
                             required
                         ></InputNumber>
                         <InputGroupAddon>$</InputGroupAddon>
@@ -65,8 +71,10 @@
                         <InputNumber
                             name="priceProperty"
                             v-model="property.priceUSD"
-                            showButtons mode="decimal"
-                            currency="UAH" locale="uk-UA" required
+                            showButtons
+                            mode="decimal"
+                            currency="UAH" locale="uk-UA"
+                            required
                         ></InputNumber>
                         <InputGroupAddon>грн</InputGroupAddon>
                         <InputGroupAddon>.00</InputGroupAddon>
@@ -140,7 +148,13 @@
                 <div class="card flex flex-col gap-4">
                     <div class="font-semibold text-xl">Площа(м²)</div>
                     <div class="font-semibold text-sm">Загальна площа</div>
-                    <InputNumber name="propertyApartmentAreaTotalArea" v-model="property.apartmentArea.totalArea"  showButtons mode="decimal" required></InputNumber>
+                    <InputNumber
+                        name="propertyApartmentAreaTotalArea"
+                        v-model="property.apartmentArea.totalArea"
+                        showButtons
+                        inputId="minmaxfraction" :minFractionDigits="1" :maxFractionDigits="2" fluid
+                        required
+                    ></InputNumber>
                     <Message
                         v-if="$form.propertyApartmentAreaTotalArea?.invalid"
                         severity="error" size="small"
@@ -149,10 +163,20 @@
                     </Message>
 
                     <div class="font-semibold text-sm">Жила площа квартири</div>
-                    <InputNumber v-model="property.apartmentArea.livingArea"  showButtons mode="decimal" required></InputNumber>
+                    <InputNumber
+                        v-model="property.apartmentArea.livingArea"
+                        showButtons
+                        inputId="minmaxfraction" :minFractionDigits="1" :maxFractionDigits="2" fluid
+                        required
+                    ></InputNumber>
 
                     <div class="font-semibold text-sm">Площа кухні</div>
-                    <InputNumber v-model="property.apartmentArea.kitchenArea"  showButtons mode="decimal" required></InputNumber>
+                    <InputNumber
+                        v-model="property.apartmentArea.kitchenArea"
+                        showButtons
+                        inputId="minmaxfraction" :minFractionDigits="1" :maxFractionDigits="2" fluid
+                        required
+                    ></InputNumber>
                 </div>
 
                 <div class="card flex flex-col gap-4">
@@ -241,29 +265,71 @@
 
                     <div class="font-semibold text-sm">Кількість кухонь</div>
                     <InputNumber v-model="property.rooms.kitchens"  showButtons mode="decimal" required></InputNumber>
+
+                    <div class="font-semibold text-xl">Планування</div>
+                    <div class="font-semibold text-sm">Планування квартири</div>
+                    <Select
+                        name="propertyPlanning"
+                        v-model="property.planning"
+                        :options="dropdowns.planning" optionLabel="name" placeholder="Select" required/>
+                    <Message
+                        v-if="$form.propertyPlanning?.invalid"
+                        severity="error" size="small"
+                        variant="simple">
+                        {{ $form.propertyPlanning.error?.message }}
+                    </Message>
+
+                    <div class="font-semibold text-sm">Планування санвузла</div>
+                    <Select
+                        name="propertyBathroom"
+                        v-model="property.bathroom"
+                        :options="dropdowns.bathroom" optionLabel="name" placeholder="Select" required/>
+                    <Message
+                        v-if="$form.propertyBathroom?.invalid"
+                        severity="error" size="small"
+                        variant="simple">
+                        {{ $form.propertyBathroom.error?.message }}
+                    </Message>
                 </div>
 
                 <div class="card flex flex-col gap-4">
                     <div class="font-semibold text-xl">Стан нерухомості</div>
-                    <SelectButton v-model="property.condition" :options="dropdowns.conditions" optionLabel="name" />
+                    <SelectButton v-model="property.condition"
+                                  :options="dropdowns.conditions"
+                                  optionLabel="name"
+                                  required
+                                  class="flex flex-col"
+                    />
+
+                    <div class="font-semibold text-xl">Тип будівлі</div>
+                    <Select v-model="property.buildingType" :options="dropdowns.buildingTypes" optionLabel="name" placeholder="Select" />
+
+                    <div class="font-semibold text-xl">Клас об'єкта</div>
+                    <Select v-model="property.objectClass" :options="dropdowns.objectClass" optionLabel="name" placeholder="Select" />
 
                     <div class="font-semibold text-xl">Ремонт</div>
                     <Select v-model="property.reconditioning" :options="dropdowns.reconditioning" optionLabel="name" placeholder="Select" />
                 </div>
 
                 <div class="card flex flex-col gap-4">
-                    <div class="font-semibold text-xl">Тип будівлі</div>
-                    <Select v-model="property.buildingType" :options="dropdowns.buildingTypes" optionLabel="name" placeholder="Select" />
-                </div>
+                    <div class="font-semibold text-xl">Комунікації</div>
+                    <Textarea v-model="property.communications" placeholder="Your Message" :autoResize="true" rows="3" cols="30" />
 
-                <div class="card flex flex-col gap-4">
-                    <div class="font-semibold text-xl">Клас об'єкта</div>
-                    <Select v-model="property.objectClass" :options="dropdowns.objectClass" optionLabel="name" placeholder="Select" />
+                    <div class="font-semibold text-xl">Інфраструктура</div>
+                    <Textarea v-model="property.infrastructure" placeholder="Your Message" :autoResize="true" rows="3" cols="30" />
+
+                    <div class="font-semibold text-xl">Ландшафт</div>
+                    <Textarea v-model="property.landscape" placeholder="Your Message" :autoResize="true" rows="3" cols="30" />
                 </div>
 
                 <div class="card flex flex-col gap-4">
                     <div class="font-semibold text-xl">Проживання тварин</div>
-                    <ToggleButton v-model="property.animal" onLabel="Yes" offLabel="No" :style="{ width: '10em' }" />
+                    <ToggleButton v-model="property.animal" onLabel="Так" offLabel="Ні" :style="{ width: '10em' }" />
+
+                    <!-- Емодзі тварин -->
+                    <div v-if="property.animal" class="text-3xl mt-2">
+                        🐶 🐱 🐰 🦜 🐠
+                    </div>
                 </div>
 
                 <div class="card flex flex-col gap-4">
@@ -281,36 +347,78 @@
             <div class="card flex flex-col gap-4 w-full">
                 <div class="flex flex-col md:flex-row gap-4">
                     <div class="font-semibold text-xl">Додадковий опис об'єкта</div>
-                    <Textarea v-model="property.description" placeholder="Додадковий опис об'єкта" :autoResize="true" rows="7" cols="50" />
+                    <Editor v-model="property.description" editorStyle="height: 320px" />
                 </div>
             </div>
 
             <div class="field col-12">
                 <label>Фотографії</label>
-                <FileUpload
-                    name="advanced"
-                    @uploader="onFileSelect"
-                    :multiple="true"
-                    accept="image/*"
-                    :maxFileSize="1000000"
-                    customUpload
-                    chooseLabel="Обрати"
-                    uploadLabel="Завантажити"
-                    cancelLabel="Скасувати"
-                />
+                <div class="field col-12">
+                    <FileUpload
+                        ref="fileUpload"
+                        name="advanced"
+                        @uploader="onFileSelect"
+                        :multiple="true"
+                        accept="image/*"
+                        :maxFileSize="10000000"
+                        customUpload
+                        chooseLabel="Обрати"
+                        uploadLabel="Завантажити"
+                        cancelLabel="Скасувати"
+                    >
+                        <template #empty>
+                            <span>Перетягніть файли сюди, щоб завантажити.</span>
+                        </template>
+                    </FileUpload>
+
+                    <div v-if="images?.length" class="flex flex-wrap">
+                        <div
+                            v-for="(imageUrl, index) in images"
+                            :key="imageUrl"
+                            class="col-3 relative m-4"
+                        >
+                            <img
+                                :src="imageUrl"
+                                class="w-full h-auto object-cover"
+                                style="height: 100px; width: 100px"
+                            />
+                            <Button
+                                icon="pi pi-trash"
+                                class="absolute top-0 right-0 p-button-danger p-button-rounded"
+                                @click="removeImage(imageUrl)"
+                                style="margin-top: -25px"
+                            />
+                        </div>
+                    </div>
+                </div>
             </div>
         </Fluid>
 
         <Fluid class="flex mt-8">
-            <div class="card flex flex-col gap-4 ье-2">
-                <div class="font-semibold text-xl">Опублікувати</div>
-                <ToggleButton v-model="property.public" onLabel="Yes" offLabel="No" :style="{ width: '10em' }" />
-            </div>
+            <div class="font-semibold text-xl mr-2">Опублікувати</div>
+            <ToggleSwitch v-model="property.isPublic" />
         </Fluid>
 
-        <Fluid class="flex mt-8">
-            <div class="card flex flex-col gap-4 w-full">
-                <div class="font-semibold text-xl">Власник</div>
+
+        <Fluid class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+            <!-- Блок "Інформація про власника" -->
+            <div class="card flex flex-col gap-6 p-4 shadow-lg rounded-lg bg-white">
+                <div class="font-semibold text-xl">Інформація про власника</div>
+                <div class="flex flex-col md:flex-row gap-4">
+                    <SelectButton
+                        name="propertyTypeOwner"
+                        v-model="property.typeOwner"
+                        :options="dropdowns.typeOwner"
+                        optionLabel="name"
+                    />
+                    <Message
+                        v-if="$form.propertyTypeOwner?.invalid"
+                        severity="error" size="small"
+                        variant="simple">
+                        {{ $form.propertyTypeOwner.error?.message }}
+                    </Message>
+                </div>
+
                 <div class="flex flex-col md:flex-row gap-4">
                     <InputGroup>
                         <InputGroupAddon>
@@ -322,17 +430,51 @@
                         <InputGroupAddon>
                             <i class="pi pi-phone"></i>
                         </InputGroupAddon>
-                        <InputNumber v-model="property.owner.phone" placeholder="Телефон" />
+                        <InputMask
+                            id="phone"
+                            v-model="property.owner.phone"
+                            type="phones"
+                            mask="+38(0**) 999-99-99"
+                            class="mb-4" fluid
+                            placeholder="+38(999) 999-9999"
+                        />
                     </InputGroup>
                 </div>
-                <div class="flex flex-col md:flex-row gap-4">
-                    <div class="font-semibold text-xl">Додадково</div>
+
+                <div>
+                    <div class="font-semibold text-lg mb-2">Додадково</div>
                     <Textarea v-model="property.owner.message" placeholder="Your Message" :autoResize="true" rows="3" cols="30" />
+                </div>
+            </div>
+
+            <!-- Блок "Мої контакти" -->
+            <div class="card flex flex-col gap-6 p-4 shadow-lg rounded-lg bg-white">
+                <div class="font-semibold text-xl">Мої контакти</div>
+                <div class="flex flex-col gap-4">
+                    <InputGroup>
+                        <InputGroupAddon>
+                            <i class="pi pi-user"></i>
+                        </InputGroupAddon>
+                        <InputText :value="contacts.displayName" placeholder="Username" disabled />
+                    </InputGroup>
+                    <div v-for="(phone, index) in contacts.phones" :key="index" class="phone-item">
+                        <InputGroup>
+                            <InputGroupAddon>
+                                <i class="pi pi-phone"></i>
+                            </InputGroupAddon>
+                            <InputText :value="phone" disabled placeholder="Телефон" />
+                        </InputGroup>
+                    </div>
+                </div>
+                <div>
+                    <div class="font-semibold text-lg mb-2">Додадково</div>
+                    <Textarea v-model="property.creator.message" placeholder="Ваш текст" :autoResize="true" rows="3" cols="30" />
                 </div>
             </div>
         </Fluid>
 
-        <Fluid class="flex mt-8">
+
+        <Fluid class="flex my-8">
             <div class="field max-w-60">
                 <Button type="submit" label="Зберегти" icon="pi pi-check" :loading="saving" />
             </div>
@@ -341,268 +483,137 @@
 
     <Toast />
 
+    <div class="card flex justify-center">
+        <Toast position="top-center" group="headless" @close="visible = false">
+            <template #container="{ message }">
+                <section class="flex flex-col p-4 gap-4 w-full bg-primary/70 rounded-xl">
+                    <div class="flex items-center gap-5">
+                        <i class="pi pi-cloud-upload text-white dark:text-black text-2xl"></i>
+                        <span class="font-bold text-base text-white dark:text-black">{{ message.summary }}</span>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <ProgressBar :value="progress" :showValue="false" :style="{ height: '4px' }" pt:value:class="!bg-primary-50 dark:!bg-primary-900" class="!bg-primary/80"></ProgressBar>
+                        <label class="text-sm font-bold text-white dark:text-black">{{ progress }}% завантаження</label>
+                    </div>
+                </section>
+            </template>
+        </Toast>
+    </div>
+
 </template>
 
 <script setup>
-import { ref, onBeforeMount, reactive } from 'vue';
-import { db, storage } from '@/firebase/config';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { ref, onBeforeMount, computed, onUnmounted, reactive } from 'vue';
 import { useToast } from 'primevue/usetoast';
-import Toast from 'primevue/toast';
-import Select from "primevue/select";
-import compressWithCompressor from '@/service/Compressor';
 import { useApartmentsStore } from '@/store/apartments';
+import { useAuthStore } from '@/store/authFirebase';
+import { PropertyManager } from '@/service/property/PropertyManagerAdd';
 import GoogleMapAddApartment from '@/components/googleMap/AddApartment.vue';
 
 const toast = useToast();
 const store = useApartmentsStore();
+const authStore = useAuthStore();
+
 const saving = ref(false);
+const visible = ref(false);
+const progress = ref(0);
+const interval = ref(null);
 
-const property = reactive({
-    title: '',
-    priceUSD: null,
-    rooms: {
-        all: null,
-        bedrooms: null,
-        bathrooms: null,
-        kitchens: null
-    },
-    heatingType: null,
-    condition: null,
-    balconyCount: 0,
-    description: '',
-    images: [],
-    category: null,
-    subcategory: '',
-    createdAt: null,
-    updatedAt: null,
-    apartmentArea: {
-        totalArea: null,
-        livingArea: null,
-        kitchenArea: null
-    },
-    floors : {
-        floor: null,
-        totalFloors: null,
-        totalFloorsBuilding: null
-    },
-    reconditioning: null,
-    buildingType: null,
-    utilities: [],
-    furniture: null,
-    parking: null,
-    balconyTerrace: null,
-    objectClass: null,
-    animal: false,
-    facilityReadiness: null,
-    public: false,
-    address: {
-        region: '',
-        area: {
-            code: null,
-            name: null
-        },
-        street: '',
-        city: '',
-        markerPosition: null
-    },
-    owner: {
-        username: '',
-        phone: '',
-        message: ''
+const propertyManager = new PropertyManager(authStore, store, toast);
+
+const property = computed(() => propertyManager.property);
+const images = computed(() => propertyManager.property.images);
+const contacts = computed(() => authStore.user);
+const dropdowns = computed(() => store.dropdowns);
+const selectedCategoryName = computed(() => {
+    if (!dropdowns.value?.category || !Array.isArray(dropdowns.value.category)) {
+        return 'Категорія не знайдена';
     }
+    const category = dropdowns.value.category.find(item => item.code === property.value.category.code);
+    return category ? category.name : 'Категорія не знайдена';
 });
 
-let dropdowns = reactive([]);
+const selectPropertySubcategory = (value) => {
+    const result = value.category.code + '-' + value.subcategory.code;
+    console.log(result);
+    propertyManager.setPropertyType(result);
+};
 
-onBeforeMount(async () => {
-    dropdowns = store.dropdowns;
-});
+const show = () => {
+    if (!visible.value) {
+        toast.add({ severity: 'custom', summary: 'Uploading files...', group: 'headless', styleClass: 'backdrop-blur-lg rounded-2xl' });
+        visible.value = true;
+        progress.value = 0;
 
-const onFileSelect = async (event) => {
-    try {
-        const files = event.files;
-        if (!files || files.length === 0) {
-            throw new Error("No files selected");
+        if (interval.value) {
+            clearInterval(interval.value);
         }
 
-        for (let file of files) {
-            if (file) {
-                try {
-                    // Перевірка типу та розміру файлів перед стисненням
-                    if (file.size > 10 * 1024 * 1024) { // Приклад: перевірка на максимальний розмір 10 MB
-                        throw new Error('File size exceeds limit of 10MB');
-                    }
-
-                    // Стиснення зображення
-                    const compressedFile = await compressWithCompressor(file);
-                    console.log(compressedFile); // Виводимо стиснуте зображення
-
-                    // Зберігаємо файл у Firebase Storage
-                    const storageReference = storageRef(storage, `properties/${Date.now()}_${file.name}`);
-                    const snapshot = await uploadBytes(storageReference, compressedFile); // Завантажуємо стиснуте зображення
-                    const downloadURL = await getDownloadURL(snapshot.ref); // Отримуємо URL стиснутого зображення
-
-                    // Додаємо URL в масив зображень
-                    property.value.images.push(downloadURL);
-                } catch (error) {
-                    console.error('Ошибка сжатия или загрузки файла:', error);
-                    toast.add({ severity: 'error', summary: 'Помилка', detail: `Помилка стиснення або завантаження: ${error.message}`, life: 3000 });
-                }
-            }
-        }
-
-        // Успішне завантаження
-        toast.add({ severity: 'success', summary: 'Успішно', detail: 'Фото завантажено', life: 3000 });
-    } catch (error) {
-        console.error('Error during file selection or upload:', error);
-        toast.add({ severity: 'error', summary: 'Помилка', detail: 'Помилка завантаження фото: ' + error.message, life: 3000 });
+        interval.value = setInterval(() => {
+            progress.value = Math.min(progress.value + 20, 100);
+            if (progress.value >= 100) clearInterval(interval.value);
+        }, 500);
     }
 };
 
+onBeforeMount(async () => {
+    await authStore.getCurrentUser();
+    propertyManager.setPropertyType('offices-sell');
+});
+
+onUnmounted(() => {
+    if (interval.value) {
+        clearInterval(interval.value);
+    }
+});
+
+const removeImage = async (imageUrl) => {
+    await propertyManager.removeImage(imageUrl);
+};
+
+const onFileSelect = async (event) => {
+    show();
+    await propertyManager.uploadImages(event.files);
+    toast.removeGroup('headless');
+};
+
 const updateMarkerPosition = (position) => {
-    property.address.markerPosition = position;
+    propertyManager.updateMarkerPosition(position);
 };
 
 const saveProperty = async ({ valid }) => {
     if (valid) {
-        const utilitiesObject = property.value.utilities.reduce((acc, current) => {
-            acc[current.key] = current;  // Используем `key` как ключ, а объект как значение
-            return acc;
-        }, {});
-        console.log(utilitiesObject);
-        console.log(property.value);
-
-        try {
-            saving.value = true;
-            const propertyData = {
-                ...property.value,
-                utilities: utilitiesObject,
-                createdAt: serverTimestamp(),
-                updatedAt: serverTimestamp()
-            };
-
-            await addDoc(collection(db, 'properties'), propertyData);
-            toast.add({ severity: 'success', summary: 'Успішно', detail: 'Об\'єкт додано', life: 3000 });
-
-            // Reset form
-            property.value = {
-                title: '',
-                priceUSD: null,
-                rooms: {
-                    all: null,
-                    bedrooms: null,
-                    bathrooms: null,
-                    kitchens: null
-                },
-                houseNumber: '',
-                constructionYear: null,
-                heatingType: null,
-                condition: null,
-                balconyCount: 0,
-                description: '',
-                images: [],
-                category: null,
-                subcategory: null,
-                createdAt: null,
-                updatedAt: null,
-                apartmentArea: {
-                    totalArea: null,
-                    livingArea: null,
-                    kitchenArea: null
-                },
-                floors : {
-                    floor: null,
-                    totalFloors: null,
-                    totalFloorsBuilding: null
-                },
-                reconditioning: null,
-                buildingType: null,
-                furniture: null,
-                parking: null,
-                balconyTerrace: null,
-                objectClass: null,
-                animal: false,
-                facilityReadiness: null,
-                public: false,
-                address: {
-                    region: '',
-                    area: {
-                        code: null,
-                        name: null
-                    },
-                    street: '',
-                    city: '',
-                    markerPosition: null
-                },
-                owner: {
-                    username: '',
-                    phone: '',
-                    message: ''
-                }
-            };
-        } catch (error) {
-            console.error('Error saving property:', error);
-            toast.add({ severity: 'error', summary: 'Помилка', detail: 'Помилка збереження об\'єкту', life: 3000 });
-        } finally {
-            saving.value = false;
-        }
+        saving.value = true;
+        await propertyManager.saveProperty();
+        saving.value = false;
     } else {
-        toast.add({ severity: 'error', summary: 'Form is invalid.', life: 3000 });
+        toast.add({ severity: 'error', summary: 'Помилка', detail: 'Перевірте форму на помилки', life: 3000 });
     }
 };
 
-const initialValues = reactive({
-    nameProperty: '',
-    categoryProperty: '',
-    subcategoryProperty: '',
-    priceUSDProperty: '',
-    priceProperty: '',
-    addressRegionProperty: '',
-    propertyAddressCity: '',
-    propertyAddressArea: '',
-    propertyApartmentAreaTotalArea: '',
-    propertyFloorsFloor: '',
-});
+const requiredFields = [
+    'nameProperty', 'categoryProperty', 'subcategoryProperty',
+    'priceUSDProperty', 'priceProperty', 'addressRegionProperty',
+    'propertyAddressCity', 'propertyAddressArea',
+    'propertyApartmentAreaTotalArea', 'propertyFloorsFloor',
+    'propertyPlanning', 'propertyBathroom', 'propertyTypeOwner'
+];
+
+const initialValues = reactive(
+    requiredFields.reduce((acc, field) => {
+        acc[field] = '';
+        return acc;
+    }, {})
+);
 
 const resolver = ({ values }) => {
-    const errors = {};
+    const errors = requiredFields.reduce((acc, field) => {
+        if (!values[field]) {
+            acc[field] = [{ message: 'Обов\'язкове поле!' }];
+        }
+        return acc;
+    }, {});
 
-    if (!values.nameProperty) {
-        errors.nameProperty = [{ message: 'Додайте назву!' }];
-    }
-    if (!values.categoryProperty) {
-        errors.categoryProperty = [{ message: 'Додайте категорію!' }];
-    }
-    if (!values.subcategoryProperty) {
-        errors.subcategoryProperty = [{ message: 'Додайте мету використання!' }];
-    }
-    if (!values.priceUSDProperty) {
-        errors.priceUSDProperty = [{ message: 'Додайте ціну!' }];
-    }
-    if (!values.priceProperty) {
-        errors.priceProperty = [{ message: 'Додайте ціну!' }];
-    }
-    if (!values.addressRegionProperty) {
-        errors.addressRegionProperty = [{ message: 'Обов\'язкове поле!' }];
-    }
-    if (!values.propertyAddressCity) {
-        errors.propertyAddressCity = [{ message: 'Обов\'язкове поле!' }];
-    }
-    if (!values.propertyAddressArea) {
-        errors.propertyAddressArea = [{ message: 'Обов\'язкове поле!' }];
-    }
-    if (!values.propertyApartmentAreaTotalArea) {
-        errors.propertyApartmentAreaTotalArea = [{ message: 'Обов\'язкове поле!' }];
-    }
-    if (!values.propertyFloorsFloor) {
-        errors.propertyFloorsFloor = [{ message: 'Обов\'язкове поле!' }];
-    }
-
-    return {
-        errors
-    };
+    return { errors };
 };
-
 </script>

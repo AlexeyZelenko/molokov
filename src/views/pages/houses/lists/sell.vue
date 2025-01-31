@@ -119,9 +119,6 @@ const deleteProperty = (property) => {
                 await deleteDoc(doc(db, `properties/${property.category.code}/${property.subcategory.code}`, property.id));
 
                 // Reload properties
-                console.log('property.category.code', property.category.code);
-                console.log('property.subcategory.code', property.subcategory.code);
-                console.log('property.id', property.id);
                 await store.getProperties(property.category.code, property.subcategory.code);
 
                 toast.add({

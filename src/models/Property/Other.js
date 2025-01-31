@@ -1,18 +1,19 @@
 import Property from "./Property";
-import House from "@/models/Property/House";
 
-export default class Office extends Property {
+// Базовий клас House
+export default class Other extends Property {
     constructor(props = {}) {
-        super(props);
-        this.officeArea = props.officeArea || null;
-        this.floor = props.floor || null;
-        this.parking = props.parking || false;
-        this.security = props.security || false;
-        this.category = { name: 'Приміщення', code: 'offices' };
+        super(props); // Виклик конструктора батьківського класу
+        this.landArea = props.landArea || null;
+        this.garage = props.garage || false;
+        this.pool = props.pool || false;
+        this.garden = props.garden || false;
+        this.category = { name: 'Інше', code: 'other' }; // Визначаємо категорію один раз
     }
 }
 
-export class OfficeSell extends Office {
+// Клас для продажу будинків
+export class OtherSell extends Other {
     constructor(props = {}) {
         super(props); // Виклик конструктора батьківського класу
         this.subcategory = { name: 'Продаж', code: 'sell' }; // Визначаємо підкатегорію
@@ -20,7 +21,8 @@ export class OfficeSell extends Office {
     }
 }
 
-export class OfficeRent extends Office {
+// Клас для оренди будинків
+export class OtherRent extends Other {
     constructor(props = {}) {
         super(props); // Виклик конструктора батьківського класу
         this.subcategory = { name: 'Довгострокова оренда', code: 'rent' }; // Визначаємо підкатегорію
@@ -28,7 +30,8 @@ export class OfficeRent extends Office {
     }
 }
 
-export class OfficeExchange extends Office {
+// Клас для обміну будинків
+export class OtherExchange extends Other {
     constructor(props = {}) {
         super(props); // Виклик конструктора батьківського класу
         this.subcategory = { name: 'Обмін', code: 'exchange' }; // Визначаємо підкатегорію
@@ -36,7 +39,8 @@ export class OfficeExchange extends Office {
     }
 }
 
-export class OfficeRentDaily extends Office {
+// Клас для оренди будинків подобово
+export class OtherRentDaily extends Other {
     constructor(props = {}) {
         super(props); // Виклик конструктора батьківського класу
         this.subcategory = { name: 'Короткострокова оренда', code: 'daily' }; // Визначаємо підкатегорію

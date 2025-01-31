@@ -210,8 +210,6 @@ export const useAuthStore = defineStore('auth', () => {
 
         return new Promise((resolve) => {
             onAuthStateChanged(auth, async (currentUser) => {
-                console.log('Auth state changed. Current user:', currentUser);
-
                 if (currentUser) {
                     try {
                         const userDocRef = doc(db, 'users', currentUser.uid);
@@ -279,8 +277,6 @@ export const useAuthStore = defineStore('auth', () => {
     async function getCurrentUser() {
         const auth = getAuth(); // Получение инстанса Firebase Auth
         const currentUser = auth.currentUser; // Текущий пользователь
-
-        console.log("Current user:", currentUser);
 
         if (!currentUser) {
             console.warn("No authenticated user found.");

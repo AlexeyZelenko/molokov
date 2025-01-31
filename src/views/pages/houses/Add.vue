@@ -1,9 +1,5 @@
 <template>
-    <select @change="propertyManager.setPropertyType($event.target.value)">
-        <option value="houses-sell">Продажа домов</option>
-        <option value="apartments-sell">Пролаж квартир</option>
-    </select>
-    <Form v-slot="$form" :initialValues :resolver="resolver" @submit="saveProperty">
+    <Form v-slot="$form" :initialValues :resolver="resolver" @submit.prevent="saveProperty">
         <Fluid class="flex flex-col md:flex-row gap-8">
             <div class="md:w-1/2">
                 <div class="card flex flex-col gap-4"  >
@@ -18,6 +14,8 @@
                             {{ $form.nameProperty.error?.message }}
                         </Message>
                     </FloatLabel>
+
+
                     <div class="font-semibold text-xl">Тип нерухомості</div>
                     <InputText
                         id="categoryProperty"
@@ -34,7 +32,15 @@
                     </Message>
 
                     <div class="font-semibold text-xl">Мета використання</div>
-                    <Select name="subcategoryProperty" v-model="property.subcategory" :options="dropdowns.subcategory" optionLabel="name" placeholder="Select" required/>
+                    <Select
+                        name="subcategoryProperty"
+                        v-model="property.subcategory"
+                        :options="dropdowns.subcategory"
+                        optionLabel="name"
+                        placeholder="Select"
+                        required
+                        @change="selectPropertySubcategory(property)"
+                    />
                     <Message
                         v-if="$form.subcategoryProperty?.invalid"
                         severity="error" size="small"
@@ -133,11 +139,11 @@
                         </Message>
                     </template>
 
-                    <GoogleMapAddApartment
-                        style="width: 100%; height: 500px"
-                        :area="property.address.area"
-                        @update-marker-position="updateMarkerPosition"
-                    ></GoogleMapAddApartment>
+<!--                    <GoogleMapAddApartment-->
+<!--                        style="width: 100%; height: 500px"-->
+<!--                        :area="property.address.area"-->
+<!--                        @update-marker-position="updateMarkerPosition"-->
+<!--                    ></GoogleMapAddApartment>-->
 
                 </div>
 
@@ -529,6 +535,11 @@ const selectedCategoryName = computed(() => {
     return category ? category.name : 'Категорія не знайдена';
 });
 
+const selectPropertySubcategory = (value) => {
+    const result = value.category.code + '-' + value.subcategory.code;
+    propertyManager.setPropertyType(result);
+};
+
 const show = () => {
     if (!visible.value) {
         toast.add({ severity: 'custom', summary: 'Uploading files...', group: 'headless', styleClass: 'backdrop-blur-lg rounded-2xl' });
@@ -579,5 +590,31 @@ const saveProperty = async ({ valid }) => {
     } else {
         toast.add({ severity: 'error', summary: 'Помилка', detail: 'Перевірте форму на помилки', life: 3000 });
     }
+};
+
+const requiredFields = [
+    'nameProperty', 'categoryProperty', 'subcategoryProperty',
+    'priceUSDProperty', 'priceProperty', 'addressRegionProperty',
+    'propertyAddressCity', 'propertyAddressArea',
+    'propertyApartmentAreaTotalArea', 'propertyFloorsFloor',
+    'propertyPlanning', 'propertyBathroom', 'propertyTypeOwner'
+];
+
+const initialValues = reactive(
+    requiredFields.reduce((acc, field) => {
+        acc[field] = '';
+        return acc;
+    }, {})
+);
+
+const resolver = ({ values }) => {
+    const errors = requiredFields.reduce((acc, field) => {
+        if (!values[field]) {
+            acc[field] = [{ message: 'Обов\'язкове поле!' }];
+        }
+        return acc;
+    }, {});
+
+    return { errors };
 };
 </script>
