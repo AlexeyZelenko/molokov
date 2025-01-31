@@ -41,6 +41,8 @@ export class PropertyManager {
         // Обновляем объект без потери реактивности
         Object.assign(this.property, this.getInitialState(propertyType));
 
+        console.log("this.property", this.property);
+
         // Восстанавливаем данные, которые нужно сохранить
         this.property.images = currentImages;
         this.property.address = currentAddress;
@@ -160,10 +162,7 @@ export class PropertyManager {
 
             const lastPropertyId = await this.store.getLastPropertyId;
 
-            console.log("lastPropertyId", lastPropertyId);
-            console.log("this.contact", this.contact);
-            console.log("utilitiesObject", utilitiesObject);
-
+            console.log("this.property - save >>", this.property, this.contact);
             const propertyData = {
                 ...this.property,
                 utilities: utilitiesObject,
@@ -179,6 +178,7 @@ export class PropertyManager {
                     message: this.property.creator?.message || null
                 }
             };
+            console.log("propertyData", propertyData);
 
             await addDoc(collection(db, `properties/${this.property.category.code}/${this.property.subcategory.code}`), propertyData);
             await this.store.updateLastPropertyId(lastPropertyId + 1);

@@ -8,7 +8,7 @@ export default class House extends Property {
         this.garage = props.garage || false;
         this.pool = props.pool || false;
         this.garden = props.garden || false;
-        this.category = "houses"; // Визначаємо категорію один раз
+        this.category = { name: 'Будинок', code: 'houses' }; // Визначаємо категорію один раз
     }
 }
 
@@ -16,7 +16,7 @@ export default class House extends Property {
 export class HouseSell extends House {
     constructor(props = {}) {
         super(props); // Виклик конструктора батьківського класу
-        this.subcategory = 'sell'; // Визначаємо підкатегорію
+        this.subcategory = { name: 'Продаж', code: 'sell' }; // Визначаємо підкатегорію
         this.houseArea1 = props.houseArea1 || null; // Унікальна властивість для HouseSell
     }
 }
@@ -25,7 +25,7 @@ export class HouseSell extends House {
 export class HouseRent extends House {
     constructor(props = {}) {
         super(props); // Виклик конструктора батьківського класу
-        this.subcategory = 'rent'; // Визначаємо підкатегорію
+        this.subcategory = { name: 'Довгострокова оренда', code: 'rent' }; // Визначаємо підкатегорію
         this.houseArea2 = props.houseArea2 || null; // Унікальна властивість для HouseRent
     }
 }
@@ -34,7 +34,7 @@ export class HouseRent extends House {
 export class HouseExchange extends House {
     constructor(props = {}) {
         super(props); // Виклик конструктора батьківського класу
-        this.subcategory = 'exchange'; // Визначаємо підкатегорію
+        this.subcategory = { name: 'Обмін', code: 'exchange' }; // Визначаємо підкатегорію
         this.houseArea3 = props.houseArea3 || null; // Унікальна властивість для HouseExchange
     }
 }
@@ -43,7 +43,7 @@ export class HouseExchange extends House {
 export class HouseRentDaily extends House {
     constructor(props = {}) {
         super(props); // Виклик конструктора батьківського класу
-        this.subcategory = 'daily'; // Визначаємо підкатегорію
+        this.subcategory = { name: 'Короткострокова оренда', code: 'daily' }; // Визначаємо підкатегорію
         this.houseArea4 = props.houseArea4 || null; // Унікальна властивість для HouseRentDaily
     }
 }

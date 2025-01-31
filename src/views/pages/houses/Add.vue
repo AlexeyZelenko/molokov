@@ -22,8 +22,7 @@
                     <InputText
                         id="categoryProperty"
                         name="categoryProperty"
-                        v-model="property.category"
-                        :value="dropdowns.category.find(item => item.code === property.category).name"
+                        :value="selectedCategoryName"
                         required
                         disabled
                     />
@@ -392,13 +391,8 @@
         </Fluid>
 
         <Fluid class="flex mt-8">
-            <!--            <div class="card flex flex-col gap-4 ье-2">-->
-            <!--                <div class="font-semibold text-xl">Опублікувати</div>-->
-            <!--                <ToggleButton v-model="property.public" onLabel="Так" offLabel="Ні" :style="{ width: '10em' }" />-->
-            <!--            </div>-->
-
             <div class="font-semibold text-xl mr-2">Опублікувати</div>
-            <ToggleSwitch v-model="property.public" />
+            <ToggleSwitch v-model="property.isPublic" />
         </Fluid>
 
 
@@ -527,8 +521,13 @@ const property = computed(() => propertyManager.property);
 const images = computed(() => propertyManager.property.images);
 const contacts = computed(() => authStore.user);
 const dropdowns = computed(() => store.dropdowns);
-
-const category = computed(() => propertyManager.property.category);
+const selectedCategoryName = computed(() => {
+    if (!dropdowns.value?.category || !Array.isArray(dropdowns.value.category)) {
+        return 'Категорія не знайдена';
+    }
+    const category = dropdowns.value.category.find(item => item.code === property.value.category.code);
+    return category ? category.name : 'Категорія не знайдена';
+});
 
 const show = () => {
     if (!visible.value) {
@@ -543,7 +542,7 @@ const show = () => {
         interval.value = setInterval(() => {
             progress.value = Math.min(progress.value + 20, 100);
             if (progress.value >= 100) clearInterval(interval.value);
-        }, 1000);
+        }, 500);
     }
 };
 

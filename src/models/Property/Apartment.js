@@ -16,14 +16,14 @@ export default class Apartment extends Property {
         this.planning = props.planning || null;
         this.infrastructure = props.infrastructure || null;
     }
-    category = "apartments";
+    category = { name: 'Квартира', code: 'apartments' };
 }
 
 // Клас для продажу квартири
 export class ApartmentSell extends Apartment {
     constructor(props = {}) {
         super(props); // Виклик конструктора батьківського класу
-        this.subcategory = 'sell'; // Визначаємо підкатегорію
+        this.subcategory = { name: 'Продаж', code: 'sell' }; // Визначаємо підкатегорію
         this.houseArea1 = props.houseArea1 || null; // Унікальна властивість для ApartmentSell
     }
 }
@@ -32,7 +32,7 @@ export class ApartmentSell extends Apartment {
 export class ApartmentRent extends Apartment {
     constructor(props = {}) {
         super(props); // Виклик конструктора батьківського класу
-        this.subcategory = 'rent'; // Визначаємо підкатегорію
+        this.subcategory = { name: 'Довгострокова оренда', code: 'rent' }; // Визначаємо підкатегорію
         this.houseArea2 = props.houseArea2 || null; // Унікальна властивість для ApartmentRent
     }
 }
@@ -41,7 +41,7 @@ export class ApartmentRent extends Apartment {
 export class ApartmentExchange extends Apartment {
     constructor(props = {}) {
         super(props); // Виклик конструктора батьківського класу
-        this.subcategory = 'exchange'; // Визначаємо підкатегорію
+        this.subcategory = { name: 'Обмін', code: 'exchange' }; // Визначаємо підкатегорію
         this.houseArea3 = props.houseArea3 || null; // Унікальна властивість для ApartmentExchange
     }
 }
@@ -50,7 +50,7 @@ export class ApartmentExchange extends Apartment {
 export class ApartmentRentDaily extends Apartment {
     constructor(props = {}) {
         super(props); // Виклик конструктора батьківського класу
-        this.subcategory = 'daily'; // Визначаємо підкатегорію
+        this.subcategory = { name: 'Короткострокова оренда', code: 'daily' }; // Визначаємо підкатегорію
         this.houseArea4 = props.houseArea4 || null; // Унікальна властивість для ApartmentRentDaily
     }
 }

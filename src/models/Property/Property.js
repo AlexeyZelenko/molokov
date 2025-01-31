@@ -6,7 +6,6 @@ export default class Property {
                     title = "",
                     priceUSD = null,
                     description = "",
-                    isPublic = false,
                     createdAt = null,
                     updatedAt = null,
 
@@ -27,7 +26,8 @@ export default class Property {
                         message: ""
                     },
                     creator = {
-                        message: ""
+                        message: "",
+                        phone: "",
                     },
 
                     // Room Information
@@ -71,6 +71,7 @@ export default class Property {
                     infrastructure = null,
                     typeOwner = null,
                     landscape = null,
+                    isPublic = true
                 }) {
         // Base Properties
         this.title = title;
