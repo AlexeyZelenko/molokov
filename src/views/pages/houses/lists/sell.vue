@@ -23,7 +23,7 @@ const currentPage = ref(1);
 const pageSize = 2;
 
 const showProperty = (property) => {
-    router.push(`/pages/apartments/view/${property.id}`);
+    router.push(`/pages/houses/view/${property.id}`);
 };
 
 const filters = ref({

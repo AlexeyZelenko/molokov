@@ -1,46 +1,35 @@
 <template>
-    <h1 class="my-2">Деталі об'єкта нерухомості</h1>
+    <div class="flex items-center">
+        <h1 class="font-semibold text-xl mb-2 mr-4">{{ property.title }}</h1>
+    </div>
+
 
     <Fluid class="flex flex-col md:flex-row gap-8">
         <div class="md:w-1/2">
             <div v-if="property.images?.length" class="card">
                 <Galleria :value="property.images" :responsiveOptions="galleriaResponsiveOptions" :numVisible="5" containerStyle="max-width: 640px">
                     <template #item="slotProps">
-                        <Image :src="slotProps.item" :alt="slotProps.item.title" preview style="width: 100%" />
+                        <Image
+                            :src="slotProps.item"
+                            :alt="slotProps.item.title"
+                            preview
+                            style="margin: 0 auto;
+                            max-height: 400px"
+                        />
                     </template>
                     <template #thumbnail="slotProps">
-                        <img :src="slotProps.item" :alt="slotProps.item.title" width="100"/>
+                        <img :src="slotProps.item" :alt="slotProps.item.title" width="100" style="height: 65px; padding: 0 5px"/>
                     </template>
                 </Galleria>
             </div>
 
             <div class="card flex flex-col gap-4">
-                <div class="font-semibold text-xl">Назва</div>
-                <div>{{ property.title }}</div>
-
-                <div class="font-semibold text-xl">Тип нерухомості</div>
-                <div>{{ property.category?.name }}</div>
-
-                <div class="font-semibold text-xl">Мета використання</div>
-                <div>{{ property.subcategory?.name }}</div>
-
-                <div v-if="property.subcategory && property.subcategory.code === 'SALE'" class="font-semibold text-xl">Ціна USD</div>
-                <div v-if="property.subcategory && property.subcategory.code === 'SALE'">{{ property.priceUSD }} $</div>
-
-                <div v-if="property.subcategory && property.subcategory.code !== 'SALE'" class="font-semibold text-xl">Вартість оренди</div>
-                <div v-if="property.subcategory && property.subcategory.code !== 'SALE'">{{ property.priceUSD }} $</div>
-            </div>
-
-            <div class="card flex flex-col gap-4">
                 <div class="font-semibold text-xl">Розташування</div>
-                <div class="font-semibold text-sm">Область</div>
-                <div>{{ property.address.region?.name }}</div>
+                <div class="font-semibold text-sm">Область / Місто</div>
+                <div>{{ property.address.region?.name }} / {{ property.address.city.name }}</div>
 
-                <div class="font-semibold text-sm">Місто</div>
-                <div>{{ property.address.city.name }}</div>
-
-                <div class="font-semibold text-sm">Вулиця</div>
-                <div>{{ property.address.street }}</div>
+                <div class="font-semibold text-sm">Район / Вулиця</div>
+                <div>{{ property.address?.area?.name }} / {{ property.address.street }}</div>
 
                 <GoogleMapAddApartment
                     style="width: 100%; height: 500px"
@@ -49,23 +38,68 @@
                     :disabled="true"
                 />
             </div>
+
+            <div class="card flex flex-col gap-4">
+                <div class="font-semibold text-xl">Стан нерухомості</div>
+                <div>{{ property.condition?.name }}</div>
+
+                <div class="font-semibold text-xl">Тип будівлі</div>
+                <div>{{ property.buildingType?.name }}</div>
+
+                <div class="font-semibold text-xl">Клас об'єкта</div>
+                <div>{{ property.objectClass?.name }}</div>
+
+                <div class="font-semibold text-xl">Ремонт</div>
+                <div>{{ property.reconditioning?.name }}</div>
+            </div>
         </div>
         <div class="md:w-1/2">
+            <div class="card flex flex-col gap-4">
+                <div class="font-semibold text-xl">
+                    {{ property.category?.name }} / {{ property.subcategory?.name }}
+                </div>
+
+                <div v-if="property.subcategory && property.subcategory.code === 'sell'">{{ property.priceUSD }} $</div>
+
+                <div v-if="property.subcategory && property.subcategory.code !== 'sell'">{{ property.priceUSD }} грн</div>
+            </div>
+
             <div class="card flex flex-col gap-4">
                 <div class="font-semibold text-xl">Площа(м²)</div>
                 <div class="font-semibold text-sm">Загальна площа</div>
                 <div>{{ property.apartmentArea.totalArea }} м²</div>
 
                 <div class="font-semibold text-sm">Жила площа квартири</div>
-                <div>{{ property.apartmentArea.livingArea }} м²</div>
+                <div>{{ property.apartmentArea.livingArea }} м² / {{property.planning?.name}}</div>
 
                 <div class="font-semibold text-sm">Площа кухні</div>
                 <div>{{ property.apartmentArea.kitchenArea }} м²</div>
+
+                <div class="font-semibold text-sm">Санвузел - {{ property.bathroom?.name }}</div>
             </div>
 
             <div class="card flex flex-col gap-4">
                 <div class="font-semibold text-xl">Тип опалення</div>
                 <div>{{ property.heatingType?.name }}</div>
+            </div>
+
+            <div class="card flex flex-col gap-4">
+                <div class="font-semibold text-xl">Комунікації</div>
+                <div>{{ property.communications }}</div>
+
+                <div class="font-semibold text-xl">Інфраструктура</div>
+                <div>{{ property.infrastructure }}</div>
+
+                <div class="font-semibold text-xl">Ландшафт</div>
+                <div>{{ property.landscape }}</div>
+
+                <div class="font-semibold text-xl">Проживання тварин</div>
+                <div>{{ property.animal ? 'Так' : 'Ні' }}</div>
+            </div>
+
+            <div v-if="property?.facilityReadiness" class="card flex flex-col gap-4">
+                <div class="font-semibold text-xl">Готовність об'єкта</div>
+                <div>{{ formatFirebaseTimestamp(property?.facilityReadiness) }}</div>
             </div>
 
             <div class="card flex flex-col gap-4">
@@ -96,13 +130,38 @@
         </div>
     </Fluid>
 
-    <Fluid class="flex mt-8">
-        <div class="field max-w-60">
-            <Button label="Назад" icon="pi pi-arrow-left" @click="goBack" />
+    <Fluid class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+        <!-- Блок "контакти ріелтора" -->
+        <div class="card flex flex-col gap-6 p-4 shadow-lg rounded-lg bg-white">
+            <div class="card flex flex-col gap-2">
+                <div class="font-semibold text-xl">Контакти ріелтора</div>
+                <div>{{ property.creator?.username }}</div>
+                <div v-for="phone in property.creator?.phone">Телефон: {{ phone }}</div>
+                <div v-if="property.creator?.message">
+                    {{ property.creator?.message }}
+                </div>
+            </div>
         </div>
+        <!-- Блок "Інформація про власника" -->
+        <div class="card flex flex-col gap-6 p-4 shadow-lg rounded-lg bg-white">
+            <div class="card flex flex-col gap-2">
+                <div class="font-semibold text-xl">Контакти власника / посередника</div>
+                <div>{{ property.owner?.username }} - {{ property.typeOwner?.name }}</div>
+                <div>Телефон: {{ property.owner?.phone }}</div>
+                <div v-if="property.owner?.message">
+                    {{ property.owner?.message }}
+                </div>
+            </div>
+        </div>
+
+
     </Fluid>
 
     <Toast />
+    <AddToListModal
+        :ad="property"
+        :propertyId="propertyId"
+    />
 </template>
 
 <script setup>
@@ -113,12 +172,16 @@ import { doc, getDoc } from 'firebase/firestore';
 import { useToast } from 'primevue/usetoast';
 import Toast from 'primevue/toast';
 import GoogleMapAddApartment from '@/components/googleMap/AddApartment.vue';
+import { formatFirebaseTimestamp } from '@/utils/dateUtils';
+import AddToListModal from '@/components/AddToListModal.vue';
 
 const toast = useToast();
 const router = useRouter();
 const route = useRoute();
 
 const propertyId = route.params.id;
+const category = route.query.category;
+const subcategory = route.query.subcategory;
 const property = ref({
     title: '',
     priceUSD: null,
@@ -139,11 +202,16 @@ const property = ref({
     utilities: [],
     furniture: null,
     parking: null,
-    description: ''
+    description: '',
+    creator: {
+        username: '',
+        phone: '',
+        message: ''
+    },
 });
 
 onMounted(async () => {
-    await loadPropertyData(propertyId);
+    await loadPropertyData(category, subcategory, propertyId);
 });
 
 const galleriaResponsiveOptions = ref([
@@ -165,9 +233,11 @@ const galleriaResponsiveOptions = ref([
     }
 ]);
 
-const loadPropertyData = async (id) => {
+const loadPropertyData = async (category, subcategory, id) => {
     try {
-        const propertyRef = doc(db, 'properties', id);
+        console.log('Загрузка объекта...', category, subcategory, id);
+
+        const propertyRef = doc(db, `properties/${category || 'houses'}/${subcategory || 'sell'}`, id);
         const propertyDoc = await getDoc(propertyRef);
 
         if (propertyDoc.exists()) {
@@ -180,12 +250,13 @@ const loadPropertyData = async (id) => {
     }
 };
 
-const goBack = () => {
-    router.go(-1); // Переход на предыдущую страницу
-};
 </script>
 
 <style scoped>
+img {
+    max-width: 100%;
+    margin: 0 auto;
+}
 .location-picker {
     width: 100%;
 }
