@@ -62,12 +62,7 @@ onMounted(async () => {
         dropdowns = apartmentsStore.dropdowns;
         clients.value = userStore.clients;
     } catch (error) {
-        toast.add({
-            severity: 'error',
-            summary: 'Помилка',
-            detail: 'Не вдалося завантажити дані',
-            life: 3000
-        });
+        console.log('Error fetching data:', error);
     } finally {
         loading.value = false;
     }

@@ -294,7 +294,7 @@ onMounted(async () => {
         await userStore.fetchPropertyLists();
         dropdowns = apartmentsStore.dropdowns;
     } catch (error) {
-        toast.add({ severity: 'error', summary: 'Помилка', detail: 'Не вдалося завантажити дані', life: 3000 });
+        console.log(error);
     } finally {
         loading.value = false;
     }

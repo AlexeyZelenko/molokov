@@ -251,12 +251,6 @@ export const usePropertiesStore = defineStore('properties', {
                         ...this.processDocumentData(doc.data())
                     }));
                 }
-
-                console.log(`Retrieved ${this.properties.length} properties from ${collectionPath}`, {
-                    withSpecificIds: !!specificIds.length,
-                    totalIds: specificIds.length || 0
-                });
-
             } catch (error) {
                 this.handleError(error, filters, specificIds);
             } finally {
