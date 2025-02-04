@@ -82,9 +82,5 @@ const categories = ['sell', 'rent', 'daily', 'exchange'];
 onMounted(async () => {
     await analyticsStore.getPropertiesByCategories(categories);
     await analyticsStore.getPropertiesByCategories(categories, true);
-
-    console.log(analyticsStore.properties)
-    console.log(analyticsStore.propertiesLastWeek)
-
 });
 </script>

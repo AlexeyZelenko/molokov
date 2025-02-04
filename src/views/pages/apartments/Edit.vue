@@ -437,7 +437,6 @@ onBeforeMount(async () => {
 });
 
 const loadPropertyData = async (id, category, subcategory) => {
-    console.log('Загрузка об\'єкта...', category, subcategory, id);
     try {
         const propertyRef = doc(db, `properties/${category}/${subcategory}`, id);
         const propertyDoc = await getDoc(propertyRef);

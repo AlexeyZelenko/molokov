@@ -11,7 +11,14 @@
                     :src="slotProps.item"
                     :alt="slotProps.item.title"
                     preview
-                    style="margin: 0 auto; max-height: 400px"
+                    :imageStyle="{
+                        maxWidth: '100%',
+                        maxHeight: '400px',
+                        objectFit: 'contain'
+                    }"
+                    :previewIcon="'pi pi-search'"
+                    :zoomInDisabled="false"
+                    :zoomOutDisabled="false"
                 />
             </template>
             <template #thumbnail="slotProps">
@@ -19,7 +26,7 @@
                     :src="slotProps.item"
                     :alt="slotProps.item.title"
                     width="100"
-                    style="height: 65px; padding: 0 5px"
+                    style="height: 65px; object-fit: cover; padding: 0 5px"
                 />
             </template>
         </Galleria>

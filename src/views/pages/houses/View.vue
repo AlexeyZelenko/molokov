@@ -235,8 +235,6 @@ const galleriaResponsiveOptions = ref([
 
 const loadPropertyData = async (category, subcategory, id) => {
     try {
-        console.log('Загрузка объекта...', category, subcategory, id);
-
         const propertyRef = doc(db, `properties/${category || 'houses'}/${subcategory || 'sell'}`, id);
         const propertyDoc = await getDoc(propertyRef);
 

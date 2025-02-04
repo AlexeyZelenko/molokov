@@ -127,9 +127,6 @@ export const useUserStore = defineStore('user', {
 
                 this.clients = clients;
 
-                console.log('Дані користувача:', this.user);
-                console.log('Дані клієнтів:', clients);
-
                 return { user: this.user, clients };
             } catch (error) {
                 console.error('Помилка при отриманні даних:', error);

@@ -1,65 +1,102 @@
 <template>
-    <div class="flex items-center">
-        <h1 class="font-semibold text-xl mb-2 mr-4">{{ property.title }}</h1>
+    <div v-if="!property.title">
+        <div class="rounded border border-surface-200 dark:border-surface-700 p-6 bg-surface-0 dark:bg-surface-900">
+            <div class="flex mb-4">
+                <Skeleton shape="circle" size="4rem" class="mr-2"></Skeleton>
+                <div>
+                    <Skeleton width="10rem" class="mb-2"></Skeleton>
+                    <Skeleton width="5rem" class="mb-2"></Skeleton>
+                    <Skeleton height=".5rem"></Skeleton>
+                </div>
+            </div>
+            <Skeleton width="100%" height="150px"></Skeleton>
+            <div class="flex justify-between mt-4">
+                <Skeleton width="4rem" height="2rem"></Skeleton>
+                <Skeleton width="4rem" height="2rem"></Skeleton>
+            </div>
+        </div>
+
+        <div class="rounded border border-surface-200 dark:border-surface-700 p-6 bg-surface-0 dark:bg-surface-900">
+            <div class="flex mb-4">
+                <Skeleton shape="circle" size="4rem" class="mr-2"></Skeleton>
+                <div>
+                    <Skeleton width="10rem" class="mb-2"></Skeleton>
+                    <Skeleton width="5rem" class="mb-2"></Skeleton>
+                    <Skeleton height=".5rem"></Skeleton>
+                </div>
+            </div>
+            <Skeleton width="100%" height="150px"></Skeleton>
+            <div class="flex justify-between mt-4">
+                <Skeleton width="4rem" height="2rem"></Skeleton>
+                <Skeleton width="4rem" height="2rem"></Skeleton>
+            </div>
+        </div>
     </div>
+    <div v-else>
+        <div class="flex items-center">
+            <h1 class="font-semibold text-xl mb-2 mr-4">{{ property.title }}</h1>
+        </div>
 
+        <Fluid class="flex flex-col md:flex-row gap-8">
+            <div class="md:w-1/2">
+                <div v-if="property.images?.length">
+                    <PropertyGallery
+                        v-if="property.images?.length"
+                        :images="property.images"
+                    />
+                </div>
 
-    <Fluid class="flex flex-col md:flex-row gap-8">
-        <div class="md:w-1/2">
-            <div v-if="property.images?.length">
-                <PropertyGallery
-                    v-if="property.images?.length"
-                    :images="property.images"
+                <PropertyLocation
+                    :address="property.address"
+                />
+
+                <PropertyAmenities
+                    :property="property"
+                />
+
+                <PropertyReadiness
+                    v-if="property?.facilityReadiness"
+                    :property="property"
                 />
             </div>
 
-            <PropertyLocation
-                :address="property.address"
-            />
+            <div class="md:w-1/2">
+                <component
+                    v-if="property"
+                    :is="categoryComponentMap[category] || PropertyOther"
+                    :property="property"
+                />
+            </div>
+        </Fluid>
 
-            <PropertyAmenities
-                :property="property"
-            />
+        <PropertyDescription
+            :description="property.description"
+        />
 
-            <PropertyReadiness
-                v-if="property?.facilityReadiness"
-                :property="property"
-            />
-        </div>
+        <PropertyContacts
+            :creator="property.creator"
+            :owner="property.owner"
+            :typeOwner="property.typeOwner"
+        />
 
-        <div class="md:w-1/2">
-            <component
-                v-if="property"
-                :is="categoryComponentMap[category] || PropertyOther"
-                :property="property"
-            />
-        </div>
-    </Fluid>
+        <Toast />
 
-    <PropertyDescription
-        :description="property.description"
-    />
-
-    <PropertyContacts
-        :creator="property.creator"
-        :owner="property.owner"
-        :typeOwner="property.typeOwner"
-    />
-
-    <Toast />
-    <AddToListModal
-        :ad="property"
-        :propertyId="propertyId"
-    />
+        <AddToListModal
+            v-if="isRegister"
+            :ad="property"
+            :propertyId="propertyId"
+        />
+    </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { db } from '@/firebase/config';
 import { doc, getDoc } from 'firebase/firestore';
 import { useToast } from 'primevue/usetoast';
 import Toast from 'primevue/toast';
+import { useUserStore } from '@/store/userStore';
 import AddToListModal from '@/components/AddToListModal.vue';
 
 import PropertyGallery from './gallery/PropertyGallery.vue';
@@ -79,6 +116,11 @@ import PropertyOther from './categories/other/index.vue';
 const toast = useToast();
 const router = useRouter();
 const route = useRoute();
+
+const userStore = useUserStore();
+const isRegister = computed(() => {
+    return userStore.user?.id || null;
+});
 
 const categoryComponentMap = {
     'apartments': PropertyApartment,

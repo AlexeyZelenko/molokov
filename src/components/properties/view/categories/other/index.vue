@@ -3,76 +3,51 @@
         <div class="font-semibold text-xl">
             {{ property.category?.name }} / {{ property.subcategory?.name }}
         </div>
-
-        <div v-if="property.subcategory && property.subcategory.code === 'sell'">{{ property.priceUSD }} $</div>
-
-        <div v-if="property.subcategory && property.subcategory.code !== 'sell'">{{ property.priceUSD }} грн</div>
+        <PriceDisplay :priceUSD="property.priceUSD" :subcategory="property.subcategory" />
     </div>
 
-    <div class="card flex flex-col gap-4">
-        <div class="font-semibold text-xl">Площа(м²)</div>
-        <div class="font-semibold text-sm">Загальна площа</div>
-        <div>{{ property.apartmentArea.totalArea }} м²</div>
+    <AreaDetails
+        :apartmentArea="property.apartmentArea"
+        :planning="property.planning"
+        :bathroom="property.bathroom"
+    />
 
-        <div class="font-semibold text-sm">Жила площа квартири</div>
-        <div>{{ property.apartmentArea.livingArea }} м² / {{property.planning?.name}}</div>
+    <PropertyDetails
+        :condition="property.condition"
+        :buildingType="property.buildingType"
+        :objectClass="property.objectClass"
+        :reconditioning="property.reconditioning"
+    />
+    <component
+        v-if="property"
+        :is="subcategoryComponentMap[property?.subcategory?.code] || SellApartment"
+        :property="property"
+    />
 
-        <div class="font-semibold text-sm">Площа кухні</div>
-        <div>{{ property.apartmentArea.kitchenArea }} м²</div>
-
-        <div class="font-semibold text-sm">Санвузел - {{ property.bathroom?.name }}</div>
-    </div>
-
-    <div class="card flex flex-col gap-4">
-        <div class="font-semibold text-xl">Тип опалення</div>
-        <div>{{ property.heatingType?.name }}</div>
-    </div>
-
-    <div class="card flex flex-col gap-4">
-        <div class="font-semibold text-xl">Стан нерухомості</div>
-        <div>{{ property.condition?.name }}</div>
-
-        <div class="font-semibold text-xl">Тип будівлі</div>
-        <div>{{ property.buildingType?.name }}</div>
-
-        <div class="font-semibold text-xl">Клас об'єкта</div>
-        <div>{{ property.objectClass?.name }}</div>
-
-        <div class="font-semibold text-xl">Ремонт</div>
-        <div>{{ property.reconditioning?.name }}</div>
-    </div>
-
-    <div class="card flex flex-col gap-4">
-        <div class="font-semibold text-xl">Комунальні послуги</div>
-        <div>
-            <ul>
-                <li v-for="utility in property.utilities" :key="utility.code">{{ utility.name }}</li>
-            </ul>
-        </div>
-    </div>
-
-    <div class="card flex flex-col gap-4">
-        <div class="font-semibold text-xl">Меблі</div>
-        <div>{{ property.furniture?.name }}</div>
-
-        <div class="font-semibold text-xl">Проживання тварин</div>
-        <div>{{ property.animal ? 'Так' : 'Ні' }}</div>
-    </div>
-
-    <div class="card flex flex-col gap-4">
-        <div class="font-semibold text-xl">Паркування</div>
-        <div>{{ property.parking?.name }}</div>
-    </div>
+    <ParkingDetails :parking="property.parking" />
 </template>
 
 <script setup>
 import { defineProps, onMounted } from 'vue';
+import PriceDisplay from "./PriceDisplay.vue";
+import AreaDetails from "./AreaDetails.vue";
+import PropertyDetails from "./PropertyDetails.vue";
+import ParkingDetails from "./ParkingDetails.vue";
+
+import SellApartment from './sell/index.vue';
+import RentApartment from './rent/index.vue';
+import ExchangeApartment from './exchange/index.vue';
+import DailyRentApartment from './daily/index.vue';
+
 
 const props = defineProps({
     property: Object
 })
 
-onMounted(() => {
-    console.log(props.property)
-})
+const subcategoryComponentMap = {
+    sell: SellApartment,
+    rent: RentApartment,
+    exchange: ExchangeApartment,
+    daily: DailyRentApartment
+};
 </script>

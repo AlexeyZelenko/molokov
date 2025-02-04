@@ -50,8 +50,8 @@ const totalPages = computed(() => {
 
 const loadPage = async () => {
     try {
-        await userStore.fetchUser();
         await store.getProperties(filters.value);
+        await userStore.fetchUser();
     } catch (error) {
         console.error('Ошибка при загрузке данных:', error);
     }

@@ -28,7 +28,7 @@
 </template>
 
 <script setup>
-import { defineProps, onMounted } from 'vue';
+import { defineProps } from 'vue';
 import PriceDisplay from "./PriceDisplay.vue";
 import AreaDetails from "./AreaDetails.vue";
 import PropertyDetails from "./PropertyDetails.vue";
@@ -50,8 +50,4 @@ const subcategoryComponentMap = {
     exchange: ExchangeApartment,
     daily: DailyRentApartment
 };
-
-onMounted(() => {
-    console.log(props.property)
-})
 </script>

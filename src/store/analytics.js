@@ -129,10 +129,8 @@ export const useAnalyticsStore = defineStore('analytics', {
                 // Обрабатываем результаты
                 results.forEach(({ categoryCode, products }) => {
                     if (lastWeek) {
-                        console.log(`Продуктов за последние 7 дней (${categoryCode}):`, products.length);
                         this.propertiesLastWeek[categoryCode] = products.length;
                     } else {
-                        console.log(`Все продукты (${categoryCode}):`, products);
                         this.properties[categoryCode] = products;
                     }
                 });
