@@ -137,11 +137,11 @@
                         </Message>
                     </template>
 
-                    <GoogleMapAddApartment
-                        style="width: 100%; height: 500px"
-                        :area="property.address.area"
-                        @update-marker-position="updateMarkerPosition"
-                    ></GoogleMapAddApartment>
+<!--                    <GoogleMapAddApartment-->
+<!--                        style="width: 100%; height: 500px"-->
+<!--                        :area="property.address.area"-->
+<!--                        @update-marker-position="updateMarkerPosition"-->
+<!--                    ></GoogleMapAddApartment>-->
 
                 </div>
 

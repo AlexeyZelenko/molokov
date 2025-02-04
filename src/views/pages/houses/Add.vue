@@ -1,21 +1,8 @@
 <template>
-    <Form v-slot="$form" :initialValues :resolver="resolver" @submit.prevent="saveProperty">
+    <Form v-slot="$form" :initialValues :resolver="resolver" @submit="saveProperty">
         <Fluid class="flex flex-col md:flex-row gap-8">
             <div class="md:w-1/2">
                 <div class="card flex flex-col gap-4"  >
-                    <div class="font-semibold text-xl">Назва</div>
-                    <FloatLabel>
-                        <InputText id="nameProperty" name="nameProperty" type="text" v-model="property.title" required />
-                        <label for="nameProperty">Назва оголошення</label>
-                        <Message
-                            v-if="$form.nameProperty?.invalid"
-                            severity="error" size="small"
-                            variant="simple">
-                            {{ $form.nameProperty.error?.message }}
-                        </Message>
-                    </FloatLabel>
-
-
                     <div class="font-semibold text-xl">Тип нерухомості</div>
                     <InputText
                         id="categoryProperty"
@@ -38,47 +25,30 @@
                         :options="dropdowns.subcategory"
                         optionLabel="name"
                         placeholder="Select"
-                        required
                         @change="selectPropertySubcategory(property)"
                     />
-                    <Message
-                        v-if="$form.subcategoryProperty?.invalid"
-                        severity="error" size="small"
-                        variant="simple">
-                        {{ $form.subcategoryProperty.error?.message }}
-                    </Message>
 
+                    <div class="font-semibold text-xl">Назва</div>
+                    <FloatLabel>
+                        <InputText id="nameProperty" name="nameProperty" type="text" v-model="property.title" required />
+                        <label for="nameProperty">Назва оголошення</label>
+                        <Message
+                            v-if="$form.nameProperty?.invalid"
+                            severity="error" size="small"
+                            variant="simple">
+                            {{ $form.nameProperty.error?.message }}
+                        </Message>
+                    </FloatLabel>
 
-                    <div v-if="property.subcategory && property.subcategory.code === 'sell' && property.subcategory.code !== 'exchange'" class="font-semibold text-xl">Ціна</div>
-                    <InputGroup v-if="property.subcategory && property.subcategory.code === 'sell' && property.subcategory.code !== 'exchange'">
-                        <InputNumber
-                            id="priceUSDProperty"
-                            name="priceUSDProperty"
-                            v-model="property.priceUSD"
-                            mode="decimal"
-                            required
-                        ></InputNumber>
-                        <InputGroupAddon>$</InputGroupAddon>
-                        <InputGroupAddon>.00</InputGroupAddon>
-                    </InputGroup>
-                    <Message
-                        v-if="$form.priceUSDProperty?.invalid"
-                        severity="error" size="small"
-                        variant="simple">
-                        {{ $form.priceUSDProperty.error?.message }}
-                    </Message>
-
-                    <div v-if="property.subcategory && property.subcategory.code !== 'sell' && property.subcategory.code !== 'exchange'" class="font-semibold text-xl">Вартість оренди</div>
-                    <InputGroup v-if="property.subcategory && property.subcategory.code !== 'sell' && property.subcategory.code !== 'exchange'">
+                    <div class="font-semibold text-xl">Вартість</div>
+                    <InputGroup>
                         <InputNumber
                             name="priceProperty"
                             v-model="property.priceUSD"
                             showButtons
                             mode="decimal"
-                            currency="UAH" locale="uk-UA"
                             required
                         ></InputNumber>
-                        <InputGroupAddon>грн</InputGroupAddon>
                         <InputGroupAddon>.00</InputGroupAddon>
                     </InputGroup>
                     <Message
@@ -593,11 +563,10 @@ const saveProperty = async ({ valid }) => {
 };
 
 const requiredFields = [
-    'nameProperty', 'categoryProperty', 'subcategoryProperty',
     'priceUSDProperty', 'priceProperty', 'addressRegionProperty',
     'propertyAddressCity', 'propertyAddressArea',
     'propertyApartmentAreaTotalArea', 'propertyFloorsFloor',
-    'propertyPlanning', 'propertyBathroom', 'propertyTypeOwner'
+    'propertyPlanning', 'propertyBathroom', 'propertyTypeOwner', 'nameProperty'
 ];
 
 const initialValues = reactive(
