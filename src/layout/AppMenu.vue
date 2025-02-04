@@ -39,6 +39,11 @@ const model = ref([
                         label: 'Подобово',
                         icon: 'pi pi-fw pi-list',
                         to: '/categories/apartments/daily'
+                    },
+                    {
+                        label: 'Інше',
+                        icon: 'pi pi-fw pi-list',
+                        to: '/categories/apartments/other',
                     }
                 ]
             },

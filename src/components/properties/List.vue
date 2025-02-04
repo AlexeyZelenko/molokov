@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, watch, computed } from 'vue';
+import { onMounted, ref, watch, computed, defineProps } from 'vue';
 import { usePropertiesStore } from '@/store/propertiesCategories';
 import  { useAreasStore } from '@/store/areasStore';
 import { useRoute, useRouter } from 'vue-router';
@@ -11,6 +11,11 @@ import {deleteDoc, doc} from "firebase/firestore";
 import ConfirmDialog from "primevue/confirmdialog";
 import {useConfirm} from "primevue/useconfirm";
 
+const props = defineProps({
+    category: String,
+    type: String,
+});
+
 const route = useRoute();
 const router = useRouter();
 const products = ref([]);
@@ -21,11 +26,9 @@ const store = usePropertiesStore();
 const confirm = useConfirm();
 
 const storeAreas = useAreasStore();
-const categoryName = computed(() => storeAreas.realEstateItems.find(item => item.key === 'apartments')?.title);
-const subcategoryName = computed(() => storeAreas.realEstateItems.find(item => item.key === 'apartments')?.actions.find(subcategory => subcategory.type === 'sell')?.label);
+const categoryName = computed(() => storeAreas.realEstateItems.find(item => item.key === props.category)?.title);
+const subcategoryName = computed(() => storeAreas.realEstateItems.find(item => item.key === props.category)?.actions.find(subcategory => subcategory.type === props.type)?.label);
 
-const category = computed(() => route.query.category);
-const subcategory = computed(() => route.query.subcategory);
 // Пагинация
 const currentPage = ref(1);
 const pageSize = 3;
@@ -39,8 +42,8 @@ const editProperty = (property) => {
 };
 
 const filters = ref({
-    category: category,
-    subcategory: subcategory,
+    category: props.category,
+    subcategory: props.type,
 });
 
 const loadPage = async () => {
@@ -80,6 +83,7 @@ watch(() => store.properties, () => {
 
 // Загрузка данных при монтировании компонента
 onMounted(() => {
+    console.log('Загрузка данных при монтировании компонента', props);
     // Проверяем, есть ли параметр listId в query
     if (!route.query.listId) {
         loadPage();
