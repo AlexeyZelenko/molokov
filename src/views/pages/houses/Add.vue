@@ -76,23 +76,6 @@
                     v-model="property.floors"
                     @validation-change="handleFloorsValidation"
                 />
-<!--                <div class="card flex flex-col gap-4">-->
-<!--                    <div class="font-semibold text-xl">Поверховість</div>-->
-<!--                    <div class="font-semibold text-sm">Поверх</div>-->
-<!--                    <InputNumber name="propertyFloorsFloor" v-model="property.floors.floor"  showButtons mode="decimal" required></InputNumber>-->
-<!--                    <Message-->
-<!--                        v-if="$form.propertyFloorsFloor?.invalid"-->
-<!--                        severity="error" size="small"-->
-<!--                        variant="simple">-->
-<!--                        {{ $form.propertyFloorsFloor.error?.message }}-->
-<!--                    </Message>-->
-
-<!--                    <div class="font-semibold text-sm">Поверховість будівлі</div>-->
-<!--                    <InputNumber v-model="property.floors.totalFloorsBuilding"  showButtons mode="decimal" required></InputNumber>-->
-
-<!--                    <div class="font-semibold text-sm">Кількість поверхів у приміщенні</div>-->
-<!--                    <InputNumber v-model="property.floors.totalFloors"  showButtons mode="decimal" required></InputNumber>-->
-<!--                </div>-->
 
                 <div class="card flex flex-col gap-4">
                     <div class="font-semibold text-xl">Кількість кімнат</div>
@@ -141,24 +124,12 @@
                     </Message>
                 </div>
 
-                <div class="card flex flex-col gap-4">
-                    <div class="font-semibold text-xl">Стан нерухомості</div>
-                    <SelectButton v-model="property.condition"
-                                  :options="dropdowns.conditions"
-                                  optionLabel="name"
-                                  required
-                                  class="flex flex-col"
-                    />
-
-                    <div class="font-semibold text-xl">Тип будівлі</div>
-                    <Select v-model="property.buildingType" :options="dropdowns.buildingTypes" optionLabel="name" placeholder="Select" />
-
-                    <div class="font-semibold text-xl">Клас об'єкта</div>
-                    <Select v-model="property.objectClass" :options="dropdowns.objectClass" optionLabel="name" placeholder="Select" />
-
-                    <div class="font-semibold text-xl">Ремонт</div>
-                    <Select v-model="property.reconditioning" :options="dropdowns.reconditioning" optionLabel="name" placeholder="Select" />
-                </div>
+                <PropertyCondition
+                    ref="conditionForm"
+                    v-model="property"
+                    :dropdowns="dropdowns"
+                    @validation-change="handleConditionValidation"
+                />
 
                 <div class="card flex flex-col gap-4">
                     <div class="font-semibold text-xl">Комунікації</div>
@@ -384,6 +355,12 @@ const handleFloorsValidation = (isValid) => {
     isFloorsValid.value = isValid;
 };
 
+const conditionForm = ref(null);
+const isConditionValid = ref(false);
+const handleConditionValidation = (isValid) => {
+    isConditionValid.value = isValid;
+};
+
 const toast = useToast();
 const store = useApartmentsStore();
 const authStore = useAuthStore();
@@ -462,7 +439,9 @@ const saveProperty = async ({ valid }) => {
     const isValidBasicInfo = await basicInfoForm.value.validate();
     const isValidDetail = await areaDetailsForm.value.validate();
     const isValidFloors = await areaFloorsForm.value.validateAll();
-    if (valid && isValidBasicInfo && isValidDetail && isValidFloors) {
+    console.log(conditionForm.value)
+    const isValidCondition = await conditionForm.value.validate();
+    if (valid && isValidBasicInfo && isValidDetail && isValidFloors && isValidCondition) {
         saving.value = true;
         await propertyManager.saveProperty();
         saving.value = false;
