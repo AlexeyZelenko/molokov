@@ -1,5 +1,5 @@
 <template>
-    <Form v-slot="$form" :initialValues :resolver="resolver" @submit="saveProperty">
+    <Form v-slot="$form" @submit="saveProperty">
         <Fluid class="flex flex-col md:flex-row gap-8">
             <div class="md:w-1/2">
                 <PropertyBasicInfo
@@ -24,7 +24,12 @@
 
                 <div class="card flex flex-col gap-4">
                     <div class="font-semibold text-xl">Тип опалення</div>
-                    <Select v-model="property.heatingType" :options="dropdowns.heatingTypes" optionLabel="name" placeholder="Вибрати" />
+                    <Select
+                        v-model="property.heatingType"
+                        :options="dropdowns.heatingTypes"
+                        optionLabel="name"
+                        placeholder="Вибрати"
+                    />
                 </div>
 
                 <div class="card flex flex-col gap-4">
@@ -56,17 +61,32 @@
 
                 <div class="card flex flex-col gap-4">
                     <div class="font-semibold text-xl">Меблі</div>
-                    <Select v-model="property.furniture" :options="dropdowns.furniture" optionLabel="name" placeholder="Вибрати" />
+                    <Select
+                        v-model="property.furniture"
+                        :options="dropdowns.furniture"
+                        optionLabel="name"
+                        placeholder="Вибрати"
+                    />
                 </div>
 
                 <div class="card flex flex-col gap-4">
                     <div class="font-semibold text-xl">Паркування</div>
-                    <Select v-model="property.parking" :options="dropdowns.parking" optionLabel="name" placeholder="Вибрати" />
+                    <Select
+                        v-model="property.parking"
+                        :options="dropdowns.parking"
+                        optionLabel="name"
+                        placeholder="Вибрати"
+                    />
                 </div>
 
                 <div class="card flex flex-col gap-4">
                     <div class="font-semibold text-xl">Балкон / Тераса</div>
-                    <Select v-model="property.balconyTerrace" :options="dropdowns.balconyTerrace" optionLabel="name" placeholder="Вибрати" />
+                    <Select
+                        v-model="property.balconyTerrace"
+                        :options="dropdowns.balconyTerrace"
+                        optionLabel="name"
+                        placeholder="Вибрати"
+                    />
                 </div>
             </div>
 
@@ -83,7 +103,6 @@
                     :dropdowns="dropdowns"
                     @validation-change="handleRoomsValidation"
                 />
-
 
                 <PropertyCondition
                     ref="conditionForm"
@@ -174,80 +193,21 @@
             <ToggleSwitch v-model="property.isPublic" />
         </Fluid>
 
-
         <Fluid class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
             <!-- Блок "Інформація про власника" -->
-            <div class="card flex flex-col gap-6 p-4 shadow-lg rounded-lg bg-white">
-                <div class="font-semibold text-xl">Інформація про власника</div>
-                <div class="flex flex-col md:flex-row gap-4">
-                    <SelectButton
-                        name="propertyTypeOwner"
-                        v-model="property.typeOwner"
-                        :options="dropdowns.typeOwner"
-                        optionLabel="name"
-                    />
-                    <Message
-                        v-if="$form.propertyTypeOwner?.invalid"
-                        severity="error" size="small"
-                        variant="simple">
-                        {{ $form.propertyTypeOwner.error?.message }}
-                    </Message>
-                </div>
-
-                <div class="flex flex-col md:flex-row gap-4">
-                    <InputGroup>
-                        <InputGroupAddon>
-                            <i class="pi pi-user"></i>
-                        </InputGroupAddon>
-                        <InputText v-model="property.owner.username" placeholder="Username" />
-                    </InputGroup>
-                    <InputGroup>
-                        <InputGroupAddon>
-                            <i class="pi pi-phone"></i>
-                        </InputGroupAddon>
-                        <InputMask
-                            id="phone"
-                            v-model="property.owner.phone"
-                            type="phones"
-                            mask="+38(0**) 999-99-99"
-                            class="mb-4" fluid
-                            placeholder="+38(999) 999-9999"
-                        />
-                    </InputGroup>
-                </div>
-
-                <div>
-                    <div class="font-semibold text-lg mb-2">Додадково</div>
-                    <Textarea v-model="property.owner.message" placeholder="Your Message" :autoResize="true" rows="3" cols="30" />
-                </div>
-            </div>
+            <PropertyContactsInformation
+                ref="contactsInfoForm"
+                v-model="property"
+                @validation-change="handleContactsInfoValidation"
+                :dropdowns="dropdowns"
+            />
 
             <!-- Блок "Мої контакти" -->
-            <div class="card flex flex-col gap-6 p-4 shadow-lg rounded-lg bg-white">
-                <div class="font-semibold text-xl">Мої контакти</div>
-                <div class="flex flex-col gap-4">
-                    <InputGroup>
-                        <InputGroupAddon>
-                            <i class="pi pi-user"></i>
-                        </InputGroupAddon>
-                        <InputText :value="contacts.displayName" placeholder="Username" disabled />
-                    </InputGroup>
-                    <div v-for="(phone, index) in contacts.phones" :key="index" class="phone-item">
-                        <InputGroup>
-                            <InputGroupAddon>
-                                <i class="pi pi-phone"></i>
-                            </InputGroupAddon>
-                            <InputText :value="phone" disabled placeholder="Телефон" />
-                        </InputGroup>
-                    </div>
-                </div>
-                <div>
-                    <div class="font-semibold text-lg mb-2">Додадково</div>
-                    <Textarea v-model="property.creator.message" placeholder="Ваш текст" :autoResize="true" rows="3" cols="30" />
-                </div>
-            </div>
+            <MyContacts
+                v-model="property"
+                :contacts="contacts"
+            />
         </Fluid>
-
 
         <Fluid class="flex my-8">
             <div class="field max-w-60">
@@ -283,7 +243,6 @@ import { useToast } from 'primevue/usetoast';
 import { useApartmentsStore } from '@/store/apartments';
 import { useAuthStore } from '@/store/authFirebase';
 import { PropertyManager } from '@/service/property/PropertyManagerAdd';
-import GoogleMapAddApartment from '@/components/googleMap/AddApartment.vue';
 
 import PropertyAddress from '@/components/forms/PropertyAddress.vue';
 import PropertyBasicInfo from '@/components/forms/PropertyBasicInfo.vue';
@@ -292,6 +251,8 @@ import PropertyFloors from '@/components/forms/PropertyFloors.vue';
 import PropertyRooms from '@/components/forms/PropertyRooms.vue';
 import PropertyCondition from '@/components/forms/PropertyCondition.vue';
 import PropertyDetails from '@/components/forms/PropertyDetails.vue';
+import PropertyContactsInformation from '@/components/forms/PropertyContactsInformation.vue';
+import MyContacts from '@/components/forms/MyContacts.vue';
 
 const areaDetailsForm = ref(null);
 const isAreaValid = ref(false);
@@ -321,6 +282,12 @@ const roomsForm = ref(null);
 const isRoomsValid = ref(false);
 const handleRoomsValidation = (isValid) => {
     isRoomsValid.value = isValid;
+};
+
+const contactsInfoForm = ref(null);
+const isContactsInfoValid = ref(false);
+const handleContactsInfoValidation = (isValid) => {
+    isContactsInfoValid.value = isValid;
 };
 
 const toast = useToast();
@@ -389,10 +356,6 @@ const onFileSelect = async (event) => {
     toast.removeGroup('headless');
 };
 
-const updateMarkerPosition = (position) => {
-    propertyManager.updateMarkerPosition(position);
-};
-
 const handleSubcategoryChange = (value) => {
     selectPropertySubcategory(value);
 };
@@ -401,40 +364,15 @@ const saveProperty = async ({ valid }) => {
     const isValidBasicInfo = await basicInfoForm.value.validate();
     const isValidDetail = await areaDetailsForm.value.validate();
     const isValidFloors = await areaFloorsForm.value.validateAll();
-    console.log(roomsForm.value);
     const isValidRooms = await roomsForm.value.validate();
     const isValidCondition = await conditionForm.value.validate();
-    if (valid && isValidBasicInfo && isValidDetail && isValidFloors && isValidCondition && isValidRooms) {
+    const isValidContactsInfo = await contactsInfoForm.value.validate();
+    if (valid && isValidBasicInfo && isValidDetail && isValidFloors && isValidCondition && isValidRooms && isValidContactsInfo) {
         saving.value = true;
         await propertyManager.saveProperty();
         saving.value = false;
     } else {
         toast.add({ severity: 'error', summary: 'Помилка', detail: 'Перевірте форму на помилки', life: 3000 });
     }
-};
-
-const requiredFields = [
-    'priceUSDProperty', 'priceProperty', 'addressRegionProperty',
-    'propertyAddressCity', 'propertyAddressArea',
-    'propertyApartmentAreaTotalArea', 'propertyFloorsFloor',
-    'propertyPlanning', 'propertyBathroom', 'propertyTypeOwner', 'nameProperty'
-];
-
-const initialValues = reactive(
-    requiredFields.reduce((acc, field) => {
-        acc[field] = '';
-        return acc;
-    }, {})
-);
-
-const resolver = ({ values }) => {
-    const errors = requiredFields.reduce((acc, field) => {
-        if (!values[field]) {
-            acc[field] = [{ message: 'Обов\'язкове поле!' }];
-        }
-        return acc;
-    }, {});
-
-    return { errors };
 };
 </script>
