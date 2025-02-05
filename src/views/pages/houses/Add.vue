@@ -236,7 +236,8 @@ const saveProperty = async ({ valid }) => {
         toast.add({
             severity: 'error',
             summary: 'Помилка',
-            detail: 'Перевірте форму на помилки'
+            detail: 'Перевірте форму на помилки',
+            life: 5000
         });
     }
 };
