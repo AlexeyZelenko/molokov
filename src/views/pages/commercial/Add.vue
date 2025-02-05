@@ -1,19 +1,9 @@
 <template>
-    <Form v-slot="$form" :initialValues :resolver="resolver" @submit="saveProperty">
+    <Form v-slot="$form" @submit.prevent="saveProperty">
         <Fluid class="flex flex-col md:flex-row gap-8">
             <div class="md:w-1/2">
                 <div class="card flex flex-col gap-4"  >
-                    <div class="font-semibold text-xl">Назва</div>
-                    <FloatLabel>
-                        <InputText id="nameProperty" name="nameProperty" type="text" v-model="property.title" required />
-                        <label for="nameProperty">Назва оголошення</label>
-                        <Message
-                            v-if="$form.nameProperty?.invalid"
-                            severity="error" size="small"
-                            variant="simple">
-                            {{ $form.nameProperty.error?.message }}
-                        </Message>
-                    </FloatLabel>
+
                     <div class="font-semibold text-xl">Тип нерухомості</div>
                     <InputText
                         id="categoryProperty"
@@ -45,6 +35,22 @@
                         variant="simple">
                         {{ $form.subcategoryProperty.error?.message }}
                     </Message>
+
+                    <div class="font-semibold text-xl">Назва</div>
+                    <FloatLabel>
+                        <InputText
+                            id="nameProperty"
+                            name="nameProperty"
+                            type="text"
+                            v-model="property.title" required />
+                        <label for="nameProperty">Назва оголошення</label>
+                        <Message
+                            v-if="$form.nameProperty?.invalid"
+                            severity="error" size="small"
+                            variant="simple">
+                            {{ $form.nameProperty.error?.message }}
+                        </Message>
+                    </FloatLabel>
 
 
                     <div v-if="property.subcategory && property.subcategory.code === 'sell' && property.subcategory.code !== 'exchange'" class="font-semibold text-xl">Ціна</div>

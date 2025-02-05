@@ -2,154 +2,25 @@
     <Form v-slot="$form" :initialValues :resolver="resolver" @submit="saveProperty">
         <Fluid class="flex flex-col md:flex-row gap-8">
             <div class="md:w-1/2">
-                <div class="card flex flex-col gap-4"  >
-                    <div class="font-semibold text-xl">Тип нерухомості</div>
-                    <InputText
-                        id="categoryProperty"
-                        name="categoryProperty"
-                        :value="selectedCategoryName"
-                        required
-                        disabled
-                    />
-                    <Message
-                        v-if="$form.categoryProperty?.invalid"
-                        severity="error" size="small"
-                        variant="simple">
-                        {{ $form.categoryProperty.error?.message }}
-                    </Message>
+                <PropertyBasicInfo
+                    ref="basicInfoForm"
+                    v-model="property"
+                    :dropdowns="dropdowns"
+                    :selectedCategoryName="selectedCategoryName"
+                    @validation-change="handleBasicInfoValidation"
+                    @subcategory-change="handleSubcategoryChange"
+                />
 
-                    <div class="font-semibold text-xl">Мета використання</div>
-                    <Select
-                        name="subcategoryProperty"
-                        v-model="property.subcategory"
-                        :options="dropdowns.subcategory"
-                        optionLabel="name"
-                        placeholder="Select"
-                        @change="selectPropertySubcategory(property)"
-                    />
+                <PropertyAddress
+                    v-model="property.address"
+                    :dropdowns="dropdowns"
+                />
 
-                    <div class="font-semibold text-xl">Назва</div>
-                    <FloatLabel>
-                        <InputText id="nameProperty" name="nameProperty" type="text" v-model="property.title" required />
-                        <label for="nameProperty">Назва оголошення</label>
-                        <Message
-                            v-if="$form.nameProperty?.invalid"
-                            severity="error" size="small"
-                            variant="simple">
-                            {{ $form.nameProperty.error?.message }}
-                        </Message>
-                    </FloatLabel>
-
-                    <div class="font-semibold text-xl">Вартість</div>
-                    <InputGroup>
-                        <InputNumber
-                            name="priceProperty"
-                            v-model="property.priceUSD"
-                            showButtons
-                            mode="decimal"
-                            required
-                        ></InputNumber>
-                        <InputGroupAddon>.00</InputGroupAddon>
-                    </InputGroup>
-                    <Message
-                        v-if="$form.priceProperty?.invalid"
-                        severity="error" size="small"
-                        variant="simple">
-                        {{ $form.priceProperty.error?.message }}
-                    </Message>
-                </div>
-
-                <div class="card flex flex-col gap-4">
-                    <div class="font-semibold text-xl">Розташування</div>
-
-                    <div class="font-semibold text-sm">Область</div>
-                    <Select name="addressRegionProperty" v-model="property.address.region" :options="dropdowns.regions" optionLabel="name" placeholder="Select" required/>
-                    <Message
-                        v-if="$form.addressRegionProperty?.invalid"
-                        severity="error" size="small"
-                        variant="simple">
-                        {{ $form.addressRegionProperty.error?.message }}
-                    </Message>
-
-                    <div class="font-semibold text-sm">Місто</div>
-                    <div v-if="property.address.region && property.address.region.code === 'CHK'">
-                        <Select
-                            name="propertyAddressCity"
-                            v-model="property.address.city"
-                            :options="dropdowns.cities"
-                            optionLabel="name"
-                            placeholder="Виберіть місто"
-                        />
-                        <Message
-                            v-if="$form.propertyAddressCity?.invalid"
-                            severity="error" size="small"
-                            variant="simple">
-                            {{ $form.propertyAddressCity.error?.message }}
-                        </Message>
-                    </div>
-
-                    <InputText
-                        v-else
-                        v-model="property.address.city"
-                        placeholder="Місто"
-                    />
-
-                    <div class="font-semibold text-sm">Вулиця</div>
-                    <InputText v-model="property.address.street" placeholder="Вулиця" />
-
-
-                    <template v-if="property.address.city && property.address.city.code === '1'">
-                        <div class="font-semibold text-sm">Мікрорайон міста Черкаси</div>
-                        <Select name="propertyAddressArea" v-model="property.address.area" :options="dropdowns.areas" optionLabel="name" placeholder="Select" />
-                        <Message
-                            v-if="$form.propertyAddressArea?.invalid"
-                            severity="error" size="small"
-                            variant="simple">
-                            {{ $form.propertyAddressArea.error?.message }}
-                        </Message>
-                    </template>
-
-<!--                    <GoogleMapAddApartment-->
-<!--                        style="width: 100%; height: 500px"-->
-<!--                        :area="property.address.area"-->
-<!--                        @update-marker-position="updateMarkerPosition"-->
-<!--                    ></GoogleMapAddApartment>-->
-
-                </div>
-
-                <div class="card flex flex-col gap-4">
-                    <div class="font-semibold text-xl">Площа(м²)</div>
-                    <div class="font-semibold text-sm">Загальна площа</div>
-                    <InputNumber
-                        name="propertyApartmentAreaTotalArea"
-                        v-model="property.apartmentArea.totalArea"
-                        showButtons
-                        inputId="minmaxfraction" :minFractionDigits="1" :maxFractionDigits="2" fluid
-                        required
-                    ></InputNumber>
-                    <Message
-                        v-if="$form.propertyApartmentAreaTotalArea?.invalid"
-                        severity="error" size="small"
-                        variant="simple">
-                        {{ $form.propertyApartmentAreaTotalArea.error?.message }}
-                    </Message>
-
-                    <div class="font-semibold text-sm">Жила площа квартири</div>
-                    <InputNumber
-                        v-model="property.apartmentArea.livingArea"
-                        showButtons
-                        inputId="minmaxfraction" :minFractionDigits="1" :maxFractionDigits="2" fluid
-                        required
-                    ></InputNumber>
-
-                    <div class="font-semibold text-sm">Площа кухні</div>
-                    <InputNumber
-                        v-model="property.apartmentArea.kitchenArea"
-                        showButtons
-                        inputId="minmaxfraction" :minFractionDigits="1" :maxFractionDigits="2" fluid
-                        required
-                    ></InputNumber>
-                </div>
+                <PropertyAreaDetails
+                    ref="areaDetailsForm"
+                    v-model="property.apartmentArea"
+                    @validation-change="handleAreaValidation"
+                />
 
                 <div class="card flex flex-col gap-4">
                     <div class="font-semibold text-xl">Тип опалення</div>
@@ -482,6 +353,24 @@ import { useAuthStore } from '@/store/authFirebase';
 import { PropertyManager } from '@/service/property/PropertyManagerAdd';
 import GoogleMapAddApartment from '@/components/googleMap/AddApartment.vue';
 
+import PropertyAddress from '@/components/forms/PropertyAddress.vue';
+import PropertyBasicInfo from '@/components/forms/PropertyBasicInfo.vue';
+import PropertyAreaDetails from '@/components/forms/PropertyAreaDetails.vue';
+import PropertyRooms from '@/components/forms/PropertyRooms.vue';
+import PropertyCondition from '@/components/forms/PropertyCondition.vue';
+
+const areaDetailsForm = ref(null);
+const isAreaValid = ref(false);
+const handleAreaValidation = (isValid) => {
+    isAreaValid.value = isValid;
+};
+
+const basicInfoForm = ref(null);
+const isBasicInfoValid = ref(false);
+const handleBasicInfoValidation = (isValid) => {
+    isBasicInfoValid.value = isValid;
+};
+
 const toast = useToast();
 const store = useApartmentsStore();
 const authStore = useAuthStore();
@@ -553,7 +442,9 @@ const updateMarkerPosition = (position) => {
 };
 
 const saveProperty = async ({ valid }) => {
-    if (valid) {
+    const isValidBasicInfo = basicInfoForm.value.validate();
+    const isValidDetail = areaDetailsForm.value.validate();
+    if (valid && isValidBasicInfo && isValidDetail) {
         saving.value = true;
         await propertyManager.saveProperty();
         saving.value = false;

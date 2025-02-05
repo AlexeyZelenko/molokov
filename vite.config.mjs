@@ -4,9 +4,9 @@ import { PrimeVueResolver } from '@primevue/auto-import-resolver';
 import vue from '@vitejs/plugin-vue';
 import Components from 'unplugin-vue-components/vite';
 import { defineConfig } from 'vite';
-import vueDevTools from 'vite-plugin-vue-devtools'
+import vueDevTools from 'vite-plugin-vue-devtools';
+import commonjs from 'vite-plugin-commonjs';
 
-// https://vitejs.dev/config/
 export default defineConfig({
     optimizeDeps: {
         include: ['tiny-case', 'property-expr', 'quill'],
@@ -17,7 +17,8 @@ export default defineConfig({
         Components({
             resolvers: [PrimeVueResolver()]
         }),
-        vueDevTools()
+        vueDevTools(),
+        commonjs()
     ],
     resolve: {
         alias: {

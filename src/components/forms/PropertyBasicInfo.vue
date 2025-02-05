@@ -1,0 +1,162 @@
+<template>
+    <div class="card flex flex-col gap-4">
+        <div class="font-semibold text-xl">Тип нерухомості</div>
+        <InputText
+            id="categoryProperty"
+            :value="selectedCategoryName"
+            required
+            disabled
+        />
+
+        <div class="font-semibold text-xl">Мета використання</div>
+        <Select
+            v-model="modelValue.subcategory"
+            :options="dropdowns.subcategory"
+            optionLabel="name"
+            placeholder="Select"
+            :class="{ 'p-invalid': errors.subcategory }"
+            required
+            @change="handleSubcategoryChange"
+        />
+        <small class="text-red-500" v-if="errors.subcategory">
+            {{ errors.subcategory }}
+        </small>
+
+        <div class="font-semibold text-xl">Назва</div>
+        <FloatLabel>
+            <InputText
+                v-model="modelValue.title"
+                :class="{ 'p-invalid': errors.title }"
+                required
+            />
+            <label>Назва оголошення</label>
+        </FloatLabel>
+        <small class="text-red-500" v-if="errors.title">
+            {{ errors.title }}
+        </small>
+
+        <div class="font-semibold text-xl">Вартість</div>
+        <InputGroup>
+            <InputNumber
+                v-model="modelValue.priceUSD"
+                :class="{ 'p-invalid': errors.priceUSD }"
+                showButtons
+                mode="decimal"
+                :min="0"
+                required
+            />
+            <InputGroupAddon>.00</InputGroupAddon>
+        </InputGroup>
+        <small class="text-red-500" v-if="errors.priceUSD">
+            {{ errors.priceUSD }}
+        </small>
+    </div>
+</template>
+
+<script setup>
+import { ref, watch } from 'vue';
+
+const props = defineProps({
+    modelValue: {
+        type: Object,
+        required: true
+    },
+    dropdowns: {
+        type: Object,
+        required: true
+    },
+    selectedCategoryName: {
+        type: String,
+        required: true
+    }
+});
+
+const emit = defineEmits(['update:modelValue', 'subcategory-change', 'validation-change']);
+
+const errors = ref({
+    subcategory: '',
+    title: '',
+    priceUSD: ''
+});
+
+// Custom validation rules
+const validateTitle = (value) => {
+    if (!value) return 'Назва обов\'язкова';
+    if (value.length < 3) return 'Назва повинна містити мінімум 3 символи';
+    if (value.length > 100) return 'Назва не повинна перевищувати 100 символів';
+    return '';
+};
+
+const validatePrice = (value) => {
+    if (!value && value !== 0) return 'Вартість обов\'язкова';
+    if (value < 0) return 'Вартість не може бути від\'ємною';
+    if (value > 1000000000) return 'Вартість занадто велика';
+    return '';
+};
+
+const validateFields = () => {
+    errors.value = {
+        subcategory: !props.modelValue.subcategory ? 'Мета використання обов\'язкова' : '',
+        title: validateTitle(props.modelValue.title),
+        priceUSD: validatePrice(props.modelValue.priceUSD)
+    };
+
+    // Remove empty error messages
+    Object.keys(errors.value).forEach(key => {
+        if (!errors.value[key]) {
+            delete errors.value[key];
+        }
+    });
+
+    // Emit validation state
+    const isValid = Object.keys(errors.value).length === 0;
+    emit('validation-change', isValid);
+
+    return isValid;
+};
+
+// Handle subcategory change with validation
+const handleSubcategoryChange = () => {
+    validateFields();
+    emit('subcategory-change', props.modelValue);
+};
+
+// Watch for changes in modelValue and validate
+watch(() => props.modelValue, () => {
+    validateFields();
+}, { deep: true });
+
+// Debounced validation for title to prevent too frequent validation
+let titleTimeout;
+watch(() => props.modelValue.title, (newValue) => {
+    clearTimeout(titleTimeout);
+    titleTimeout = setTimeout(() => {
+        errors.value.title = validateTitle(newValue);
+        if (!errors.value.title) {
+            delete errors.value.title;
+        }
+        validateFields();
+    }, 300);
+});
+
+// Export validateFields for parent component use
+defineExpose({ validate: validateFields });
+</script>
+
+<style scoped>
+.p-invalid {
+    border-color: #dc3545 !important;
+}
+
+.p-invalid:focus {
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+}
+
+.p-inputnumber.p-invalid .p-inputnumber-input {
+    border-color: #dc3545 !important;
+}
+
+.p-float-label.p-invalid > label {
+    color: #dc3545 !important;
+}
+</style>

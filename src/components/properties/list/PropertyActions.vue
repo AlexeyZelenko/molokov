@@ -57,7 +57,11 @@ const deleteProperty = () => {
                 }
 
                 await deleteDoc(doc(db, `properties/${props.item.category.code}/${props.item.subcategory.code}`, props.item.id));
-                await store.getProperties(props.item.category.code, props.item.subcategory.code);
+
+                await store.getProperties({
+                    category: props.item.category.code,
+                    subcategory: props.item.subcategory.code}
+                );
 
                 toast.add({
                     severity: 'success',
