@@ -131,16 +131,10 @@
                     @validation-change="handleConditionValidation"
                 />
 
-                <div class="card flex flex-col gap-4">
-                    <div class="font-semibold text-xl">Комунікації</div>
-                    <Textarea v-model="property.communications" placeholder="Your Message" :autoResize="true" rows="3" cols="30" />
-
-                    <div class="font-semibold text-xl">Інфраструктура</div>
-                    <Textarea v-model="property.infrastructure" placeholder="Your Message" :autoResize="true" rows="3" cols="30" />
-
-                    <div class="font-semibold text-xl">Ландшафт</div>
-                    <Textarea v-model="property.landscape" placeholder="Your Message" :autoResize="true" rows="3" cols="30" />
-                </div>
+                <PropertyDetails
+                    ref="detailsForm"
+                    v-model="property"
+                />
 
                 <div class="card flex flex-col gap-4">
                     <div class="font-semibold text-xl">Проживання тварин</div>
@@ -336,6 +330,7 @@ import PropertyAreaDetails from '@/components/forms/PropertyAreaDetails.vue';
 import PropertyFloors from '@/components/forms/PropertyFloors.vue';
 import PropertyRooms from '@/components/forms/PropertyRooms.vue';
 import PropertyCondition from '@/components/forms/PropertyCondition.vue';
+import PropertyDetails from '@/components/forms/PropertyDetails.vue';
 
 const areaDetailsForm = ref(null);
 const isAreaValid = ref(false);
