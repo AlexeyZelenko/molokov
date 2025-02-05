@@ -1,6 +1,6 @@
 <template>
     <div class="card flex flex-col gap-4">
-        <div class="font-semibold text-xl">Стан нерухомості</div>
+        <div class="font-semibold text-xl">Стан нерухомості *</div>
         <SelectButton
             v-model="modelValue.condition"
             :options="dropdowns.conditions"
@@ -11,7 +11,7 @@
         />
         <small class="text-red-500" v-if="errors.condition">{{ errors.condition }}</small>
 
-        <div class="font-semibold text-xl">Тип будівлі</div>
+        <div class="font-semibold text-xl">Тип будівлі *</div>
         <Select
             v-model="modelValue.buildingType"
             :options="dropdowns.buildingTypes"
@@ -22,7 +22,7 @@
         />
         <small class="text-red-500" v-if="errors.buildingType">{{ errors.buildingType }}</small>
 
-        <div class="font-semibold text-xl">Клас об'єкта</div>
+        <div class="font-semibold text-xl">Клас об'єкта *</div>
         <Select
             v-model="modelValue.objectClass"
             :options="dropdowns.objectClass"
@@ -33,7 +33,7 @@
         />
         <small class="text-red-500" v-if="errors.objectClass">{{ errors.objectClass }}</small>
 
-        <div class="font-semibold text-xl">Ремонт</div>
+        <div class="font-semibold text-xl">Ремонт *</div>
         <Select
             v-model="modelValue.reconditioning"
             :options="dropdowns.reconditioning"

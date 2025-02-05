@@ -3,7 +3,7 @@
         <div class="font-semibold text-xl">Поверховість</div>
 
         <div class="field">
-            <div class="font-semibold text-sm">Поверх *</div>
+            <div class="font-semibold text-sm mb-2">Поверх *</div>
             <InputNumber
                 v-model="formData.floor"
                 showButtons
@@ -15,11 +15,11 @@
                 :tooltip="'Поверх не може перевищувати поверховість будівлі'"
                 tooltipMode="top"
             />
-            <small class="p-error" v-if="errors.floor">{{ errors.floor }}</small>
+            <small class="text-red-500" v-if="errors.floor">{{ errors.floor }}</small>
         </div>
 
         <div class="field">
-            <div class="font-semibold text-sm">Поверховість будівлі *</div>
+            <div class="font-semibold text-sm mb-2">Поверховість будівлі *</div>
             <InputNumber
                 v-model="formData.totalFloorsBuilding"
                 showButtons
@@ -29,11 +29,11 @@
                 :placeholder="'Введіть поверховість будівлі'"
                 aria-label="Поверховість будівлі"
             />
-            <small class="p-error" v-if="errors.totalFloorsBuilding">{{ errors.totalFloorsBuilding }}</small>
+            <small class="text-red-500" v-if="errors.totalFloorsBuilding">{{ errors.totalFloorsBuilding }}</small>
         </div>
 
         <div class="field">
-            <div class="font-semibold text-sm">Кількість поверхів у приміщенні *</div>
+            <div class="font-semibold text-sm mb-2">Кількість поверхів у приміщенні *</div>
             <InputNumber
                 v-model="formData.totalFloors"
                 showButtons
@@ -45,7 +45,7 @@
                 :tooltip="'Не може перевищувати поверховість будівлі'"
                 tooltipMode="top"
             />
-            <small class="p-error" v-if="errors.totalFloors">{{ errors.totalFloors }}</small>
+            <small class="text-red-500" v-if="errors.totalFloors">{{ errors.totalFloors }}</small>
         </div>
     </div>
 </template>
@@ -138,12 +138,8 @@ const isFormValid = computed(() => {
     return Object.values(errors.value).every(error => !error);
 });
 
-// Следим за изменениями данных формы
 watchEffect(() => {
-    // Валидируем поля при изменении любого значения
     validateAll();
-
-    // Обновляем модель
     emit('update:modelValue', { ...formData.value });
 });
 
@@ -172,22 +168,6 @@ defineExpose({
 }
 
 .p-invalid {
-    border-color: #ff4d4f !important;
-}
-
-.p-error {
-    color: #ff4d4f;
-    font-size: 0.875rem;
-    margin-top: 0.25rem;
-}
-
-/* Добавляем анимацию для сообщений об ошибках */
-.p-error {
-    opacity: 1;
-    transition: opacity 0.2s ease-in-out;
-}
-
-.p-error:empty {
-    opacity: 0;
+    border-color: #dc3545 !important;
 }
 </style>

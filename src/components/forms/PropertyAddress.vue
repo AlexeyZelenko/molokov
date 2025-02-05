@@ -2,7 +2,7 @@
     <div class="card flex flex-col gap-4">
         <div class="font-semibold text-xl">Розташування</div>
 
-        <div class="font-semibold text-sm">Область</div>
+        <div class="font-semibold text-sm">Область *</div>
         <Select
             v-model="modelValue.region"
             :options="dropdowns.regions"
@@ -15,7 +15,7 @@
             {{ errors.region }}
         </small>
 
-        <div class="font-semibold text-sm">Місто</div>
+        <div class="font-semibold text-sm">Місто  *</div>
         <template v-if="modelValue.region?.code === 'CHK'">
             <Select
                 v-model="modelValue.city"
@@ -41,7 +41,7 @@
             </small>
         </template>
 
-        <div class="font-semibold text-sm">Вулиця</div>
+        <div class="font-semibold text-sm">Вулиця *</div>
         <InputText
             v-model="modelValue.street"
             placeholder="Вулиця"

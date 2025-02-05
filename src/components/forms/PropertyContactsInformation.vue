@@ -74,7 +74,13 @@ const errors = ref({
     message: ''
 });
 
+let isFirstRender = true;
 const validateFields = () => {
+    if (isFirstRender) {
+        isFirstRender = false;
+        return true;
+    }
+
     errors.value = {
         typeOwner: !props.modelValue.typeOwner ? 'Тип власника обов\'язковий' : '',
         username: !props.modelValue.owner.username ? 'Ім\'я власника обов\'язкове' : '',

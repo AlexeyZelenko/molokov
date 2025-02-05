@@ -6,9 +6,8 @@
                     ref="basicInfoForm"
                     v-model="property"
                     :dropdowns="dropdowns"
+                    @validation-change="handleValidation('basicInfo', $event)"
                     :selectedCategoryName="selectedCategoryName"
-                    @validation-change="handleBasicInfoValidation"
-                    @subcategory-change="handleSubcategoryChange"
                 />
 
                 <PropertyAddress
@@ -19,18 +18,14 @@
                 <PropertyAreaDetails
                     ref="areaDetailsForm"
                     v-model="property.apartmentArea"
-                    @validation-change="handleAreaValidation"
+                    @validation-change="handleValidation('area', $event)"
                 />
 
-                <div class="card flex flex-col gap-4">
-                    <div class="font-semibold text-xl">Тип опалення</div>
-                    <Select
-                        v-model="property.heatingType"
-                        :options="dropdowns.heatingTypes"
-                        optionLabel="name"
-                        placeholder="Вибрати"
-                    />
-                </div>
+                <FormSection
+                    title="Тип опалення"
+                    v-model="property.heatingType"
+                    :options="dropdowns.heatingTypes"
+                />
 
                 <div class="card flex flex-col gap-4">
                     <div class="font-semibold text-xl">Комунальні послуги</div>
@@ -43,7 +38,6 @@
                     >
                         <template #value="slotProps">
                             <div class="inline-flex items-center py-1 px-2 bg-primary text-primary-contrast rounded-border mr-2" v-for="option of slotProps.value" :key="option.code">
-                                <span :class="'mr-2 flag flag-' + option.code.toLowerCase()" style="width: 18px; height: 12px" />
                                 <div>{{ option.name }}</div>
                             </div>
                             <template v-if="!slotProps.value || slotProps.value.length === 0">
@@ -59,150 +53,89 @@
                     </MultiSelect>
                 </div>
 
-                <div class="card flex flex-col gap-4">
-                    <div class="font-semibold text-xl">Меблі</div>
-                    <Select
-                        v-model="property.furniture"
-                        :options="dropdowns.furniture"
-                        optionLabel="name"
-                        placeholder="Вибрати"
-                    />
-                </div>
+                <FormSection
+                    title="Меблі"
+                    v-model="property.furniture"
+                    :options="dropdowns.furniture"
+                />
 
-                <div class="card flex flex-col gap-4">
-                    <div class="font-semibold text-xl">Паркування</div>
-                    <Select
-                        v-model="property.parking"
-                        :options="dropdowns.parking"
-                        optionLabel="name"
-                        placeholder="Вибрати"
-                    />
-                </div>
+                <FormSection
+                    title="Паркування"
+                    v-model="property.parking"
+                    :options="dropdowns.parking"
+                />
 
-                <div class="card flex flex-col gap-4">
-                    <div class="font-semibold text-xl">Балкон / Тераса</div>
-                    <Select
-                        v-model="property.balconyTerrace"
-                        :options="dropdowns.balconyTerrace"
-                        optionLabel="name"
-                        placeholder="Вибрати"
-                    />
-                </div>
+                <FormSection
+                    title="Балкон / Тераса"
+                    v-model="property.balconyTerrace"
+                    :options="dropdowns.balconyTerrace"
+                />
             </div>
 
             <div class="md:w-1/2">
                 <PropertyFloors
-                    ref="areaFloorsForm"
+                    ref="floorsForm"
                     v-model="property.floors"
-                    @validation-change="handleFloorsValidation"
+                    @validation-change="handleValidation('floors', $event)"
                 />
 
                 <PropertyRooms
                     ref="roomsForm"
                     v-model="property"
                     :dropdowns="dropdowns"
-                    @validation-change="handleRoomsValidation"
+                    @validation-change="handleValidation('rooms', $event)"
                 />
 
                 <PropertyCondition
                     ref="conditionForm"
                     v-model="property"
                     :dropdowns="dropdowns"
-                    @validation-change="handleConditionValidation"
+                    @validation-change="handleValidation('condition', $event)"
                 />
 
-                <PropertyDetails
+                <FormDetails
                     ref="detailsForm"
                     v-model="property"
                 />
 
-                <div class="card flex flex-col gap-4">
-                    <div class="font-semibold text-xl">Проживання тварин</div>
-                    <ToggleButton v-model="property.animal" onLabel="Так" offLabel="Ні" :style="{ width: '10em' }" />
+                <FormSection
+                    title="Проживання тварин"
+                    v-model="property.animal"
+                    type="toggle"
+                />
 
-                    <!-- Емодзі тварин -->
-                    <div v-if="property.animal" class="text-3xl mt-2">
-                        🐶 🐱 🐰 🦜 🐠
-                    </div>
-                </div>
-
-                <div class="card flex flex-col gap-4">
-                    <div class="font-semibold text-xl">Готовність об'єкта</div>
-                    <DatePicker
-                        :showIcon="true"
-                        :showButtonBar="true"
-                        v-model="property.facilityReadiness"
-                    ></DatePicker>
-                </div>
+                <FormSection
+                    title="Готовність об'єкта"
+                    v-model="property.facilityReadiness"
+                    type="date"
+                />
             </div>
         </Fluid>
 
         <Fluid class="flex flex-col mt-8">
-            <div class="card flex flex-col gap-4 w-full">
-                <div class="flex flex-col md:flex-row gap-4">
-                    <div class="font-semibold text-xl">Додадковий опис об'єкта</div>
-                    <Editor v-model="property.description" editorStyle="height: 320px" />
-                </div>
-            </div>
+            <PropertyDescription
+                v-model="property.description"
+            />
 
-            <div class="field col-12">
-                <label>Фотографії</label>
-                <div class="field col-12">
-                    <FileUpload
-                        ref="fileUpload"
-                        name="advanced"
-                        @uploader="onFileSelect"
-                        :multiple="true"
-                        accept="image/*"
-                        :maxFileSize="10000000"
-                        customUpload
-                        chooseLabel="Обрати"
-                        uploadLabel="Завантажити"
-                        cancelLabel="Скасувати"
-                    >
-                        <template #empty>
-                            <span>Перетягніть файли сюди, щоб завантажити.</span>
-                        </template>
-                    </FileUpload>
-
-                    <div v-if="images?.length" class="flex flex-wrap">
-                        <div
-                            v-for="(imageUrl, index) in images"
-                            :key="imageUrl"
-                            class="col-3 relative m-4"
-                        >
-                            <img
-                                :src="imageUrl"
-                                class="w-full h-auto object-cover"
-                                style="height: 100px; width: 100px"
-                            />
-                            <Button
-                                icon="pi pi-trash"
-                                class="absolute top-0 right-0 p-button-danger p-button-rounded"
-                                @click="removeImage(imageUrl)"
-                                style="margin-top: -25px"
-                            />
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <PropertyImageUpload
+                :images="images"
+                @upload="onFileSelect"
+                @remove="removeImage"
+            />
         </Fluid>
 
         <Fluid class="flex mt-8">
-            <div class="font-semibold text-xl mr-2">Опублікувати</div>
-            <ToggleSwitch v-model="property.isPublic" />
+            <PublishToggle v-model="property.isPublic" />
         </Fluid>
 
         <Fluid class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-            <!-- Блок "Інформація про власника" -->
             <PropertyContactsInformation
                 ref="contactsInfoForm"
                 v-model="property"
-                @validation-change="handleContactsInfoValidation"
                 :dropdowns="dropdowns"
+                @validation-change="handleValidation('contactsInfo', $event)"
             />
 
-            <!-- Блок "Мої контакти" -->
             <MyContacts
                 v-model="property"
                 :contacts="contacts"
@@ -210,101 +143,75 @@
         </Fluid>
 
         <Fluid class="flex my-8">
-            <div class="field max-w-60">
-                <Button type="submit" label="Зберегти" icon="pi pi-check" :loading="saving" />
-            </div>
+<!--            <Button-->
+<!--                type="submit"-->
+<!--                label="Зберегти"-->
+<!--                icon="pi pi-check"-->
+<!--                :loading="saving"-->
+<!--                :disabled="!isFormValid"-->
+<!--            />-->
+            <Button
+                type="submit"
+                label="Зберегти"
+                icon="pi pi-check"
+                :loading="saving"
+            />
         </Fluid>
+
+        <Toast />
+
+        <div v-if="uploadVisible">
+            <UploadProgressToast :visible="uploadVisible"/>
+        </div>
     </Form>
-
-    <Toast />
-
-    <div class="card flex justify-center">
-        <Toast position="top-center" group="headless" @close="visible = false">
-            <template #container="{ message }">
-                <section class="flex flex-col p-4 gap-4 w-full bg-primary/70 rounded-xl">
-                    <div class="flex items-center gap-5">
-                        <i class="pi pi-cloud-upload text-white dark:text-black text-2xl"></i>
-                        <span class="font-bold text-base text-white dark:text-black">{{ message.summary }}</span>
-                    </div>
-                    <div class="flex flex-col gap-2">
-                        <ProgressBar :value="progress" :showValue="false" :style="{ height: '4px' }" pt:value:class="!bg-primary-50 dark:!bg-primary-900" class="!bg-primary/80"></ProgressBar>
-                        <label class="text-sm font-bold text-white dark:text-black">{{ progress }}% завантаження</label>
-                    </div>
-                </section>
-            </template>
-        </Toast>
-    </div>
-
 </template>
 
 <script setup>
-import { ref, onBeforeMount, computed, onUnmounted, reactive } from 'vue';
+import { ref, computed, onBeforeMount, onUnmounted } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import { useApartmentsStore } from '@/store/apartments';
 import { useAuthStore } from '@/store/authFirebase';
 import { PropertyManager } from '@/service/property/PropertyManagerAdd';
 
+// Component imports
 import PropertyAddress from '@/components/forms/PropertyAddress.vue';
 import PropertyBasicInfo from '@/components/forms/PropertyBasicInfo.vue';
 import PropertyAreaDetails from '@/components/forms/PropertyAreaDetails.vue';
 import PropertyFloors from '@/components/forms/PropertyFloors.vue';
 import PropertyRooms from '@/components/forms/PropertyRooms.vue';
 import PropertyCondition from '@/components/forms/PropertyCondition.vue';
-import PropertyDetails from '@/components/forms/PropertyDetails.vue';
+import FormDetails from '@/components/forms/FormDetails.vue';
 import PropertyContactsInformation from '@/components/forms/PropertyContactsInformation.vue';
 import MyContacts from '@/components/forms/MyContacts.vue';
-
-const areaDetailsForm = ref(null);
-const isAreaValid = ref(false);
-const handleAreaValidation = (isValid) => {
-    isAreaValid.value = isValid;
-};
-
-const basicInfoForm = ref(null);
-const isBasicInfoValid = ref(false);
-const handleBasicInfoValidation = (isValid) => {
-    isBasicInfoValid.value = isValid;
-};
-
-const areaFloorsForm = ref(null);
-const isFloorsValid = ref(false);
-const handleFloorsValidation = (isValid) => {
-    isFloorsValid.value = isValid;
-};
-
-const conditionForm = ref(null);
-const isConditionValid = ref(false);
-const handleConditionValidation = (isValid) => {
-    isConditionValid.value = isValid;
-};
-
-const roomsForm = ref(null);
-const isRoomsValid = ref(false);
-const handleRoomsValidation = (isValid) => {
-    isRoomsValid.value = isValid;
-};
-
-const contactsInfoForm = ref(null);
-const isContactsInfoValid = ref(false);
-const handleContactsInfoValidation = (isValid) => {
-    isContactsInfoValid.value = isValid;
-};
+import FormSection from '@/components/common/FormSection.vue';
+import PropertyDescription from '@/components/forms/PropertyDescription.vue';
+import PropertyImageUpload from '@/components/forms/PropertyImageUpload.vue';
+import PublishToggle from '@/components/common/PublishToggle.vue';
+import UploadProgressToast from '@/components/common/UploadProgressToast.vue';
 
 const toast = useToast();
 const store = useApartmentsStore();
 const authStore = useAuthStore();
 
-const saving = ref(false);
-const visible = ref(false);
-const progress = ref(0);
-const interval = ref(null);
-
 const propertyManager = new PropertyManager(authStore, store, toast);
+
+const formValidations = ref({
+    basicInfo: false,
+    area: false,
+    floors: false,
+    rooms: false,
+    condition: false,
+    contactsInfo: false
+});
+
+const saving = ref(false);
+const uploadVisible = ref(false);
 
 const property = computed(() => propertyManager.property);
 const images = computed(() => propertyManager.property.images);
 const contacts = computed(() => authStore.user);
 const dropdowns = computed(() => store.dropdowns);
+
 const selectedCategoryName = computed(() => {
     if (!dropdowns.value?.category || !Array.isArray(dropdowns.value.category)) {
         return 'Категорія не знайдена';
@@ -312,67 +219,42 @@ const selectedCategoryName = computed(() => {
     const category = dropdowns.value.category.find(item => item.code === property.value.category.code);
     return category ? category.name : 'Категорія не знайдена';
 });
+const isFormValid = computed(() =>
+    Object.values(formValidations.value).every(v => v)
+);
 
-const selectPropertySubcategory = (value) => {
-    const result = value.category.code + '-' + value.subcategory.code;
-    propertyManager.setPropertyType(result);
+const handleValidation = (formName, isValid) => {
+    formValidations.value[formName] = isValid;
 };
 
-const show = () => {
-    if (!visible.value) {
-        toast.add({ severity: 'custom', summary: 'Uploading files...', group: 'headless', styleClass: 'backdrop-blur-lg rounded-2xl' });
-        visible.value = true;
-        progress.value = 0;
-
-        if (interval.value) {
-            clearInterval(interval.value);
-        }
-
-        interval.value = setInterval(() => {
-            progress.value = Math.min(progress.value + 20, 100);
-            if (progress.value >= 100) clearInterval(interval.value);
-        }, 500);
+const saveProperty = async ({ valid }) => {
+    if (valid && isFormValid.value) {
+        saving.value = true;
+        await propertyManager.saveProperty();
+        saving.value = false;
+    } else {
+        toast.add({
+            severity: 'error',
+            summary: 'Помилка',
+            detail: 'Перевірте форму на помилки'
+        });
     }
+};
+
+const onFileSelect = async (files) => {
+    uploadVisible.value = true;
+    await propertyManager.uploadImages(files);
+    uploadVisible.value = false;
+};
+
+const removeImage = async (imageUrl) => {
+    uploadVisible.value = true;
+    await propertyManager.removeImage(imageUrl);
+    uploadVisible.value = false;
 };
 
 onBeforeMount(async () => {
     await authStore.getCurrentUser();
     propertyManager.setPropertyType('houses-sell');
 });
-
-onUnmounted(() => {
-    if (interval.value) {
-        clearInterval(interval.value);
-    }
-});
-
-const removeImage = async (imageUrl) => {
-    await propertyManager.removeImage(imageUrl);
-};
-
-const onFileSelect = async (event) => {
-    show();
-    await propertyManager.uploadImages(event.files);
-    toast.removeGroup('headless');
-};
-
-const handleSubcategoryChange = (value) => {
-    selectPropertySubcategory(value);
-};
-
-const saveProperty = async ({ valid }) => {
-    const isValidBasicInfo = await basicInfoForm.value.validate();
-    const isValidDetail = await areaDetailsForm.value.validate();
-    const isValidFloors = await areaFloorsForm.value.validateAll();
-    const isValidRooms = await roomsForm.value.validate();
-    const isValidCondition = await conditionForm.value.validate();
-    const isValidContactsInfo = await contactsInfoForm.value.validate();
-    if (valid && isValidBasicInfo && isValidDetail && isValidFloors && isValidCondition && isValidRooms && isValidContactsInfo) {
-        saving.value = true;
-        await propertyManager.saveProperty();
-        saving.value = false;
-    } else {
-        toast.add({ severity: 'error', summary: 'Помилка', detail: 'Перевірте форму на помилки', life: 3000 });
-    }
-};
 </script>

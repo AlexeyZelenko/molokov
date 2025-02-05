@@ -42,7 +42,7 @@
 </template>
 
 <script setup>
-import { computed, watch, onMounted } from 'vue';
+import { computed, watch } from 'vue';
 
 const props = defineProps({
     modelValue: {
@@ -91,28 +91,10 @@ const isValidForm = () => {
 
 watch(
     () => props.modelValue,
-    () => {
-        emit('validation-change', isValidForm());
-    },
+    () => {}, // Прибрано валідацію
     { deep: true }
 );
 
 // Export validateFields for parent component use
 defineExpose({ validate: isValidForm });
-
-onMounted(() => {
-    emit('validation-change', isValidForm());
-});
 </script>
-
-<style scoped>
-.text-red-500 {
-    color: #dc3545;
-}
-.p-invalid {
-    border-color: #dc3545 !important;
-}
-.p-invalid:focus {
-    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
-}
-</style>

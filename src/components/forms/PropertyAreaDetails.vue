@@ -2,7 +2,7 @@
     <div class="card flex flex-col gap-4">
         <div class="font-semibold text-xl">Площа(м²)</div>
 
-        <div class="font-semibold text-sm">Загальна площа</div>
+        <div class="font-semibold text-sm">Загальна площа *</div>
         <InputNumber
             v-model="modelValue.totalArea"
             showButtons
@@ -17,7 +17,7 @@
             {{ errors.totalArea }}
         </small>
 
-        <div class="font-semibold text-sm">Жила площа квартири</div>
+        <div class="font-semibold text-sm">Жила площа квартири *</div>
         <InputNumber
             v-model="modelValue.livingArea"
             showButtons
@@ -31,7 +31,7 @@
             {{ errors.livingArea }}
         </small>
 
-        <div class="font-semibold text-sm">Площа кухні</div>
+        <div class="font-semibold text-sm">Площа кухні *</div>
         <InputNumber
             v-model="modelValue.kitchenArea"
             showButtons
