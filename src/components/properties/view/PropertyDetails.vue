@@ -50,6 +50,10 @@
                     :address="property.address"
                 />
 
+                <PropertyFloors
+                    :property="property"
+                />
+
                 <PropertyAmenities
                     :property="property"
                 />
@@ -105,6 +109,7 @@ import PropertyDescription from './descriptions/PropertyDescription.vue';
 import PropertyContacts from './contacts/PropertyContacts.vue';
 import PropertyAmenities from './amenities/PropertyAmenities.vue';
 import PropertyReadiness from './readiness/PropertyReadiness.vue';
+import PropertyFloors from './floors/PropertyFloors.vue';
 
 import PropertyApartment from './categories/apartment/index.vue';
 import PropertyHouse from './categories/house/index.vue';

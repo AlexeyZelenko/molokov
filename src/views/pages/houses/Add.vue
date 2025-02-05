@@ -69,24 +69,30 @@
                     <Select v-model="property.balconyTerrace" :options="dropdowns.balconyTerrace" optionLabel="name" placeholder="Вибрати" />
                 </div>
             </div>
+
             <div class="md:w-1/2">
-                <div class="card flex flex-col gap-4">
-                    <div class="font-semibold text-xl">Поверховість</div>
-                    <div class="font-semibold text-sm">Поверх</div>
-                    <InputNumber name="propertyFloorsFloor" v-model="property.floors.floor"  showButtons mode="decimal" required></InputNumber>
-                    <Message
-                        v-if="$form.propertyFloorsFloor?.invalid"
-                        severity="error" size="small"
-                        variant="simple">
-                        {{ $form.propertyFloorsFloor.error?.message }}
-                    </Message>
+                <PropertyFloors
+                    ref="areaFloorsForm"
+                    v-model="property.floors"
+                    @validation-change="handleFloorsValidation"
+                />
+<!--                <div class="card flex flex-col gap-4">-->
+<!--                    <div class="font-semibold text-xl">Поверховість</div>-->
+<!--                    <div class="font-semibold text-sm">Поверх</div>-->
+<!--                    <InputNumber name="propertyFloorsFloor" v-model="property.floors.floor"  showButtons mode="decimal" required></InputNumber>-->
+<!--                    <Message-->
+<!--                        v-if="$form.propertyFloorsFloor?.invalid"-->
+<!--                        severity="error" size="small"-->
+<!--                        variant="simple">-->
+<!--                        {{ $form.propertyFloorsFloor.error?.message }}-->
+<!--                    </Message>-->
 
-                    <div class="font-semibold text-sm">Поверховість будівлі</div>
-                    <InputNumber v-model="property.floors.totalFloorsBuilding"  showButtons mode="decimal" required></InputNumber>
+<!--                    <div class="font-semibold text-sm">Поверховість будівлі</div>-->
+<!--                    <InputNumber v-model="property.floors.totalFloorsBuilding"  showButtons mode="decimal" required></InputNumber>-->
 
-                    <div class="font-semibold text-sm">Кількість поверхів у приміщенні</div>
-                    <InputNumber v-model="property.floors.totalFloors"  showButtons mode="decimal" required></InputNumber>
-                </div>
+<!--                    <div class="font-semibold text-sm">Кількість поверхів у приміщенні</div>-->
+<!--                    <InputNumber v-model="property.floors.totalFloors"  showButtons mode="decimal" required></InputNumber>-->
+<!--                </div>-->
 
                 <div class="card flex flex-col gap-4">
                     <div class="font-semibold text-xl">Кількість кімнат</div>
@@ -356,6 +362,7 @@ import GoogleMapAddApartment from '@/components/googleMap/AddApartment.vue';
 import PropertyAddress from '@/components/forms/PropertyAddress.vue';
 import PropertyBasicInfo from '@/components/forms/PropertyBasicInfo.vue';
 import PropertyAreaDetails from '@/components/forms/PropertyAreaDetails.vue';
+import PropertyFloors from '@/components/forms/PropertyFloors.vue';
 import PropertyRooms from '@/components/forms/PropertyRooms.vue';
 import PropertyCondition from '@/components/forms/PropertyCondition.vue';
 
@@ -369,6 +376,12 @@ const basicInfoForm = ref(null);
 const isBasicInfoValid = ref(false);
 const handleBasicInfoValidation = (isValid) => {
     isBasicInfoValid.value = isValid;
+};
+
+const areaFloorsForm = ref(null);
+const isFloorsValid = ref(false);
+const handleFloorsValidation = (isValid) => {
+    isFloorsValid.value = isValid;
 };
 
 const toast = useToast();
@@ -441,10 +454,15 @@ const updateMarkerPosition = (position) => {
     propertyManager.updateMarkerPosition(position);
 };
 
+const handleSubcategoryChange = (value) => {
+    selectPropertySubcategory(value);
+};
+
 const saveProperty = async ({ valid }) => {
-    const isValidBasicInfo = basicInfoForm.value.validate();
-    const isValidDetail = areaDetailsForm.value.validate();
-    if (valid && isValidBasicInfo && isValidDetail) {
+    const isValidBasicInfo = await basicInfoForm.value.validate();
+    const isValidDetail = await areaDetailsForm.value.validate();
+    const isValidFloors = await areaFloorsForm.value.validateAll();
+    if (valid && isValidBasicInfo && isValidDetail && isValidFloors) {
         saving.value = true;
         await propertyManager.saveProperty();
         saving.value = false;
