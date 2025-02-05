@@ -77,52 +77,13 @@
                     @validation-change="handleFloorsValidation"
                 />
 
-                <div class="card flex flex-col gap-4">
-                    <div class="font-semibold text-xl">Кількість кімнат</div>
-                    <div class="font-semibold text-sm">Кількість кімнат</div>
-                    <InputNumber name="propertyRoomsAll" v-model="property.rooms.all"  showButtons mode="decimal" required></InputNumber>
-                    <Message
-                        v-if="$form.propertyRoomsAll?.invalid"
-                        severity="error" size="small"
-                        variant="simple">
-                        {{ $form.propertyRoomsAll.error?.message }}
-                    </Message>
+                <PropertyRooms
+                    ref="roomsForm"
+                    v-model="property"
+                    :dropdowns="dropdowns"
+                    @validation-change="handleRoomsValidation"
+                />
 
-                    <div class="font-semibold text-sm">Кількість спалень</div>
-                    <InputNumber v-model="property.rooms.bedrooms"  showButtons mode="decimal" required></InputNumber>
-
-
-                    <div class="font-semibold text-sm">Кількість ванних кімнат</div>
-                    <InputNumber v-model="property.rooms.bathrooms"  showButtons mode="decimal" required></InputNumber>
-
-                    <div class="font-semibold text-sm">Кількість кухонь</div>
-                    <InputNumber v-model="property.rooms.kitchens"  showButtons mode="decimal" required></InputNumber>
-
-                    <div class="font-semibold text-xl">Планування</div>
-                    <div class="font-semibold text-sm">Планування квартири</div>
-                    <Select
-                        name="propertyPlanning"
-                        v-model="property.planning"
-                        :options="dropdowns.planning" optionLabel="name" placeholder="Select" required/>
-                    <Message
-                        v-if="$form.propertyPlanning?.invalid"
-                        severity="error" size="small"
-                        variant="simple">
-                        {{ $form.propertyPlanning.error?.message }}
-                    </Message>
-
-                    <div class="font-semibold text-sm">Планування санвузла</div>
-                    <Select
-                        name="propertyBathroom"
-                        v-model="property.bathroom"
-                        :options="dropdowns.bathroom" optionLabel="name" placeholder="Select" required/>
-                    <Message
-                        v-if="$form.propertyBathroom?.invalid"
-                        severity="error" size="small"
-                        variant="simple">
-                        {{ $form.propertyBathroom.error?.message }}
-                    </Message>
-                </div>
 
                 <PropertyCondition
                     ref="conditionForm"
@@ -356,6 +317,12 @@ const handleConditionValidation = (isValid) => {
     isConditionValid.value = isValid;
 };
 
+const roomsForm = ref(null);
+const isRoomsValid = ref(false);
+const handleRoomsValidation = (isValid) => {
+    isRoomsValid.value = isValid;
+};
+
 const toast = useToast();
 const store = useApartmentsStore();
 const authStore = useAuthStore();
@@ -434,9 +401,10 @@ const saveProperty = async ({ valid }) => {
     const isValidBasicInfo = await basicInfoForm.value.validate();
     const isValidDetail = await areaDetailsForm.value.validate();
     const isValidFloors = await areaFloorsForm.value.validateAll();
-    console.log(conditionForm.value)
+    console.log(roomsForm.value);
+    const isValidRooms = await roomsForm.value.validate();
     const isValidCondition = await conditionForm.value.validate();
-    if (valid && isValidBasicInfo && isValidDetail && isValidFloors && isValidCondition) {
+    if (valid && isValidBasicInfo && isValidDetail && isValidFloors && isValidCondition && isValidRooms) {
         saving.value = true;
         await propertyManager.saveProperty();
         saving.value = false;
