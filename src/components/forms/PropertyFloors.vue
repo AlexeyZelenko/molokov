@@ -51,7 +51,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watchEffect } from 'vue';
+import { ref, watch } from 'vue';
 
 const props = defineProps({
     modelValue: {
@@ -126,27 +126,21 @@ const validateField = (fieldName) => {
 };
 
 // Валидация всех полей
-const validateAll = () => {
+const validate = () => {
     const validationResults = Object.keys(validationRules).map(field => validateField(field));
     const isValid = validationResults.every(Boolean);
     emit('validation-change', isValid);
     return isValid;
 };
 
-// Вычисляемое свойство для проверки валидности всей формы
-const isFormValid = computed(() => {
-    return Object.values(errors.value).every(error => !error);
-});
+// Следим за изменениями формы и обновляем родительский компонент
+watch(formData, (newValue) => {
+    emit('update:modelValue', { ...newValue });
+}, { deep: true });
 
-watchEffect(() => {
-    validateAll();
-    emit('update:modelValue', { ...formData.value });
-});
-
-// Делаем доступными методы для родительского компонента
+// Экспортируем методы для родительского компонента
 defineExpose({
-    validateAll,
-    isFormValid,
+    validate,
     reset: () => {
         formData.value = {
             floor: null,

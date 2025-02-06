@@ -4,7 +4,6 @@
         <InputText
             id="categoryProperty"
             :value="selectedCategoryName"
-            required
             disabled
         />
 
@@ -54,7 +53,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 
 const props = defineProps({
     modelValue: {
@@ -79,7 +78,7 @@ const errors = ref({
     priceUSD: ''
 });
 
-// Custom validation rules
+// Валидация полей
 const validateTitle = (value) => {
     if (!value) return 'Назва обов\'язкова';
     if (value.length < 3) return 'Назва повинна містити мінімум 3 символи';
@@ -94,6 +93,7 @@ const validatePrice = (value) => {
     return '';
 };
 
+// Метод валидации, вызываемый из родителя
 const validateFields = () => {
     errors.value = {
         subcategory: !props.modelValue.subcategory ? 'Мета використання обов\'язкова' : '',
@@ -101,47 +101,29 @@ const validateFields = () => {
         priceUSD: validatePrice(props.modelValue.priceUSD)
     };
 
-    // Remove empty error messages
+    // Убираем пустые ошибки
     Object.keys(errors.value).forEach(key => {
         if (!errors.value[key]) {
             delete errors.value[key];
         }
     });
 
-    // Emit validation state
+    // Сообщаем родителю о результате валидации
     const isValid = Object.keys(errors.value).length === 0;
     emit('validation-change', isValid);
 
     return isValid;
 };
 
-// Handle subcategory change with validation
+// Обработчик изменения подкатегории
 const handleSubcategoryChange = () => {
-    validateFields();
     emit('subcategory-change', props.modelValue);
 };
 
-// Watch for changes in modelValue and validate
-watch(() => props.modelValue, () => {
-    validateFields();
-}, { deep: true });
-
-// Debounced validation for title to prevent too frequent validation
-let titleTimeout;
-watch(() => props.modelValue.title, (newValue) => {
-    clearTimeout(titleTimeout);
-    titleTimeout = setTimeout(() => {
-        errors.value.title = validateTitle(newValue);
-        if (!errors.value.title) {
-            delete errors.value.title;
-        }
-        validateFields();
-    }, 300);
-});
-
-// Export validateFields for parent component use
+// Экспорт метода валидации, чтобы родитель мог его вызвать
 defineExpose({ validate: validateFields });
 </script>
+
 
 <style scoped>
 .p-invalid {

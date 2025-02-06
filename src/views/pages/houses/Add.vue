@@ -1,5 +1,5 @@
 <template>
-    <Form v-slot="$form" @submit="saveProperty">
+    <Form @submit="saveProperty">
         <Fluid class="flex flex-col md:flex-row gap-8">
             <div class="md:w-1/2">
                 <PropertyBasicInfo
@@ -143,13 +143,6 @@
         </Fluid>
 
         <Fluid class="flex my-8">
-<!--            <Button-->
-<!--                type="submit"-->
-<!--                label="Зберегти"-->
-<!--                icon="pi pi-check"-->
-<!--                :loading="saving"-->
-<!--                :disabled="!isFormValid"-->
-<!--            />-->
             <Button
                 type="submit"
                 label="Зберегти"
@@ -189,6 +182,57 @@ import PropertyImageUpload from '@/components/forms/PropertyImageUpload.vue';
 import PublishToggle from '@/components/common/PublishToggle.vue';
 import UploadProgressToast from '@/components/common/UploadProgressToast.vue';
 
+const basicInfoForm = ref(null);
+const areaDetailsForm = ref(null);
+const floorsForm = ref(null);
+const roomsForm = ref(null);
+const conditionForm = ref(null);
+const contactsInfoForm = ref(null);
+
+const validateAllForms = async () => {
+    console.log('validateAllForms');
+    const validations = await Promise.all([
+        basicInfoForm.value?.validate(),
+        areaDetailsForm.value?.validate(),
+        floorsForm.value?.validate(),
+        roomsForm.value?.validate(),
+        conditionForm.value?.validate(),
+        contactsInfoForm.value?.validate()
+    ]);
+    console.log('validations', validations);
+
+    // Убрать undefined/null из массива перед проверкой
+    const filteredValidations = validations.filter(v => v !== undefined && v !== null);
+    return filteredValidations.length > 0 && filteredValidations.every(v => v === true);
+};
+
+const saveProperty = async () => {
+    const isValid = await validateAllForms();
+
+    if (isValid) {
+        try {
+            saving.value = true;
+            await propertyManager.saveProperty();
+        } catch (error) {
+            toast.add({
+                severity: 'error',
+                summary: 'Помилка',
+                detail: 'Помилка при збереженні оголошення',
+                life: 5000
+            });
+        } finally {
+            saving.value = false;
+        }
+    } else {
+        toast.add({
+            severity: 'error',
+            summary: 'Помилка',
+            detail: 'Перевірте форму на помилки',
+            life: 5000
+        });
+    }
+};
+
 const toast = useToast();
 const store = useApartmentsStore();
 const authStore = useAuthStore();
@@ -219,29 +263,11 @@ const selectedCategoryName = computed(() => {
     const category = dropdowns.value.category.find(item => item.code === property.value.category.code);
     return category ? category.name : 'Категорія не знайдена';
 });
-const isFormValid = computed(() =>
-    Object.values(formValidations.value).every(v => v)
-);
 
 const handleValidation = (formName, isValid) => {
+    // console.log('formName', formName, 'isValid', isValid);
     formValidations.value[formName] = isValid;
 };
-
-const saveProperty = async ({ valid }) => {
-    if (valid && isFormValid.value) {
-        saving.value = true;
-        await propertyManager.saveProperty();
-        saving.value = false;
-    } else {
-        toast.add({
-            severity: 'error',
-            summary: 'Помилка',
-            detail: 'Перевірте форму на помилки',
-            life: 5000
-        });
-    }
-};
-
 const onFileSelect = async (files) => {
     uploadVisible.value = true;
     await propertyManager.uploadImages(files);

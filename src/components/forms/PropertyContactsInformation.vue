@@ -100,10 +100,6 @@ const validateFields = () => {
     return isValid;
 };
 
-watch(() => props.modelValue, () => {
-    validateFields();
-}, { deep: true });
-
 defineExpose({ validate: validateFields });
 </script>
 

@@ -90,7 +90,7 @@ const validateKitchenArea = (value, totalArea, livingArea) => {
     return '';
 };
 
-const validateAll = () => {
+const validate = () => {
     const { totalArea, livingArea, kitchenArea } = props.modelValue;
 
     errors.value = {
@@ -114,12 +114,12 @@ const validateAll = () => {
 };
 
 // Watch for changes in individual values
-watch(() => props.modelValue.totalArea, () => validateAll());
-watch(() => props.modelValue.livingArea, () => validateAll());
-watch(() => props.modelValue.kitchenArea, () => validateAll());
+watch(() => props.modelValue.totalArea, () => validate());
+watch(() => props.modelValue.livingArea, () => validate());
+watch(() => props.modelValue.kitchenArea, () => validate());
 
 // Export validation method for parent component
-defineExpose({ validate: validateAll });
+defineExpose({ validate });
 </script>
 
 <style scoped>

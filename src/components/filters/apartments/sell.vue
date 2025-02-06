@@ -406,40 +406,38 @@ const roomsAll = computed(() => {
 });
 
 const address = computed(() => {
-    // Общая функция для обработки и исключения дубликатов на основе уникального поля
     const processAddressField = (field) => {
         const values = storeCategories.properties
+            .filter(property => property.address && property.address[field])
             .map(property => property.address[field])
-            .flat() // Разворачиваем массив, чтобы работать с отдельными объектами
-            .filter(value => value !== null && value !== '' && value !== undefined); // Исключаем пустые значения
+            .flat()
+            .filter(value => value !== null && value !== '' && value !== undefined);
 
-        // Убираем дубли по 'code' в каждом объекте
         const uniqueValues = [];
         values.forEach(value => {
-            if (!uniqueValues.some(item => item.code === value.code)) {
+            if (value && value.code && !uniqueValues.some(item => item.code === value.code)) {
                 uniqueValues.push(value);
             }
         });
 
-        // Сортировка по имени
-        return uniqueValues.sort((a, b) => a.name.localeCompare(b.name));
+        return uniqueValues.sort((a, b) => {
+            if (!a.name || !b.name) return 0;
+            return a.name.localeCompare(b.name);
+        });
     };
 
-    // Обработка region
     const region = {
         name: 'Регіон',
         key: 'region',
         value: processAddressField('region')
     };
 
-    // Обработка city
     const city = {
         name: 'Місто',
         key: 'city',
         value: processAddressField('city')
     };
 
-    // Обработка area
     const area = {
         name: 'Район',
         key: 'area',
@@ -450,26 +448,25 @@ const address = computed(() => {
 });
 
 const utilities = computed(() => {
-    // Общая функция для обработки и исключения дубликатов на основе уникального поля
     const processUtilityField = (field) => {
         const values = storeCategories.properties
+            .filter(property => property.utilities && property.utilities[field])
             .map(property => property.utilities[field])
-            .filter(value => value !== null && value !== undefined); // Исключаем пустые значения
+            .filter(value => value !== null && value !== undefined);
 
-        // Убираем дубликаты по уникальному полю (например, 'code')
         const uniqueValues = [];
         values.forEach(value => {
-            // Проверяем, что такого элемента еще нет в uniqueValues
-            if (!uniqueValues.some(item => item.code === value.code)) {
+            if (value && value.code && !uniqueValues.some(item => item.code === value.code)) {
                 uniqueValues.push(value);
             }
         });
 
-        // Сортировка значений
-        return uniqueValues.sort((a, b) => a.name.localeCompare(b.name)); // Для строк сортировка по алфавиту
+        return uniqueValues.sort((a, b) => {
+            if (!a.name || !b.name) return 0;
+            return a.name.localeCompare(b.name);
+        });
     };
 
-    // Обработка utilities
     const electricity = {
         name: 'Електрика',
         key: 'electricity',
