@@ -4,21 +4,21 @@
             <p class="mb-2">{{ field.label }} *</p>
             <component
                 :is="field.component"
-                v-model="modelValue[key]"
+                v-model="modelValue[field.code]"
                 :options="dropdowns[key]"
                 optionLabel="name"
                 :placeholder="field.placeholder"
-                :class="{'p-invalid': errors[key]}"
+                :class="{'p-invalid': errors[field.code]}"
                 class="w-full"
                 size="small"
             />
-            <small class="text-red-500" v-if="errors[key]">{{ errors[key] }}</small>
+            <small class="text-red-500" v-if="errors[field.code]">{{ errors[field.code] }}</small>
         </label>
     </div>
 </template>
 
 <script setup>
-import { ref, watch, computed } from 'vue';
+import { ref, computed } from 'vue';
 import SelectButton from 'primevue/selectbutton';
 import Select from 'primevue/select';
 
@@ -30,25 +30,45 @@ const emit = defineEmits(['update:modelValue', 'validation-change']);
 const errors = ref({});
 
 const fields = computed(() => ({
-    conditions: { label: "Стан нерухомості", component: SelectButton },
-    buildingTypes: { label: "Тип будівлі", component: Select, placeholder: "Оберіть тип будівлі" },
-    objectClass: { label: "Клас об'єкта", component: Select, placeholder: "Оберіть клас" },
-    reconditioning: { label: "Ремонт", component: Select, placeholder: "Оберіть тип ремонту" }
+    conditions: {
+        label: "Стан нерухомості",
+        component: SelectButton,
+        code: 'condition'
+    },
+    buildingTypes: {
+        label: "Тип будівлі",
+        component: Select,
+        placeholder: "Оберіть тип будівлі",
+        code: 'buildingType'
+    },
+    objectClass: {
+        label: "Клас об'єкта",
+        component: Select,
+        placeholder: "Оберіть клас",
+        code: 'objectClass'
+    },
+    reconditioning: {
+        label: "Ремонт",
+        component: Select,
+        placeholder: "Оберіть тип ремонту",
+        code: 'reconditioning'
+    }
 }));
 
 const validateFields = () => {
-    errors.value = Object.keys(fields.value).reduce((acc, key) => {
-        if (!props.modelValue[key]) {
-            acc[key] = `${fields.value[key].label} обов'язковий`;
+    errors.value = {};
+
+    Object.entries(fields.value).forEach(([key, field]) => {
+        if (!props.modelValue[field.code]) {
+            errors.value[key] = `${field.label} обов'язковий`;
         }
-        return acc;
-    }, {});
+    });
 
-    emit('validation-change', Object.keys(errors.value).length === 0);
+    const isValid = Object.keys(errors.value).length === 0;
+    emit('validation-change', isValid);
 
-    return Object.keys(errors.value).length === 0;
+    return isValid;
 };
-
 
 defineExpose({ validate: validateFields });
 </script>
