@@ -70,6 +70,7 @@ watch(() => store.properties, () => {
 
 <template>
     <div class="flex flex-col">
+        {{props.category}}
         <ConfirmationModal />
         <div class="card">
             <div class="font-semibold text-xl">{{categoryName}} / {{subcategoryName}}</div>

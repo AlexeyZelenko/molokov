@@ -50,7 +50,7 @@ export const useAreasStore = defineStore('areas', {
             {
                 id: 2,
                 title: 'Приватний сектор',
-                key: 'buildings',
+                key: 'houses',
                 image: '/images/houses.jpg',
                 actions: [
                     {type: 'sell', label: 'Продаж', icon: 'pi pi-home'},
@@ -62,7 +62,7 @@ export const useAreasStore = defineStore('areas', {
             {
                 id: 3,
                 title: 'Приміщення',
-                key: 'commercial',
+                key: 'offices',
                 image: '/images/commercial.jpg',
                 actions: [
                     {type: 'sell', label: 'Продаж', icon: 'pi pi-home'},
@@ -74,7 +74,7 @@ export const useAreasStore = defineStore('areas', {
             {
                 id: 4,
                 title: 'Будівлі',
-                key: 'houses',
+                key: 'commercial',
                 image: '/images/buildings.jpg',
                 actions: [
                     {type: 'sell', label: 'Продаж', icon: 'pi pi-home'},
@@ -87,6 +87,18 @@ export const useAreasStore = defineStore('areas', {
                 id: 5,
                 title: 'Земельні ділянки',
                 key: 'land',
+                image: '/images/land.jpg',
+                actions: [
+                    {type: 'sell', label: 'Продаж', icon: 'pi pi-home'},
+                    {type: 'rent', label: 'Оренда', icon: 'pi pi-key'},
+                    {type: 'exchange', label: 'Обмін', icon: 'pi pi-sync'},
+                    {type: 'daily', label: 'Подобово', icon: 'pi pi-clock'}
+                ],
+            },
+            {
+                id: 6,
+                title: 'Інше',
+                key: 'other',
                 image: '/images/land.jpg',
                 actions: [
                     {type: 'sell', label: 'Продаж', icon: 'pi pi-home'},
