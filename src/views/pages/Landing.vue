@@ -15,7 +15,7 @@ import TopbarWidget from '@/components/landing/TopbarWidget.vue';
             </div>
             <HeroWidget />
             <FeaturesWidget />
-<!--            <HighlightsWidget />-->
+            <HighlightsWidget />
 <!--            <PricingWidget />-->
             <FooterWidget />
         </div>
