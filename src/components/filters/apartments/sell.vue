@@ -2,30 +2,57 @@
     <div class="flex flex-col">
         <div class="sticky top-0 z-10 py-4">
             <div class="flex justify-between font-semibold text-xl">
-                <div class="flex flex-col">
-                    <div class="mb-1">Фільтри</div>
-                    <Button
-                        @click="clearFilters"
-                        type="button"
-                        label="Скинути"
-                        :icon="countFilterParams ? 'pi pi-filter' : 'pi pi-filter-slash'"
-                        :badge="countFilterParams"
-                        badgeSeverity="contrast"
-                        variant="outlined"
-                    />
-                    <Button
-                        :label="allPanelsOpen ? 'Закрити всі фільтри' : 'Відкрити всі фільтри'"
-                        @click="toggleAllPanels"
-                        class="mt-2"
-                        variant="outlined"
-                    />
-                </div>
+                Фільтри
                 <Button icon="pi pi-times" severity="help" rounded variant="outlined" aria-label="Cancel" @click="handleClose"/>
             </div>
         </div>
         <div class="flex flex-col gap-3 overflow-y-auto p-4">
 
+            <div class="flex flex-col">
+                <Button
+                    @click="clearFilters"
+                    type="button"
+                    label="Скинути"
+                    :icon="countFilterParams ? 'pi pi-filter' : 'pi pi-filter-slash'"
+                    :badge="countFilterParams"
+                    badgeSeverity="contrast"
+                    variant="outlined"
+                />
+                <Button
+                    :label="allPanelsOpen ? 'Закрити всі фільтри' : 'Відкрити всі фільтри'"
+                    @click="toggleAllPanels"
+                    class="mt-2"
+                    variant="outlined"
+                />
+            </div>
+
             <Accordion v-model:value="activePanels" :multiple="true">
+                <AccordionPanel value="selectedFilters">
+                    <AccordionHeader class="font-semibold text-xl mb-4">
+                        Вибрані фільтри
+                        <OverlayBadge v-if="countFilterParams" :value="countFilterParams">
+                            <i
+                                :class="countFilterParams ? 'pi pi-filter' : 'pi pi-filter-slash'"
+                                style="font-size: 1.5rem"
+                            />
+                        </OverlayBadge>
+                        <i
+                            v-else
+                            class="pi pi-filter-slash"
+                            style="font-size: 1.5rem"
+                        />
+                    </AccordionHeader>
+                    <AccordionContent>
+                        <div
+                            v-for="filter in getSelectedFilters"
+                            :key="filter.key"
+                            class="flex justify-between items-center bg-gray-100 dark:bg-gray-800 p-1 rounded-lg mt-2"
+                        >
+                            <p class="font-light text-sm">{{ filter.displayName }}: {{ filter.value }}</p>
+                        </div>
+                    </AccordionContent>
+                </AccordionPanel>
+
                 <AccordionPanel value="location">
                     <AccordionHeader class="font-semibold text-xl mb-4">Росташування</AccordionHeader>
                     <AccordionContent>
@@ -543,6 +570,148 @@ const utilities = computed(() => {
     };
 
     return { electricity, water, sewerage, gas, heating, internet, TV };
+});
+
+const getSelectedFilters = computed(() => {
+    const selectedFilters = [];
+
+    for (const [key, value] of Object.entries(filters.value)) {
+        if (value !== null && value !== undefined && value !== '') {
+            const parts = key.split('.');
+            let displayName = '';
+            let displayValue = value;
+            console.log(parts);
+
+            // Handle different filter types
+            if (parts[0] === 'rooms') {
+                const roomType = roomsAll.value[parts[1]];
+                displayName = roomType.name;
+            } else if (parts[0] === 'address') {
+                const addressType = address.value[parts[1]];
+                displayName = addressType.name;
+                const addressItem = addressType.value.find(item => item.code === value);
+                if (addressItem) {
+                    displayValue = addressItem.name;
+                }
+            } else if (parts[0] === 'utilities') {
+                const utilityType = utilities.value[parts[1]];
+                displayName = utilityType.name;
+                const utilityItem = utilityType.value.find(item => item.code === value);
+                if (utilityItem) {
+                    displayValue = utilityItem.name;
+                }
+            } else if (parts[0] === 'condition' && parts[1] === 'value') {
+                displayName = 'Стан будинку';
+                const conditionItem = condition.value.find(item => item.value === value);
+                console.log(conditionItem);
+                if (conditionItem) {
+                    displayValue = conditionItem.name;
+                }
+            } else if (parts[0] === 'reconditioning' && parts[1] === 'value') {
+                displayName = 'Ремонт';
+                const reconditioningItem = reconditioning.value.find(item => item.value === value);
+                if (reconditioningItem) {
+                    displayValue = reconditioningItem.name;
+                }
+            } else if (parts[0] === 'balconyTerrace' && parts[1] === 'code') {
+                displayName = 'Балкон/Тераса';
+                const balconyItem = balconyTerrace.value.find(item => item.code === value);
+                if (balconyItem) {
+                    displayValue = balconyItem.name;
+                }
+            } else if (parts[0] === 'heatingType' && parts[1] === 'value') {
+                displayName = 'Тип опалення';
+                const heatingItem = heatingTypes.value.find(item => item.value === value);
+                if (heatingItem) {
+                    displayValue = heatingItem.name;
+                }
+            } else if (parts[0] === 'objectClass' && parts[1] === 'value') {
+                displayName = 'Клас';
+                const classItem = objectClass.value.find(item => item.value === value);
+                if (classItem) {
+                    displayValue = classItem.name;
+                }
+            } else if (parts[0] === 'buildingType' && parts[1] === 'value') {
+                displayName = 'Тип будинку';
+                const classItem = buildingType.value.find(item => item.value === value);
+                if (classItem) {
+                    displayValue = classItem.name;
+                }
+            } else if (parts[0] === 'parking' && parts[1] === 'code') {
+                displayName = 'Паркінг';
+                const parkingItem = parking.value.find(item => item.code === value);
+                if (parkingItem) {
+                    displayValue = parkingItem.name;
+                }
+            } else if (parts[0] === 'furniture' && parts[1] === 'code') {
+                displayName = 'Меблі';
+                const furnitureItem = furniture.value.find(item => item.code === value);
+                if (furnitureItem) {
+                    displayValue = furnitureItem.name;
+                }
+            } else {
+            // Handle other filter types
+            switch (key) {
+                    case 'minPrice':
+                        displayName = 'Мін. ціна';
+                        break;
+                    case 'maxPrice':
+                        displayName = 'Макс. ціна';
+                        break;
+                    case 'minArea':
+                        displayName = 'Мін. площа';
+                        displayValue = `${value} м²`;
+                        break;
+                    case 'maxArea':
+                        displayName = 'Макс. площа';
+                        displayValue = `${value} м²`;
+                        break;
+                    case 'minAreaLiving':
+                        displayName = 'Мін. житлова площа';
+                        displayValue = `${value} м²`;
+                        break;
+                    case 'maxAreaLiving':
+                        displayName = 'Макс. житлова площа';
+                        displayValue = `${value} м²`;
+                        break;
+                    case 'minAreaKitchen':
+                        displayName = 'Мін. площа кухні';
+                        displayValue = `${value} м²`;
+                        break;
+                    case 'maxAreaKitchen':
+                        displayName = 'Макс. площа кухні';
+                        displayValue = `${value} м²`;
+                        break;
+                    case 'minFloor':
+                        displayName = 'Мін. поверх';
+                        break;
+                    case 'maxFloor':
+                        displayName = 'Макс. поверх';
+                        break;
+                    default:
+                        const computedProps = {
+                            furniture
+                        };
+
+                        for (const [propName, prop] of Object.entries(computedProps)) {
+                            if (key.includes(propName)) {
+                                displayName = value.name || propName;
+                                displayValue = value.value || value;
+                                break;
+                            }
+                        }
+                }
+            }
+
+            selectedFilters.push({
+                key,
+                displayName: displayName || key,
+                value: displayValue
+            });
+        }
+    }
+
+    return selectedFilters;
 });
 
 </script>
