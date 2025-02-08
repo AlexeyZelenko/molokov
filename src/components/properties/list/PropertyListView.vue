@@ -11,12 +11,13 @@ defineProps({
 <template>
     <div class="flex flex-col">
         <div v-for="(item, index) in items" :key="index">
-            <div class="flex flex-col sm:flex-row sm:items-center p-6 gap-4"
+            <div class="flex flex-col sm:flex-row sm:items-center p-4 gap-4"
                  :class="{ 'border-t border-surface': index !== 0 }">
-                <div class="md:w-40 relative">
-                    <img class="block xl:block mx-auto rounded w-full"
+                <div class="md:w-40 relative h-40">
+                    <img class="block mx-auto rounded w-full h-full object-cover"
                          :src="item.images[0]"
-                         :alt="item.title" />
+                         :alt="item.title"
+                    />
                 </div>
                 <div class="flex flex-col md:flex-row justify-between md:items-center flex-1 gap-6">
                     <div class="flex flex-col">
