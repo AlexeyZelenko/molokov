@@ -1,4 +1,9 @@
 <script setup>
+import AppConfigurator from "@/layout/AppConfigurator.vue";
+import {useLayout} from "@/layout/composables/layout";
+
+const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
+
 function smoothScroll(id) {
     document.body.click();
     const element = document.getElementById(id);
@@ -133,8 +138,34 @@ function smoothScroll(id) {
                     <span>Вибрати нерухомість</span>
                 </a>
             </li>
+            <li>
+                <a @click="smoothScroll('highlights')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium text-xl">
+                    <span>Про додаток</span>
+                </a>
+            </li>
         </ul>
         <div class="flex border-t lg:border-t-0 border-surface py-4 lg:py-0 mt-4 lg:mt-0 gap-2">
+
+            <button type="button" class="layout-topbar-action" @click="toggleDarkMode">
+                <i :class="['pi', { 'pi-moon': isDarkTheme, 'pi-sun': !isDarkTheme }]"></i>
+            </button>
+
+            <Button
+                v-styleclass="{
+                selector: '@next',
+                 enterFromClass: 'hidden',
+                  enterActiveClass: 'animate-scalein',
+                   leaveToClass: 'hidden',
+                    leaveActiveClass: 'animate-fadeout',
+                     hideOnOutsideClick: true
+            }"
+                type="button"
+                class="layout-topbar-action layout-topbar-action-highlight ml-6 mr-12"
+            >
+                <i class="pi pi-palette"></i>
+            </Button>
+            <AppConfigurator class="mt-10" />
+
             <Button label="Вхід" text as="router-link" to="/auth/login" rounded></Button>
             <Button label="Реєстрація" as="router-link" to="/auth/register" rounded></Button>
         </div>

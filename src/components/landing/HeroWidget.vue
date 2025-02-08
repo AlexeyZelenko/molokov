@@ -6,11 +6,11 @@
     >
         <div class="mx-6 md:mx-20 mt-0 md:mt-6">
             <h1 class="text-6xl font-bold text-gray-900 leading-tight">
-                <span class="font-light block">Тільки реальні об'єкти</span>
-                покупець комісію не сплачує!
+                <span class="font-light block">Сучасний інструмент для рієлторів!</span>
+                Легко знаходьте та керуйте об'єктами!
             </h1>
             <p class="font-normal text-2xl leading-normal md:mt-4 text-gray-700">
-                Це можливість зробити вигідну покупку без зайвих витрат...
+                Ефективний пошук, управління та угоди в одному місці...
             </p>
         </div>
         <div class="img flex justify-center md:justify-end">

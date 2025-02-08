@@ -1,30 +1,19 @@
 <template>
-    <div id="features" class="features flex flex-nowrap gap-4 justify-center mt-6">
-        <Card
-            v-for="item in realEstateItems"
-            :key="item.id"
-            class="real-estate-card"
-        >
+    <div id="features" class="features grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4 mt-150">
+        <Card v-for="item in realEstateItems" :key="item.id" class="real-estate-card pt-50">
             <template #header>
-                <img :src="item.image" :alt="item.title" class="w-full h-48 object-cover"/>
+                <img :src="item.image" :alt="item.title" class="w-full h-52 object-cover rounded-t-lg"/>
             </template>
             <template #title>
-                <h3 class="text-md font-bold mb-2">{{ item.title }}</h3>
+                <h3 class="text-lg font-semibold text-gray-800 text-center">{{ item.title }}</h3>
             </template>
             <template #content>
-                <div class="flex flex-col">
-                    <router-link
-                        v-for="subcategory in item.actions"
-                        :key="subcategory.type"
-                        :to="`/categories/${item.key}/${subcategory.type}`"
-                        class="p-1 text-blue-900 no-underline"
-                    >
-                        <Button
-                            :label="subcategory.label"
-                            :icon="subcategory.icon"
-                            class="p-button-text"
-                            @click="handleAction(item.id, subcategory.type)"
-                        />
+                <div class="flex flex-col gap-2 mt-2">
+                    <router-link v-for="subcategory in item.actions" :key="subcategory.type"
+                                 :to="`/categories/${item.key}/${subcategory.type}`" class="w-full">
+                        <Button :label="subcategory.label" :icon="subcategory.icon"
+                                class="p-button-outlined w-full text-gray-700 border-gray-500 hover:bg-gray-700 hover:text-white"
+                                @click="handleAction(item.id, subcategory.type)"/>
                     </router-link>
                 </div>
             </template>
@@ -33,8 +22,8 @@
 </template>
 
 <script setup>
-import {computed} from 'vue';
-import  { useAreasStore } from '@/store/areasStore';
+import { computed } from 'vue';
+import { useAreasStore } from '@/store/areasStore';
 
 const store = useAreasStore();
 
@@ -49,60 +38,24 @@ const handleAction = (itemId, actionType) => {
 @import 'animate.css';
 
 .features {
-    max-width: 1100px;
-    margin: 30px auto;
-    display: flex;
-    flex-wrap: nowrap;
-    gap: 16px;
-    justify-content: center;
+    max-width: 1200px;
+    margin: 50px auto 0;
 }
 
 .real-estate-card {
-    flex: 0 1 300px;
-    margin-bottom: 1rem;
-    transition: transform 0.3s ease;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
 
     &:hover {
-        transform: scale(1.05);
-    }
-
-    // Анимация при загрузке
-    .p-card-header img {
-        border-radius: 6px 6px 0 0;
-    }
-
-    .p-button {
-        width: 100%;
-        justify-content: flex-start;
-    }
-
-    .p-button .p-button-icon {
-        margin-right: 0.5rem;
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
     }
 }
 
-// Адаптивные стили
-@media screen and (max-width: 768px) {
-    .real-estate-card {
-        flex: 0 1 100%;
-    }
-
-    .features {
-        max-width: 100%;
-        margin: 10px 20px;
-        flex-wrap: wrap;
-    }
-}
-
-@media screen and (min-width: 769px) and (max-width: 1024px) {
-    .real-estate-card {
-        flex: 0 1 calc(50% - 1rem);
-    }
-}
-
-@media screen and (min-width: 1025px) {
-    .real-estate-card {
-        flex: 0 1 calc(33% - 1rem);
-    }
+.p-button {
+    transition: all 0.3s ease;
+    border-radius: 6px;
 }
 </style>
