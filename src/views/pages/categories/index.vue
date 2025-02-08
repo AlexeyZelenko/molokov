@@ -327,7 +327,7 @@ const deleteProperty = (property) => {
         <!-- Пагинация -->
         <div class="pagination flex justify-center align-center gap-2">
             <Button
-                label="Попередня"
+                label=""
                 icon="pi pi-chevron-left"
                 @click="prevPage"
                 :disabled="currentPage === 1"
@@ -335,7 +335,7 @@ const deleteProperty = (property) => {
             />
             <div class="pagination--text">Сторінка {{ currentPage }}</div>
             <Button
-                label="Наступна"
+                label=""
                 icon="pi pi-chevron-right"
                 @click="nextPage"
                 class="pagination--btn"

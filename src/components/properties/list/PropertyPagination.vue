@@ -8,34 +8,21 @@ defineEmits(['prevPage', 'nextPage']);
 </script>
 
 <template>
-    <div class="pagination flex justify-center align-center gap-2">
+    <div class="flex justify-center align-center gap-2 mt-4">
         <Button
-            label="Попередня"
+            label=""
             icon="pi pi-chevron-left"
             @click="$emit('prevPage')"
             :disabled="currentPage === 1"
-            class="pagination--btn"
+            rounded
         />
-        <div class="pagination--text">Сторінка {{ currentPage }}</div>
+        <div class="flex items-center px-4 text-xl font-bold">{{ currentPage }}</div>
         <Button
-            label="Наступна"
+            label=""
             icon="pi pi-chevron-right"
             @click="$emit('nextPage')"
             :disabled="currentPage === totalPages"
-            class="pagination--btn"
+            rounded
         />
     </div>
 </template>
-
-<style scoped>
-.pagination {
-    margin-top: 1rem;
-}
-.pagination--btn {
-    min-width: 100px;
-}
-.pagination--text {
-    display: flex;
-    align-items: center;
-}
-</style>

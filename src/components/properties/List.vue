@@ -339,7 +339,7 @@ const deleteProperty = (property) => {
             />
             <div class="pagination--text">Сторінка {{ currentPage }}</div>
             <Button
-                label="Наступна"
+                label=""
                 icon="pi pi-chevron-right"
                 @click="nextPage"
                 class="pagination--btn"

@@ -61,7 +61,6 @@ const goBack = () => {
         display: flex;
         align-items: center;
         font-size: 14px;
-        color: black;
         background: none;
         border: none;
         cursor: pointer;
