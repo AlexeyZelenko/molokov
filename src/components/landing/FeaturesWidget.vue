@@ -5,7 +5,7 @@
                 <img :src="item.image" :alt="item.title" class="w-full h-52 object-cover rounded-t-lg"/>
             </template>
             <template #title>
-                <h3 class="text-lg font-semibold text-gray-800 text-center">{{ item.title }}</h3>
+                <h3 class="text-lg font-semibold text-center">{{ item.title }}</h3>
             </template>
             <template #content>
                 <div class="flex flex-col gap-2 mt-2">

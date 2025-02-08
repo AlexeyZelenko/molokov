@@ -2,14 +2,18 @@
     <div
         id="hero"
         class="flex flex-col pt-6 px-6 lg:px-20 overflow-hidden"
-        style="background: linear-gradient(0deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)), radial-gradient(77.36% 256.97% at 77.36% 57.52%, rgb(238, 239, 175) 0%, rgb(195, 227, 250) 100%); clip-path: ellipse(150% 87% at 93% 13%)"
-    >
+        :style="{
+            background: isDarkTheme
+                ? 'linear-gradient(135deg, rgba(20, 20, 20, 0.8) 0%, rgba(45, 45, 45, 0.6) 40%, rgba(100, 100, 100, 0.3) 100%), radial-gradient(100% 200% at 80% 20%, rgba(200, 150, 250, 0.4) 0%, rgba(100, 200, 255, 0.3) 100%)'
+                : 'linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(230, 240, 255, 0.6) 40%, rgba(200, 225, 255, 0.3) 100%), radial-gradient(100% 200% at 80% 20%, rgba(250, 210, 250, 0.6) 0%, rgba(100, 180, 255, 0.5) 100%)',
+            clipPath: 'ellipse(150% 90% at 93% 10%)'
+        }">
         <div class="mx-6 md:mx-20 mt-0 md:mt-6">
-            <h1 class="text-6xl font-bold text-gray-900 leading-tight">
+            <h1 class="text-6xl font-bold leading-tight">
                 <span class="font-light block">Сучасний інструмент для рієлторів!</span>
                 Легко знаходьте та керуйте об'єктами!
             </h1>
-            <p class="font-normal text-2xl leading-normal md:mt-4 text-gray-700">
+            <p class="font-normal text-2xl leading-normal md:mt-4 text-gray-400">
                 Ефективний пошук, управління та угоди в одному місці...
             </p>
         </div>
@@ -22,6 +26,12 @@
         </div>
     </div>
 </template>
+
+<script setup>
+import {useLayout} from "@/layout/composables/layout";
+
+const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
+</script>
 
 <style scoped lang="scss">
 // Определяем переменные для шрифта
