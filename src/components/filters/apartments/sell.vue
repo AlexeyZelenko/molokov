@@ -1,274 +1,283 @@
 <template>
-    <div>
-        <div class="flex flex-col">
-            <div class="flex justify-between font-semibold text-xl mb-4">
-                <div>Фільтри</div>
+    <div class="flex flex-col">
+        <div class="sticky top-0 z-10 py-4">
+            <div class="flex justify-between font-semibold text-xl">
+                <div class="flex flex-col">
+                    <div class="mb-1">Фільтри</div>
+                    <Button
+                        @click="clearFilters"
+                        type="button"
+                        label="Скинути"
+                        :icon="countFilterParams ? 'pi pi-filter' : 'pi pi-filter-slash'"
+                        :badge="countFilterParams"
+                        badgeSeverity="contrast"
+                        variant="outlined"
+                    />
+                    <Button
+                        :label="allPanelsOpen ? 'Закрити всі фільтри' : 'Відкрити всі фільтри'"
+                        @click="toggleAllPanels"
+                        class="mt-2"
+                        variant="outlined"
+                    />
+                </div>
                 <Button icon="pi pi-times" severity="help" rounded variant="outlined" aria-label="Cancel" @click="handleClose"/>
             </div>
-            <div class="flex flex-col gap-3">
+        </div>
+        <div class="flex flex-col gap-3 overflow-y-auto p-4">
 
-                <Accordion value="0">
-                    <AccordionPanel>
-                        <AccordionHeader class="font-semibold text-xl mb-4">Росташування</AccordionHeader>
-                        <AccordionContent>
-                            <div v-for="(item, key) in address" :key="key" class="flex flex-col">
-                                <label>{{ item.name }}</label>
-                                <Select
-                                    v-model="filters[`address.${key}.code`]"
-                                    :options="item.value.map(i => ({ name: i.name, value: i.code }))"
-                                    optionLabel="name"
-                                    optionValue="value"
-                                    placeholder="Вибрати"
-                                    @change="applyFilters"
+            <Accordion v-model:value="activePanels" :multiple="true">
+                <AccordionPanel value="location">
+                    <AccordionHeader class="font-semibold text-xl mb-4">Росташування</AccordionHeader>
+                    <AccordionContent>
+                        <div v-for="(item, key) in address" :key="key" class="flex flex-col">
+                            <label>{{ item.name }}</label>
+                            <Select
+                                v-model="filters[`address.${key}.code`]"
+                                :options="item.value.map(i => ({ name: i.name, value: i.code }))"
+                                optionLabel="name"
+                                optionValue="value"
+                                placeholder="Вибрати"
+                                @change="applyFilters"
+                            />
+                        </div>
+                    </AccordionContent>
+                </AccordionPanel>
+
+                <AccordionPanel value="rooms">
+                    <AccordionHeader class="font-semibold text-xl mb-4">Кількість кімнат</AccordionHeader>
+                    <AccordionContent>
+                        <div v-for="(rooms, key) in roomsAll" :key="key" class="flex flex-col">
+                            <label>{{ rooms.name }}</label>
+                            <Select
+                                v-model="filters[`rooms.${key}`]"
+                                :options="rooms.value.map(room => ({ name: room, value: room }))"
+                                optionLabel="name"
+                                optionValue="value"
+                                placeholder="Вибрати"
+                                @change="applyFilters"
+                            />
+                        </div>
+                    </AccordionContent>
+                </AccordionPanel>
+
+                <AccordionPanel value="area">
+                    <AccordionHeader>Площа</AccordionHeader>
+                    <AccordionContent>
+                        <!-- Фильтр по площади -->
+                        <div class="flex flex-col">
+                            <label>Площа (загальна)</label>
+                            <div class="flex flex-col gap-1">
+                                <InputNumber
+                                    v-model="filters.minArea"
+                                    placeholder="Мінімальна"
+                                    :min="0"
+                                    :max="filters.maxArea"
+                                />
+                                <InputNumber
+                                    v-model="filters.maxArea"
+                                    placeholder="Максимальна"
+                                    :min="filters.minArea"
                                 />
                             </div>
-                        </AccordionContent>
-                    </AccordionPanel>
-                </Accordion>
+                        </div>
 
-                <Accordion value="0">
-                    <AccordionPanel>
-                        <AccordionHeader class="font-semibold text-xl mb-4">Кількість кімнат</AccordionHeader>
-                        <AccordionContent>
-                            <div v-for="(rooms, key) in roomsAll" :key="key" class="flex flex-col">
-                                <label>{{ rooms.name }}</label>
-                                <Select
-                                    v-model="filters[`rooms.${key}`]"
-                                    :options="rooms.value.map(room => ({ name: room, value: room }))"
-                                    optionLabel="name"
-                                    optionValue="value"
-                                    placeholder="Вибрати"
-                                    @change="applyFilters"
+                        <!-- Фильтр по площади -->
+                        <div class="flex flex-col">
+                            <label>Площа (житлова)</label>
+                            <div class="flex flex-col gap-1">
+                                <InputNumber
+                                    v-model="filters.minAreaLiving"
+                                    placeholder="Мінімальна"
+                                    :min="0"
+                                    :max="filters.maxAreaLiving"
+                                />
+                                <InputNumber
+                                    v-model="filters.maxAreaLiving"
+                                    placeholder="Максимальна"
+                                    :min="filters.minAreaLiving"
                                 />
                             </div>
-                        </AccordionContent>
-                    </AccordionPanel>
-                </Accordion>
+                        </div>
 
-                <Accordion value="0">
-                    <AccordionPanel value="0">
-                        <AccordionHeader>Площа</AccordionHeader>
-                        <AccordionContent>
-                            <!-- Фильтр по площади -->
-                            <div class="flex flex-col">
-                                <label>Площа (загальна)</label>
-                                <div class="flex flex-col gap-1">
-                                    <InputNumber
-                                        v-model="filters.minArea"
-                                        placeholder="Мінімальна"
-                                        :min="0"
-                                        :max="filters.maxArea"
-                                    />
-                                    <InputNumber
-                                        v-model="filters.maxArea"
-                                        placeholder="Максимальна"
-                                        :min="filters.minArea"
-                                    />
-                                </div>
-                            </div>
-
-                            <!-- Фильтр по площади -->
-                            <div class="flex flex-col">
-                                <label>Площа (житлова)</label>
-                                <div class="flex flex-col gap-1">
-                                    <InputNumber
-                                        v-model="filters.minAreaLiving"
-                                        placeholder="Мінімальна"
-                                        :min="0"
-                                        :max="filters.maxAreaLiving"
-                                    />
-                                    <InputNumber
-                                        v-model="filters.maxAreaLiving"
-                                        placeholder="Максимальна"
-                                        :min="filters.minAreaLiving"
-                                    />
-                                </div>
-                            </div>
-
-                            <!-- Фильтр по площади кухні-->
-                            <div class="flex flex-col">
-                                <label>Площа (кухні)</label>
-                                <div class="flex flex-col gap-1">
-                                    <InputNumber
-                                        v-model="filters.minAreaKitchen"
-                                        placeholder="Мінімальна"
-                                        :min="0"
-                                        :max="filters.maxAreaKitchen"
-                                    />
-                                    <InputNumber
-                                        v-model="filters.maxAreaKitchen"
-                                        placeholder="Максимальна"
-                                        :min="filters.minAreaKitchen"
-                                    />
-                                </div>
-                            </div>
-                        </AccordionContent>
-                    </AccordionPanel>
-                </Accordion>
-
-                <Accordion value="0">
-                    <AccordionPanel value="0">
-                        <AccordionHeader>Інфо про будинок</AccordionHeader>
-                        <AccordionContent>
-                            <div class="flex flex-col">
-                                <label>Стан будинку</label>
-                                <Select
-                                    v-model="filters['condition.value']"
-                                    :options="condition"
-                                    optionLabel="name"
-                                    optionValue="value"
-                                    placeholder="Вибрати"
-                                    @change="applyFilters"
+                        <!-- Фильтр по площади кухні-->
+                        <div class="flex flex-col">
+                            <label>Площа (кухні)</label>
+                            <div class="flex flex-col gap-1">
+                                <InputNumber
+                                    v-model="filters.minAreaKitchen"
+                                    placeholder="Мінімальна"
+                                    :min="0"
+                                    :max="filters.maxAreaKitchen"
+                                />
+                                <InputNumber
+                                    v-model="filters.maxAreaKitchen"
+                                    placeholder="Максимальна"
+                                    :min="filters.minAreaKitchen"
                                 />
                             </div>
+                        </div>
+                    </AccordionContent>
+                </AccordionPanel>
 
-                            <div class="flex flex-col">
-                                <label>Клас будинку</label>
-                                <Select
-                                    v-model="filters['objectClass.value']"
-                                    :options="objectClass"
-                                    optionLabel="name"
-                                    optionValue="value"
-                                    placeholder="Вибрати"
-                                    @change="applyFilters"
+                <AccordionPanel value="building">
+                    <AccordionHeader>Інфо про будинок</AccordionHeader>
+                    <AccordionContent>
+                        <div class="flex flex-col">
+                            <label>Стан будинку</label>
+                            <Select
+                                v-model="filters['condition.value']"
+                                :options="condition"
+                                optionLabel="name"
+                                optionValue="value"
+                                placeholder="Вибрати"
+                                @change="applyFilters"
+                            />
+                        </div>
+
+                        <div class="flex flex-col">
+                            <label>Клас будинку</label>
+                            <Select
+                                v-model="filters['objectClass.value']"
+                                :options="objectClass"
+                                optionLabel="name"
+                                optionValue="value"
+                                placeholder="Вибрати"
+                                @change="applyFilters"
+                            />
+                        </div>
+
+                        <div class="flex flex-col">
+                            <label>Тип будинку</label>
+                            <Select
+                                v-model="filters['buildingType.value']"
+                                :options="buildingType"
+                                optionLabel="name"
+                                optionValue="value"
+                                placeholder="Вибрати"
+                                @change="applyFilters"
+                            />
+                        </div>
+                    </AccordionContent>
+                </AccordionPanel>
+
+                <AccordionPanel value="details">
+                    <AccordionHeader>Детальніше про об'єкт</AccordionHeader>
+                    <AccordionContent>
+                        <div class="flex flex-col">
+                            <label>Стан об'єкта</label>
+                            <Select
+                                v-model="filters['reconditioning.value']"
+                                :options="reconditioning"
+                                optionLabel="name"
+                                optionValue="value"
+                                placeholder="Вибрати стан"
+                                @change="applyFilters"
+                            />
+                        </div>
+
+                        <div class="flex flex-col">
+                            <label>Тип опалення</label>
+                            <Select
+                                v-model="filters['heatingType.value']"
+                                :options="heatingTypes"
+                                optionLabel="name"
+                                optionValue="value"
+                                placeholder="Вибрати тип опалення"
+                                @change="applyFilters"
+                            />
+                        </div>
+
+                        <div class="flex flex-col">
+                            <label>Паркінг</label>
+                            <Select
+                                v-model="filters['parking.code']"
+                                :options="parking"
+                                optionLabel="name"
+                                optionValue="code"
+                                placeholder="Вибрати"
+                                @change="applyFilters"
+                            />
+                        </div>
+
+                        <div class="flex flex-col">
+                            <label>Поверх</label>
+                            <div class="flex flex-col gap-1">
+                                <InputNumber
+                                    v-model="filters.minFloor"
+                                    placeholder="Мінімальна"
+                                    :min="0"
+                                    :max="filters.maxFloor"
+                                />
+                                <InputNumber
+                                    v-model="filters.maxFloor"
+                                    placeholder="Максимальна"
+                                    :min="filters.minFloor"
                                 />
                             </div>
+                        </div>
 
-                            <div class="flex flex-col">
-                                <label>Тип будинку</label>
-                                <Select
-                                    v-model="filters['buildingType.value']"
-                                    :options="buildingType"
-                                    optionLabel="name"
-                                    optionValue="value"
-                                    placeholder="Вибрати"
-                                    @change="applyFilters"
-                                />
-                            </div>
-                        </AccordionContent>
-                    </AccordionPanel>
-                </Accordion>
+                        <div class="flex flex-col">
+                            <label>Балкон / Тераса</label>
+                            <Select
+                                v-model="filters['balconyTerrace.code']"
+                                :options="balconyTerrace"
+                                optionLabel="name"
+                                optionValue="code"
+                                placeholder="Вибрати"
+                                @change="applyFilters"
+                            />
+                        </div>
 
-                <Accordion value="0">
-                    <AccordionPanel value="0">
-                        <AccordionHeader>Детальніше про об'єкт</AccordionHeader>
-                        <AccordionContent>
-                            <div class="flex flex-col">
-                                <label>Стан об'єкта</label>
-                                <Select
-                                    v-model="filters['reconditioning.value']"
-                                    :options="reconditioning"
-                                    optionLabel="name"
-                                    optionValue="value"
-                                    placeholder="Вибрати стан"
-                                    @change="applyFilters"
-                                />
-                            </div>
+                        <div class="flex flex-col">
+                            <label>Меблі</label>
+                            <Select
+                                v-model="filters['furniture.code']"
+                                :options="furniture"
+                                optionLabel="name"
+                                optionValue="code"
+                                placeholder="Вибрати"
+                                @change="applyFilters"
+                            />
+                        </div>
+                        <Accordion value="0">
+                            <AccordionPanel>
+                                <AccordionHeader class="font-semibold text-xl mb-4">Комунальні послуги</AccordionHeader>
+                                <AccordionContent>
+                                    <div v-for="(item, key) in utilities" :key="key" class="flex justify-between my-2 gap-2">
+                                        <label class="text-sm font-medium">{{ item.name }}</label>
+                                        <ToggleSwitch
+                                            v-model="filters[`utilities.${key}.code`]"
+                                            :trueValue="`${item.code}`"
+                                            :falseValue="null"
+                                            @change="applyFilters"
+                                        />
+                                    </div>
+                                </AccordionContent>
+                            </AccordionPanel>
+                        </Accordion>
+                    </AccordionContent>
+                </AccordionPanel>
+            </Accordion>
 
-                            <div class="flex flex-col">
-                                <label>Тип опалення</label>
-                                <Select
-                                    v-model="filters['heatingType.value']"
-                                    :options="heatingTypes"
-                                    optionLabel="name"
-                                    optionValue="value"
-                                    placeholder="Вибрати тип опалення"
-                                    @change="applyFilters"
-                                />
-                            </div>
-
-                            <div class="flex flex-col">
-                                <label>Паркінг</label>
-                                <Select
-                                    v-model="filters['parking.code']"
-                                    :options="parking"
-                                    optionLabel="name"
-                                    optionValue="code"
-                                    placeholder="Вибрати"
-                                    @change="applyFilters"
-                                />
-                            </div>
-
-                            <div class="flex flex-col">
-                                <label>Поверх</label>
-                                <div class="flex flex-col gap-1">
-                                    <InputNumber
-                                        v-model="filters.minFloor"
-                                        placeholder="Мінімальна"
-                                        :min="0"
-                                        :max="filters.maxFloor"
-                                    />
-                                    <InputNumber
-                                        v-model="filters.maxFloor"
-                                        placeholder="Максимальна"
-                                        :min="filters.minFloor"
-                                    />
-                                </div>
-                            </div>
-
-                            <div class="flex flex-col">
-                                <label>Балкон / Тераса</label>
-                                <Select
-                                    v-model="filters['balconyTerrace.code']"
-                                    :options="balconyTerrace"
-                                    optionLabel="name"
-                                    optionValue="code"
-                                    placeholder="Вибрати"
-                                    @change="applyFilters"
-                                />
-                            </div>
-
-                            <div class="flex flex-col">
-                                <label>Меблі</label>
-                                <Select
-                                    v-model="filters['furniture.code']"
-                                    :options="furniture"
-                                    optionLabel="name"
-                                    optionValue="code"
-                                    placeholder="Вибрати"
-                                    @change="applyFilters"
-                                />
-                            </div>
-                            <Accordion value="0">
-                                <AccordionPanel>
-                                    <AccordionHeader class="font-semibold text-xl mb-4">Комунальні послуги</AccordionHeader>
-                                    <AccordionContent>
-                                        <div v-for="(item, key) in utilities" :key="key" class="flex justify-between my-2 gap-2">
-                                            <label class="text-sm font-medium">{{ item.name }}</label>
-                                            <ToggleSwitch
-                                                v-model="filters[`utilities.${key}.code`]"
-                                                :trueValue="`${item.code}`"
-                                                :falseValue="null"
-                                                @change="applyFilters"
-                                            />
-                                        </div>
-                                    </AccordionContent>
-                                </AccordionPanel>
-                            </Accordion>
-                        </AccordionContent>
-                    </AccordionPanel>
-                </Accordion>
-
-                <div class="flex flex-col">
-                    <label>Ціна</label>
-                    <div class="flex flex-col gap-1">
-                        <InputNumber
-                            v-model="filters.minPrice"
-                            placeholder="Мінімальна"
-                            :min="0"
-                            :max="filters.maxPrice"
-                        />
-                        <InputNumber
-                            v-model="filters.maxPrice"
-                            placeholder="Максимальна"
-                            :min="filters.minPrice"
-                        />
-                    </div>
+            <div class="flex flex-col">
+                <label>Ціна</label>
+                <div class="flex flex-col gap-1">
+                    <InputNumber
+                        v-model="filters.minPrice"
+                        placeholder="Мінімальна"
+                        :min="0"
+                        :max="filters.maxPrice"
+                    />
+                    <InputNumber
+                        v-model="filters.maxPrice"
+                        placeholder="Максимальна"
+                        :min="filters.minPrice"
+                    />
                 </div>
             </div>
-            <Button label="Застосувати фільтри" icon="pi pi-check" @click="setFilters" class="mt-4" />
-            <Button label="Скинути фільтри" icon="pi pi-check" @click="clearFilters" class="mt-4" />
         </div>
+        <Button label="Застосувати фільтри" icon="pi pi-check" @click="setFilters" class="mt-4" />
+        <Button label="Скинути фільтри" icon="pi pi-check" @click="clearFilters" class="mt-4" />
     </div>
 </template>
 
@@ -310,10 +319,27 @@ const filters = ref({
     'furniture.code': null
 });
 
+// Состояние для управления открытием/закрытием всех панелей
+const allPanelsOpen = ref(false);
+// Значения всех панелей
+const panelValues = ['location', 'rooms', 'area', 'building', 'details'];
+// Активные панели
+const activePanels = ref([]);
+
+// Функция для переключения состояния всех панелей
+const toggleAllPanels = () => {
+    allPanelsOpen.value = !allPanelsOpen.value;
+    activePanels.value = allPanelsOpen.value ? [...panelValues] : [];
+};
+
 const emit = defineEmits(['closeFilters']);
 const handleClose = () => {
     emit('closeFilters');
 };
+
+const countFilterParams = computed(() => {
+    return Object.keys(filters.value).filter(key => filters.value[key] !== null).length;
+});
 
 // Функция для установки фильтров
 const setFilters = () => {
@@ -520,3 +546,11 @@ const utilities = computed(() => {
 });
 
 </script>
+
+<style scoped>
+.sticky {
+    position: sticky;
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid #e5e7eb;
+}
+</style>

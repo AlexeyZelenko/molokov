@@ -133,7 +133,6 @@ function handleSidebarClick(event) {
         <app-sidebar></app-sidebar>
         <Button
             label="Фильтри"
-            severity="help"
             raised
             icon="pi pi-filter"
             class="filters-button p-button"
@@ -143,9 +142,12 @@ function handleSidebarClick(event) {
             <div class="layout-main">
                 <!-- Добавляем @click на контейнер фильтров -->
                 <div
-                    class="filters-sidebar"
+                    class="filters-sidebar animate-fadein p-shadow-2 p-sidebar-right"
                     :class="{ 'active': isFiltersActive }"
                     @click.stop="handleSidebarClick"
+                    :aria-hidden="!isFiltersActive"
+                    role="complementary"
+                    aria-label="Фільтри"
                 >
                     <slot name="filters">
                         <app-categories-menu
@@ -165,7 +167,7 @@ function handleSidebarClick(event) {
 <style scoped>
 .filters-button {
     position: fixed;
-    right: 0;
+    right: 5px;
     top: 100px;
     z-index: 999;
     display: flex;
@@ -179,8 +181,8 @@ function handleSidebarClick(event) {
     top: 0;
     width: 300px;
     height: 100%;
-    background: white;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    background: var(--surface-overlay); /* используем переменную темы */
+    box-shadow: 0 2px 4px -1px rgba(0,0,0,.2),0 4px 5px 0 rgba(0,0,0,.14),0 1px 10px 0 rgba(0,0,0,.12);
     transition: right 0.3s ease;
     z-index: 1000;
     padding: 1rem;
@@ -195,5 +197,20 @@ function handleSidebarClick(event) {
 /* Затемнение фона при открытых фильтрах */
 .filters-active .layout-mask {
     display: block;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+/* Добавляем стили для скроллбара в темной теме */
+.dark .filters-sidebar::-webkit-scrollbar {
+    width: 10px;
+}
+
+.dark .filters-sidebar::-webkit-scrollbar-track {
+    background: var(--surface-ground);
+}
+
+.dark .filters-sidebar::-webkit-scrollbar-thumb {
+    background: var(--surface-section);
+    border-radius: 5px;
 }
 </style>
