@@ -124,7 +124,12 @@
                     <p class="text-gray-900 sm:line-height-2 md:line-height-4 text-2xl mt-6" style="max-width: 800px">
                         “Ми допомагаємо клієнтам знайти ідеальне житло та інвестувати у нерухомість з упевненістю. Наш досвід та персональний підхід гарантують вам найкращі умови на ринку.”
                     </p>
-<!--                    <img src="/demo/images/landing/prestige-logo.svg" class="mt-6" alt="Логотип компанії" />-->
+                    <Avatar
+                        image="/demo/images/landing/molokov-logo.webp"
+                        class="mt-6"
+                        size="xlarge"
+                        shape="circle"
+                    />
                 </div>
             </div>
 
