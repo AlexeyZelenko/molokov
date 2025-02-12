@@ -132,7 +132,7 @@ function handleSidebarClick(event) {
         <app-topbar></app-topbar>
         <app-sidebar></app-sidebar>
         <Button
-            label="Фильтри"
+            label="Фільтри"
             raised
             icon="pi pi-filter"
             class="filters-button p-button"
