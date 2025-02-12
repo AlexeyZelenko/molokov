@@ -109,16 +109,6 @@ export default [
         component: () => import('@/views/pages/apartments/Add.vue')
     },
     {
-        path: '/pages/apartments/list',
-        name: 'apartmentsList',
-        component: () => import('@/views/pages/apartments/List.vue')
-    },
-    {
-        path: '/pages/apartments/table',
-        name: 'apartmentsTable',
-        component: () => import('@/views/pages/apartments/Table.vue')
-    },
-    {
         path: '/pages/apartments/edit/:id',
         name: 'editApartments',
         component: () => import('@/views/pages/apartments/Edit.vue')
@@ -132,16 +122,6 @@ export default [
         path: '/pages/houses/add',
         name: 'addApartments',
         component: () => import('@/views/pages/apartments/Add.vue')
-    },
-    {
-        path: '/pages/houses/list',
-        name: 'apartmentsList',
-        component: () => import('@/views/pages/apartments/List.vue')
-    },
-    {
-        path: '/pages/houses/table',
-        name: 'apartmentsTable',
-        component: () => import('@/views/pages/apartments/Table.vue')
     },
     {
         path: '/pages/houses/edit/:id',

@@ -13,31 +13,6 @@ export default [
         }
     },
     {
-        path: '/pages/commercial/list',
-        name: 'commercialList',
-        component: () => import('@/views/pages/commercial/List.vue'),
-        meta: {
-            requiresAuth: true,
-            breadcrumb: [
-                {name: 'Головна', route: '/', icon: 'pi pi-home'},
-                {name: 'Комерційна нерухомість', route: '/pages/commercial'},
-                {name: 'Список об\'єктів нерухомості', route: '/pages/commercial/list'}
-            ]
-        }
-    },
-    {
-        path: '/pages/commercial/table',
-        name: 'commercialTable',
-        component: () => import('@/views/pages/commercial/Table.vue'),
-        meta: {
-            requiresAuth: true,
-            breadcrumb: [
-                {name: 'Головна', link: 'home'},
-                {name: 'Комерційна нерухомість', link: 'commercialTable'}
-            ]
-        }
-    },
-    {
         path: '/pages/commercial/edit/:id',
         name: 'commercialEdit',
         component: () => import('@/views/pages/commercial/Edit.vue'),

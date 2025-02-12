@@ -13,32 +13,6 @@ export default [
         }
     },
     {
-        path: '/pages/other/list',
-        name: 'otherList',
-        component: () => import('@/views/pages/other/List.vue'),
-        meta: {
-            requiresAuth: true,
-            breadcrumb: [
-                { name: 'Головна', route: '/', icon: 'pi pi-home' },
-                { name: 'Інше', route: '/pages/other' },
-                { name: 'Список об\'єктів нерухомості', route: '/pages/other/list' }
-            ]
-        }
-    },
-    {
-        path: '/pages/other/table',
-        name: 'otherTable',
-        component: () => import('@/views/pages/other/Table.vue'),
-        meta: {
-            requiresAuth: true,
-            breadcrumb: [
-                { name: 'Головна', route: '/', icon: 'pi pi-home' },
-                { name: 'Інше', route: '/pages/other' },
-                { name: 'Таблиця об\'єктів нерухомості', route: '/pages/other/table' }
-            ]
-        }
-    },
-    {
         path: '/pages/other/edit/:id',
         name: 'otherEdit',
         component: () => import('@/views/pages/other/Edit.vue'),

@@ -13,19 +13,6 @@ export default [
         }
     },
     {
-        path: '/pages/houses/table',
-        name: 'housesTable',
-        component: () => import('@/views/pages/houses/Table.vue'),
-        meta: {
-            requiresAuth: true,
-            breadcrumb: [
-                { name: 'Головна', route: '/', icon: 'pi pi-home' },
-                { name: 'Будинки', route: '/pages/houses' },
-                { name: 'Список об\'єктів нерухомості', route: '/pages/houses/table' }
-            ]
-        }
-    },
-    {
         path: '/pages/houses/edit/:id',
         name: 'editHouse',
         component: () => import('@/views/pages/houses/Edit.vue'),
