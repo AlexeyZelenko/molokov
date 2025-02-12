@@ -2,6 +2,7 @@
 import PropertyActions from './PropertyActions.vue';
 import PropertyUserInfo from './PropertyUserInfo.vue';
 import { formatFirebaseTimestampToTime } from '@/utils/dateUtils';
+import PropertyPrice from "@/components/price/PriceConverter.vue";
 
 defineProps({
     items: Array
@@ -37,7 +38,12 @@ defineProps({
                         <PropertyUserInfo :creator="item.creator" />
                     </div>
                     <div class="flex flex-col gap-6 mt-6">
-                        <span class="text-2xl font-semibold">${{ item.price }}</span>
+                        <div class="font-bold">
+                            <PropertyPrice
+                                :price="item.price"
+                                isDisplayUAH=true
+                            />
+                        </div>
                         <PropertyActions :item="item" />
                     </div>
                 </div>
