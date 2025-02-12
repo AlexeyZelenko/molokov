@@ -216,7 +216,7 @@ const deleteProperty = (property) => {
                                         </div>
                                     </div>
                                     <div class="flex flex-col md:items-end gap-8">
-                                        <span class="text-xl font-semibold">${{ item.priceUSD }}</span>
+                                        <span class="text-xl font-semibold">{{ item.price }}</span>
                                         <div class="flex flex-row-reverse md:flex-row gap-2">
                                             <Button
                                                 icon="pi pi-eye"
@@ -301,7 +301,7 @@ const deleteProperty = (property) => {
                                         </div>
                                     </div>
                                     <div class="flex flex-col gap-6 mt-6">
-                                        <span class="text-2xl font-semibold">${{ item.priceUSD }}</span>
+                                        <span class="text-2xl font-semibold">{{ item.price }}</span>
                                         <div class="flex gap-2">
                                             <Button
                                                 icon="pi pi-eye"

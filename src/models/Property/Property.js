@@ -4,7 +4,7 @@ export default class Property {
     constructor({
                     // Base fields
                     title = "",
-                    priceUSD = null,
+                    price = null,
                     description = "",
                     createdAt = null,
                     updatedAt = null,
@@ -75,7 +75,7 @@ export default class Property {
                 }) {
         // Base Properties
         this.title = title;
-        this.priceUSD = priceUSD;
+        this.price = price;
         this.description = description;
         this.isPublic = isPublic;
         this.createdAt = createdAt || serverTimestamp();
@@ -175,7 +175,7 @@ export default class Property {
             this.title &&
             this.category &&
             this.address.city &&
-            this.priceUSD !== null
+            this.price !== null
         );
     }
 

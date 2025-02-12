@@ -51,7 +51,7 @@ export const getValidationSchema = (propertyType) => {
                 ...baseSchema,
                 ...roomsValidation,
                 ...areaValidation,
-                priceUSD: yup.number().required('Вкажіть ціну').min(1)
+                price: yup.number().required('Вкажіть ціну').min(1)
             };
         case PROPERTY_TYPES.APARTMENT_RENT:
         case PROPERTY_TYPES.HOUSE_RENT:
@@ -59,7 +59,7 @@ export const getValidationSchema = (propertyType) => {
                 ...baseSchema,
                 ...roomsValidation,
                 ...areaValidation,
-                priceUSD: yup.object().shape({
+                price: yup.object().shape({
                     monthly: yup.number().required('Вкажіть ціну оренди').min(1),
                     deposit: yup.number()
                 })

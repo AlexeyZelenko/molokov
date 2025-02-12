@@ -3,7 +3,7 @@
         <div class="font-semibold text-xl">
             {{ property.category?.name }} / {{ property.subcategory?.name }}
         </div>
-        <PriceDisplay :priceUSD="property.priceUSD" :subcategory="property.subcategory" />
+        <PriceConverter :price="property.price" isDisplayUAH class="font-bold text-xl"/>
     </div>
 
     <AreaDetails
@@ -29,7 +29,7 @@
 
 <script setup>
 import { defineProps } from 'vue';
-import PriceDisplay from "./PriceDisplay.vue";
+import PriceConverter from "@/components/price/PriceConverter.vue";
 import AreaDetails from "./AreaDetails.vue";
 import PropertyDetails from "./PropertyDetails.vue";
 import ParkingDetails from "./ParkingDetails.vue";

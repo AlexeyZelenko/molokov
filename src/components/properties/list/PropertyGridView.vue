@@ -37,7 +37,7 @@ defineProps({
                         <PropertyUserInfo :creator="item.creator" />
                     </div>
                     <div class="flex flex-col gap-6 mt-6">
-                        <span class="text-2xl font-semibold">${{ item.priceUSD }}</span>
+                        <span class="text-2xl font-semibold">${{ item.price }}</span>
                         <PropertyActions :item="item" />
                     </div>
                 </div>

@@ -23,7 +23,7 @@ const priceStats = computed(() => {
 
     sell.value.forEach(apartment => {
         const rooms = apartment.rooms?.all;
-        const price = apartment.priceUSD;
+        const price = apartment.price;
 
         if (rooms >= 1 && rooms <= 4 && price) {
             stats[rooms].min = Math.min(stats[rooms].min, price);
@@ -144,7 +144,7 @@ function setChartOptions() {
                         weight: 500
                     },
                     callback: function (value) {
-                        return '$' + value.toLocaleString();
+                        return value.toLocaleString();
                     }
                 },
                 grid: {

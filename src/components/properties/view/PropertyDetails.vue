@@ -141,7 +141,7 @@ const category = route.query.category;
 const subcategory = route.query.subcategory;
 const property = ref({
     title: '',
-    priceUSD: null,
+    price: null,
     category: null,
     subcategory: null,
     apartmentArea: {
@@ -173,6 +173,7 @@ onMounted(async () => {
 
 
 const loadPropertyData = async (category, subcategory, id) => {
+    console.log('category:', category);
     try {
         const propertyRef = doc(db, `properties/${category}/${subcategory}`, id);
         const propertyDoc = await getDoc(propertyRef);

@@ -25,10 +25,10 @@
                 <div>{{ property.subcategory?.name }}</div>
 
                 <div v-if="property.subcategory && property.subcategory.code === 'SALE'" class="font-semibold text-xl">Ціна USD</div>
-                <div v-if="property.subcategory && property.subcategory.code === 'SALE'">{{ property.priceUSD }} $</div>
+                <div v-if="property.subcategory && property.subcategory.code === 'SALE'">{{ property.price }} $</div>
 
                 <div v-if="property.subcategory && property.subcategory.code !== 'SALE'" class="font-semibold text-xl">Вартість оренди</div>
-                <div v-if="property.subcategory && property.subcategory.code !== 'SALE'">{{ property.priceUSD }} $</div>
+                <div v-if="property.subcategory && property.subcategory.code !== 'SALE'">{{ property.price }} $</div>
             </div>
 
             <div class="card flex flex-col gap-4">
@@ -121,7 +121,7 @@ const route = useRoute();
 const propertyId = route.params.id;
 const property = ref({
     title: '',
-    priceUSD: null,
+    price: null,
     category: null,
     subcategory: null,
     apartmentArea: {

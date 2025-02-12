@@ -45,12 +45,12 @@ export const usePropertiesStore = defineStore('properties', {
                 Object.entries(filters).forEach(([key, value]) => {
                     // Проверка на минимальную цену
                     if (key === 'minPrice' && value !== null && value !== undefined) {
-                        isMatch = property.priceUSD >= Number(value);
+                        isMatch = property.price >= Number(value);
                     }
 
                     // Проверка на максимальную цену
                     if (key === 'maxPrice' && value !== null && value !== undefined) {
-                        isMatch = property.priceUSD <= Number(value);
+                        isMatch = property.price <= Number(value);
                     }
 
                     // Проверка на минимальную этажность

@@ -36,9 +36,10 @@
 
         <div class="font-semibold text-xl">Вартість</div>
         <InputGroup>
+            <InputGroupAddon>грн</InputGroupAddon>
             <InputNumber
-                v-model="modelValue.priceUSD"
-                :class="{ 'p-invalid': errors.priceUSD }"
+                v-model="modelValue.price"
+                :class="{ 'p-invalid': errors.price }"
                 showButtons
                 mode="decimal"
                 :min="0"
@@ -46,14 +47,19 @@
             />
             <InputGroupAddon>.00</InputGroupAddon>
         </InputGroup>
-        <small class="text-red-500" v-if="errors.priceUSD">
-            {{ errors.priceUSD }}
+        <small class="text-red-500" v-if="errors.price">
+            {{ errors.price }}
         </small>
+        <PriceConverter
+            :price="modelValue.price"
+            :subcategory="modelValue.subcategory"
+        />
     </div>
 </template>
 
 <script setup>
 import { ref } from 'vue';
+import PriceConverter from '@/components/price/PriceConverter.vue';
 
 const props = defineProps({
     modelValue: {
@@ -75,7 +81,7 @@ const emit = defineEmits(['update:modelValue', 'subcategory-change', 'validation
 const errors = ref({
     subcategory: '',
     title: '',
-    priceUSD: ''
+    price: ''
 });
 
 // Валидация полей
@@ -98,7 +104,7 @@ const validateFields = () => {
     errors.value = {
         subcategory: !props.modelValue.subcategory ? 'Мета використання обов\'язкова' : '',
         title: validateTitle(props.modelValue.title),
-        priceUSD: validatePrice(props.modelValue.priceUSD)
+        price: validatePrice(props.modelValue.price)
     };
 
     // Убираем пустые ошибки

@@ -1,13 +1,15 @@
 <script setup>
 import { defineProps } from "vue";
+import PriceConverter from '@/components/price/PriceDisplay.vue';
 
 const props = defineProps({
-    priceUSD: Number,
+    price: Number,
     subcategory: Object,
 });
 </script>
 
 <template>
-    <div v-if="subcategory && subcategory.code === 'sell'">{{ priceUSD }} $</div>
-    <div v-else>{{ priceUSD }} грн</div>
+    <PriceConverter
+        :price="price"
+    />
 </template>

@@ -3,7 +3,7 @@
         <div class="font-semibold text-xl">
             {{ property.category?.name }} / {{ property.subcategory?.name }}
         </div>
-        <PriceDisplay :priceUSD="property.priceUSD" :subcategory="property.subcategory" />
+        <PriceConverter :price="property.price" isDisplayUAH class="font-bold text-xl"/>
     </div>
 
     <AreaDetails
@@ -29,7 +29,6 @@
 
 <script setup>
 import { defineProps, onMounted } from 'vue';
-import PriceDisplay from "./PriceDisplay.vue";
 import AreaDetails from "./AreaDetails.vue";
 import PropertyDetails from "./PropertyDetails.vue";
 import ParkingDetails from "./ParkingDetails.vue";
@@ -38,6 +37,7 @@ import SellApartment from './sell/index.vue';
 import RentApartment from './rent/index.vue';
 import ExchangeApartment from './exchange/index.vue';
 import DailyRentApartment from './daily/index.vue';
+import PriceConverter from "@/components/price/PriceConverter.vue";
 
 
 const props = defineProps({

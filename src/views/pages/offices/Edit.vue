@@ -25,27 +25,14 @@
                     <div class="font-semibold text-xl">Мета використання</div>
                     <Select v-model="property.subcategory" :options="dropdowns.subcategory" optionLabel="name" placeholder="Select" />
 
-                    <div v-if="property.subcategory && property.subcategory.code === 'SALE'" class="font-semibold text-xl">Ціна USD</div>
-                    <InputGroup v-if="property.subcategory && property.subcategory.code === 'SALE'">
-                        <InputNumber
-                            v-model="property.priceUSD"
-                            showButtons mode="decimal"
-                            currency="UAH"
-                            locale="uk-UA"
-                            required
-                        ></InputNumber>
-                        <InputGroupAddon>$</InputGroupAddon>
-                        <InputGroupAddon>.00</InputGroupAddon>
-                    </InputGroup>
-
-                    <div v-if="property.subcategory && property.subcategory.code !== 'SALE'" class="font-semibold text-xl">Вартість оренди</div>
+                    <div class="font-semibold text-xl">Вартість</div>
                     <InputGroup v-if="property.subcategory && property.subcategory.code !== 'SALE'">
                         <InputNumber
-                            v-model="property.priceUSD"
+                            v-model="property.price"
                             showButtons mode="decimal"
                             currency="UAH" locale="uk-UA" required
                         ></InputNumber>
-                        <InputGroupAddon>$</InputGroupAddon>
+                        <InputGroupAddon>₴</InputGroupAddon>
                         <InputGroupAddon>.00</InputGroupAddon>
                     </InputGroup>
                 </div>
@@ -303,7 +290,7 @@ const saving = ref(false);
 const isEdit = ref(false);
 const property = ref({
     title: '',
-    priceUSD: null,
+    price: null,
     rooms: {
         all: null,
         bedrooms: null,
