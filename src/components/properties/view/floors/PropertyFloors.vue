@@ -1,5 +1,5 @@
 <template>
-    <div class="card flex flex-col gap-2">
+    <div class="card flex flex-col gap-2 shadow-lg">
         <div class="font-semibold text-xl">Поверховість</div>
 
         <div class="flex items-center">

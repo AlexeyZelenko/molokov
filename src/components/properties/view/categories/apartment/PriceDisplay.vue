@@ -1,6 +1,6 @@
 <script setup>
 import { defineProps } from "vue";
-import PriceConverter from '@/components/price/PriceDisplay.vue';
+import PriceConverter from '@/components/price/PriceConverter.vue';
 
 const props = defineProps({
     price: Number,

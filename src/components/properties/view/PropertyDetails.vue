@@ -81,6 +81,7 @@
             :creator="property.creator"
             :owner="property.owner"
             :typeOwner="property.typeOwner"
+            class="mb-4"
         />
 
         <Toast />
@@ -118,8 +119,6 @@ import PropertyLand from './categories/land/index.vue';
 import PropertyOffice from './categories/office/index.vue';
 import PropertyOther from './categories/other/index.vue';
 
-const toast = useToast();
-const router = useRouter();
 const route = useRoute();
 
 const userStore = useUserStore();

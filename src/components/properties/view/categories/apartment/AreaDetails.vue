@@ -9,7 +9,7 @@ const props = defineProps({
 </script>
 
 <template>
-    <div class="card flex flex-col gap-4">
+    <div class="card flex flex-col gap-4 shadow-lg">
         <div class="font-semibold text-xl">Площа(м²)</div>
         <div class="font-semibold text-sm">Загальна площа</div>
         <div>{{ apartmentArea.totalArea }} м²</div>

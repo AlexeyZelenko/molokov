@@ -1,5 +1,5 @@
 <template>
-    <div class="card">
+    <div class="card shadow-lg">
         <Galleria
             :value="images"
             :responsiveOptions="responsiveOptions"

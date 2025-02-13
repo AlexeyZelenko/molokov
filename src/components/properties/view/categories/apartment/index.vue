@@ -1,5 +1,5 @@
 <template>
-    <div class="card flex flex-col gap-4">
+    <div class="card flex flex-col gap-4 shadow-lg">
         <div class="font-semibold text-xl">
             {{ property.category?.name }} / {{ property.subcategory?.name }}
         </div>

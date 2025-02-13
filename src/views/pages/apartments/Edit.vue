@@ -20,29 +20,23 @@
                     <div class="font-semibold text-xl">Мета використання</div>
                     <Select v-model="property.subcategory" :options="dropdowns.subcategory" optionLabel="name" placeholder="Select" />
 
-                    <div v-if="property.subcategory && property.subcategory.code === 'SALE'" class="font-semibold text-xl">Ціна</div>
-                    <InputGroup v-if="property.subcategory && property.subcategory.code === 'SALE'">
+                    <div class="font-semibold text-xl">Вартість</div>
+                    <InputGroup>
+                        <InputGroupAddon>грн</InputGroupAddon>
                         <InputNumber
                             v-model="property.price"
-                            showButtons mode="decimal"
-                            currency="UAH"
-                            locale="uk-UA"
+                            :class="{ 'p-invalid': property.price }"
+                            showButtons
+                            mode="decimal"
+                            :min="0"
                             required
-                        ></InputNumber>
-                        <InputGroupAddon>₴</InputGroupAddon>
+                        />
                         <InputGroupAddon>.00</InputGroupAddon>
                     </InputGroup>
-
-                    <div v-if="property.subcategory && property.subcategory.code !== 'SALE'" class="font-semibold text-xl">Вартість оренди</div>
-                    <InputGroup v-if="property.subcategory && property.subcategory.code !== 'SALE'">
-                        <InputNumber
-                            v-model="property.price"
-                            showButtons mode="decimal"
-                            currency="UAH" locale="uk-UA" required
-                        ></InputNumber>
-                        <InputGroupAddon>₴</InputGroupAddon>
-                        <InputGroupAddon>.00</InputGroupAddon>
-                    </InputGroup>
+                    <PriceConverter
+                        :price="property.price"
+                        :subcategory="property.subcategory"
+                    />
                 </div>
 
                 <div class="card flex flex-col gap-4">
@@ -72,12 +66,12 @@
                         <Select v-model="property.address.area" :options="dropdowns.areas" optionLabel="name" placeholder="Select" />
                     </template>
 
-                    <GoogleMapAddApartment
-                        style="width: 100%; height: 500px"
-                        :area="property.address.area"
-                        :center="property.address.markerPosition"
-                        :disabled="true"
-                    />
+<!--                    <GoogleMapAddApartment-->
+<!--                        style="width: 100%; height: 500px"-->
+<!--                        :area="property.address.area"-->
+<!--                        :center="property.address.markerPosition"-->
+<!--                        :disabled="true"-->
+<!--                    />-->
 
                 </div>
                 <div class="card flex flex-col gap-4">
@@ -311,6 +305,7 @@ import Select from "primevue/select";
 import GoogleMapAddApartment from "@/components/googleMap/AddApartment.vue";
 import { formatFirebaseTimestamp } from '@/utils/dateUtils';
 import compressWithCompressor from "@/service/Compressor";
+import PriceConverter from '@/components/price/PriceConverter.vue';
 
 // Стейт для дата-пикера
 const formattedFacilityReadiness = computed({

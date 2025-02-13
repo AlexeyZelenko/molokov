@@ -1,5 +1,5 @@
 <template>
-    <div class="card flex flex-col gap-4">
+    <div class="card flex flex-col gap-4 shadow-lg">
         <div class="font-semibold text-xl">Розташування</div>
         <div class="font-semibold text-sm">Область / Місто</div>
         <div>{{ address.region?.name }} / {{ address.city.name }}</div>

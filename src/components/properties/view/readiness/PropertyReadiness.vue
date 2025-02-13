@@ -1,5 +1,5 @@
 <template>
-    <div v-if="property?.facilityReadiness" class="card flex flex-col gap-4">
+    <div v-if="property?.facilityReadiness" class="card flex flex-col gap-4 shadow-lg">
         <div class="font-semibold text-xl">Готовність об'єкта</div>
         <div>{{ formatFirebaseTimestamp(property?.facilityReadiness) }}</div>
     </div>

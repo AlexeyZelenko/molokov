@@ -1,21 +1,51 @@
 <template>
-    <div class="card flex flex-col gap-4">
-        <div class="font-semibold text-xl">Комунікації</div>
-        <div>{{ property.communications }}</div>
+    <div class="card flex flex-col gap-4 shadow-lg">
+        <div class="hidden md:block">
+            <Tabs value="0">
+                <TabList class="flex flex-col">
+                    <Tab
+                        v-for="tab in tabs"
+                        :key="tab.title"
+                        :value="tab.value"
+                        class="font-semibold text-xl"
+                    >
+                        <span>{{ tab.title }}</span>
+                    </Tab>
+                </TabList>
+                <TabPanels>
+                    <TabPanel v-for="tab in tabs" :key="tab.content" :value="tab.value">
+                        <p class="m-0">{{ tab.content }}</p>
+                    </TabPanel>
+                </TabPanels>
+            </Tabs>
+        </div>
 
-        <div class="font-semibold text-xl">Інфраструктура</div>
-        <div>{{ property.infrastructure }}</div>
-
-        <div class="font-semibold text-xl">Ландшафт</div>
-        <div>{{ property.landscape }}</div>
+        <Accordion value="0" class="block md:hidden">
+            <AccordionPanel v-for="tab in tabs" :key="tab.title" :value="tab.value">
+                <AccordionHeader>
+                    <span class="font-semibold text-xl">{{ tab.title }}</span>
+                </AccordionHeader>
+                <AccordionContent>
+                    <p class="m-0">{{ tab.content }}</p>
+                </AccordionContent>
+            </AccordionPanel>
+        </Accordion>
     </div>
 </template>
 
 <script setup>
-defineProps({
+import { ref, defineProps } from 'vue'
+
+const props = defineProps({
     property: {
         type: Object,
         default: () => ({})
     }
 });
+
+const tabs = ref([
+    { title: 'Комунікації', content: props.property.communications, value: '0' },
+    { title: 'Інфраструктура', content: props.property.infrastructure, value: '1' },
+    { title: 'Ландшафт', content: props.property.landscape, value: '2' }
+]);
 </script>
