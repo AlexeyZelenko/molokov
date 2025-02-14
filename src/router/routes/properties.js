@@ -9,7 +9,12 @@ export default [
                 path: '/properties',
                 name: 'properties',
                 component: () => import('@/views/pages/categories/index.vue')
-            }
+            },
+            {
+                path: '/cherkasy-areas',
+                name: 'cherkasy-areas',
+                component: () => import('@/views/CherkasyAreas.vue')
+            },
         ]
     },
     {

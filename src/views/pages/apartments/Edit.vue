@@ -73,6 +73,14 @@
 <!--                        :disabled="true"-->
 <!--                    />-->
 
+                    {{property?.address.markerPosition}}
+                    <MapWithMarkerEdit
+                        v-if="property.address.markerPosition"
+                        :area="property.address.area"
+                        :marker="property.address.markerPosition ?? [49.4444, 32.0598]"
+                        v-model:marker="property.address.markerPosition"
+                    />
+
                 </div>
                 <div class="card flex flex-col gap-4">
                     <div class="font-semibold text-xl">Площа(м²)</div>
@@ -306,6 +314,7 @@ import GoogleMapAddApartment from "@/components/googleMap/AddApartment.vue";
 import { formatFirebaseTimestamp } from '@/utils/dateUtils';
 import compressWithCompressor from "@/service/Compressor";
 import PriceConverter from '@/components/price/PriceConverter.vue';
+import MapWithMarkerEdit from "@/components/maps/MapWithMarkerEdit.vue";
 
 // Стейт для дата-пикера
 const formattedFacilityReadiness = computed({

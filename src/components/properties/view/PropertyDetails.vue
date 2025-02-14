@@ -91,6 +91,9 @@
             :ad="property"
             :propertyId="propertyId"
         />
+
+        <DgisMap :property="property" class="my-4"/>
+        <VueLeafle :property="property"/>
     </div>
 </template>
 
@@ -118,6 +121,9 @@ import PropertyCommercial from './categories/commercial/index.vue';
 import PropertyLand from './categories/land/index.vue';
 import PropertyOffice from './categories/office/index.vue';
 import PropertyOther from './categories/other/index.vue';
+
+import DgisMap from "@/components/maps/DgisMap.vue";
+import VueLeafle from "@/components/maps/VueLeafle.vue";
 
 const route = useRoute();
 

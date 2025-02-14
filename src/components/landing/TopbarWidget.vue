@@ -1,8 +1,11 @@
 <script setup>
 import AppConfigurator from "@/layout/AppConfigurator.vue";
 import {useLayout} from "@/layout/composables/layout";
+import {useRouter} from "vue-router";
 
-const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
+const { toggleDarkMode, isDarkTheme } = useLayout();
+
+const router = useRouter();
 
 function smoothScroll(id) {
     document.body.click();
@@ -13,6 +16,10 @@ function smoothScroll(id) {
             block: 'start'
         });
     }
+}
+
+function navigateTo(route) {
+    router.push(route);
 }
 </script>
 
@@ -141,6 +148,11 @@ function smoothScroll(id) {
             <li>
                 <a @click="smoothScroll('highlights')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium text-xl">
                     <span>Про додаток</span>
+                </a>
+            </li>
+            <li>
+                <a @click="navigateTo('/cherkasy-areas')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium text-xl">
+                    <span>Райони</span>
                 </a>
             </li>
         </ul>
