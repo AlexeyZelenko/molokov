@@ -50,6 +50,7 @@
                     :address="property.address"
                 />
 
+
                 <PropertyFloors
                     :property="property"
                 />
@@ -92,17 +93,16 @@
             :propertyId="propertyId"
         />
 
-        <DgisMap :property="property" class="my-4"/>
-        <VueLeafle :property="property"/>
+        <DgisMap :property="property" class="my-6"/>
+<!--        <VueLeafle :property="property"/>-->
     </div>
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { useRoute } from 'vue-router';
 import { db } from '@/firebase/config';
 import { doc, getDoc } from 'firebase/firestore';
-import { useToast } from 'primevue/usetoast';
 import Toast from 'primevue/toast';
 import { useUserStore } from '@/store/userStore';
 import AddToListModal from '@/components/AddToListModal.vue';

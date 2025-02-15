@@ -73,10 +73,10 @@
 <!--                        :disabled="true"-->
 <!--                    />-->
 
-                    {{property?.address.markerPosition}}
                     <MapWithMarkerEdit
                         v-if="property.address.markerPosition"
                         :area="property.address.area"
+                        :property="property"
                         :marker="property.address.markerPosition ?? [49.4444, 32.0598]"
                         v-model:marker="property.address.markerPosition"
                     />

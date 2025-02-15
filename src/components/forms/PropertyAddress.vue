@@ -1,4 +1,5 @@
 <template>
+    {{props.modelValue}}
     <div class="card flex flex-col gap-4">
         <div class="font-semibold text-xl">Розташування</div>
 
@@ -10,6 +11,7 @@
             placeholder="Select"
             :class="{ 'p-invalid': errors.region }"
             required
+            @change="changeRegion"
         />
         <small class="text-red-500" v-if="errors.region">
             {{ errors.region }}
@@ -29,7 +31,7 @@
                 {{ errors.city }}
             </small>
         </template>
-        <template v-else>
+        <template v-else-if="modelValue.region?.code !== 'CHK'">
             <InputText
                 v-model="modelValue.city"
                 placeholder="Місто"
@@ -66,11 +68,24 @@
                 {{ errors.area }}
             </small>
         </template>
+
+        <MapWithMarkerEdit
+            v-if="modelValue.city?.code === '1' && modelValue.area.code"
+            :property="property"
+            v-model:marker="property.address.markerPosition"
+        />
+        <VueLeafle
+            v-else-if="modelValue.city?.code !== '1' && modelValue.area.street"
+            :property="property"
+            v-model:marker="property.address.markerPosition"
+        />
     </div>
 </template>
 
 <script setup>
 import { ref, watch } from 'vue';
+import MapWithMarkerEdit from "@/components/maps/MapWithMarkerEdit.vue";
+import VueLeafle from "@/components/maps/VueLeafle.vue";
 
 const props = defineProps({
     modelValue: {
@@ -78,6 +93,10 @@ const props = defineProps({
         required: true
     },
     dropdowns: {
+        type: Object,
+        required: true
+    },
+    property: {
         type: Object,
         required: true
     }
@@ -91,6 +110,17 @@ const errors = ref({
     street: '',
     area: ''
 });
+
+const changeRegion = () => {
+    props.modelValue.area = {
+        code: null,
+        name: null
+    };
+    props.modelValue.street = "";
+    props.modelValue.city = "";
+    props.modelValue.markerPosition = [];
+
+};
 
 // Validation rules
 const validateFields = () => {

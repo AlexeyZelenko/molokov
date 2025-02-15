@@ -32,7 +32,7 @@ export const useAreasStore = defineStore('areas', {
             { name: 'Хімселище', code: 'KHM', position: { lat: 49.40505338758406, lng: 32.04394340515137 }, radius: 700, color: '#614035' },
             { name: 'Центр', code: 'CEN', position: { lat: 49.441491717097755, lng: 32.064263236198826 }, radius: 1000, color: '#0ccfd2' },
             { name: 'Шкільна', code: 'SHK', position: { lat: 49.41011721110426, lng: 32.055765689692656 }, radius: 1000, color: '#50bf5f' },
-            { name: 'Інше', code: 'UNK' }
+            { name: 'Інше', code: 'UNK', position: { lat: 49.441491717097755, lng: 32.064263236198826 }, radius: 10000, zoom: 10 },
         ],
         realEstateItems: [
             {
