@@ -4,7 +4,7 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['update:layout']);
-const options = ['list', 'grid'];
+const options = ['list', 'grid', 'map'];
 </script>
 
 <template>
@@ -16,7 +16,13 @@ const options = ['list', 'grid'];
             @update:modelValue="emit('update:layout', $event)"
         >
             <template #option="{ option }">
-                <i :class="[option === 'list' ? 'pi pi-bars' : 'pi pi-table']" />
+                <i
+                    :class="{
+                        'pi pi-bars': option === 'list',
+                        'pi pi-th-large': option === 'grid',
+                        'pi pi-map-marker': option === 'map'
+                    }"
+                />
             </template>
         </SelectButton>
     </div>

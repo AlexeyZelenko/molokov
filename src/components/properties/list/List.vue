@@ -7,6 +7,7 @@ import { useRoute, useRouter } from 'vue-router';
 import PropertyListHeader from './PropertyListHeader.vue';
 import PropertyListView from './PropertyListView.vue';
 import PropertyGridView from './PropertyGridView.vue';
+import PropertyMapView from './PropertyMapView.vue';
 import PropertyPagination from './PropertyPagination.vue';
 import ConfirmationModal from './ConfirmationModal.vue';
 import LoadingSkeleton from './LoadingSkeleton.vue';
@@ -21,7 +22,6 @@ const userStore = useUserStore();
 const route = useRoute();
 const store = usePropertiesStore();
 const storeAreas = useAreasStore();
-const layout = ref('list');
 const currentPage = ref(1);
 const pageSize = 3;
 
@@ -57,6 +57,25 @@ const loadPage = async () => {
     }
 };
 
+const layout = ref('list'); // Начальный layout по умолчанию
+
+const changeLayout = (layout) => {
+    layout.value = layout;
+};
+
+const currentComponent = computed(() => {
+    switch (layout.value) {
+        case 'list':
+            return PropertyListView;
+        case 'grid':
+            return PropertyGridView;
+        case 'map':
+            return PropertyMapView;
+        default:
+            return PropertyListView;
+    }
+});
+
 onMounted(() => {
     if (!route.query.listId) {
         loadPage();
@@ -76,10 +95,7 @@ watch(() => store.properties, () => {
             <LoadingSkeleton v-if="store.loading" />
             <template v-else>
                 <PropertyListHeader v-model:layout="layout" />
-                <component
-                    :is="layout === 'list' ? PropertyListView : PropertyGridView"
-                    :items="paginatedProducts"
-                />
+                <component :is="currentComponent" :items="paginatedProducts" />
                 <PropertyPagination
                     :current-page="currentPage"
                     :total-pages="totalPages"
