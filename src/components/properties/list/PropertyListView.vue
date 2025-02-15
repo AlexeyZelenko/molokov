@@ -35,7 +35,7 @@ defineProps({
                         <div class="font-bold">
                             <PropertyPrice
                                 :price="item.price"
-                                isDisplayUAH=true
+                                :isDisplayUAH=true
                             />
                         </div>
 

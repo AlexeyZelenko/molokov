@@ -3,7 +3,11 @@
         <div class="font-semibold text-xl">
             {{ property.category?.name }} / {{ property.subcategory?.name }}
         </div>
-        <PriceConverter :price="property.price" isDisplayUAH class="font-bold text-xl"/>
+        <PriceConverter
+            :price="property.price"
+            :isDisplayUAH=true
+            class="font-bold text-xl"
+        />
     </div>
 
     <AreaDetails

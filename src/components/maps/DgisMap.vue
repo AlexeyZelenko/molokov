@@ -1,7 +1,7 @@
 <template>
     <div class="map-container">
         <div ref="mapContainer" style="width: 100%; height: 500px"></div>
-        <div v-if="hasMarker" class="controls">
+        <div v-if="hasMarker && isDelete" class="controls">
             <button
                 @click="removeMarker"
                 class="control-button remove-button"
@@ -28,6 +28,10 @@ const props = defineProps({
     editable: {
         type: Boolean,
         default: false
+    },
+    isDelete: {
+        type: Boolean,
+        default: true
     }
 });
 
@@ -142,7 +146,7 @@ const updateAreaCircle = () => {
     if (!currentArea.value) return;
 
     // Получаем центр района
-    const center = currentArea.value.center || [49.4444, 32.0598];
+    const center = currentArea.value.position ?? [49.4444, 32.0598];
 
     // Создаем новый круг
     areaCircle.value = leaflet.circle(center, {

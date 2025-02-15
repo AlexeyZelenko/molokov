@@ -1,5 +1,4 @@
 <template>
-    {{props.modelValue}}
     <div class="card flex flex-col gap-4">
         <div class="font-semibold text-xl">Розташування</div>
 

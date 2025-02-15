@@ -50,7 +50,6 @@
                     :address="property.address"
                 />
 
-
                 <PropertyFloors
                     :property="property"
                 />
@@ -93,8 +92,11 @@
             :propertyId="propertyId"
         />
 
-        <DgisMap :property="property" class="my-6"/>
-<!--        <VueLeafle :property="property"/>-->
+        <DgisMap
+            :property="property"
+            :isDelete="false"
+            class="my-6"
+        />
     </div>
 </template>
 
@@ -123,7 +125,6 @@ import PropertyOffice from './categories/office/index.vue';
 import PropertyOther from './categories/other/index.vue';
 
 import DgisMap from "@/components/maps/DgisMap.vue";
-import VueLeafle from "@/components/maps/VueLeafle.vue";
 
 const route = useRoute();
 
