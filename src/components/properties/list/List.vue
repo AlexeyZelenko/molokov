@@ -113,7 +113,7 @@ watch(() => store.properties.length, () => {
 <template>
     <div class="flex flex-col">
         <ConfirmationModal />
-        <div class="card">
+        <div class="card p-3">
             <div class="font-semibold text-xl">{{categoryName}} / {{subcategoryName}}</div>
             <LoadingSkeleton v-if="store.loading" />
             <template v-else>

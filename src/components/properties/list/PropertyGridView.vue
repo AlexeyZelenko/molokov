@@ -13,7 +13,7 @@ defineProps({
     <div class="grid grid-cols-12 gap-4">
         <div v-for="(item, index) in items"
              :key="index"
-             class="col-span-12 sm:col-span-6 lg:col-span-4 p-2">
+             class="col-span-12 sm:col-span-6 lg:col-span-4">
             <div class="p-6 border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-900 rounded flex flex-col">
                 <div class="bg-surface-50 flex justify-center rounded p-4">
                     <div class="relative mx-auto">
