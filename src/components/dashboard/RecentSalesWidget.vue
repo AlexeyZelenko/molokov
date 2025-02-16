@@ -26,7 +26,7 @@ const showProperty = (property) => {
                 </template>
             </Column>
             <Column field="title" header="Назва" :sortable="true" style="width: 45%"></Column>
-            <Column field="price" header="Price" :sortable="true" style="width: 20%"></Column>
+            <Column field="price" header="Ціна(грн)" :sortable="true" style="width: 20%"></Column>
             <Column style="width: 10%" header="Деталі">
                 <template #body="slotProps">
                     <Button

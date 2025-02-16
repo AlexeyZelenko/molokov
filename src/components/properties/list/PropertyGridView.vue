@@ -29,8 +29,17 @@ defineProps({
                             {{ item.category.name }} / {{ item.subcategory.name }}
                         </span>
                         <div class="text-lg font-medium">{{ item.title }}</div>
-                        <div class="text-sm text-surface-500">
-                            {{ formatFirebaseTimestampToTime(item.createdAt) }}
+                        <div class="flex items-center">
+                            <i class="pi pi-map-marker mr-2"></i>
+                            {{ item.address.city.name }} / {{ item.address.area.name }}
+                        </div>
+                        <div class="flex items-center">
+                            <i class="pi pi-table mr-2"></i>
+                            {{ item.apartmentArea.totalArea }} m2
+                        </div>
+                        <div class="flex items-center">
+                            <i class="pi pi-calendar mr-2"></i>
+                            <div>{{ formatFirebaseTimestampToTime(item.createdAt) }}</div>
                         </div>
                         <div class="text-sm text-surface-500">
                             Номер оголошення: {{ item.idProperty }}

@@ -8,7 +8,7 @@ export default [
         meta: {
             breadcrumb: [
                 { name: 'Головна', route: '/', icon: 'pi pi-home' },
-                { name: 'Dashboard', route: '/dashboard' }
+                { name: 'Аналітика', route: '/dashboard' }
             ]
         }
     },

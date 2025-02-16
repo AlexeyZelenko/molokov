@@ -22,8 +22,8 @@ onMounted(() => {
             <AccordionHeader>
                 <span class="flex items-center gap-2 w-full">
                     <Avatar
-                        :icon="user.avatar ? null : 'pi pi-user'"
-                        :image="user.avatar || null"
+                        :icon="user?.avatar ? null : 'pi pi-user'"
+                        :image="user?.avatar || null"
                         style="height: 35px; width: 50px"
                         shape="circle"
                     />

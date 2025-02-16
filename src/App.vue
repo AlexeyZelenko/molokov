@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted } from 'vue';
 import { useAuthStore } from '@/store/authFirebase';
+import AppLoader from '@/components/AppLoader.vue';
 
 const authStore = useAuthStore();
 
@@ -10,6 +11,7 @@ onMounted(async () => {
 </script>
 
 <template>
+    <AppLoader />
     <router-view />
 </template>
 

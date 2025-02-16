@@ -4,8 +4,20 @@ import {
     onAuthStateChanged,
 } from 'firebase/auth'
 import { storeToRefs } from 'pinia'
+import { ref } from 'vue';
+
+// Создаем реактивное состояние для лоадера
+export const loading = ref(false);
+
+// Время для минимального отображения лоадера
+const MIN_LOADING_TIME = 1000;
+let loadingStartTime = 0;
 
 export const authGuard = async (to, from, next) => {
+    // Запускаем лоадер
+    loadingStartTime = Date.now();
+    loading.value = true;
+
     const authStore = useAuthStore();
 
     // Check for persisted login
@@ -42,21 +54,37 @@ export const authGuard = async (to, from, next) => {
         }
     }
 
-    // Для отладки
-    // const { user } = storeToRefs(authStore)
-    // console.log('Component user data:', authStore.userRole)
-    // authStore.debugUserState()
-
-
     if (to.meta.requiresAdmin && authStore.userRole !== 'admin') {
+        finishLoading();
         next('/');
         return;
     }
 
     // Standard authentication check
     if (to.meta.requiresAuth && !authStore.user) {
+        finishLoading();
         next('/auth/login');
     } else {
+        finishLoading();
         next();
     }
 };
+
+// Функция для завершения загрузки с минимальной задержкой
+function finishLoading() {
+    const elapsed = Date.now() - loadingStartTime;
+    const delay = Math.max(0, MIN_LOADING_TIME - elapsed);
+
+    setTimeout(() => {
+        loading.value = false;
+    }, delay);
+}
+
+// Функция для настройки других хуков маршрутизации
+export function setupRouterGuards(router) {
+    // Регистрируем обработчик ошибок
+    router.onError((error) => {
+        console.error('Navigation error:', error);
+        loading.value = false;
+    });
+}
