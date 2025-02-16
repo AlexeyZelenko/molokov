@@ -365,7 +365,11 @@ const handleClose = () => {
 };
 
 const countFilterParams = computed(() => {
-    return Object.keys(filters.value).filter(key => filters.value[key] !== null).length;
+    const count = Object.keys(filters.value)
+        .filter(key => filters.value[key] !== null)
+        .length;
+
+    return count > 0 ? String(count) : null;
 });
 
 // Функция для установки фильтров

@@ -1,17 +1,20 @@
 <script setup>
 import AppFooter from './AppFooter.vue';
-import AppCategoriesMenu from './AppCategoriesMenu.vue';
+import AppCategoriesMenu from './properties/Menu.vue';
 import AppTopbar from './AppTopbar.vue';
 import {computed, ref, watch} from "vue";
 import {useLayout} from "@/layout/composables/layout";
 import AppSidebar from "@/layout/AppSidebar.vue";
 import Breadcrumb from "@/components/Breadcrumb.vue";
+import { usePropertiesStore } from '@/store/propertiesCategories';
 
 const { layoutConfig, layoutState, isSidebarActive } = useLayout();
 const isFiltersActive = ref(false);
 const outsideClickListener = ref(null);
 const filtersOutsideClickListener = ref(null);
 
+const componentStore = usePropertiesStore()
+const filtersLength = computed(() => String(Object.keys(componentStore.filters).length))
 
 watch(isSidebarActive, (newVal) => {
     if (newVal) {
@@ -135,9 +138,11 @@ function handleSidebarClick(event) {
             label="Фільтри"
             raised
             icon="pi pi-filter"
+            :badge="filtersLength"
             class="filters-button p-button"
             @click="toggleFilters"
         />
+
         <div class="layout-main-container">
             <div class="layout-main">
                 <!-- Добавляем @click на контейнер фильтров -->

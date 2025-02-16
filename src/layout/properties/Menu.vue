@@ -10,10 +10,8 @@ const componentMap = {
     ApartmentsRent,
 }
 
-// Use Pinia store
 const componentStore = usePropertiesStore()
 
-// Dynamically select component based on store state
 const DynamicComponent = computed(() => {
     return componentMap[componentStore.currentComponent] || ApartmentsSell
 })
