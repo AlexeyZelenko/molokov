@@ -14,7 +14,10 @@ const outsideClickListener = ref(null);
 const filtersOutsideClickListener = ref(null);
 
 const componentStore = usePropertiesStore()
-const filtersLength = computed(() => String(Object.keys(componentStore.filters).length))
+const filtersLength = computed(() => {
+    const length = Object.keys(componentStore.filters).length
+    return length > 0 ? String(length) : null
+})
 
 watch(isSidebarActive, (newVal) => {
     if (newVal) {
@@ -145,14 +148,13 @@ function handleSidebarClick(event) {
 
         <div class="layout-main-container">
             <div class="layout-main">
-                <!-- Добавляем @click на контейнер фильтров -->
                 <div
                     class="filters-sidebar animate-fadein p-shadow-2 p-sidebar-right"
                     :class="{ 'active': isFiltersActive }"
                     @click.stop="handleSidebarClick"
-                    :aria-hidden="!isFiltersActive"
                     role="complementary"
                     aria-label="Фільтри"
+                    :inert="!isFiltersActive"
                 >
                     <slot name="filters">
                         <app-categories-menu

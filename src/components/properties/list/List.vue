@@ -117,11 +117,14 @@ watch(() => store.properties.length, () => {
             <div class="font-semibold text-xl">{{categoryName}} / {{subcategoryName}}</div>
             <LoadingSkeleton v-if="store.loading" />
             <template v-else>
-                <PropertyListHeader v-model:layout="layout" />
+                <PropertyListHeader
+                    class="m-1"
+                    v-model:layout="layout"
+                />
                 <component :is="currentComponent" :items="paginatedProducts" />
 
                 <Paginator
-                    v-if="showPaginator"
+                    v-if="showPaginator && store.getFilteredProperties.length"
                     :rows="pageSize"
                     :first="first"
                     :current-page="currentPage"
@@ -131,6 +134,16 @@ watch(() => store.properties.length, () => {
                     @prev-page="currentPage--"
                     @next-page="currentPage++"
                 />
+                <Message
+                    v-else
+                    severity="info"
+                    icon="pi pi-send"
+                    class="m-7"
+                >
+                    <template #default>
+                        <span>Немає оголошень</span>
+                    </template>
+                </Message>
             </template>
         </div>
     </div>
