@@ -9,170 +9,170 @@ const model = ref([
         label: 'Головна',
         items: [
             { label: 'Головна', icon: 'pi pi-fw pi-home', to: '/landing' },
-            { label: 'Аналітика', icon: 'pi pi-fw pi-home', to: '/dashboard' }
+            { label: 'Аналітика', icon: 'pi pi-fw pi-chart-line', to: '/dashboard' }
         ]
     },
     {
         label: 'Нерухомість',
-        icon: 'pi pi-fw pi-briefcase',
+        icon: 'pi pi-fw pi-building',
         items: [
             {
                 label: 'Квартири',
-                icon: 'pi pi-fw pi-briefcase',
+                icon: 'pi pi-fw pi-building',
                 items: [
                     {
                         label: 'Продаж',
-                        icon: 'pi pi-fw pi-plus',
+                        icon: 'pi pi-fw pi-tag',
                         to: '/categories/apartments/sell'
                     },
                     {
                         label: 'Оренда',
-                        icon: 'pi pi-fw pi-list',
+                        icon: 'pi pi-fw pi-calendar',
                         to: '/categories/apartments/rent'
                     },
                     {
                         label: 'Обмін',
-                        icon: 'pi pi-fw pi-list',
+                        icon: 'pi pi-fw pi-sync',
                         to: '/categories/apartments/exchange'
                     },
                     {
                         label: 'Подобово',
-                        icon: 'pi pi-fw pi-list',
+                        icon: 'pi pi-fw pi-clock',
                         to: '/categories/apartments/daily'
                     },
                     {
                         label: 'Інше',
-                        icon: 'pi pi-fw pi-list',
+                        icon: 'pi pi-fw pi-ellipsis-h',
                         to: '/categories/apartments/other',
                     }
                 ]
             },
             {
                 label: 'Будинки',
-                icon: 'pi pi-fw pi-briefcase',
+                icon: 'pi pi-fw pi-home',
                 items: [
                     {
                         label: 'Продаж',
-                        icon: 'pi pi-fw pi-plus',
+                        icon: 'pi pi-fw pi-tag',
                         to: '/categories/houses/sell'
                     },
                     {
                         label: 'Оренда',
-                        icon: 'pi pi-fw pi-list',
+                        icon: 'pi pi-fw pi-calendar',
                         to: '/categories/houses/rent'
                     },
                     {
                         label: 'Обмін',
-                        icon: 'pi pi-fw pi-list',
+                        icon: 'pi pi-fw pi-sync',
                         to: '/categories/houses/exchange'
                     },
                     {
                         label: 'Подобово',
-                        icon: 'pi pi-fw pi-list',
+                        icon: 'pi pi-fw pi-clock',
                         to: '/categories/houses/daily'
                     }
                 ]
             },
             {
                 label: 'Приміщення',
-                icon: 'pi pi-fw pi-briefcase',
+                icon: 'pi pi-fw pi-building',
                 items: [
                     {
                         label: 'Продаж',
-                        icon: 'pi pi-fw pi-plus',
+                        icon: 'pi pi-fw pi-tag',
                         to: '/categories/offices/sell'
                     },
                     {
                         label: 'Оренда',
-                        icon: 'pi pi-fw pi-list',
+                        icon: 'pi pi-fw pi-calendar',
                         to: '/categories/offices/rent'
                     },
                     {
                         label: 'Обмін',
-                        icon: 'pi pi-fw pi-list',
+                        icon: 'pi pi-fw pi-sync',
                         to: '/categories/offices/exchange'
                     },
                     {
                         label: 'Подобово',
-                        icon: 'pi pi-fw pi-list',
+                        icon: 'pi pi-fw pi-clock',
                         to: '/categories/offices/daily'
                     }
                 ]
             },
             {
                 label: 'Будівлі',
-                icon: 'pi pi-fw pi-briefcase',
+                icon: 'pi pi-fw pi-building',
                 items: [
                     {
                         label: 'Продаж',
-                        icon: 'pi pi-fw pi-plus',
+                        icon: 'pi pi-fw pi-tag',
                         to: '/categories/commercial/sell'
                     },
                     {
                         label: 'Оренда',
-                        icon: 'pi pi-fw pi-list',
+                        icon: 'pi pi-fw pi-calendar',
                         to: '/categories/commercial/rent'
                     },
                     {
                         label: 'Обмін',
-                        icon: 'pi pi-fw pi-list',
+                        icon: 'pi pi-fw pi-sync',
                         to: '/categories/commercial/exchange'
                     },
                     {
                         label: 'Подобово',
-                        icon: 'pi pi-fw pi-list',
+                        icon: 'pi pi-fw pi-clock',
                         to: '/categories/commercial/daily'
                     }
                 ]
             },
             {
                 label: 'Земельні ділянки',
-                icon: 'pi pi-fw pi-briefcase',
+                icon: 'pi pi-fw pi-map',
                 items: [
                     {
                         label: 'Продаж',
-                        icon: 'pi pi-fw pi-plus',
+                        icon: 'pi pi-fw pi-tag',
                         to: '/categories/land/sell'
                     },
                     {
                         label: 'Оренда',
-                        icon: 'pi pi-fw pi-list',
+                        icon: 'pi pi-fw pi-calendar',
                         to: '/categories/land/rent'
                     },
                     {
                         label: 'Обмін',
-                        icon: 'pi pi-fw pi-list',
+                        icon: 'pi pi-fw pi-sync',
                         to: '/categories/land/exchange'
                     },
                     {
                         label: 'Подобово',
-                        icon: 'pi pi-fw pi-list',
+                        icon: 'pi pi-fw pi-clock',
                         to: '/categories/land/daily'
                     }
                 ]
             },
             {
                 label: 'Інше',
-                icon: 'pi pi-fw pi-briefcase',
+                icon: 'pi pi-fw pi-ellipsis-h',
                 items: [
                     {
                         label: 'Продаж',
-                        icon: 'pi pi-fw pi-plus',
+                        icon: 'pi pi-fw pi-tag',
                         to: '/categories/other/sell'
                     },
                     {
                         label: 'Оренда',
-                        icon: 'pi pi-fw pi-list',
+                        icon: 'pi pi-fw pi-calendar',
                         to: '/categories/other/rent'
                     },
                     {
                         label: 'Обмін',
-                        icon: 'pi pi-fw pi-list',
+                        icon: 'pi pi-fw pi-sync',
                         to: '/categories/other/exchange'
                     },
                     {
                         label: 'Подобово',
-                        icon: 'pi pi-fw pi-list',
+                        icon: 'pi pi-fw pi-clock',
                         to: '/categories/other/daily'
                     }
                 ]
@@ -181,115 +181,80 @@ const model = ref([
     },
     {
         label: 'Нерухомість (admin)',
-        icon: 'pi pi-fw pi-briefcase',
+        icon: 'pi pi-fw pi-cog',
         roles: ['admin', 'customer'],
         items: [
             {
                 label: 'Квартири',
-                icon: 'pi pi-fw pi-briefcase',
+                icon: 'pi pi-fw pi-building',
                 items: [
                     {
                         label: 'Додати',
                         icon: 'pi pi-fw pi-plus',
                         to: '/pages/apartments/add'
                     },
-                    // {
-                    //     label: 'Таблиця',
-                    //     icon: 'pi pi-fw pi-list',
-                    //     to: '/pages/apartments/table'
-                    // },
-                    // {
-                    //     label: 'Список',
-                    //     icon: 'pi pi-fw pi-list',
-                    //     to: '/pages/apartments/list'
-                    // }
                 ]
             },
             {
                 label: 'Будинки',
-                icon: 'pi pi-fw pi-briefcase',
+                icon: 'pi pi-fw pi-home',
                 items: [
                     {
                         label: 'Додати',
                         icon: 'pi pi-fw pi-plus',
                         to: '/pages/houses/add'
                     },
-                    // {
-                    //     label: 'Список',
-                    //     icon: 'pi pi-fw pi-list',
-                    //     to: '/pages/houses/table'
-                    // }
                 ]
             },
             {
                 label: 'Приміщення',
-                icon: 'pi pi-fw pi-briefcase',
+                icon: 'pi pi-fw pi-building',
                 items: [
                     {
                         label: 'Додати',
                         icon: 'pi pi-fw pi-plus',
                         to: '/pages/offices/add'
                     },
-                    // {
-                    //     label: 'Список',
-                    //     icon: 'pi pi-fw pi-list',
-                    //     to: '/pages/offices/table'
-                    // }
                 ]
             },
             {
                 label: 'Будівлі',
-                icon: 'pi pi-fw pi-briefcase',
+                icon: 'pi pi-fw pi-building',
                 items: [
                     {
                         label: 'Додати',
                         icon: 'pi pi-fw pi-plus',
                         to: '/pages/commercial/add'
                     },
-                    // {
-                    //     label: 'Список',
-                    //     icon: 'pi pi-fw pi-list',
-                    //     to: '/pages/commercial/table'
-                    // }
                 ]
             },
             {
                 label: 'Земельні ділянки',
-                icon: 'pi pi-fw pi-briefcase',
+                icon: 'pi pi-fw pi-map',
                 items: [
                     {
                         label: 'Додати',
                         icon: 'pi pi-fw pi-plus',
                         to: '/pages/land/add'
                     },
-                    // {
-                    //     label: 'Список',
-                    //     icon: 'pi pi-fw pi-list',
-                    //     to: '/pages/land/table'
-                    // }
                 ]
             },
             {
                 label: 'Інше',
-                icon: 'pi pi-fw pi-briefcase',
+                icon: 'pi pi-fw pi-ellipsis-h',
                 items: [
                     {
                         label: 'Додати',
                         icon: 'pi pi-fw pi-plus',
                         to: '/pages/other/add'
                     },
-                    // {
-                    //     label: 'Таблиця',
-                    //     icon: 'pi pi-fw pi-list',
-                    //     to: '/pages/other/table'
-                    // }
                 ]
             },
         ]
     },
     {
         label: 'Профіль',
-        icon: 'pi pi-fw pi-briefcase',
+        icon: 'pi pi-fw pi-user',
         roles: ['admin', 'customer'],
         items: [
             {
@@ -298,7 +263,7 @@ const model = ref([
                 items: [
                     {
                         label: 'Мій профіль',
-                        icon: 'pi pi-fw pi-user',
+                        icon: 'pi pi-fw pi-user-edit',
                         to: '/users/user/profile'
                     },
                 ]
@@ -309,12 +274,12 @@ const model = ref([
                 items: [
                     {
                         label: 'Таблиця клієнтів',
-                        icon: 'pi pi-fw pi-list',
+                        icon: 'pi pi-fw pi-table',
                         to: '/users/user/clients'
                     },
                     {
                         label: 'Виборка для клієнтів',
-                        icon: 'pi pi-fw pi-list',
+                        icon: 'pi pi-fw pi-filter',
                         to: '/users/user/propertyLists'
                     },
                 ]
@@ -323,7 +288,7 @@ const model = ref([
     },
     {
         label: 'Admin',
-        icon: 'pi pi-fw pi-briefcase',
+        icon: 'pi pi-fw pi-cog',
         roles: ['admin'],
         items: [
             {
@@ -332,7 +297,7 @@ const model = ref([
                 items: [
                     {
                         label: 'Таблиця',
-                        icon: 'pi pi-fw pi-list',
+                        icon: 'pi pi-fw pi-table',
                         to: '/users/admin/customers'
                     },
                 ]
@@ -362,7 +327,7 @@ const model = ref([
     },
     {
         label: 'Pages',
-        icon: 'pi pi-fw pi-briefcase',
+        icon: 'pi pi-fw pi-file',
         roles: ['admin'],
         to: '/pages',
         items: [
