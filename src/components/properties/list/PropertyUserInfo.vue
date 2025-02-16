@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps, onMounted } from 'vue';
+import { defineProps } from 'vue';
 import { useUserStore } from '@/store/userStore';
 
 const userStore = useUserStore();
@@ -8,12 +8,6 @@ const user = userStore.user;
 defineProps({
     creator: Object
 });
-
-onMounted(() => {
-
-    console.log(user);
-});
-
 </script>
 
 <template>

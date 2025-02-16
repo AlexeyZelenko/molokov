@@ -3,12 +3,11 @@ import { onMounted, ref, watch, computed } from 'vue';
 import { usePropertiesStore } from '@/store/propertiesCategories';
 import { useAreasStore } from '@/store/areasStore';
 import { useUserStore } from '@/store/userStore';
-import { useRoute, useRouter } from 'vue-router';
+import { useRoute } from 'vue-router';
 import PropertyListHeader from './PropertyListHeader.vue';
 import PropertyListView from './PropertyListView.vue';
 import PropertyGridView from './PropertyGridView.vue';
 import PropertyMapView from './PropertyMapView.vue';
-import PropertyPagination from './PropertyPagination.vue';
 import ConfirmationModal from './ConfirmationModal.vue';
 import LoadingSkeleton from './LoadingSkeleton.vue';
 
@@ -23,7 +22,7 @@ const route = useRoute();
 const store = usePropertiesStore();
 const storeAreas = useAreasStore();
 const currentPage = ref(1);
-const pageSize = 3;
+const pageSize = 1;
 
 const categoryName = computed(() =>
     storeAreas.realEstateItems.find(item => item.key === props.category)?.title
@@ -40,18 +39,25 @@ const filters = ref({
 });
 
 const paginatedProducts = computed(() => {
+    if (currentComponent.value === PropertyMapView) {
+        return store.getFilteredProperties; // Все объявления
+    }
     const start = (currentPage.value - 1) * pageSize;
-    return store.getFilteredProperties.slice(start, start + pageSize);
+    return store.getFilteredProperties.slice(start, start + pageSize); // Пагинация
 });
+const showPaginator = computed(() => currentComponent.value !== PropertyMapView);
+
 
 const totalPages = computed(() => {
-    return Math.ceil(store.properties.length / pageSize);
+    return Math.ceil(store.getFilteredProperties.length / pageSize);
 });
 
 const loadPage = async () => {
     try {
-        await store.getProperties(filters.value);
-        await userStore.fetchUser();
+        await Promise.all([
+            store.getProperties(filters.value),
+            userStore.fetchUser()
+        ]);
     } catch (error) {
         console.error('Ошибка при загрузке данных:', error);
     }
@@ -59,9 +65,25 @@ const loadPage = async () => {
 
 const layout = ref('list'); // Начальный layout по умолчанию
 
-const changeLayout = (layout) => {
-    layout.value = layout;
+const changeLayout = (newLayout) => {
+    layout.value = newLayout;
 };
+
+
+const onPageChange = (page) => {
+    currentPage.value = page;
+};
+
+const first = computed(() => Math.min((currentPage.value - 1) * pageSize, store.getFilteredProperties.length));
+
+watch(filters, loadPage, { deep: true });
+
+watch(totalPages, () => {
+    if (currentPage.value > totalPages.value) {
+        currentPage.value = totalPages.value || 1;
+    }
+});
+
 
 const currentComponent = computed(() => {
     switch (layout.value) {
@@ -82,9 +104,10 @@ onMounted(() => {
     }
 });
 
-watch(() => store.properties, () => {
+watch(() => store.properties.length, () => {
     currentPage.value = 1;
 });
+
 </script>
 
 <template>
@@ -96,10 +119,15 @@ watch(() => store.properties, () => {
             <template v-else>
                 <PropertyListHeader v-model:layout="layout" />
                 <component :is="currentComponent" :items="paginatedProducts" />
-                <PropertyPagination
-                    v-if="currentComponent !== PropertyMapView"
+
+                <Paginator
+                    v-if="showPaginator"
+                    :rows="pageSize"
+                    :first="first"
                     :current-page="currentPage"
                     :total-pages="totalPages"
+                    :totalRecords="100"
+                    @update:currentPage="onPageChange"
                     @prev-page="currentPage--"
                     @next-page="currentPage++"
                 />

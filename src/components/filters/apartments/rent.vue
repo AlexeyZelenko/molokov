@@ -580,7 +580,6 @@ const getSelectedFilters = computed(() => {
             const parts = key.split('.');
             let displayName = '';
             let displayValue = value;
-            console.log(parts);
 
             // Handle different filter types
             if (parts[0] === 'rooms') {
