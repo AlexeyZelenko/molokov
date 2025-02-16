@@ -1,27 +1,27 @@
 <template>
     <div class="map-container">
         <div ref="mapContainer" style="width: 100%; height: 500px"></div>
-        <div class="controls">
-            <button @click="toggleAddMarkerMode" :class="{ active: isAddingMarkers }">
-                {{ isAddingMarkers ? 'Stop Adding Markers' : 'Start Adding Markers' }}
-            </button>
-            <button @click="clearMarkers" :disabled="markers.length === 0">
-                Clear All Markers
-            </button>
-            <button @click="exportMarkers" :disabled="markers.length === 0">
-                Export Markers
-            </button>
-            <input
-                type="file"
-                ref="fileInput"
-                style="display: none"
-                accept=".json"
-                @change="importMarkers"
-            >
-            <button @click="$refs.fileInput.click()">
-                Import Markers
-            </button>
-        </div>
+<!--        <div class="controls">-->
+<!--            <button @click="toggleAddMarkerMode" :class="{ active: isAddingMarkers }">-->
+<!--                {{ isAddingMarkers ? 'Stop Adding Markers' : 'Start Adding Markers' }}-->
+<!--            </button>-->
+<!--            <button @click="clearMarkers" :disabled="markers.length === 0">-->
+<!--                Clear All Markers-->
+<!--            </button>-->
+<!--            <button @click="exportMarkers" :disabled="markers.length === 0">-->
+<!--                Export Markers-->
+<!--            </button>-->
+<!--            <input-->
+<!--                type="file"-->
+<!--                ref="fileInput"-->
+<!--                style="display: none"-->
+<!--                accept=".json"-->
+<!--                @change="importMarkers"-->
+<!--            >-->
+<!--            <button @click="$refs.fileInput.click()">-->
+<!--                Import Markers-->
+<!--            </button>-->
+<!--        </div>-->
     </div>
 
     <!-- Modal for editing marker text -->

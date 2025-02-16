@@ -97,6 +97,7 @@ watch(() => store.properties, () => {
                 <PropertyListHeader v-model:layout="layout" />
                 <component :is="currentComponent" :items="paginatedProducts" />
                 <PropertyPagination
+                    v-if="currentComponent !== PropertyMapView"
                     :current-page="currentPage"
                     :total-pages="totalPages"
                     @prev-page="currentPage--"

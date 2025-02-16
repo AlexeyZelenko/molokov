@@ -1,11 +1,15 @@
 <template>
     <Card style="width: 25rem; overflow: hidden">
         <template #header>
-            <img
-                alt="user header"
-                :src="props.marker.item.images[0]"
-                class="w-full h-60 object-cover"
-            />
+            <Galleria :value="props.marker.item.images" :numVisible="5" :circular="true" containerStyle="max-width: 640px"
+                      :showItemNavigators="true" :showThumbnails="false">
+                <template #item="slotProps">
+                    <img :src="slotProps.item" :alt="slotProps.item.alt" style="width: 100%; display: block;" />
+                </template>
+                <template #thumbnail="slotProps">
+                    <img :src="slotProps.item" :alt="slotProps.item.alt" style="display: block;" />
+                </template>
+            </Galleria>
         </template>
         <template #title>{{ props.marker.item.title}}</template>
         <template #subtitle>{{ props.marker.item.subcategory.name}}</template>
