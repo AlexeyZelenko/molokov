@@ -1,25 +1,36 @@
 <script setup>
+import { defineProps, onMounted } from 'vue';
+import { useUserStore } from '@/store/userStore';
+
+const userStore = useUserStore();
+const user = userStore.user;
+
 defineProps({
     creator: Object
 });
+
+onMounted(() => {
+
+    console.log(user);
+});
+
 </script>
 
 <template>
-    <Accordion value="1" expandIcon="pi pi-plus" collapseIcon="pi pi-minus">
+    <Accordion value="1" expandIcon="pi pi-phone" collapseIcon="pi pi-angle-up">
         <AccordionPanel value="0">
             <AccordionHeader>
                 <span class="flex items-center gap-2 w-full">
-                    <Avatar icon="pi pi-user"
-                            style="background-color: #dee9fc; color: #1a2551"
-                            shape="circle" />
-                    <span class="font-bold whitespace-nowrap px-2">Користувач</span>
+                    <Avatar
+                        :icon="user.avatar ? null : 'pi pi-user'"
+                        :image="user.avatar || null"
+                        style="height: 35px; width: 50px"
+                        shape="circle"
+                    />
+                    <span class="font-bold whitespace-nowrap px-2">{{ creator?.username }}</span>
                 </span>
             </AccordionHeader>
             <AccordionContent>
-                <div class="font-medium text-surface-500 dark:text-surface-400 text-sm pt-2">
-                    <i class="pi pi-user mr-2"></i>
-                    {{ creator?.username }}
-                </div>
                 <div v-for="(phone, i) in creator?.phone"
                      :key="i"
                      class="font-medium text-surface-500 dark:text-surface-400 text-sm pt-2">

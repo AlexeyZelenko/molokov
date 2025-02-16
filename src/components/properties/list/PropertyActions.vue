@@ -87,7 +87,7 @@ const deleteProperty = () => {
 <template>
     <div class="flex gap-2">
         <Button
-            icon="pi pi-eye"
+            label="Переглянути деталі"
             class="p-button-info mr-2"
             @click="showProperty"
         />
