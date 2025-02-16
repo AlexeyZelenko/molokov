@@ -97,6 +97,15 @@
             :isDelete="false"
             class="my-6"
         />
+
+        <div style="position: relative; right: 0; top: 0;">
+            <SocialShare
+                :adUrl="fullUrl"
+                :title="property.title"
+                :description="property.price"
+                :image="property.images[0]"
+            />
+        </div>
     </div>
 </template>
 
@@ -125,6 +134,7 @@ import PropertyOffice from './categories/office/index.vue';
 import PropertyOther from './categories/other/index.vue';
 
 import DgisMap from "@/components/maps/DgisMap.vue";
+import SocialShare from "@/components/SocialShare.vue";
 
 const route = useRoute();
 
@@ -141,6 +151,11 @@ const categoryComponentMap = {
     'offices': PropertyOffice,
     'other': PropertyOther
 };
+
+const fullUrl = computed(() => {
+    const baseUrl = window.location.origin;
+    return `${baseUrl}${route.fullPath}`;
+});
 
 const propertyId = route.params.id;
 const category = route.query.category;
