@@ -135,7 +135,7 @@ watch(() => store.properties.length, () => {
                     @next-page="currentPage++"
                 />
                 <Message
-                    v-else
+                    v-else-if="store.getFilteredProperties.length === 0"
                     severity="info"
                     icon="pi pi-send"
                     class="m-7"

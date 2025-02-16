@@ -56,7 +56,6 @@ const props = defineProps({
 });
 
 const closeModal = () => {
-    console.log('Close modal');
     editingMarker.value = null;
 };
 const toggleAddMarkerMode = () => {

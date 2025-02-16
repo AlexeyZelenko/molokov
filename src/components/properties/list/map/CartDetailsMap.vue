@@ -1,13 +1,25 @@
 <template>
     <Card style="width: 25rem; overflow: hidden">
         <template #header>
-            <Galleria :value="props.marker.item.images" :numVisible="5" :circular="true" containerStyle="max-width: 640px"
-                      :showItemNavigators="true" :showThumbnails="false">
+            <Galleria
+                v-if="props.marker?.item?.images?.length"
+                :value="props.marker.item.images"
+                :numVisible="5"
+                :circular="true"
+                containerStyle="max-width: 640px; height: 400px;"
+                :showItemNavigators="true"
+                :showThumbnails="false"
+            >
                 <template #item="slotProps">
-                    <img :src="slotProps.item" :alt="slotProps.item.alt" style="width: 100%; display: block;" />
-                </template>
-                <template #thumbnail="slotProps">
-                    <img :src="slotProps.item" :alt="slotProps.item.alt" style="display: block;" />
+                    <transition name="fade">
+                        <img
+                            :key="slotProps.item"
+                            :src="slotProps.item"
+                            :alt="slotProps.item.alt || 'Image'"
+                            class="fixed-image"
+                            loading="lazy"
+                        />
+                    </transition>
                 </template>
             </Galleria>
         </template>
@@ -39,7 +51,7 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, onMounted } from 'vue';
+import { defineProps, defineEmits } from 'vue';
 import {useRouter} from 'vue-router';
 
 const props = defineProps({
@@ -57,8 +69,19 @@ const showProperty = (marker) => {
 const closeModal = () => {
     emit('close-modal');
 };
-
-onMounted(() => {
-    console.log('Marker:', props.marker);
-});
 </script>
+
+<style scoped>
+.fixed-image {
+    width: 100%;
+    height: 400px; /* Фиксированная высота */
+    object-fit: cover; /* Заполняет область, не искажая изображение */
+    display: block;
+}
+.fade-enter-active, .fade-leave-active {
+    transition: opacity 0.3s ease-in-out;
+}
+.fade-enter-from, .fade-leave-to {
+    opacity: 0;
+}
+</style>
