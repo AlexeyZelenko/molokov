@@ -15,12 +15,13 @@ defineProps({
              :key="index"
              class="col-span-12 sm:col-span-6 lg:col-span-4">
             <div class="p-6 border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-900 rounded flex flex-col">
-                <div class="bg-surface-50 flex justify-center rounded p-4">
-                    <div class="relative mx-auto">
-                        <img class="rounded w-full"
-                             :src="item.images[0]"
-                             :alt="item.title"
-                             style="max-width: 300px; height: 150px" />
+                <div class="flex justify-center rounded">
+                    <div class="relative w-full max-w-[300px] h-[150px]">
+                        <img
+                            class="rounded w-full h-full object-cover"
+                            :src="item.images[0]"
+                            :alt="item.title"
+                        />
                     </div>
                 </div>
                 <div class="pt-6">
