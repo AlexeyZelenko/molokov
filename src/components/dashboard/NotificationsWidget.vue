@@ -59,6 +59,10 @@ function setChartData() {
                     priceStats.value[3].min,
                     priceStats.value[4].min
                 ],
+                borderRadius: {
+                    topLeft: 8,
+                    topRight: 8
+                },
                 barThickness: 20
             },
             {
@@ -71,6 +75,10 @@ function setChartData() {
                     priceStats.value[3].avg,
                     priceStats.value[4].avg
                 ],
+                borderRadius: {
+                    topLeft: 8,
+                    topRight: 8
+                },
                 barThickness: 20
             },
             {
