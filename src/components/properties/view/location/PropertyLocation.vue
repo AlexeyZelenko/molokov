@@ -1,24 +1,23 @@
 <template>
-    <div class="card flex flex-col gap-4 shadow-lg">
+    <div class="card flex flex-col gap-2 shadow-lg">
         <div class="font-semibold text-xl">Розташування</div>
-        <div class="font-semibold text-sm">Область / Місто</div>
-        <div>{{ address.region?.name }} / {{ address.city.name }}</div>
+        <div class="font-bold text-sm">Область / Місто</div>
+        <div>{{ address?.region?.name }} / {{ address?.city?.name || address?.city }}</div>
 
-        <div class="font-semibold text-sm">Район / Вулиця</div>
-        <div>{{ address?.area?.name }} / {{ address.street }}</div>
+        <div v-if="address.area?.name">
+            <span class="font-bold text-sm">Район: </span>
+            <span>{{ address?.area?.name }}</span>
+        </div>
 
-<!--        <GoogleMapAddApartment-->
-<!--            style="width: 100%; height: 500px"-->
-<!--            :area="address.area"-->
-<!--            :center="address.markerPosition"-->
-<!--            :disabled="true"-->
-<!--        />-->
+        <div v-if="address?.street">
+            <span class="font-bold text-sm">Вулиця: </span>
+            <span>{{ address?.street }}</span>
+        </div>
+
     </div>
 </template>
 
 <script setup>
-// import GoogleMapAddApartment from '@/components/googleMap/AddApartment.vue';
-
 defineProps({
     address: {
         type: Object,

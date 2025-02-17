@@ -4,13 +4,17 @@
 
         <div class="font-semibold text-sm">Ім'я</div>
         <InputText
-            :value="contacts.displayName"
+            :value="contacts?.name"
             placeholder="Username"
             disabled
         />
 
         <div class="font-semibold text-sm">Телефони</div>
-        <div v-for="(phone, index) in contacts.phones" :key="index" class="mb-2">
+        <div
+            v-for="(phone, index) in contacts?.phones"
+            :key="index"
+            class="mb-2"
+        >
             <InputText
                 :value="phone"
                 disabled

@@ -83,7 +83,6 @@ export class PropertyManager {
         this.property.address = address;
     };
 
-
     resetForm(propertyType) {
         this.setPropertyType(propertyType);
         this.property.images = [];
@@ -160,10 +159,6 @@ export class PropertyManager {
         });
     }
 
-    updateMarkerPosition(position) {
-        this.property.address.markerPosition = position;
-    }
-
     getFormattedDescription() {
         return this.property.description.replace(/\n/g, '<br>').replace(/ {2,}/g, match => '&nbsp;'.repeat(match.length));
     }
@@ -184,11 +179,11 @@ export class PropertyManager {
                 idProperty: Number(lastPropertyId) + 1,
                 description: this.getFormattedDescription(),
                 creator: {
-                    id: this.contact.id || this.contact.uid || null,
-                    username: this.contact.displayName || null,
-                    email: this.contact.email || null,
-                    phone: this.contact.phones || null,
-                    message: this.property.creator?.message || null
+                    id: this.contact?.id || this.contact?.uid || null,
+                    username: this.contact?.name || null,
+                    email: this.contact?.email || null,
+                    phone: this.contact?.phones || null,
+                    message: this.property?.creator?.message || null
                 }
             };
 

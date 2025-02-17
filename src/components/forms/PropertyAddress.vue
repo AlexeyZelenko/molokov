@@ -32,7 +32,7 @@
         </template>
         <template v-else-if="modelValue.region?.code !== 'CHK'">
             <InputText
-                v-model="modelValue.city"
+                v-model="modelValue.city.name"
                 placeholder="Місто"
                 :class="{ 'p-invalid': errors.city }"
                 required
@@ -42,16 +42,11 @@
             </small>
         </template>
 
-        <div class="font-semibold text-sm">Вулиця *</div>
+        <div class="font-semibold text-sm">Вулиця</div>
         <InputText
             v-model="modelValue.street"
             placeholder="Вулиця"
-            :class="{ 'p-invalid': errors.street }"
-            required
         />
-        <small class="text-red-500" v-if="errors.street">
-            {{ errors.street }}
-        </small>
 
         <template v-if="modelValue.city?.code === '1'">
             <div class="font-semibold text-sm">Мікрорайон міста Черкаси</div>
@@ -74,7 +69,7 @@
             v-model:marker="property.address.markerPosition"
         />
         <VueLeafle
-            v-else-if="modelValue.city?.code !== '1' && modelValue.area.street"
+            v-else-if="modelValue.city?.code !== '1'"
             :property="property"
             v-model:marker="property.address.markerPosition"
         />
@@ -106,7 +101,6 @@ const emit = defineEmits(['update:modelValue', 'validation-change']);
 const errors = ref({
     region: '',
     city: '',
-    street: '',
     area: ''
 });
 

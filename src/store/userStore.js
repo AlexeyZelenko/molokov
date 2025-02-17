@@ -147,7 +147,10 @@ export const useUserStore = defineStore('user', {
             const userDoc = await getDoc(userRef);
 
             if (userDoc.exists()) {
-                this.user = { id: userDoc.id, ...userDoc.data() };
+                this.user = {
+                    id: userDoc.id,
+                    ...userDoc.data()
+                };
             }
 
             this.loading = false;

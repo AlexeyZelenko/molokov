@@ -1,5 +1,5 @@
 <template>
-    <div class="card flex flex-col gap-4 shadow-lg">
+    <div class="card flex flex-col gap-2 shadow-lg">
         <div class="hidden md:block">
             <Tabs value="0">
                 <TabList class="flex flex-col">
@@ -7,7 +7,7 @@
                         v-for="tab in tabs"
                         :key="tab.title"
                         :value="tab.value"
-                        class="font-semibold text-xl"
+                        class="font-bold text-xl"
                     >
                         <span>{{ tab.title }}</span>
                     </Tab>

@@ -10,17 +10,25 @@ const props = defineProps({
 </script>
 
 <template>
-    <div class="card flex flex-col gap-4 shadow-lg">
-        <div class="font-semibold text-xl">Стан нерухомості</div>
-        <div>{{ condition?.name }}</div>
+    <div class="card flex flex-col gap-2 shadow-lg">
+        <div class="flex wrap">
+            <div class="font-semibold text-md mr-2">Стан нерухомості:</div>
+            <div>{{ condition?.name }}</div>
+        </div>
 
-        <div class="font-semibold text-xl">Тип будівлі</div>
-        <div>{{ buildingType?.name }}</div>
+        <div class="flex wrap">
+            <div class="font-semibold text-md mr-2">Тип будівлі:</div>
+            <div>{{ buildingType?.name }}</div>
+        </div>
 
-        <div class="font-semibold text-xl">Клас об'єкта</div>
-        <div>{{ objectClass?.name }}</div>
+        <div class="flex wrap">
+            <div class="font-semibold text-md mr-2">Клас об'єкта:</div>
+            <div>{{ objectClass?.name }}</div>
+        </div>
 
-        <div class="font-semibold text-xl">Ремонт</div>
-        <div>{{ reconditioning?.name }}</div>
+        <div class="flex wrap">
+            <div class="font-semibold text-md mr-2">Ремонт:</div>
+            <div>{{ reconditioning?.name }}</div>
+        </div>
     </div>
 </template>

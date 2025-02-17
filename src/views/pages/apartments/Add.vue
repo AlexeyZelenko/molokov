@@ -165,6 +165,7 @@ import { ref, computed, onBeforeMount, onUnmounted } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import { useApartmentsStore } from '@/store/apartments';
 import { useAuthStore } from '@/store/authFirebase';
+import { useUserStore } from '@/store/userStore';
 import { PropertyManager } from '@/service/property/PropertyManagerAdd';
 
 // Component imports
@@ -190,6 +191,53 @@ const roomsForm = ref(null);
 const conditionForm = ref(null);
 const contactsInfoForm = ref(null);
 
+const toast = useToast();
+const store = useApartmentsStore();
+const authStore = useAuthStore();
+const userStore = useUserStore();
+
+const propertyManager = new PropertyManager(userStore, store, toast);
+
+const formValidations = ref({
+    basicInfo: false,
+    area: false,
+    floors: false,
+    rooms: false,
+    condition: false,
+    contactsInfo: false
+});
+
+const saving = ref(false);
+const uploadVisible = ref(false);
+
+const property = computed(() => propertyManager.property);
+const images = computed(() => propertyManager.property.images);
+const contacts = computed(() => userStore.user);
+const dropdowns = computed(() => store.dropdowns);
+
+const selectedCategoryName = computed(() => {
+    if (!dropdowns.value?.category || !Array.isArray(dropdowns.value.category)) {
+        return 'Категорія не знайдена';
+    }
+    const category = dropdowns.value.category.find(item => item.code === property.value.category.code);
+    return category ? category.name : 'Категорія не знайдена';
+});
+
+const handleValidation = (formName, isValid) => {
+    formValidations.value[formName] = isValid;
+};
+const onFileSelect = async (files) => {
+    uploadVisible.value = true;
+    await propertyManager.uploadImages(files);
+    uploadVisible.value = false;
+};
+
+const removeImage = async (imageUrl) => {
+    uploadVisible.value = true;
+    await propertyManager.removeImage(imageUrl);
+    uploadVisible.value = false;
+};
+
 const validateAllForms = async () => {
     console.log('validateAllForms');
     const validations = await Promise.all([
@@ -208,11 +256,13 @@ const validateAllForms = async () => {
 };
 
 const saveProperty = async () => {
+
     const isValid = await validateAllForms();
 
     if (isValid) {
         try {
             saving.value = true;
+
             await propertyManager.saveProperty();
         } catch (error) {
             toast.add({
@@ -232,53 +282,6 @@ const saveProperty = async () => {
             life: 5000
         });
     }
-};
-
-const toast = useToast();
-const store = useApartmentsStore();
-const authStore = useAuthStore();
-
-const propertyManager = new PropertyManager(authStore, store, toast);
-
-const formValidations = ref({
-    basicInfo: false,
-    area: false,
-    floors: false,
-    rooms: false,
-    condition: false,
-    contactsInfo: false
-});
-
-const saving = ref(false);
-const uploadVisible = ref(false);
-
-const property = computed(() => propertyManager.property);
-const images = computed(() => propertyManager.property.images);
-const contacts = computed(() => authStore.user);
-const dropdowns = computed(() => store.dropdowns);
-
-const selectedCategoryName = computed(() => {
-    if (!dropdowns.value?.category || !Array.isArray(dropdowns.value.category)) {
-        return 'Категорія не знайдена';
-    }
-    const category = dropdowns.value.category.find(item => item.code === property.value.category.code);
-    return category ? category.name : 'Категорія не знайдена';
-});
-
-const handleValidation = (formName, isValid) => {
-    // console.log('formName', formName, 'isValid', isValid);
-    formValidations.value[formName] = isValid;
-};
-const onFileSelect = async (files) => {
-    uploadVisible.value = true;
-    await propertyManager.uploadImages(files);
-    uploadVisible.value = false;
-};
-
-const removeImage = async (imageUrl) => {
-    uploadVisible.value = true;
-    await propertyManager.removeImage(imageUrl);
-    uploadVisible.value = false;
 };
 
 onBeforeMount(async () => {

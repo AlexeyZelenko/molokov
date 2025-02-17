@@ -3,17 +3,17 @@
         <div class="font-semibold text-xl">Поверховість</div>
 
         <div class="flex items-center">
-            <div class="font-semibold text-sm mr-2">Поверх</div>
+            <div class="font-bold text-sm mr-2">Поверх:</div>
             <div>{{ property?.floors?.floor }}</div>
         </div>
 
         <div class="flex items-center">
-            <div class="font-semibold text-sm mr-2">Поверховість будівлі</div>
+            <div class="font-bold text-sm mr-2">Поверховість будівлі:</div>
             <div>{{ property?.floors?.totalFloors }}</div>
         </div>
 
         <div class="flex items-center">
-            <div class="font-semibold text-sm mr-2">Кількість поверхів у приміщенні</div>
+            <div class="font-bold text-sm mr-2">Кількість поверхів у приміщенні:</div>
             <div>{{ property.floors?.totalFloorsBuilding }}</div>
         </div>
     </div>
