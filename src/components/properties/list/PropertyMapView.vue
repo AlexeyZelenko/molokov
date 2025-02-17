@@ -1,6 +1,6 @@
 <template>
     <div class="map-container">
-        <div ref="mapContainer" style="width: 100%; height: 500px"></div>
+        <div ref="mapContainer" style="width: 100%; height: 600px"></div>
 <!--        <div class="controls">-->
 <!--            <button @click="toggleAddMarkerMode" :class="{ active: isAddingMarkers }">-->
 <!--                {{ isAddingMarkers ? 'Stop Adding Markers' : 'Start Adding Markers' }}-->
@@ -194,11 +194,11 @@ const importMarkers = (event) => {
 
 onMounted(() => {
     // Инициализировать карту
-    map.value = leaflet.map(mapContainer.value).setView([49.4444, 32.0598], 13);
+    map.value = leaflet.map(mapContainer.value).setView([49, 32.0598], 12);
 
     // Добавить слой OpenStreetMap
     leaflet.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
+        maxZoom: 17,
         attribution: '© OpenStreetMap contributors'
     }).addTo(map.value);
 
