@@ -10,7 +10,7 @@
                 </option>
             </select>
         </div>
-        <div ref="mapContainer" style="width: 100%; height: 500px"></div>
+        <div ref="mapContainer" style="width: 100%; height: 600px"></div>
     </div>
 </template>
 

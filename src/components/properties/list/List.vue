@@ -22,7 +22,7 @@ const route = useRoute();
 const store = usePropertiesStore();
 const storeAreas = useAreasStore();
 const currentPage = ref(1);
-const pageSize = 1;
+const pageSize = 3;
 
 const categoryName = computed(() =>
     storeAreas.realEstateItems.find(item => item.key === props.category)?.title
