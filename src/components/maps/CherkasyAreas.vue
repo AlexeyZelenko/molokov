@@ -76,7 +76,7 @@ const drawArea = (area) => {
 
     circle.bindPopup(`
     <div class="area-popup">
-      <h3>${area.name}</h3>
+      <h3 style="color: black">${area.name}</h3>
       <p>Радиус: ${area.radius}м</p>
     </div>
   `);
