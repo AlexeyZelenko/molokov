@@ -19,20 +19,62 @@ const showProperty = (property) => {
 <template>
     <div v-if="products?.length" class="card">
         <div class="font-semibold text-xl mb-4">Останні на продаж</div>
-        <DataTable :value="products" :rows="5" :paginator="true" responsiveLayout="scroll">
-            <Column style="width: 15%" header="Фото">
-                <template #body="slotProps">
-                    <img :src="`${slotProps.data.images[0]}`" alt="image" width="50" class="shadow" />
+        <DataTable
+            :value="products"
+            :rows="5"
+            :paginator="true"
+            responsiveLayout="scroll"
+            class="p-datatable-sm"
+            stripedRows
+            :rowHover="true"
+            paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink"
+        >
+            <Column header="Фото" style="width: 15%">
+                <template #body="{ data }">
+                    <div class="relative w-[50px] h-[50px]">
+                        <img
+                            :src="data.images[0]"
+                            :alt="data.title"
+                            class="rounded-md shadow-sm w-full h-full object-cover"
+                        />
+                    </div>
                 </template>
             </Column>
-            <Column field="title" header="Назва" :sortable="true" style="width: 45%"></Column>
-            <Column field="price" header="Ціна(грн)" :sortable="true" style="width: 20%"></Column>
-            <Column style="width: 10%" header="Деталі">
-                <template #body="slotProps">
+
+            <Column
+                field="title"
+                header="Назва"
+                :sortable="true"
+                style="width: 45%"
+            >
+                <template #body="{ data }">
+                    <div class="font-medium">{{ data.title }}</div>
+                </template>
+            </Column>
+
+            <Column
+                field="price"
+                header="Ціна(грн)"
+                :sortable="true"
+                style="width: 20%"
+            >
+                <template #body="{ data }">
+                    <div class="font-semibold text-primary">
+                        {{ data.price.toLocaleString() }} ₴
+                    </div>
+                </template>
+            </Column>
+
+            <Column header="Деталі" style="width: 10%">
+                <template #body="{ data }">
                     <Button
-                        icon="pi pi-search" type="button" class="p-button-text"
-                        @click="showProperty(slotProps.data)"
-                    ></Button>
+                        icon="pi pi-search"
+                        type="button"
+                        class="p-button-rounded p-button-text"
+                        @click="showProperty(data)"
+                        tooltip="Переглянути деталі"
+                        tooltipPosition="top"
+                    />
                 </template>
             </Column>
         </DataTable>
