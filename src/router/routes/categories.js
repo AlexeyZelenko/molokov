@@ -75,6 +75,9 @@ export default [
                                 path: 'sell',
                                 name: 'apartmentsSell',
                                 component: () => import('@/views/pages/apartments/lists/sell.vue'),
+                                query: {
+                                    userId: null
+                                },
                                 meta: {
                                     breadcrumb: [
                                         { name: 'Головна', route: '/', icon: 'pi pi-home' },
@@ -82,7 +85,7 @@ export default [
                                         { name: 'Квартири', route: '/categories/apartments' },
                                         { name: 'Продаж', route: '/categories/apartments/sell' }
                                     ]
-                                }
+                                },
                             },
                             {
                                 path: 'rent',

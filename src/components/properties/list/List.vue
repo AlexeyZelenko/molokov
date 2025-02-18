@@ -14,6 +14,7 @@ import LoadingSkeleton from './LoadingSkeleton.vue';
 const props = defineProps({
     category: String,
     type: String,
+    userId: String
 });
 
 const userStore = useUserStore();
@@ -54,8 +55,19 @@ const totalPages = computed(() => {
 
 const loadPage = async () => {
     try {
+        // Проверяем значение userId
+        console.log('props.userId:', props.userId);
+
+        // Формируем фильтры с явной проверкой
+        const searchFilters = {
+            ...filters.value,
+            "creator.id": props.userId || null
+        };
+
+        console.log('Prepared filters:', searchFilters);
+
         await Promise.all([
-            store.getProperties(filters.value),
+            store.getProperties(searchFilters),
             userStore.fetchUser()
         ]);
     } catch (error) {
@@ -64,11 +76,6 @@ const loadPage = async () => {
 };
 
 const layout = ref('list'); // Начальный layout по умолчанию
-
-const changeLayout = (newLayout) => {
-    layout.value = newLayout;
-};
-
 
 const onPageChange = (page) => {
     currentPage.value = page;

@@ -1,8 +1,17 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useAuthStore } from '@/store/authFirebase';
-
 import AppMenuItem from './AppMenuItem.vue';
+
+const store = useAuthStore();
+const userId = computed(() => {
+    return store?.user?.uid;
+});
+
+const user = computed(() => {
+    return store?.user;
+});
+
 
 const model = ref([
     {
@@ -23,7 +32,10 @@ const model = ref([
                     {
                         label: 'Продаж',
                         icon: 'pi pi-fw pi-tag',
-                        to: '/categories/apartments/sell'
+                        to: {
+                            name: 'apartmentsSell',
+                            path: '/categories/apartments/sell',
+                        }
                     },
                     {
                         label: 'Оренда',
@@ -348,7 +360,7 @@ const model = ref([
                 ]
             },
             {
-                label: 'Клієнти',
+                label: 'Мої Клієнти',
                 icon: 'pi pi-fw pi-users',
                 items: [
                     {
@@ -360,6 +372,233 @@ const model = ref([
                         label: 'Виборка для клієнтів',
                         icon: 'pi pi-fw pi-filter',
                         to: '/users/user/propertyLists'
+                    },
+                ]
+            },
+            {
+                label: 'Моя Нерухомість',
+                icon: 'pi pi-fw pi-building',
+                items: [
+                    {
+                        label: 'Квартири',
+                        icon: 'pi pi-fw pi-building',
+                        items: [
+                            {
+                                label: 'Продаж',
+                                icon: 'pi pi-fw pi-tag',
+                                to: {
+                                    path: '/categories/apartments/sell',
+                                    name: 'apartmentsSell',
+                                    query: { user: userId.value } }
+                            },
+                            {
+                                label: 'Оренда',
+                                icon: 'pi pi-fw pi-calendar',
+                                to: '/categories/apartments/rent'
+                            },
+                            {
+                                label: 'Обмін',
+                                icon: 'pi pi-fw pi-sync',
+                                to: '/categories/apartments/exchange'
+                            },
+                            {
+                                label: 'Подобово',
+                                icon: 'pi pi-fw pi-clock',
+                                to: '/categories/apartments/daily'
+                            },
+                            {
+                                label: 'Інше',
+                                icon: 'pi pi-fw pi-ellipsis-h',
+                                to: '/categories/apartments/other',
+                            }
+                        ]
+                    },
+                    {
+                        label: 'Кімнати',
+                        icon: 'pi pi-fw pi-building',
+                        items: [
+                            {
+                                label: 'Продаж',
+                                icon: 'pi pi-fw pi-tag',
+                                to: '/categories/rooms/sell'
+                            },
+                            {
+                                label: 'Оренда',
+                                icon: 'pi pi-fw pi-calendar',
+                                to: '/categories/rooms/rent'
+                            },
+                            {
+                                label: 'Обмін',
+                                icon: 'pi pi-fw pi-sync',
+                                to: '/categories/rooms/exchange'
+                            },
+                            {
+                                label: 'Подобово',
+                                icon: 'pi pi-fw pi-clock',
+                                to: '/categories/rooms/daily'
+                            },
+                            {
+                                label: 'Інше',
+                                icon: 'pi pi-fw pi-ellipsis-h',
+                                to: '/categories/rooms/other',
+                            }
+                        ]
+                    },
+                    {
+                        label: 'Будинки',
+                        icon: 'pi pi-fw pi-home',
+                        items: [
+                            {
+                                label: 'Продаж',
+                                icon: 'pi pi-fw pi-tag',
+                                to: '/categories/houses/sell'
+                            },
+                            {
+                                label: 'Оренда',
+                                icon: 'pi pi-fw pi-calendar',
+                                to: '/categories/houses/rent'
+                            },
+                            {
+                                label: 'Обмін',
+                                icon: 'pi pi-fw pi-sync',
+                                to: '/categories/houses/exchange'
+                            },
+                            {
+                                label: 'Подобово',
+                                icon: 'pi pi-fw pi-clock',
+                                to: '/categories/houses/daily'
+                            }
+                        ]
+                    },
+                    {
+                        label: 'Приміщення',
+                        icon: 'pi pi-fw pi-building',
+                        items: [
+                            {
+                                label: 'Продаж',
+                                icon: 'pi pi-fw pi-tag',
+                                to: '/categories/offices/sell'
+                            },
+                            {
+                                label: 'Оренда',
+                                icon: 'pi pi-fw pi-calendar',
+                                to: '/categories/offices/rent'
+                            },
+                            {
+                                label: 'Обмін',
+                                icon: 'pi pi-fw pi-sync',
+                                to: '/categories/offices/exchange'
+                            },
+                            {
+                                label: 'Подобово',
+                                icon: 'pi pi-fw pi-clock',
+                                to: '/categories/offices/daily'
+                            }
+                        ]
+                    },
+                    {
+                        label: 'Гаражи',
+                        icon: 'pi pi-fw pi-building',
+                        items: [
+                            {
+                                label: 'Продаж',
+                                icon: 'pi pi-fw pi-tag',
+                                to: '/categories/garages/sell'
+                            },
+                            {
+                                label: 'Оренда',
+                                icon: 'pi pi-fw pi-calendar',
+                                to: '/categories/garages/rent'
+                            },
+                            {
+                                label: 'Обмін',
+                                icon: 'pi pi-fw pi-sync',
+                                to: '/categories/garages/exchange'
+                            },
+                            {
+                                label: 'Подобово',
+                                icon: 'pi pi-fw pi-clock',
+                                to: '/categories/garages/daily'
+                            }
+                        ]
+                    },
+                    {
+                        label: 'Будівлі',
+                        icon: 'pi pi-fw pi-building',
+                        items: [
+                            {
+                                label: 'Продаж',
+                                icon: 'pi pi-fw pi-tag',
+                                to: '/categories/commercial/sell'
+                            },
+                            {
+                                label: 'Оренда',
+                                icon: 'pi pi-fw pi-calendar',
+                                to: '/categories/commercial/rent'
+                            },
+                            {
+                                label: 'Обмін',
+                                icon: 'pi pi-fw pi-sync',
+                                to: '/categories/commercial/exchange'
+                            },
+                            {
+                                label: 'Подобово',
+                                icon: 'pi pi-fw pi-clock',
+                                to: '/categories/commercial/daily'
+                            }
+                        ]
+                    },
+                    {
+                        label: 'Земельні ділянки',
+                        icon: 'pi pi-fw pi-map',
+                        items: [
+                            {
+                                label: 'Продаж',
+                                icon: 'pi pi-fw pi-tag',
+                                to: '/categories/land/sell'
+                            },
+                            {
+                                label: 'Оренда',
+                                icon: 'pi pi-fw pi-calendar',
+                                to: '/categories/land/rent'
+                            },
+                            {
+                                label: 'Обмін',
+                                icon: 'pi pi-fw pi-sync',
+                                to: '/categories/land/exchange'
+                            },
+                            {
+                                label: 'Подобово',
+                                icon: 'pi pi-fw pi-clock',
+                                to: '/categories/land/daily'
+                            }
+                        ]
+                    },
+                    {
+                        label: 'Інше',
+                        icon: 'pi pi-fw pi-ellipsis-h',
+                        items: [
+                            {
+                                label: 'Продаж',
+                                icon: 'pi pi-fw pi-tag',
+                                to: '/categories/other/sell'
+                            },
+                            {
+                                label: 'Оренда',
+                                icon: 'pi pi-fw pi-calendar',
+                                to: '/categories/other/rent'
+                            },
+                            {
+                                label: 'Обмін',
+                                icon: 'pi pi-fw pi-sync',
+                                to: '/categories/other/exchange'
+                            },
+                            {
+                                label: 'Подобово',
+                                icon: 'pi pi-fw pi-clock',
+                                to: '/categories/other/daily'
+                            }
+                        ]
                     },
                 ]
             },
@@ -521,9 +760,6 @@ const model = ref([
         ]
     }
 ]);
-
-const store = useAuthStore();
-const user = computed(() => store.user);
 </script>
 
 <template>

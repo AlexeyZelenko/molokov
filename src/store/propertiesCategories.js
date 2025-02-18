@@ -7,8 +7,10 @@ import {
     getDocs,
     orderBy,
     limit,
-    documentId
+    documentId,
+    FieldPath
 } from 'firebase/firestore';
+import {log10} from "chart.js/helpers";
 
 export const usePropertiesStore = defineStore('properties', {
     state: () => ({
@@ -134,7 +136,6 @@ export const usePropertiesStore = defineStore('properties', {
                 this.loading = true;
                 this.error = null;
 
-                // Проверяем обязательные фильтры
                 if (!filters.category || !filters.subcategory) {
                     throw new Error('Category and subcategory are required');
                 }
@@ -143,37 +144,34 @@ export const usePropertiesStore = defineStore('properties', {
                 const collectionPath = `properties/${filters.category}/${filters.subcategory}`;
                 const constraints = [];
 
-                // Если переданы конкретные ID, используем их для фильтрации
                 if (specificIds && specificIds.length > 0) {
                     const BATCH_SIZE = 10;
                     const batches = [];
 
-                    // Разбиваем массив ID на группы
                     for (let i = 0; i < specificIds.length; i += BATCH_SIZE) {
                         batches.push(specificIds.slice(i, i + BATCH_SIZE));
                     }
 
-                    // Выполняем запросы для каждой группы ID
                     const results = await Promise.all(
                         batches.map(async (batchIds) => {
-                            const q = query(
-                                collection(db, collectionPath),
-                                where(documentId(), 'in', batchIds),
-                                orderBy('createdAt', 'desc')
-                            );
-                            const snapshot = await getDocs(q);
-                            return snapshot.docs;
+                            if (batchIds.length > 0) {
+                                const q = query(
+                                    collection(db, collectionPath),
+                                    where(documentId(), 'in', batchIds),
+                                    orderBy('createdAt', 'desc')
+                                );
+                                const snapshot = await getDocs(q);
+                                return snapshot.docs;
+                            }
+                            return [];
                         })
                     );
 
-                    // Обрабатываем результаты
                     this.properties = results.flat().map(doc => ({
                         id: doc.id,
                         ...this.processDocumentData(doc.data())
                     }));
-
                 } else {
-                    // Обычный поиск с фильтрами
                     for (const [key, value] of Object.entries(filters)) {
                         if (['category', 'subcategory'].includes(key) ||
                             value === undefined ||
@@ -182,7 +180,7 @@ export const usePropertiesStore = defineStore('properties', {
                             continue;
                         }
 
-                        if (typeof value === 'object' && !Array.isArray(value)) {
+                        if (typeof value === 'object' && value !== null && !Array.isArray(value) && Object.keys(value).length > 0) {
                             for (const [nestedKey, nestedValue] of Object.entries(value)) {
                                 if (nestedValue !== undefined && nestedValue !== null && nestedValue !== '') {
                                     constraints.push(where(`${key}.${nestedKey}`, '==', nestedValue));
@@ -191,7 +189,7 @@ export const usePropertiesStore = defineStore('properties', {
                             continue;
                         }
 
-                        if (Array.isArray(value) && value.length > 0) {
+                        if (Array.isArray(value) && value.length > 0 && value.length <= 10) {
                             constraints.push(where(key, 'array-contains-any', value));
                             continue;
                         }
@@ -201,8 +199,23 @@ export const usePropertiesStore = defineStore('properties', {
                         }
                     }
 
+                    // Оптимизация фильтрации на уровне запроса
+                    constraints.push(where('isPublic', '==', true));
+                    if (filters.creatorId && typeof filters.creatorId === 'string' && filters.creatorId.length > 0) {
+                        console.log('Applying creator filter:', filters.creatorId);
+                        constraints.push(where(new FieldPath('creator', 'id'), '==', filters.creatorId));
+                    }
+
                     constraints.push(orderBy('createdAt', 'desc'));
                     constraints.push(limit(100));
+
+                    console.log('constraints', constraints);
+
+                    // const q = query(collection(db, collectionPath));
+                    // const querySnapshot = await getDocs(q);
+                    // querySnapshot.docs.forEach(doc => {
+                    //     console.log('Document data:', doc.data().creator);
+                    // });
 
                     const q = query(collection(db, collectionPath), ...constraints);
                     const querySnapshot = await getDocs(q);
@@ -211,15 +224,17 @@ export const usePropertiesStore = defineStore('properties', {
                         id: doc.id,
                         ...this.processDocumentData(doc.data())
                     }));
+                    console.log('properties', this.properties);
                 }
             } catch (error) {
                 this.handleError(error, filters, specificIds);
+                console.error('Error fetching properties:', error);
             } finally {
                 this.loading = false;
             }
         },
 
-// Вспомогательный метод для обработки данных документа
+        // Вспомогательный метод для обработки данных документа
         processDocumentData(data) {
             const timestamps = ['createdAt', 'updatedAt'];
             timestamps.forEach(field => {
@@ -230,7 +245,7 @@ export const usePropertiesStore = defineStore('properties', {
             return data;
         },
 
-// Вспомогательный метод для обработки ошибок
+        // Вспомогательный метод для обработки ошибок
         handleError(error, filters, specificIds = []) {
             this.error = null;
             this.properties = [];
