@@ -2,7 +2,7 @@
     <div class="flex flex-col">
         <div class="sticky top-0 z-10 py-4">
             <div class="flex justify-between font-semibold text-xl">
-                Фільтри
+                Фільтри для оренди
                 <Button icon="pi pi-times" severity="help" rounded variant="outlined" aria-label="Cancel" @click="handleClose"/>
             </div>
         </div>
@@ -75,7 +75,7 @@
                     <AccordionContent>
                         <div v-for="(rooms, key) in roomsAll" :key="key" class="flex flex-col">
                             <MultiSelect
-                                v-model="filters[`rooms.${key}`]"
+                                v-model="filters['rooms.all']"
                                 :options="rooms.value.map(room => ({ name: room, value: room }))"
                                 optionLabel="name"
                                 optionValue="value"
@@ -320,7 +320,7 @@ const storeCategories = usePropertiesStore();
 // Фильтры
 const filters = ref({
     'condition.value': null,
-    'rooms.all': [],
+    'rooms.all': null,
     heatingType: null,
     furniture: null,
     minPrice: null,
@@ -364,7 +364,13 @@ const handleClose = () => {
 
 const countFilterParams = computed(() => {
     const count = Object.keys(filters.value)
-        .filter(key => filters.value[key] !== null)
+        .filter(key => {
+            const value = filters.value[key];
+            return value !== null &&
+                value !== undefined &&
+                value !== '' &&
+                !(Array.isArray(value) && value.length === 0);
+        })
         .length;
 
     return count > 0 ? String(count) : null;
@@ -380,7 +386,8 @@ const setFilters = () => {
 const cleanFilters = (filters) => {
     const cleanedFilters = {};
     for (const [key, value] of Object.entries(filters)) {
-        if (value !== null && value !== '' && value !== undefined) {
+        if (value !== null && value !== '' && value !== undefined &&
+            !(Array.isArray(value) && value.length === 0)) {
             cleanedFilters[key] = value;
         }
     }
@@ -394,11 +401,33 @@ const applyFilters = () => {
 };
 
 const clearFilters = () => {
-    filters.value = {};
-    storeCategories.setFilters(filters.value);
+    filters.value = {
+        'condition.value': null,
+        'rooms.all': null,
+        heatingType: null,
+        furniture: null,
+        minPrice: null,
+        maxPrice: null,
+        maxFloor: null,
+        minFloor: null,
+        minArea: null,
+        maxArea: null,
+        maxAreaLiving: null,
+        minAreaLiving: null,
+        minAreaKitchen: null,
+        maxAreaKitchen: null,
+        'address.area.code': null,
+        'address.city.code': null,
+        'address.region.code': null,
+        'buildingType.value': null,
+        'objectClass.value': null,
+        'parking.value': null,
+        'reconditioning.value': null,
+        'balconyTerrace.code': null,
+        'furniture.code': null
+    };
+    storeCategories.setFilters({});
 };
-
-const properties = computed(() => storeCategories.properties);
 
 const getUniqueValues = (propertyKey) => computed(() =>
     [...new Map(

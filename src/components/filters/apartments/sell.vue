@@ -356,8 +356,6 @@ const applyFilters = () => {
     storeCategories.setFilters(cleanedFilters);
 };
 
-const properties = computed(() => storeCategories.properties);
-
 const getUniqueValues = (propertyKey) => computed(() =>
     [...new Map(
         storeCategories.properties
