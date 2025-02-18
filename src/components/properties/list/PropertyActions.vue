@@ -25,7 +25,7 @@ const isCreator = computed(() => {
 });
 
 const showProperty = () => {
-    router.push(`/pages/apartments/view/${props.item.id}?category=${props.item.category.code}&subcategory=${props.item.subcategory.code}`);
+    router.push(`/pages/${props.item.category.code}/view/${props.item.id}?category=${props.item.category.code}&subcategory=${props.item.subcategory.code}`);
 };
 
 const editProperty = () => {

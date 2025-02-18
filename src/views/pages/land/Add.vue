@@ -15,94 +15,18 @@
                     :property="property"
                     :dropdowns="dropdowns"
                 />
+            </div>
 
-                <PropertyAreaDetails
+            <div class="md:w-1/2">
+                <LandAreaDetails
                     ref="areaDetailsForm"
                     v-model="property.apartmentArea"
                     @validation-change="handleValidation('area', $event)"
                 />
 
-                <FormSection
-                    title="Тип опалення"
-                    v-model="property.heatingType"
-                    :options="dropdowns.heatingTypes"
-                />
-
-                <div class="card flex flex-col gap-4">
-                    <div class="font-semibold text-xl">Комунальні послуги</div>
-                    <MultiSelect
-                        v-model="property.utilities"
-                        :options="dropdowns.utilities"
-                        optionLabel="name"
-                        placeholder="Комунальні послуги"
-                        :filter="true"
-                    >
-                        <template #value="slotProps">
-                            <div class="inline-flex items-center py-1 px-2 bg-primary text-primary-contrast rounded-border mr-2" v-for="option of slotProps.value" :key="option.code">
-                                <div>{{ option.name }}</div>
-                            </div>
-                            <template v-if="!slotProps.value || slotProps.value.length === 0">
-                                <div class="p-1">Вибрати комунальні послуги</div>
-                            </template>
-                        </template>
-                        <template #option="slotProps">
-                            <div class="flex items-center">
-                                <span :class="'mr-2 flag flag-' + slotProps.option.code.toLowerCase()" style="width: 18px; height: 12px" />
-                                <div>{{ slotProps.option.name }}</div>
-                            </div>
-                        </template>
-                    </MultiSelect>
-                </div>
-
-                <FormSection
-                    title="Меблі"
-                    v-model="property.furniture"
-                    :options="dropdowns.furniture"
-                />
-
-                <FormSection
-                    title="Паркування"
-                    v-model="property.parking"
-                    :options="dropdowns.parking"
-                />
-
-                <FormSection
-                    title="Балкон / Тераса"
-                    v-model="property.balconyTerrace"
-                    :options="dropdowns.balconyTerrace"
-                />
-            </div>
-
-            <div class="md:w-1/2">
-                <PropertyFloors
-                    ref="floorsForm"
-                    v-model="property.floors"
-                    @validation-change="handleValidation('floors', $event)"
-                />
-
-                <PropertyRooms
-                    ref="roomsForm"
-                    v-model="property"
-                    :dropdowns="dropdowns"
-                    @validation-change="handleValidation('rooms', $event)"
-                />
-
-                <PropertyCondition
-                    ref="conditionForm"
-                    v-model="property"
-                    :dropdowns="dropdowns"
-                    @validation-change="handleValidation('condition', $event)"
-                />
-
                 <FormDetails
                     ref="detailsForm"
                     v-model="property"
-                />
-
-                <FormSection
-                    title="Проживання тварин"
-                    v-model="property.animal"
-                    type="toggle"
                 />
 
                 <FormSection
@@ -168,9 +92,10 @@ import { useAuthStore } from '@/store/authFirebase';
 import { PropertyManager } from '@/service/property/PropertyManagerAdd';
 
 // Component imports
+import LandAreaDetails from '@/components/forms/land/LandAreaDetails.vue';
+
 import PropertyAddress from '@/components/forms/PropertyAddress.vue';
 import PropertyBasicInfo from '@/components/forms/PropertyBasicInfo.vue';
-import PropertyAreaDetails from '@/components/forms/PropertyAreaDetails.vue';
 import PropertyFloors from '@/components/forms/PropertyFloors.vue';
 import PropertyRooms from '@/components/forms/PropertyRooms.vue';
 import PropertyCondition from '@/components/forms/PropertyCondition.vue';
@@ -266,7 +191,6 @@ const selectedCategoryName = computed(() => {
 });
 
 const handleValidation = (formName, isValid) => {
-    // console.log('formName', formName, 'isValid', isValid);
     formValidations.value[formName] = isValid;
 };
 const onFileSelect = async (files) => {
