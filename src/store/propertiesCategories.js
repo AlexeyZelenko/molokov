@@ -98,8 +98,12 @@ export const usePropertiesStore = defineStore('properties', {
                     // Если после проверки цены объект не подходит, мы прекращаем дальнейшие проверки
                     if (!isMatch) return;
 
+                    if (key === 'rooms.all' && Array.isArray(value) && value.length > 0) {
+                        isMatch = value.includes(property.rooms.all);
+                    }
+
                     // Обработка вложенных объектов (например, category.code, subcategory.code)
-                    if (key.includes('.')) {
+                    else if (key.includes('.')) {
                         const keys = key.split('.'); // Разбиваем ключ, например 'subcategory.code'
                         let fieldValue = property;
                         keys.forEach((subKey) => {

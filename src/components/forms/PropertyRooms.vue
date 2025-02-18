@@ -53,17 +53,11 @@ const props = defineProps({
 });
 
 const roomLabels = {
-    all: 'Кількість кімнат',
-    bedrooms: 'Кількість спалень',
-    bathrooms: 'Кількість ванних кімнат',
-    kitchens: 'Кількість кухонь'
+    all: 'Кількість кімнат'
 };
 
 const validationRules = {
     all: (value) => value == null ? "Кількість кімнат обов'язкова" : value < 0 ? "Не може бути від'ємним" : '',
-    bedrooms: (value, data) => value == null ? "Кількість спалень обов'язкова" : value < 0 ? "Не може бути від'ємним" : (data.all && value > data.all) ? "Не може перевищувати загальну кількість кімнат" : '',
-    bathrooms: (value) => value == null ? "Кількість ванних кімнат обов'язкова" : value < 0 ? "Не може бути від'ємним" : '',
-    kitchens: (value) => value == null ? "Кількість кухонь обов'язкова" : value < 0 ? "Не може бути від'ємним" : '',
     planning: (value) => !value ? "Планування квартири обов'язкове" : '',
     bathroom: (value) => !value ? "Планування санвузла обов'язкове" : ''
 };
