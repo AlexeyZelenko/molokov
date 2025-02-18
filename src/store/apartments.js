@@ -74,7 +74,9 @@ export const useApartmentsStore = defineStore('apartments', {
             ],
             category: [
                 { name: 'Квартира', code: 'apartments' },
+                { name: 'Кімната', code: 'rooms' },
                 { name: 'Будинок', code: 'houses' },
+                { name: 'Гараж', code: 'garages' },
                 { name: 'Приміщення', code: 'offices' },
                 { name: 'Будівлі', code: 'commercial' },
                 { name: 'Земельна ділянка', code: 'land' },
@@ -188,6 +190,10 @@ export const useApartmentsStore = defineStore('apartments', {
                 {
                     name: 'Житловий стан',
                     value: 'living'
+                },
+                {
+                    name: 'Косметичний ремонт',
+                    value: 'cosmetic'
                 },
                 {
                     name: 'Потребує ремонту',

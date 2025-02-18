@@ -11,6 +11,8 @@ import uikitRoutes from './uikit';
 import categoriesRoutes from './categories';
 import profileRoutes from './profile';
 import adminRoutes from './admin';
+import garageRoutes from './garages';
+import roomRoutes from './rooms';
 
 export default [
     {
@@ -34,6 +36,8 @@ export default [
             ...officesRoutes,
             ...commercialRoutes,
             ...landRoutes,
+            ...garageRoutes,
+            ...roomRoutes,
             ...otherRoutes,
             ...profileRoutes,
             ...adminRoutes

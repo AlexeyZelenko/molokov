@@ -126,6 +126,122 @@ export default [
                         ]
                     },
                     {
+                        path: 'rooms',
+                        name: 'rooms',
+                        children: [
+                            {
+                                path: 'sell',
+                                name: 'roomsSell',
+                                component: () => import('@/views/pages/rooms/lists/sell.vue'),
+                                meta: {
+                                    breadcrumb: [
+                                        { name: 'Головна', route: '/', icon: 'pi pi-home' },
+                                        { name: 'Категорії', route: '/categories' },
+                                        { name: 'Кімнати', route: '/categories/rooms' },
+                                        { name: 'Продаж', route: '/categories/rooms/sell' }
+                                    ]
+                                }
+                            },
+                            {
+                                path: 'rent',
+                                name: 'roomsRent',
+                                component: () => import('@/views/pages/rooms/lists/rent.vue'),
+                                meta: {
+                                    breadcrumb: [
+                                        { name: 'Головна', route: '/', icon: 'pi pi-home' },
+                                        { name: 'Категорії', route: '/categories' },
+                                        { name: 'Кімнати', route: '/categories/rooms' },
+                                        { name: 'Оренда', route: '/categories/rooms/rent' }
+                                    ]
+                                }
+                            },
+                            {
+                                path: 'daily',
+                                name: 'roomsDaily',
+                                component: () => import('@/views/pages/rooms/lists/daily.vue'),
+                                meta: {
+                                    breadcrumb: [
+                                        { name: 'Головна', route: '/', icon: 'pi pi-home' },
+                                        { name: 'Категорії', route: '/categories' },
+                                        { name: 'Кімнати', route: '/categories/rooms' },
+                                        { name: 'Подобова оренда', route: '/categories/rooms/daily' }
+                                    ]
+                                }
+                            },
+                            {
+                                path: 'exchange',
+                                name: 'roomsExchange',
+                                component: () => import('@/views/pages/rooms/lists/exchange.vue'),
+                                meta: {
+                                    breadcrumb: [
+                                        { name: 'Головна', route: '/', icon: 'pi pi-home' },
+                                        { name: 'Категорії', route: '/categories' },
+                                        { name: 'Кімнати', route: '/categories/rooms' },
+                                        { name: 'Обмін', route: '/categories/rooms/exchange' }
+                                    ]
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        path: 'garages',
+                        name: 'garages',
+                        children: [
+                            {
+                                path: 'sell',
+                                name: 'garagesSell',
+                                component: () => import('@/views/pages/garages/lists/sell.vue'),
+                                meta: {
+                                    breadcrumb: [
+                                        { name: 'Головна', route: '/', icon: 'pi pi-home' },
+                                        { name: 'Категорії', route: '/categories' },
+                                        { name: 'Гаражи', route: '/categories/garages' },
+                                        { name: 'Продаж', route: '/categories/garages/sell' }
+                                    ]
+                                }
+                            },
+                            {
+                                path: 'rent',
+                                name: 'garagesRent',
+                                component: () => import('@/views/pages/garages/lists/rent.vue'),
+                                meta: {
+                                    breadcrumb: [
+                                        { name: 'Головна', route: '/', icon: 'pi pi-home' },
+                                        { name: 'Категорії', route: '/categories' },
+                                        { name: 'Гаражи', route: '/categories/garages' },
+                                        { name: 'Оренда', route: '/categories/garages/rent' }
+                                    ]
+                                }
+                            },
+                            {
+                                path: 'daily',
+                                name: 'garagesDaily',
+                                component: () => import('@/views/pages/garages/lists/daily.vue'),
+                                meta: {
+                                    breadcrumb: [
+                                        { name: 'Головна', route: '/', icon: 'pi pi-home' },
+                                        { name: 'Категорії', route: '/categories' },
+                                        { name: 'Гаражи', route: '/categories/garages' },
+                                        { name: 'Подобова оренда', route: '/categories/garages/daily' }
+                                    ]
+                                }
+                            },
+                            {
+                                path: 'exchange',
+                                name: 'garagesExchange',
+                                component: () => import('@/views/pages/garages/lists/exchange.vue'),
+                                meta: {
+                                    breadcrumb: [
+                                        { name: 'Головна', route: '/', icon: 'pi pi-home' },
+                                        { name: 'Категорії', route: '/categories' },
+                                        { name: 'Гаражи', route: '/categories/garages' },
+                                        { name: 'Обмін', route: '/categories/garages/exchange' }
+                                    ]
+                                }
+                            }
+                        ]
+                    },
+                    {
                         path: 'offices',
                         name: 'offices',
                         children: [

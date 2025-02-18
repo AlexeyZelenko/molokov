@@ -48,6 +48,37 @@ const model = ref([
                 ]
             },
             {
+                label: 'Кімнати',
+                icon: 'pi pi-fw pi-building',
+                items: [
+                    {
+                        label: 'Продаж',
+                        icon: 'pi pi-fw pi-tag',
+                        to: '/categories/rooms/sell'
+                    },
+                    {
+                        label: 'Оренда',
+                        icon: 'pi pi-fw pi-calendar',
+                        to: '/categories/rooms/rent'
+                    },
+                    {
+                        label: 'Обмін',
+                        icon: 'pi pi-fw pi-sync',
+                        to: '/categories/rooms/exchange'
+                    },
+                    {
+                        label: 'Подобово',
+                        icon: 'pi pi-fw pi-clock',
+                        to: '/categories/rooms/daily'
+                    },
+                    {
+                        label: 'Інше',
+                        icon: 'pi pi-fw pi-ellipsis-h',
+                        to: '/categories/rooms/other',
+                    }
+                ]
+            },
+            {
                 label: 'Будинки',
                 icon: 'pi pi-fw pi-home',
                 items: [
@@ -96,6 +127,32 @@ const model = ref([
                         label: 'Подобово',
                         icon: 'pi pi-fw pi-clock',
                         to: '/categories/offices/daily'
+                    }
+                ]
+            },
+            {
+                label: 'Гаражи',
+                icon: 'pi pi-fw pi-building',
+                items: [
+                    {
+                        label: 'Продаж',
+                        icon: 'pi pi-fw pi-tag',
+                        to: '/categories/garages/sell'
+                    },
+                    {
+                        label: 'Оренда',
+                        icon: 'pi pi-fw pi-calendar',
+                        to: '/categories/garages/rent'
+                    },
+                    {
+                        label: 'Обмін',
+                        icon: 'pi pi-fw pi-sync',
+                        to: '/categories/garages/exchange'
+                    },
+                    {
+                        label: 'Подобово',
+                        icon: 'pi pi-fw pi-clock',
+                        to: '/categories/garages/daily'
                     }
                 ]
             },
@@ -196,6 +253,17 @@ const model = ref([
                 ]
             },
             {
+                label: 'Кімнати',
+                icon: 'pi pi-fw pi-building',
+                items: [
+                    {
+                        label: 'Додати',
+                        icon: 'pi pi-fw pi-plus',
+                        to: '/pages/rooms/add'
+                    },
+                ]
+            },
+            {
                 label: 'Будинки',
                 icon: 'pi pi-fw pi-home',
                 items: [
@@ -214,6 +282,17 @@ const model = ref([
                         label: 'Додати',
                         icon: 'pi pi-fw pi-plus',
                         to: '/pages/offices/add'
+                    },
+                ]
+            },
+            {
+                label: 'Гаражи',
+                icon: 'pi pi-fw pi-building',
+                items: [
+                    {
+                        label: 'Додати',
+                        icon: 'pi pi-fw pi-plus',
+                        to: '/pages/garages/add'
                     },
                 ]
             },

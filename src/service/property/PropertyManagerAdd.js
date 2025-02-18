@@ -9,6 +9,8 @@ import { OfficeSell, OfficeExchange, OfficeRent, OfficeRentDaily} from '@/models
 import { LandSell, LandExchange, LandRent, LandRentDaily} from '@/models/Property/Land';
 import { CommercialSell, CommercialExchange, CommercialRent, CommercialRentDaily} from '@/models/Property/Commercial';
 import { OtherSell, OtherExchange, OtherRent, OtherRentDaily} from '@/models/Property/Other';
+import { RoomSell, RoomExchange, RoomRent, RoomRentDaily} from '@/models/Property/Rooms';
+import { GarageSell, GarageExchange, GarageRent, GarageRentDaily} from '@/models/Property/Garages';
 
 export class PropertyManager {
     constructor(authStore, store, toast) {
@@ -56,7 +58,19 @@ export class PropertyManager {
             rent: OtherRent,
             daily: OtherRentDaily,
             exchange: OtherExchange
-        }
+        },
+        rooms: {
+            sell: RoomSell,
+            rent: RoomRent,
+            daily: RoomRentDaily,
+            exchange: RoomExchange
+        },
+        garages: {
+            sell: GarageSell,
+            rent: GarageRent,
+            daily: GarageRentDaily,
+            exchange: GarageExchange
+        },
     };
 
     getInitialState(propertyType) {
