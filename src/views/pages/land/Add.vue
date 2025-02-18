@@ -15,13 +15,33 @@
                     :property="property"
                     :dropdowns="dropdowns"
                 />
-            </div>
 
-            <div class="md:w-1/2">
-                <LandAreaDetails
+                <PropertyAreaDetails
                     ref="areaDetailsForm"
                     v-model="property.apartmentArea"
                     @validation-change="handleValidation('area', $event)"
+                />
+            </div>
+
+            <div class="md:w-1/2">
+                <PropertyFloors
+                    ref="floorsForm"
+                    v-model="property.floors"
+                    @validation-change="handleValidation('floors', $event)"
+                />
+
+                <PropertyRooms
+                    ref="roomsForm"
+                    v-model="property"
+                    :dropdowns="dropdowns"
+                    @validation-change="handleValidation('rooms', $event)"
+                />
+
+                <PropertyCondition
+                    ref="conditionForm"
+                    v-model="property"
+                    :dropdowns="dropdowns"
+                    @validation-change="handleValidation('condition', $event)"
                 />
 
                 <FormDetails
@@ -33,6 +53,71 @@
                     title="Готовність об'єкта"
                     v-model="property.facilityReadiness"
                     type="date"
+                />
+            </div>
+        </Fluid>
+
+        <Fluid
+            v-if="property.subcategory.code !== 'sell' && property.subcategory.code !== 'exchange'"
+            class="flex flex-col md:flex-row gap-8 mt-4"
+        >
+            <div class="md:w-1/2">
+                <div class="card flex flex-col gap-4">
+                    <div class="font-semibold text-xl">Комунальні послуги</div>
+                    <MultiSelect
+                        v-model="property.utilities"
+                        :options="dropdowns.utilities"
+                        optionLabel="name"
+                        placeholder="Комунальні послуги"
+                        :filter="true"
+                    >
+                        <template #value="slotProps">
+                            <div class="inline-flex items-center py-1 px-2 bg-primary text-primary-contrast rounded-border mr-2" v-for="option of slotProps.value" :key="option.code">
+                                <div>{{ option.name }}</div>
+                            </div>
+                            <template v-if="!slotProps.value || slotProps.value.length === 0">
+                                <div class="p-1">Вибрати комунальні послуги</div>
+                            </template>
+                        </template>
+                        <template #option="slotProps">
+                            <div class="flex items-center">
+                                <span :class="'mr-2 flag flag-' + slotProps.option.code.toLowerCase()" style="width: 18px; height: 12px" />
+                                <div>{{ slotProps.option.name }}</div>
+                            </div>
+                        </template>
+                    </MultiSelect>
+                </div>
+
+                <FormSection
+                    title="Тип опалення"
+                    v-model="property.heatingType"
+                    :options="dropdowns.heatingTypes"
+                />
+
+                <FormSection
+                    title="Меблі"
+                    v-model="property.furniture"
+                    :options="dropdowns.furniture"
+                />
+            </div>
+
+            <div class="md:w-1/2">
+                <FormSection
+                    title="Паркування"
+                    v-model="property.parking"
+                    :options="dropdowns.parking"
+                />
+
+                <FormSection
+                    title="Балкон / Тераса"
+                    v-model="property.balconyTerrace"
+                    :options="dropdowns.balconyTerrace"
+                />
+
+                <FormSection
+                    title="Проживання тварин"
+                    v-model="property.animal"
+                    type="toggle"
                 />
             </div>
         </Fluid>
@@ -89,13 +174,12 @@ import { ref, computed, onBeforeMount, onUnmounted } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import { useApartmentsStore } from '@/store/apartments';
 import { useAuthStore } from '@/store/authFirebase';
+import { useUserStore } from '@/store/userStore';
 import { PropertyManager } from '@/service/property/PropertyManagerAdd';
-
-// Component imports
-import LandAreaDetails from '@/components/forms/land/LandAreaDetails.vue';
 
 import PropertyAddress from '@/components/forms/PropertyAddress.vue';
 import PropertyBasicInfo from '@/components/forms/PropertyBasicInfo.vue';
+import PropertyAreaDetails from '@/components/forms/PropertyAreaDetails.vue';
 import PropertyFloors from '@/components/forms/PropertyFloors.vue';
 import PropertyRooms from '@/components/forms/PropertyRooms.vue';
 import PropertyCondition from '@/components/forms/PropertyCondition.vue';
@@ -115,55 +199,12 @@ const roomsForm = ref(null);
 const conditionForm = ref(null);
 const contactsInfoForm = ref(null);
 
-const validateAllForms = async () => {
-    console.log('validateAllForms');
-    const validations = await Promise.all([
-        basicInfoForm.value?.validate(),
-        areaDetailsForm.value?.validate(),
-        floorsForm.value?.validate(),
-        roomsForm.value?.validate(),
-        conditionForm.value?.validate(),
-        contactsInfoForm.value?.validate()
-    ]);
-    console.log('validations', validations);
-
-    // Убрать undefined/null из массива перед проверкой
-    const filteredValidations = validations.filter(v => v !== undefined && v !== null);
-    return filteredValidations.length > 0 && filteredValidations.every(v => v === true);
-};
-
-const saveProperty = async () => {
-    const isValid = await validateAllForms();
-
-    if (isValid) {
-        try {
-            saving.value = true;
-            await propertyManager.saveProperty();
-        } catch (error) {
-            toast.add({
-                severity: 'error',
-                summary: 'Помилка',
-                detail: 'Помилка при збереженні оголошення',
-                life: 5000
-            });
-        } finally {
-            saving.value = false;
-        }
-    } else {
-        toast.add({
-            severity: 'error',
-            summary: 'Помилка',
-            detail: 'Перевірте форму на помилки',
-            life: 5000
-        });
-    }
-};
-
 const toast = useToast();
 const store = useApartmentsStore();
 const authStore = useAuthStore();
+const userStore = useUserStore();
 
-const propertyManager = new PropertyManager(authStore, store, toast);
+const propertyManager = new PropertyManager(userStore, store, toast);
 
 const formValidations = ref({
     basicInfo: false,
@@ -179,7 +220,7 @@ const uploadVisible = ref(false);
 
 const property = computed(() => propertyManager.property);
 const images = computed(() => propertyManager.property.images);
-const contacts = computed(() => authStore.user);
+const contacts = computed(() => userStore.user);
 const dropdowns = computed(() => store.dropdowns);
 
 const selectedCategoryName = computed(() => {
@@ -205,8 +246,51 @@ const removeImage = async (imageUrl) => {
     uploadVisible.value = false;
 };
 
+const validateAllForms = async () => {
+    const validations = await Promise.all([
+        basicInfoForm.value?.validate(),
+        areaDetailsForm.value?.validate(),
+        floorsForm.value?.validate(),
+        roomsForm.value?.validate(),
+        conditionForm.value?.validate(),
+        contactsInfoForm.value?.validate()
+    ]);
+
+    // Убрать undefined/null из массива перед проверкой
+    const filteredValidations = validations.filter(v => v !== undefined && v !== null);
+    return filteredValidations.length > 0 && filteredValidations.every(v => v === true);
+};
+
+const saveProperty = async () => {
+    const isValid = await validateAllForms();
+    if (isValid) {
+        try {
+            saving.value = true;
+
+            await propertyManager.saveProperty();
+        } catch (error) {
+            toast.add({
+                severity: 'error',
+                summary: 'Помилка',
+                detail: 'Помилка при збереженні оголошення',
+                life: 5000
+            });
+        } finally {
+            saving.value = false;
+        }
+    } else {
+        toast.add({
+            severity: 'error',
+            summary: 'Помилка',
+            detail: 'Перевірте форму на помилки',
+            life: 5000
+        });
+    }
+};
+
 onBeforeMount(async () => {
     await authStore.getCurrentUser();
+    await userStore.fetchUser();
     propertyManager.setPropertyType('land-sell');
 });
 </script>
