@@ -2,7 +2,7 @@
     <div class="flex flex-col">
         <div class="sticky top-0 z-10 py-4">
             <div class="flex justify-between font-semibold text-xl">
-                Фільтри для оренди квартир
+                Фільтри
                 <Button icon="pi pi-times" severity="help" rounded variant="outlined" aria-label="Cancel" @click="handleClose"/>
             </div>
         </div>
@@ -74,14 +74,15 @@
                     <AccordionHeader class="font-semibold text-xl mb-4">Кількість кімнат</AccordionHeader>
                     <AccordionContent>
                         <div v-for="(rooms, key) in roomsAll" :key="key" class="flex flex-col">
-                            <label>{{ rooms.name }}</label>
-                            <Select
+                            <MultiSelect
                                 v-model="filters[`rooms.${key}`]"
                                 :options="rooms.value.map(room => ({ name: room, value: room }))"
                                 optionLabel="name"
                                 optionValue="value"
                                 placeholder="Вибрати"
+                                display="chip"
                                 @change="applyFilters"
+                                class="w-full"
                             />
                         </div>
                     </AccordionContent>
@@ -319,10 +320,7 @@ const storeCategories = usePropertiesStore();
 // Фильтры
 const filters = ref({
     'condition.value': null,
-    'rooms.all': null,
-    'rooms.bedrooms': null,
-    'rooms.bathrooms': null,
-    'rooms.kitchens': null,
+    'rooms.all': [],
     heatingType: null,
     furniture: null,
     minPrice: null,
@@ -365,7 +363,11 @@ const handleClose = () => {
 };
 
 const countFilterParams = computed(() => {
-    return Object.keys(filters.value).filter(key => filters.value[key] !== null).length;
+    const count = Object.keys(filters.value)
+        .filter(key => filters.value[key] !== null)
+        .length;
+
+    return count > 0 ? String(count) : null;
 });
 
 // Функция для установки фильтров
@@ -437,25 +439,7 @@ const roomsAll = computed(() => {
         value: processRoomsField('all')
     };
 
-    const bathrooms = {
-        name: 'Санвузли',
-        key: 'rooms.bathrooms',
-        value: processRoomsField('bathrooms')
-    };
-
-    const bedrooms = {
-        name: 'Спальні',
-        key: 'rooms.bedrooms',
-        value: processRoomsField('bedrooms')
-    };
-
-    const kitchens = {
-        name: 'Кухні',
-        key: 'rooms.kitchens',
-        value: processRoomsField('kitchens')
-    };
-
-    return { all, bathrooms, bedrooms, kitchens };
+    return { all };
 });
 
 const address = computed(() => {

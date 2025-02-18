@@ -1,5 +1,5 @@
 <script setup>
-import PropertyDetails from '@/components/properties/view/land/PropertyDetails.vue';
+import PropertyDetails from '@/components/properties/view/PropertyDetails.vue';
 </script>
 
 <template>

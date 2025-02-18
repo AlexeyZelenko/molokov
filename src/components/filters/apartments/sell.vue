@@ -75,7 +75,7 @@
                     <AccordionContent>
                         <div v-for="(rooms, key) in roomsAll" :key="key" class="flex flex-col">
                             <MultiSelect
-                                v-model="filters[`rooms.${key}`]"
+                                v-model="filters['rooms.all']"
                                 :options="rooms.value.map(room => ({ name: room, value: room }))"
                                 optionLabel="name"
                                 optionValue="value"
@@ -204,30 +204,6 @@
                         </div>
 
                         <div class="flex flex-col">
-                            <label>Тип опалення</label>
-                            <Select
-                                v-model="filters['heatingType.value']"
-                                :options="heatingTypes"
-                                optionLabel="name"
-                                optionValue="value"
-                                placeholder="Вибрати тип опалення"
-                                @change="applyFilters"
-                            />
-                        </div>
-
-                        <div class="flex flex-col">
-                            <label>Паркінг</label>
-                            <Select
-                                v-model="filters['parking.code']"
-                                :options="parking"
-                                optionLabel="name"
-                                optionValue="code"
-                                placeholder="Вибрати"
-                                @change="applyFilters"
-                            />
-                        </div>
-
-                        <div class="flex flex-col">
                             <label>Поверх</label>
                             <div class="flex flex-col gap-1">
                                 <InputNumber
@@ -243,46 +219,6 @@
                                 />
                             </div>
                         </div>
-
-                        <div class="flex flex-col">
-                            <label>Балкон / Тераса</label>
-                            <Select
-                                v-model="filters['balconyTerrace.code']"
-                                :options="balconyTerrace"
-                                optionLabel="name"
-                                optionValue="code"
-                                placeholder="Вибрати"
-                                @change="applyFilters"
-                            />
-                        </div>
-
-                        <div class="flex flex-col">
-                            <label>Меблі</label>
-                            <Select
-                                v-model="filters['furniture.code']"
-                                :options="furniture"
-                                optionLabel="name"
-                                optionValue="code"
-                                placeholder="Вибрати"
-                                @change="applyFilters"
-                            />
-                        </div>
-                        <Accordion value="0">
-                            <AccordionPanel>
-                                <AccordionHeader class="font-semibold text-xl mb-4">Комунальні послуги</AccordionHeader>
-                                <AccordionContent>
-                                    <div v-for="(item, key) in utilities" :key="key" class="flex justify-between my-2 gap-2">
-                                        <label class="text-sm font-medium">{{ item.name }}</label>
-                                        <ToggleSwitch
-                                            v-model="filters[`utilities.${key}.code`]"
-                                            :trueValue="`${item.code}`"
-                                            :falseValue="null"
-                                            @change="applyFilters"
-                                        />
-                                    </div>
-                                </AccordionContent>
-                            </AccordionPanel>
-                        </Accordion>
                     </AccordionContent>
                 </AccordionPanel>
             </Accordion>
@@ -320,9 +256,7 @@ const storeCategories = usePropertiesStore();
 // Фильтры
 const filters = ref({
     'condition.value': null,
-    'rooms.all': [],
-    heatingType: null,
-    furniture: null,
+    'rooms.all': null,
     minPrice: null,
     maxPrice: null,
     maxFloor: null,
@@ -338,10 +272,6 @@ const filters = ref({
     'address.region.code': null,
     'buildingType.value': null,
     'objectClass.value': null,
-    'parking.value': null,
-    'reconditioning.value': null,
-    'balconyTerrace.code': null,
-    'furniture.code': null
 });
 
 // Состояние для управления открытием/закрытием всех панелей
@@ -364,7 +294,13 @@ const handleClose = () => {
 
 const countFilterParams = computed(() => {
     const count = Object.keys(filters.value)
-        .filter(key => filters.value[key] !== null)
+        .filter(key => {
+            const value = filters.value[key];
+            return value !== null &&
+                value !== undefined &&
+                value !== '' &&
+                !(Array.isArray(value) && value.length === 0);
+        })
         .length;
 
     return count > 0 ? String(count) : null;
@@ -380,22 +316,44 @@ const setFilters = () => {
 const cleanFilters = (filters) => {
     const cleanedFilters = {};
     for (const [key, value] of Object.entries(filters)) {
-        if (value !== null && value !== '' && value !== undefined) {
+        if (value !== null && value !== '' && value !== undefined &&
+            !(Array.isArray(value) && value.length === 0)) {
             cleanedFilters[key] = value;
         }
     }
     return cleanedFilters;
 };
 
-// Функция для применения фильтров
-const applyFilters = () => {
-    const cleanedFilters = cleanFilters(filters.value);  // Очистка фильтров
-    storeCategories.setFilters(cleanedFilters);  // Отправка очищенных фильтров в хранилище
+const clearFilters = () => {
+    filters.value = {
+        'condition.value': null,
+        'rooms.all': null,
+        minPrice: null,
+        maxPrice: null,
+        maxFloor: null,
+        minFloor: null,
+        minArea: null,
+        maxArea: null,
+        maxAreaLiving: null,
+        minAreaLiving: null,
+        minAreaKitchen: null,
+        maxAreaKitchen: null,
+        'address.area.code': null,
+        'address.city.code': null,
+        'address.region.code': null,
+        'buildingType.value': null,
+        'objectClass.value': null,
+    };
+    storeCategories.setFilters({});
 };
 
-const clearFilters = () => {
-    filters.value = {};
-    storeCategories.setFilters(filters.value);
+// При применении фильтров
+const applyFilters = () => {
+    const cleanedFilters = cleanFilters(filters.value);
+    if (cleanedFilters['rooms.all']?.length === 0) {
+        delete cleanedFilters['rooms.all'];
+    }
+    storeCategories.setFilters(cleanedFilters);
 };
 
 const properties = computed(() => storeCategories.properties);
@@ -410,13 +368,9 @@ const getUniqueValues = (propertyKey) => computed(() =>
 );
 
 // Используем универсальную функцию для создания вычисляемых свойств
-const furniture = getUniqueValues('furniture');
 const buildingType = getUniqueValues('buildingType');
 const condition = getUniqueValues('condition');
 const objectClass = getUniqueValues('objectClass');
-const parking = getUniqueValues('parking');
-const balconyTerrace = getUniqueValues('balconyTerrace');
-const heatingTypes = getUniqueValues('heatingType');
 const reconditioning = getUniqueValues('reconditioning');
 
 const roomsAll = computed(() => {
@@ -484,217 +438,80 @@ const address = computed(() => {
     return { region, city, area };
 });
 
-const utilities = computed(() => {
-    const processUtilityField = (field) => {
-        const values = storeCategories.properties
-            .filter(property => property.utilities && property.utilities[field])
-            .map(property => property.utilities[field])
-            .filter(value => value !== null && value !== undefined);
-
-        const uniqueValues = [];
-        values.forEach(value => {
-            if (value && value.code && !uniqueValues.some(item => item.code === value.code)) {
-                uniqueValues.push(value);
-            }
-        });
-
-        return uniqueValues.sort((a, b) => {
-            if (!a.name || !b.name) return 0;
-            return a.name.localeCompare(b.name);
-        });
-    };
-
-    const electricity = {
-        name: 'Електрика',
-        key: 'electricity',
-        code: 'ELEC',
-        value: processUtilityField('electricity')
-    };
-
-    const water = {
-        name: 'Вода',
-        key: 'water',
-        code: 'WTR',
-        value: processUtilityField('water')
-    };
-
-    const sewerage = {
-        name: 'Каналізація',
-        key: 'sewerage',
-        code: 'SWR',
-        value: processUtilityField('sewerage')
-    };
-
-    const gas = {
-        name: 'Газ',
-        key: 'gas',
-        code: 'GAS',
-        value: processUtilityField('gas')
-    };
-
-    const heating = {
-        name: 'Опалення',
-        key: 'heating',
-        code: 'HTG',
-        value: processUtilityField('heating')
-    };
-
-    const internet = {
-        name: 'Інтернет',
-        key: 'internet',
-        code: 'INT',
-        value: processUtilityField('internet')
-    };
-
-    const TV = {
-        name: 'Телебачення',
-        key: 'TV',
-        code: 'TV',
-        value: processUtilityField('TV')
-    };
-
-    return { electricity, water, sewerage, gas, heating, internet, TV };
-});
-
 const getSelectedFilters = computed(() => {
-    const selectedFilters = [];
+    const filterTypeMap = {
+        rooms: (key, value, parts) => ({
+            displayName: roomsAll.value[parts[1]].name,
+            displayValue: value
+        }),
+        address: (key, value, parts) => {
+            const addressType = address.value[parts[1]];
+            const addressItem = addressType.value.find(item => item.code === value);
+            return {
+                displayName: addressType.name,
+                displayValue: addressItem?.name || value
+            };
+        },
+        condition: (key, value) => ({
+            displayName: 'Стан будинку',
+            displayValue: condition.value.find(item => item.value === value)?.name || value
+        }),
+        reconditioning: (key, value) => ({
+            displayName: 'Ремонт',
+            displayValue: reconditioning.value.find(item => item.value === value)?.name || value
+        }),
+        objectClass: (key, value) => ({
+            displayName: 'Клас',
+            displayValue: objectClass.value.find(item => item.value === value)?.name || value
+        }),
+        buildingType: (key, value) => ({
+            displayName: 'Тип будинку',
+            displayValue: buildingType.value.find(item => item.value === value)?.name || value
+        })
+    };
 
-    for (const [key, value] of Object.entries(filters.value)) {
-        if (value !== null && value !== undefined && value !== '') {
+    const simpleFilterMap = {
+        minPrice: 'Мін. ціна',
+        maxPrice: 'Макс. ціна',
+        minArea: { name: 'Мін. площа', unit: 'м²' },
+        maxArea: { name: 'Макс. площа', unit: 'м²' },
+        minAreaLiving: { name: 'Мін. житлова площа', unit: 'м²' },
+        maxAreaLiving: { name: 'Макс. житлова площа', unit: 'м²' },
+        minAreaKitchen: { name: 'Мін. площа кухні', unit: 'м²' },
+        maxAreaKitchen: { name: 'Макс. площа кухні', unit: 'м²' },
+        minFloor: 'Мін. поверх',
+        maxFloor: 'Макс. поверх'
+    };
+
+    return Object.entries(filters.value)
+        .filter(([_, value]) =>
+            value !== null &&
+            value !== undefined &&
+            value !== '' &&
+            !(Array.isArray(value) && value.length === 0)
+        )
+        .map(([key, value]) => {
             const parts = key.split('.');
-            let displayName = '';
-            let displayValue = value;
+            const filterType = parts[0];
 
-            // Handle different filter types
-            if (parts[0] === 'rooms') {
-                const roomType = roomsAll.value[parts[1]];
-                displayName = roomType.name;
-            } else if (parts[0] === 'address') {
-                const addressType = address.value[parts[1]];
-                displayName = addressType.name;
-                const addressItem = addressType.value.find(item => item.code === value);
-                if (addressItem) {
-                    displayValue = addressItem.name;
-                }
-            } else if (parts[0] === 'utilities') {
-                const utilityType = utilities.value[parts[1]];
-                displayName = utilityType.name;
-                const utilityItem = utilityType.value.find(item => item.code === value);
-                if (utilityItem) {
-                    displayValue = utilityItem.name;
-                }
-            } else if (parts[0] === 'condition' && parts[1] === 'value') {
-                displayName = 'Стан будинку';
-                const conditionItem = condition.value.find(item => item.value === value);
-                console.log(conditionItem);
-                if (conditionItem) {
-                    displayValue = conditionItem.name;
-                }
-            } else if (parts[0] === 'reconditioning' && parts[1] === 'value') {
-                displayName = 'Ремонт';
-                const reconditioningItem = reconditioning.value.find(item => item.value === value);
-                if (reconditioningItem) {
-                    displayValue = reconditioningItem.name;
-                }
-            } else if (parts[0] === 'balconyTerrace' && parts[1] === 'code') {
-                displayName = 'Балкон/Тераса';
-                const balconyItem = balconyTerrace.value.find(item => item.code === value);
-                if (balconyItem) {
-                    displayValue = balconyItem.name;
-                }
-            } else if (parts[0] === 'heatingType' && parts[1] === 'value') {
-                displayName = 'Тип опалення';
-                const heatingItem = heatingTypes.value.find(item => item.value === value);
-                if (heatingItem) {
-                    displayValue = heatingItem.name;
-                }
-            } else if (parts[0] === 'objectClass' && parts[1] === 'value') {
-                displayName = 'Клас';
-                const classItem = objectClass.value.find(item => item.value === value);
-                if (classItem) {
-                    displayValue = classItem.name;
-                }
-            } else if (parts[0] === 'buildingType' && parts[1] === 'value') {
-                displayName = 'Тип будинку';
-                const classItem = buildingType.value.find(item => item.value === value);
-                if (classItem) {
-                    displayValue = classItem.name;
-                }
-            } else if (parts[0] === 'parking' && parts[1] === 'code') {
-                displayName = 'Паркінг';
-                const parkingItem = parking.value.find(item => item.code === value);
-                if (parkingItem) {
-                    displayValue = parkingItem.name;
-                }
-            } else if (parts[0] === 'furniture' && parts[1] === 'code') {
-                displayName = 'Меблі';
-                const furnitureItem = furniture.value.find(item => item.code === value);
-                if (furnitureItem) {
-                    displayValue = furnitureItem.name;
-                }
-            } else {
-            // Handle other filter types
-            switch (key) {
-                    case 'minPrice':
-                        displayName = 'Мін. ціна';
-                        break;
-                    case 'maxPrice':
-                        displayName = 'Макс. ціна';
-                        break;
-                    case 'minArea':
-                        displayName = 'Мін. площа';
-                        displayValue = `${value} м²`;
-                        break;
-                    case 'maxArea':
-                        displayName = 'Макс. площа';
-                        displayValue = `${value} м²`;
-                        break;
-                    case 'minAreaLiving':
-                        displayName = 'Мін. житлова площа';
-                        displayValue = `${value} м²`;
-                        break;
-                    case 'maxAreaLiving':
-                        displayName = 'Макс. житлова площа';
-                        displayValue = `${value} м²`;
-                        break;
-                    case 'minAreaKitchen':
-                        displayName = 'Мін. площа кухні';
-                        displayValue = `${value} м²`;
-                        break;
-                    case 'maxAreaKitchen':
-                        displayName = 'Макс. площа кухні';
-                        displayValue = `${value} м²`;
-                        break;
-                    case 'minFloor':
-                        displayName = 'Мін. поверх';
-                        break;
-                    case 'maxFloor':
-                        displayName = 'Макс. поверх';
-                        break;
-                    default:
-                        const computedProps = {
-                            furniture
-                        };
-
-                        for (const [propName, prop] of Object.entries(computedProps)) {
-                            if (key.includes(propName)) {
-                                displayName = value.name || propName;
-                                displayValue = value.value || value;
-                                break;
-                            }
-                        }
-                }
+            if (filterTypeMap[filterType]) {
+                const { displayName, displayValue } = filterTypeMap[filterType](key, value, parts);
+                return { key, displayName, value: displayValue };
             }
 
-            selectedFilters.push({
-                key,
-                displayName: displayName || key,
-                value: displayValue
-            });
-        }
-    }
+            if (simpleFilterMap[key]) {
+                const filterInfo = simpleFilterMap[key];
+                const displayName = typeof filterInfo === 'string' ? filterInfo : filterInfo.name;
+                const displayValue = filterInfo.unit ? `${value} ${filterInfo.unit}` : value;
+                return { key, displayName, value: displayValue };
+            }
 
-    return selectedFilters;
+            return {
+                key,
+                displayName: key,
+                value: value
+            };
+        });
 });
 
 </script>
