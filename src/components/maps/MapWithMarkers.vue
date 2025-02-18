@@ -82,7 +82,7 @@ const addMarker = (e) => {
     const markerData = {
         lat,
         lng,
-        text: `Marker ${markers.value.length + 1}\nLat: ${lat.toFixed(4)}\nLng: ${lng.toFixed(4)}`,
+        text: `Marker ${markers.value.length + 1}\nLat: ${lat}\nLng: ${lng}`,
         id: Date.now()
     };
 

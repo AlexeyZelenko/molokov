@@ -302,6 +302,11 @@ const model = ref([
                     },
                 ]
             },
+            {
+                label: 'Карта',
+                icon: 'pi pi-fw pi-map',
+                to: '/users/admin/map'
+            },
         ]
     },
     {
