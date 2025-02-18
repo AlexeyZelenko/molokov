@@ -39,87 +39,44 @@ export const usePropertiesStore = defineStore('properties', {
             }
 
             return properties.filter((property) => {
-                // Переменная для отслеживания, нужно ли продолжать проверку
                 let isMatch = true;
 
                 Object.entries(filters).forEach(([key, value]) => {
-                    // Проверка на минимальную цену
-                    if (key === 'minPrice' && value !== null && value !== undefined) {
-                        isMatch = property.price >= Number(value);
-                    }
+                    if (value === null || value === undefined) return;
 
-                    // Проверка на максимальную цену
-                    if (key === 'maxPrice' && value !== null && value !== undefined) {
-                        isMatch = property.price <= Number(value);
-                    }
+                    // Фильтр по цене
+                    if (key === 'minPrice') isMatch &&= property.price >= Number(value);
+                    if (key === 'maxPrice') isMatch &&= property.price <= Number(value);
 
-                    // Проверка на минимальную этажность
-                    if (key === 'minFloor' && value !== null && value !== undefined) {
-                        isMatch = property.floors.floor >= Number(value);
-                    }
+                    // Фильтр по этажности
+                    if (key === 'minFloor') isMatch &&= property.floors?.floor >= Number(value);
+                    if (key === 'maxFloor') isMatch &&= property.floors?.floor <= Number(value);
 
-                    // Проверка на максимальную этажность
-                    if (key === 'maxFloor' && value !== null && value !== undefined) {
-                        isMatch = property.floors.floor <= Number(value);
-                    }
+                    // Фильтр по площади
+                    if (key === 'minArea') isMatch &&= property.apartmentArea?.totalArea >= Number(value);
+                    if (key === 'maxArea') isMatch &&= property.apartmentArea?.totalArea <= Number(value);
+                    if (key === 'minAreaLiving') isMatch &&= property.apartmentArea?.livingArea >= Number(value);
+                    if (key === 'maxAreaLiving') isMatch &&= property.apartmentArea?.livingArea <= Number(value);
+                    if (key === 'minAreaKitchen') isMatch &&= property.apartmentArea?.kitchenArea >= Number(value);
+                    if (key === 'maxAreaKitchen') isMatch &&= property.apartmentArea?.kitchenArea <= Number(value);
 
-                    // Проверка на минимальную площадь - общая площадь
-                    if (key === 'minArea' && value !== null && value !== undefined) {
-                        isMatch = property.apartmentArea.totalArea >= Number(value);
-                    }
-
-                    // Проверка на максимальную площадь - общая площадь
-                    if (key === 'maxArea' && value !== null && value !== undefined) {
-                        isMatch = property.apartmentArea.totalArea <= Number(value);
-                    }
-
-                    // Проверка на минимальную площадь - жилая площадь
-                    if (key === 'minAreaLiving' && value !== null && value !== undefined) {
-                        isMatch = property.apartmentArea.livingArea >= Number(value);
-                    }
-
-                    // Проверка на максимальную площадь - жилая площадь
-                    if (key === 'maxAreaLiving' && value !== null && value !== undefined) {
-                        isMatch = property.apartmentArea.livingArea <= Number(value);
-                    }
-
-                    // Проверка на минимальную площадь - кухня
-                    if (key === 'minAreaKitchen' && value !== null && value !== undefined) {
-                        isMatch = property.apartmentArea.kitchenArea >= Number(value);
-                    }
-
-                    // Проверка на максимальную площадь - кухня
-                    if (key === 'maxAreaKitchen' && value !== null && value !== undefined) {
-                        isMatch = property.apartmentArea.kitchenArea <= Number(value);
-                    }
-
-
-
-                    // Если после проверки цены объект не подходит, мы прекращаем дальнейшие проверки
-                    if (!isMatch) return;
-
+                    // Фильтр по количеству комнат
                     if (key === 'rooms.all' && Array.isArray(value) && value.length > 0) {
-                        isMatch = value.includes(property.rooms.all);
+                        isMatch &&= value.includes(property.rooms?.all);
                     }
 
-                    // Обработка вложенных объектов (например, category.code, subcategory.code)
+                    // Фильтр по вложенным объектам (например, category.code, subcategory.code)
                     else if (key.includes('.')) {
-                        const keys = key.split('.'); // Разбиваем ключ, например 'subcategory.code'
-                        let fieldValue = property;
-                        keys.forEach((subKey) => {
-                            fieldValue = fieldValue ? fieldValue[subKey] : null; // Погружаемся в объекты по ключам
-                        });
-
-                        isMatch = fieldValue === value;
+                        const fieldValue = key.split('.').reduce((obj, subKey) => obj?.[subKey], property);
+                        isMatch &&= fieldValue === value;
                     }
 
-                    // Обычные фильтры (не вложенные и не объекты)
-                    if (isMatch && key && property[key] !== undefined) {
-                        isMatch = property[key] === value;
+                    // Обычные фильтры (если ключ совпадает с полем объекта)
+                    if (property[key] !== undefined) {
+                        isMatch &&= String(property[key]) === String(value);
                     }
                 });
 
-                // Возвращаем объект, если он прошел все фильтры
                 return isMatch;
             });
         }
