@@ -12,6 +12,7 @@
 
                 <PropertyAddress
                     v-model="property.address"
+                    :property="property"
                     :dropdowns="dropdowns"
                 />
 
