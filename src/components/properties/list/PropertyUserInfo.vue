@@ -18,7 +18,7 @@ defineProps({
                     <Avatar
                         :icon="user?.avatar ? null : 'pi pi-user'"
                         :image="user?.avatar || null"
-                        style="height: 35px; width: 50px"
+                        style="height: 35px; width: 50px; background: none"
                         shape="circle"
                     />
                     <span class="font-bold whitespace-nowrap px-2">{{ creator?.username }}</span>
