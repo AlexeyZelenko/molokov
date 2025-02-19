@@ -101,10 +101,6 @@ export const useUserStore = defineStore('user', {
             try {
                 const userId = auth.currentUser?.uid;
 
-                if (!userId) {
-                    throw new Error('Користувач не авторизований');
-                }
-
                 // Отримати дані користувача та клієнтів паралельно
                 const [userDoc, clientsSnapshot] = await Promise.all([
                     getDoc(doc(db, 'users', userId)),
@@ -140,28 +136,29 @@ export const useUserStore = defineStore('user', {
             this.loading = true;
             const userId = auth.currentUser?.uid;
 
-            if (!userId) throw new Error('Користувач не авторизований');
+            try {
+                const db = getFirestore();
+                if(!userId) return;
+                const userRef = doc(db, 'users', userId);
+                const userDoc = await getDoc(userRef);
 
-            const db = getFirestore();
-            const userRef = doc(db, 'users', userId);
-            const userDoc = await getDoc(userRef);
-
-            if (userDoc.exists()) {
-                this.user = {
-                    id: userDoc.id,
-                    ...userDoc.data()
-                };
+                if (userDoc.exists()) {
+                    this.user = {
+                        id: userDoc.id,
+                        ...userDoc.data()
+                    };
+                }
+            } catch (error) {
+                console.error('Failed to fetch user:', error);
+                this.error = error.message;
+                throw error;
             }
-
             this.loading = false;
         },
 
         async getClients() {
             try {
                 const userId = auth.currentUser?.uid;
-                if (!userId) {
-                    throw new Error('Користувач не авторизований');
-                }
 
                 // Отримати посилання на колекцію 'clients' для поточного користувача
                 const clientsRef = collection(db, 'users', userId, 'clients');
@@ -189,11 +186,6 @@ export const useUserStore = defineStore('user', {
         async addClient(client) {
             try {
                 const userId = auth.currentUser?.uid;
-                if (!userId) {
-                    throw new Error('Користувач не авторизований');
-                }
-
-                console.log('client:', client);
 
                 // Create a new document in 'clients' subcollection
                 const clientsRef = collection(db, 'users', userId, 'clients');
@@ -227,10 +219,6 @@ export const useUserStore = defineStore('user', {
 
             const userId = auth.currentUser?.uid;
 
-            if (!userId) {
-                throw new Error('Користувач не авторизований');
-            }
-
             // Посилання на документ клієнта в Firestore
             const clientRef = doc(db, 'users', userId, 'clients', clientId);
 
@@ -253,10 +241,6 @@ export const useUserStore = defineStore('user', {
 
         async deleteClient(clientId) {
             const userId = auth.currentUser?.uid;
-
-            if (!userId) {
-                throw new Error('Користувач не авторизований');
-            }
 
             // Посилання на документ клієнта в Firestore
             const clientRef = doc(db, 'users', userId, 'clients', clientId);
