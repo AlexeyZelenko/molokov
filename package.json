@@ -1,5 +1,5 @@
 {
-    "name": "sakai-vue",
+    "name": "Нерухомість Черкас",
     "version": "4.2.0",
     "scripts": {
         "dev": "vite",
@@ -13,6 +13,7 @@
         "@primevue/forms": "^4.2.5",
         "@primevue/themes": "^4.2.5",
         "@vueup/vue-quill": "^1.2.0",
+        "@vueuse/head": "^2.0.0",
         "2gis-maps": "^3.7.5",
         "animate.css": "^4.1.1",
         "chart.js": "3.3.2",

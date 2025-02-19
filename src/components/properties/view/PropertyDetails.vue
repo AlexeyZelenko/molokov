@@ -92,20 +92,20 @@
             :propertyId="propertyId"
         />
 
+        <SocialShare
+            :property="property"
+            :adUrl="fullUrl"
+            :title="property.title"
+            :description="property.price"
+            :image="property.images[0]"
+            class="ml-4"
+        />
+
         <DgisMap
             :property="property"
             :isDelete="false"
             class="my-6"
         />
-
-        <div style="position: relative; right: 0; top: 0;">
-            <SocialShare
-                :adUrl="fullUrl"
-                :title="property.title"
-                :description="property.price"
-                :image="property.images[0]"
-            />
-        </div>
     </div>
 </template>
 
