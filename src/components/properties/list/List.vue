@@ -14,7 +14,6 @@ import LoadingSkeleton from './LoadingSkeleton.vue';
 const props = defineProps({
     category: String,
     type: String,
-    userId: String
 });
 
 const userStore = useUserStore();
@@ -54,18 +53,24 @@ const totalPages = computed(() => {
 });
 
 const loadPage = async () => {
+    console.log('loadPage', filters.value);
     try {
-        // Проверяем значение userId
-        console.log('props.userId:', props.userId);
+        let searchFilters = {};
 
-        // Формируем фильтры с явной проверкой
-        const searchFilters = {
-            ...filters.value,
-            "creator.id": props.userId || null
-        };
+        if(route?.query?.user) {
+            searchFilters = {
+                ...filters.value,
+                "creator.id": route?.query?.user || null
+            };
+        } else {
+            searchFilters = {
+                ...filters.value,
+                "creator.id": null,
+                "listId": null
+            };
+        }
 
-        console.log('Prepared filters:', searchFilters);
-
+        console.log('searchFilters >>', searchFilters);
         await Promise.all([
             store.getProperties(searchFilters),
             userStore.fetchUser()
@@ -74,6 +79,7 @@ const loadPage = async () => {
         console.error('Ошибка при загрузке данных:', error);
     }
 };
+
 
 const layout = ref('list'); // Начальный layout по умолчанию
 
@@ -84,6 +90,8 @@ const onPageChange = (page) => {
 const first = computed(() => Math.min((currentPage.value - 1) * pageSize, store.getFilteredProperties.length));
 
 watch(filters, loadPage, { deep: true });
+watch(() => route.query.user, loadPage, { deep: true });
+
 
 watch(totalPages, () => {
     if (currentPage.value > totalPages.value) {

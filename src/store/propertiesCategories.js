@@ -201,21 +201,8 @@ export const usePropertiesStore = defineStore('properties', {
 
                     // Оптимизация фильтрации на уровне запроса
                     constraints.push(where('isPublic', '==', true));
-                    if (filters.creatorId && typeof filters.creatorId === 'string' && filters.creatorId.length > 0) {
-                        console.log('Applying creator filter:', filters.creatorId);
-                        constraints.push(where(new FieldPath('creator', 'id'), '==', filters.creatorId));
-                    }
-
                     constraints.push(orderBy('createdAt', 'desc'));
                     constraints.push(limit(100));
-
-                    console.log('constraints', constraints);
-
-                    // const q = query(collection(db, collectionPath));
-                    // const querySnapshot = await getDocs(q);
-                    // querySnapshot.docs.forEach(doc => {
-                    //     console.log('Document data:', doc.data().creator);
-                    // });
 
                     const q = query(collection(db, collectionPath), ...constraints);
                     const querySnapshot = await getDocs(q);
@@ -224,7 +211,6 @@ export const usePropertiesStore = defineStore('properties', {
                         id: doc.id,
                         ...this.processDocumentData(doc.data())
                     }));
-                    console.log('properties', this.properties);
                 }
             } catch (error) {
                 this.handleError(error, filters, specificIds);
