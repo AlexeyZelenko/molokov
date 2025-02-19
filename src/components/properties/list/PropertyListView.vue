@@ -46,8 +46,8 @@ onMounted(() => {
                          :alt="item.title"
                     />
                     <Tag
-                        v-if="user.id === item.creator.id && route?.query?.user === user.id"
-                        :value="item.isPublic ? 'Опубліковано' : 'Не опубліковано'"
+                        v-if="user?.id === item?.creator?.id && route?.query?.user === user?.id"
+                        :value="item?.isPublic ? 'Опубліковано' : 'Не опубліковано'"
                         :severity="getSeverity(item.isPublic)"
                         class="absolute" style="left:5px; top: 5px"
                     />

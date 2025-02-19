@@ -50,7 +50,7 @@ const paginatedProducts = computed(() => {
         return propertiesList;
     }
     const start = (currentPage.value - 1) * pageSize;
-    return propertiesList.slice(start, start + pageSize); // Пагинация
+    return propertiesList.slice(start, start + pageSize);
 });
 const showPaginator = computed(() => currentComponent.value !== PropertyMapView);
 
