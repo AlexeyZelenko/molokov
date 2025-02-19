@@ -36,7 +36,7 @@
 
         <div class="font-semibold text-xl">Вартість</div>
         <InputGroup>
-            <InputGroupAddon>грн</InputGroupAddon>
+            <InputGroupAddon>$</InputGroupAddon>
             <InputNumber
                 v-model="modelValue.price"
                 :class="{ 'p-invalid': errors.price }"

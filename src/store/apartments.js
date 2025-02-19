@@ -344,8 +344,10 @@ export const useApartmentsStore = defineStore('apartments', {
             ]
         },
         saving: false,
+        displayCurrency: [{ name: '$', value: 'USD' }]
     }),
     getters: {
+        getDisplayCurrency: (state) => state.displayCurrency,
         getDropdowns: (state) => state.dropdowns,
         getSaving: (state) => state.saving,
         async getLastPropertyId() {
@@ -363,6 +365,9 @@ export const useApartmentsStore = defineStore('apartments', {
         },
     },
     actions: {
+        setCurrencies(arr) {
+            this.displayCurrency = arr;
+        },
         async updateLastPropertyId(newId) {
             const db = getFirestore();
             const configDocRef = doc(db, 'config', 'NSrSG9Ujs2YYYjPgWsF1'); // Укажите путь к документу

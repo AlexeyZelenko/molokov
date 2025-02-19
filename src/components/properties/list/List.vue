@@ -10,6 +10,7 @@ import PropertyGridView from './PropertyGridView.vue';
 import PropertyMapView from './PropertyMapView.vue';
 import ConfirmationModal from './ConfirmationModal.vue';
 import LoadingSkeleton from './LoadingSkeleton.vue';
+import PropertyListCurrency from './PropertyListCurrency.vue';
 
 const props = defineProps({
     category: String,
@@ -138,10 +139,13 @@ watch(() => store.properties.length, () => {
             <div class="font-semibold text-xl">{{categoryName}} / {{subcategoryName}}</div>
             <LoadingSkeleton v-if="store.loading" />
             <template v-else>
-                <PropertyListHeader
-                    class="m-1"
-                    v-model:layout="layout"
-                />
+                <div class="flex justify-end">
+                    <PropertyListCurrency class="m-1"/>
+                    <PropertyListHeader
+                        class="m-1"
+                        v-model:layout="layout"
+                    />
+                </div>
                 <component :is="currentComponent" :items="paginatedProducts" />
 
                 <Paginator
