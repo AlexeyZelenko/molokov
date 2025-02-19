@@ -9,10 +9,10 @@
         </div>
         <l-map
             ref="map"
-            v-model:zoom="zoom"
+            :zoom="zoom"
             :center="center"
-            :use-global-leaflet="false"
             @click="handleMapClick"
+            @update:zoom="newZoom => zoom = newZoom"
         >
             <l-tile-layer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -33,8 +33,18 @@
 
 <script setup>
 import "leaflet/dist/leaflet.css";
-import { ref, computed, onDeactivated } from 'vue';
-import { LMap, LTileLayer, LMarker } from "@vue-leaflet/vue-leaflet";
+import {ref, computed, onUnmounted} from 'vue';
+import {LMap, LTileLayer, LMarker} from "@vue-leaflet/vue-leaflet";
+import L from 'leaflet';
+
+// Исправление для иконок маркеров
+delete L.Icon.Default.prototype._getIconUrl;
+
+L.Icon.Default.mergeOptions({
+    iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+    iconUrl: require('leaflet/dist/images/marker-icon.png'),
+    shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+});
 
 const props = defineProps({
     marker: {
@@ -49,7 +59,6 @@ const emit = defineEmits(['update:marker']);
 const zoom = ref(6);
 const defaultCenter = [49.4444, 32.0598];
 
-// Проверяем, существует ли маркер в валидном формате
 const markerExists = computed(() => {
     return Array.isArray(props.marker) &&
         props.marker.length === 2 &&
@@ -75,7 +84,7 @@ const removeMarker = () => {
     emit('update:marker', []);
 };
 
-onDeactivated(() => {
+onUnmounted(() => {
     removeMarker();
 });
 </script>
@@ -84,6 +93,7 @@ onDeactivated(() => {
 .map-container {
     position: relative;
 }
+
 .marker-info {
     position: absolute;
     top: 10px;
@@ -92,8 +102,9 @@ onDeactivated(() => {
     background: white;
     padding: 8px;
     border-radius: 4px;
-    box-shadow: 0 1px 5px rgba(0,0,0,0.2);
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
 }
+
 .remove-button {
     margin-left: 10px;
     cursor: pointer;
