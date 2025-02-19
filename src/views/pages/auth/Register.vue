@@ -53,7 +53,7 @@ const onClose = () => {
 }
 const toDashboard = () => {
     visible.value = false;
-    router.push('/dashboard');
+    router.push('/');
 }
 
 const toHomePage = () => {

@@ -30,7 +30,10 @@ const handleLogin = async () => {
 
     try {
         await authStore.login(sumbit, toast);
-        await router.push('/dashboard');
+        toast.add({severity: 'success', summary: 'Success', detail: 'Успішно ввійшли в систему'});
+        setTimeout(() => {
+            router.push('/');
+        }, 1000);
     } catch (err) {
         error.value = err.message;
     }
