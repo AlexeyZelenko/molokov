@@ -18,7 +18,6 @@ import * as leaflet from 'leaflet/dist/leaflet-src.esm';
 import 'leaflet/dist/leaflet.css';
 import { useAreasStore } from '@/store/areasStore';
 
-// Принимаем props
 const props = defineProps({
     property: {
         type: Object,

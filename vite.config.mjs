@@ -6,8 +6,10 @@ import Components from 'unplugin-vue-components/vite';
 import { defineConfig } from 'vite';
 import vueDevTools from 'vite-plugin-vue-devtools';
 import commonjs from 'vite-plugin-commonjs';
+import { viteStaticCopy } from 'vite-plugin-static-copy';
 
 export default defineConfig({
+    base: '/',
     optimizeDeps: {
         include: ['tiny-case', 'property-expr', 'quill'],
         noDiscovery: true
@@ -18,11 +20,29 @@ export default defineConfig({
             resolvers: [PrimeVueResolver()]
         }),
         vueDevTools(),
-        commonjs()
+        commonjs(),
+        viteStaticCopy({
+            targets: [
+                {
+                    src: 'node_modules/leaflet/dist/images/*',
+                    dest: 'leaflet-images'
+                }
+            ]
+        })
     ],
     resolve: {
         alias: {
             '@': fileURLToPath(new URL('./src', import.meta.url))
         }
+    },
+    build: {
+        rollupOptions: {
+            output: {
+                entryFileNames: 'assets/[name].js',
+                chunkFileNames: 'assets/[name].js',
+                assetFileNames: 'assets/[name].[ext]'
+            }
+        }
     }
+
 });

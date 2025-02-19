@@ -15,6 +15,7 @@ import ToastService from 'primevue/toastservice';
 import '@/assets/styles.scss';
 import '@/assets/tailwind.css';
 import 'animate.css';
+import 'leaflet/dist/leaflet.css';
 
 // Конфигурация темы
 const themeConfig = {
