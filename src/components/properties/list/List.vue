@@ -39,11 +39,18 @@ const filters = ref({
 });
 
 const paginatedProducts = computed(() => {
+    let propertiesList = [];
+    if(route?.query?.user) {
+        propertiesList = store.getFilteredProperties.filter(item => item.creator.id === route?.query?.user);
+    } else {
+        propertiesList = store.getFilteredProperties.filter(item => item.isPublic === true);
+    }
+
     if (currentComponent.value === PropertyMapView) {
-        return store.getFilteredProperties; // Все объявления
+        return propertiesList;
     }
     const start = (currentPage.value - 1) * pageSize;
-    return store.getFilteredProperties.slice(start, start + pageSize); // Пагинация
+    return propertiesList.slice(start, start + pageSize); // Пагинация
 });
 const showPaginator = computed(() => currentComponent.value !== PropertyMapView);
 
@@ -70,7 +77,6 @@ const loadPage = async () => {
             };
         }
 
-        console.log('searchFilters >>', searchFilters);
         await Promise.all([
             store.getProperties(searchFilters),
             userStore.fetchUser()

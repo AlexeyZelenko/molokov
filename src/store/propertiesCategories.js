@@ -200,7 +200,7 @@ export const usePropertiesStore = defineStore('properties', {
                     }
 
                     // Оптимизация фильтрации на уровне запроса
-                    constraints.push(where('isPublic', '==', true));
+                    // constraints.push(where('isPublic', '==', true));
                     constraints.push(orderBy('createdAt', 'desc'));
                     constraints.push(limit(100));
 

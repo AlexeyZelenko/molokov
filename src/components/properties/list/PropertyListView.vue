@@ -1,12 +1,38 @@
 <script setup>
-import { defineProps } from 'vue';
+import { defineProps, onMounted } from 'vue';
 import PropertyActions from './PropertyActions.vue';
 import PropertyUserInfo from './PropertyUserInfo.vue';
 import { formatFirebaseTimestampToTime } from '@/utils/dateUtils';
 import PropertyPrice from '@/components/price/PriceConverter.vue';
+import { useUserStore } from '@/store/userStore';
+import { useRoute } from 'vue-router';
+
+const route = useRoute();
+
+const userStore = useUserStore();
+const user = userStore.user;
+const getSeverity = (status) => {
+    switch (status) {
+        case true:
+            return 'success';
+
+        case false:
+            return 'warn';
+
+        case 'OUTOFSTOCK':
+            return 'danger';
+
+        default:
+            return null;
+    }
+};
 
 defineProps({
     items: Array
+});
+
+onMounted(() => {
+    userStore.fetchUser();
 });
 </script>
 
@@ -18,6 +44,12 @@ defineProps({
                     <img class="block mx-auto rounded w-full h-full object-cover"
                          :src="item.images[0]"
                          :alt="item.title"
+                    />
+                    <Tag
+                        v-if="user.id === item.creator.id && route?.query?.user === user.id"
+                        :value="item.isPublic ? 'Опубліковано' : 'Не опубліковано'"
+                        :severity="getSeverity(item.isPublic)"
+                        class="absolute" style="left:5px; top: 5px"
                     />
                 </div>
                 <div class="flex flex-col md:flex-row justify-between md:items-center flex-1 gap-6">

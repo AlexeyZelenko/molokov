@@ -227,11 +227,11 @@
 
                 <div v-if="images.length" class="flex flex-wrap">
                     <div
-                        v-for="(imageUrl, index) in images"
+                        v-for="imageUrl in images"
                         :key="imageUrl"
                         class="col-3 relative m-4"
                     >
-                        <img
+                        <Image
                             :src="imageUrl"
                             class="w-full h-auto object-cover"
                             style="height: 100px; width: 100px"
@@ -248,9 +248,9 @@
         </Fluid>
 
         <Fluid class="flex mt-8">
-            <div class="card flex flex-col gap-4 ье-2">
-                <div class="font-semibold text-xl">Опублікувати</div>
-                <ToggleButton v-model="property.public" onLabel="Yes" offLabel="No" :style="{ width: '10em' }" />
+            <div class="flex items-center">
+                <div class="font-semibold text-xl mr-2">Опублікувати</div>
+                <ToggleSwitch v-model="property.isPublic" />
             </div>
         </Fluid>
 
