@@ -54,12 +54,15 @@
                     />
                 </div>
 
-                <PropertyContacts
-                    :creator="property.creator"
-                    :owner="property.owner"
-                    :typeOwner="property.typeOwner"
-                    class="mb-4"
-                />
+                <div class="card shadow-lg flex flex-col md:flex-row justify-between gap-4 mt-8">
+                    <PropertyLocation
+                        :address="property.address"
+                    />
+
+                    <PropertyFloors
+                        :property="property"
+                    />
+                </div>
             </div>
 
             <div class="md:w-1/2">
@@ -72,16 +75,7 @@
                         :isDisplayUAH=true
                         class="font-bold text-2xl text-blue-400"
                     />
-                </div>
-
-                <div class="card shadow-lg flex flex-col md:flex-row justify-between gap-4 mt-8">
-                    <PropertyLocation
-                        :address="property.address"
-                    />
-
-                    <PropertyFloors
-                        :property="property"
-                    />
+                    <PropertyUserInfo :creator="property.creator" />
                 </div>
 
                 <component
@@ -140,6 +134,7 @@ import PropertyOther from './categories/other/index.vue';
 import DgisMap from "@/components/maps/DgisMap.vue";
 import SocialShare from "@/components/SocialShare.vue";
 import PriceConverter from "@/components/price/PriceConverter.vue";
+import PropertyUserInfo from "@/components/properties/list/PropertyUserInfo.vue";
 
 const route = useRoute();
 
