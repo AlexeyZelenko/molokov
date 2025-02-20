@@ -26,7 +26,7 @@ onMounted(async () => {
     >
         <AccordionPanel value="0">
             <AccordionHeader>
-                <div class="avatar-container flex items-center gap-2">
+                <div class="avatar-container flex-col flex md:flex-row  gap-2">
                     <div class="flex justify-start items-center gap-1">
                         <div class="p-avatar">
                             <div
