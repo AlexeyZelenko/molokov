@@ -2,7 +2,7 @@
 import { defineProps } from "vue";
 
 const props = defineProps({
-    utilities: Array,
+    utilities: Object,
 });
 </script>
 
@@ -10,7 +10,12 @@ const props = defineProps({
     <div class="card flex flex-col gap-4">
         <div class="font-semibold text-xl">Комунальні послуги</div>
         <ul>
-            <li v-for="utility in utilities" :key="utility.code">{{ utility.name }}</li>
+            <li
+                v-for="utility in Object.values(props.utilities)"
+                :key="utility.code"
+            >
+                {{ utility.name }}
+            </li>
         </ul>
     </div>
 </template>
