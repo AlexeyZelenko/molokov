@@ -110,7 +110,7 @@ onMounted(() => {
 <template>
     <div class="price-converter">
         <!-- Загрузка -->
-        <div v-show="loading" class="text-gray-500">
+        <div v-show="loading" class="text-gray-500 text-sm">
             Завантаження курсу валют...
         </div>
 

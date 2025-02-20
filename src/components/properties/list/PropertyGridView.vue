@@ -58,10 +58,10 @@ onMounted(() => {
                     </div>
                 </div>
                 <div class="h-full flex flex-col justify-between pt-6">
-                    <div class="flex flex-col gap-2">
-                        <span class="text-sm text-surface-500">
+                    <div class="flex flex-col gap-2 min-h-[200px]">
+                        <div class="text-sm text-surface-500">
                             {{ item.category.name }} / {{ item.subcategory.name }}
-                        </span>
+                        </div>
                         <div class="text-lg font-medium">{{ item.title }}</div>
                         <div class="flex items-center">
                             <i class="pi pi-map-marker mr-2"></i>
@@ -78,8 +78,9 @@ onMounted(() => {
                         <div class="text-sm text-surface-500">
                             Номер оголошення: {{ item.idProperty }}
                         </div>
-                        <PropertyUserInfo :creator="item.creator" />
+
                     </div>
+                    <PropertyUserInfo :creator="item.creator" />
                     <div class="flex flex-col gap-6 mt-6">
                         <div class="font-bold">
                             <PropertyPrice

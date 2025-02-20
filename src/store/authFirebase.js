@@ -13,7 +13,7 @@ import {
     browserLocalPersistence,
     browserSessionPersistence
 } from 'firebase/auth'
-import { doc, setDoc, serverTimestamp, getDoc } from 'firebase/firestore'
+import { doc, setDoc, serverTimestamp, getDoc, getDocs, collection } from 'firebase/firestore'
 import { getFirebaseErrorMessage } from '@/utils/firebaseErrors'
 import { useToast } from 'primevue/usetoast'
 
@@ -322,6 +322,15 @@ export const useAuthStore = defineStore('auth', () => {
         }
     }
 
+    async function getUsers() {
+        const users = [];
+        const querySnapshot = await getDocs(collection(db, 'users'));
+        querySnapshot.forEach((doc) => {
+            users.push(doc.data());
+        });
+        return users;
+    }
+
     return {
         user,
         error,
@@ -335,6 +344,7 @@ export const useAuthStore = defineStore('auth', () => {
         initializeAuth,
         checkAuthPersistence,
         getCurrentUser,
-        debugUserState
+        debugUserState,
+        getUsers
     }
 })
