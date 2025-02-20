@@ -118,7 +118,6 @@ const updateAreaCircle = () => {
     }
 
     // Создаем новый круг
-    console.log('currentArea.value', currentArea.value);
     const center = currentArea.value.position || [49.4444, 32.0598]; // Используем центр из area или значение по умолчанию
     areaCircle.value = leaflet.circle(center, {
         color: currentArea.value.color || '#f7f5f5',

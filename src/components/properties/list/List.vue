@@ -61,7 +61,6 @@ const totalPages = computed(() => {
 });
 
 const loadPage = async () => {
-    console.log('loadPage', filters.value);
     try {
         let searchFilters = {};
 

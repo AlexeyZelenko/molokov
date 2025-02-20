@@ -615,7 +615,6 @@ const getSelectedFilters = computed(() => {
             } else if (parts[0] === 'condition' && parts[1] === 'value') {
                 displayName = 'Стан будинку';
                 const conditionItem = condition.value.find(item => item.value === value);
-                console.log(conditionItem);
                 if (conditionItem) {
                     displayValue = conditionItem.name;
                 }

@@ -191,7 +191,6 @@ const conditionForm = ref(null);
 const contactsInfoForm = ref(null);
 
 const validateAllForms = async () => {
-    console.log('validateAllForms');
     const validations = await Promise.all([
         basicInfoForm.value?.validate(),
         areaDetailsForm.value?.validate(),
@@ -200,7 +199,6 @@ const validateAllForms = async () => {
         conditionForm.value?.validate(),
         contactsInfoForm.value?.validate()
     ]);
-    console.log('validations', validations);
 
     // Убрать undefined/null из массива перед проверкой
     const filteredValidations = validations.filter(v => v !== undefined && v !== null);
@@ -266,7 +264,6 @@ const selectedCategoryName = computed(() => {
 });
 
 const handleValidation = (formName, isValid) => {
-    // console.log('formName', formName, 'isValid', isValid);
     formValidations.value[formName] = isValid;
 };
 const onFileSelect = async (files) => {

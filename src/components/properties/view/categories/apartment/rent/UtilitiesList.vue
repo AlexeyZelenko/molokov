@@ -1,13 +1,10 @@
 <script setup>
-import {defineProps, onMounted} from "vue";
+import {defineProps} from "vue";
 
 const props = defineProps({
     utilities: Object,
 });
 
-onMounted(() => {
-    console.log('UtilitiesList.vue mounted', props.utilities)
-});
 </script>
 
 <template>

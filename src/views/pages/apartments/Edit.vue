@@ -86,53 +86,6 @@
                     <div class="font-semibold text-sm">Площа кухні</div>
                     <InputNumber v-model="property.apartmentArea.kitchenArea"  showButtons mode="decimal" required></InputNumber>
                 </div>
-
-                <div class="card flex flex-col gap-4">
-                    <div class="font-semibold text-xl">Тип опалення</div>
-                    <Select v-model="property.heatingType" :options="dropdowns.heatingTypes" optionLabel="name" placeholder="Вибрати" />
-                </div>
-
-                <div class="card flex flex-col gap-4">
-                    <div class="font-semibold text-xl">Комунальні послуги</div>
-                    <MultiSelect
-                        v-model="property.utilities"
-                        :options="dropdowns.utilities"
-                        optionLabel="name"
-                        placeholder="Комунальні послуги"
-                        :filter="true"
-                    >
-                        <template #value="slotProps">
-                            <div class="inline-flex items-center py-1 px-2 bg-primary text-primary-contrast rounded-border mr-2" v-for="option of slotProps.value" :key="option.code">
-                                <span :class="'mr-2 flag flag-' + option.code.toLowerCase()" style="width: 18px; height: 12px" />
-                                <div>{{ option.name }}</div>
-                            </div>
-                            <template v-if="!slotProps.value || slotProps.value.length === 0">
-                                <div class="p-1">Вибрати комунальні послуги</div>
-                            </template>
-                        </template>
-                        <template #option="slotProps">
-                            <div class="flex items-center">
-                                <span :class="'mr-2 flag flag-' + slotProps.option.code.toLowerCase()" style="width: 18px; height: 12px" />
-                                <div>{{ slotProps.option.name }}</div>
-                            </div>
-                        </template>
-                    </MultiSelect>
-                </div>
-
-                <div class="card flex flex-col gap-4">
-                    <div class="font-semibold text-xl">Меблі</div>
-                    <Select v-model="property.furniture" :options="dropdowns.furniture" optionLabel="name" placeholder="Вибрати" />
-                </div>
-
-                <div class="card flex flex-col gap-4">
-                    <div class="font-semibold text-xl">Паркування</div>
-                    <Select v-model="property.parking" :options="dropdowns.parking" optionLabel="name" placeholder="Вибрати" />
-                </div>
-
-                <div class="card flex flex-col gap-4">
-                    <div class="font-semibold text-xl">Балкон / Тераса</div>
-                    <Select v-model="property.balconyTerrace" :options="dropdowns.balconyTerrace" optionLabel="name" placeholder="Вибрати" />
-                </div>
             </div>
             <div class="md:w-1/2">
                 <div class="card flex flex-col gap-4">
@@ -149,20 +102,7 @@
 
                 <div class="card flex flex-col gap-4">
                     <div class="font-semibold text-xl">Кількість кімнат</div>
-                    <div class="font-semibold text-sm">Кількість кімнат</div>
                     <InputNumber v-model="property.rooms.all"  showButtons mode="decimal" required></InputNumber>
-
-                    <div class="font-semibold text-sm">Кількість спалень</div>
-                    <InputNumber v-model="property.rooms.bedrooms"  showButtons mode="decimal" required></InputNumber>
-
-                    <div class="font-semibold text-sm">Кількість санвузлів</div>
-                    <InputNumber v-model="property.rooms.bathrooms"  showButtons mode="decimal" required></InputNumber>
-
-                    <div class="font-semibold text-sm">Кількість ванних кімнат</div>
-                    <InputNumber v-model="property.rooms.bathrooms"  showButtons mode="decimal" required></InputNumber>
-
-                    <div class="font-semibold text-sm">Кількість кухонь</div>
-                    <InputNumber v-model="property.rooms.kitchens"  showButtons mode="decimal" required></InputNumber>
                 </div>
 
                 <div class="card flex flex-col gap-4">
@@ -184,8 +124,13 @@
                 </div>
 
                 <div class="card flex flex-col gap-4">
-                    <div class="font-semibold text-xl">Проживання тварин</div>
-                    <ToggleButton v-model="property.animal" onLabel="Yes" offLabel="No" :style="{ width: '10em' }" />
+                    <div class="font-semibold text-xl">Тип опалення</div>
+                    <Select v-model="property.heatingType" :options="dropdowns.heatingTypes" optionLabel="name" placeholder="Вибрати" />
+                </div>
+
+                <div class="card flex flex-col gap-4">
+                    <div class="font-semibold text-xl">Меблі</div>
+                    <Select v-model="property.furniture" :options="dropdowns.furniture" optionLabel="name" placeholder="Вибрати" />
                 </div>
 
                 <div class="card flex flex-col gap-4">
@@ -196,12 +141,9 @@
         </Fluid>
 
         <Fluid class="flex flex-col mt-8">
-            <div class="card flex flex-col gap-4 w-full">
-                <div class="flex flex-col md:flex-row gap-4">
-                    <div class="font-semibold text-xl">Додадковий опис об'єкта</div>
-                    <Editor v-model="property.description" editorStyle="height: 320px" />
-                </div>
-            </div>
+            <PropertyDescription
+                v-model="property.description"
+            />
 
             <div class="field col-12">
                 <label>Фотографії</label>
@@ -256,36 +198,11 @@
             </div>
         </Fluid>
 
-        <Fluid class="flex mt-8">
-            <div class="card flex flex-col gap-4 w-full">
-                <div class="font-semibold text-xl">Власник</div>
-                <div class="flex flex-col md:flex-row gap-4">
-                    <InputGroup>
-                        <InputGroupAddon>
-                            <i class="pi pi-user"></i>
-                        </InputGroupAddon>
-                        <InputText v-model="property.owner.username" placeholder="Username" />
-                    </InputGroup>
-                    <InputGroup>
-                        <InputGroupAddon>
-                            <i class="pi pi-phone"></i>
-                        </InputGroupAddon>
-                        <InputMask
-                            id="phone"
-                            v-model="property.owner.phone"
-                            type="phones"
-                            mask="+38(0**) 999-99-99"
-                            class="mb-4" fluid
-                            placeholder="+38(999) 999-9999"
-                        />
-                    </InputGroup>
-                </div>
-                <div class="flex flex-col md:flex-row gap-4">
-                    <div class="font-semibold text-xl">Додадково</div>
-                    <Textarea v-model="property.owner.message" placeholder="Your Message" :autoResize="true" rows="3" cols="30" />
-                </div>
-            </div>
-        </Fluid>
+        <MyContacts
+            v-model="property"
+            :contacts="contacts"
+            class="my-4"
+        />
 
         <Fluid class="flex mt-8">
             <div class="field max-w-60">
@@ -298,8 +215,8 @@
 </template>
 
 <script setup>
-import { ref, onBeforeMount, computed, reactive } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { ref, onMounted, computed, reactive } from 'vue';
+import { useRoute } from 'vue-router';
 import {db, storage} from '@/firebase/config';
 import { doc, getDoc, updateDoc, addDoc, collection, arrayRemove } from 'firebase/firestore';
 import {
@@ -311,11 +228,16 @@ import {
 import { useToast } from 'primevue/usetoast';
 import Toast from 'primevue/toast';
 import { useApartmentsStore } from '@/store/apartments';
+import { useAuthStore } from '@/store/authFirebase';
+import { useUserStore } from '@/store/userStore';
 import Select from "primevue/select";
+import Editor from 'primevue/editor';
 import { formatFirebaseTimestamp } from '@/utils/dateUtils';
 import compressWithCompressor from "@/service/Compressor";
 import PriceConverter from '@/components/price/PriceConverter.vue';
 import MapWithMarkerEdit from "@/components/maps/MapWithMarkerEdit.vue";
+import MyContacts from '@/components/forms/MyContacts.vue';
+import PropertyDescription from "@/components/forms/PropertyDescription.vue";
 
 // Стейт для дата-пикера
 const formattedFacilityReadiness = computed({
@@ -338,16 +260,12 @@ const property = ref({
     title: '',
     price: null,
     rooms: {
-        all: null,
-        bedrooms: null,
-        bathrooms: null,
-        kitchens: null
+        all: null
     },
     houseNumber: '',
     constructionYear: null,
     heatingType: null,
     condition: null,
-    balconyCount: 0,
     description: '',
     images: [],
     category: null,
@@ -367,24 +285,27 @@ const property = ref({
     reconditioning: null,
     buildingType: null,
     furniture: null,
-    parking: null,
-    balconyTerrace: null,
     objectClass: null,
-    animal: false,
     facilityReadiness: null,
-    public: false,
+    isPublic: false,
     address: {
         region: null,
         city: '',
         street: '',
         markerPosition: null
     },
-    owner: { username: '', phone: '', message: '' }
+    creator: {
+        message: ''
+    }
 });
+
+const userStore = useUserStore();
+const contacts = computed(() => userStore.user);
+
+const authStore = useAuthStore();
 
 let dropdowns = reactive([]);
 const route = useRoute();
-const router = useRouter();
 const category = route.query.category;
 const subcategory = route.query.subcategory;
 const id = route.params.id;
@@ -493,8 +414,10 @@ const removeImage = async (imageUrl) => {
     }
 };
 
-onBeforeMount(async () => {
+onMounted(async () => {
     Object.assign(dropdowns, store.dropdowns);
+    await userStore.fetchUser();
+    await authStore.getCurrentUser();
 
     if (id) {
         isEdit.value = true;
@@ -526,10 +449,6 @@ const loadPropertyData = async (id, category, subcategory) => {
             life: 3000
         });
     }
-};
-
-const updateMarkerPosition = (position) => {
-    property.value.address.markerPosition = position;
 };
 
 const formattedDescription = computed(() => {
@@ -564,8 +483,6 @@ const saveProperty = async () => {
                 life: 3000
             });
         }
-
-        // router.push(`/categories/apartments/${property.value.subcategory.code}`);
     } catch (error) {
         console.error('Помилка при збереженні об\'єкту:', error);
         toast.add({

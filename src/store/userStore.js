@@ -204,8 +204,6 @@ export const useUserStore = defineStore('user', {
                     id: docRef.id
                 };
 
-                console.log('newClient:', newClient);
-
                 this.clients.push(newClient);
                 return newClient;
             } catch (error) {
@@ -215,8 +213,6 @@ export const useUserStore = defineStore('user', {
         },
 
         async updateClient(clientId, updatedData) {
-            console.log('clientId:', clientId, 'updatedData:', updatedData);
-
             const userId = auth.currentUser?.uid;
 
             // Посилання на документ клієнта в Firestore

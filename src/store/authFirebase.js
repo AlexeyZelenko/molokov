@@ -205,7 +205,6 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     async function initializeAuth() {
-        console.log('Initializing auth...');
         const auth = getAuth();
 
         return new Promise((resolve) => {
@@ -213,10 +212,8 @@ export const useAuthStore = defineStore('auth', () => {
                 if (currentUser) {
                     try {
                         const userDocRef = doc(db, 'users', currentUser.uid);
-                        console.log('Fetching user document for:', currentUser.uid);
 
                         const userDoc = await getDoc(userDocRef);
-                        console.log('Firestore user data:', userDoc.data());
 
                         if (userDoc.exists()) {
                             const userData = {
@@ -229,7 +226,6 @@ export const useAuthStore = defineStore('auth', () => {
                                 emailVerified: currentUser.emailVerified
                             };
 
-                            console.log('!!!Setting user data:', userData);
                             user.value = userData;
                             resolve(userData);
                         } else {
@@ -255,7 +251,6 @@ export const useAuthStore = defineStore('auth', () => {
                         resolve(null);
                     }
                 } else {
-                    console.log('No authenticated user');
                     user.value = null;
                     resolve(null);
                 }
@@ -264,8 +259,6 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     function debugUserState() {
-        console.log('Current user state:', user.value);
-        console.log('Current auth user:', auth.currentUser);
         if (auth.currentUser) {
             getDoc(doc(db, 'users', auth.currentUser.uid))
                 .then(doc => {

@@ -1,7 +1,7 @@
 <template>
-    <div class="card flex flex-col gap-4 w-full">
+    <div class="card flex flex-col items-center gap-4 w-full">
+        <div class="font-semibold text-xl">Додатковий опис об'єкта</div>
         <div class="flex flex-col md:flex-row gap-4">
-            <div class="font-semibold text-xl">Додатковий опис об'єкта</div>
             <Editor
                 v-model="description"
                 editorStyle="height: 320px"

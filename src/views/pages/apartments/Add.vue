@@ -139,13 +139,6 @@
         </Fluid>
 
         <Fluid class="grid grid-cols-1 md:grid-cols-1 gap-6 mt-8">
-<!--            <PropertyContactsInformation-->
-<!--                ref="contactsInfoForm"-->
-<!--                v-model="property"-->
-<!--                :dropdowns="dropdowns"-->
-<!--                @validation-change="handleValidation('contactsInfo', $event)"-->
-<!--            />-->
-
             <MyContacts
                 v-model="property"
                 :contacts="contacts"
@@ -184,7 +177,6 @@ import PropertyFloors from '@/components/forms/PropertyFloors.vue';
 import PropertyRooms from '@/components/forms/PropertyRooms.vue';
 import PropertyCondition from '@/components/forms/PropertyCondition.vue';
 import FormDetails from '@/components/forms/FormDetails.vue';
-import PropertyContactsInformation from '@/components/forms/PropertyContactsInformation.vue';
 import MyContacts from '@/components/forms/MyContacts.vue';
 import FormSection from '@/components/common/FormSection.vue';
 import PropertyDescription from '@/components/forms/PropertyDescription.vue';
