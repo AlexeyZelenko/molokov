@@ -21,10 +21,7 @@
 defineProps({
     address: {
         type: Object,
-        required: true,
-        validator: (value) => {
-            return value.city && value.street;
-        }
+        required: true
     }
 });
 </script>

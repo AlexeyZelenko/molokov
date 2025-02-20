@@ -56,7 +56,7 @@
 
                 <div class="card shadow-lg flex flex-col md:flex-row justify-between gap-4 mt-8">
                     <PropertyLocation
-                        :address="property.address"
+                        :address="property?.address"
                     />
 
                     <PropertyFloors

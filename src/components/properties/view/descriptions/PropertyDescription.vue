@@ -55,8 +55,8 @@ defineProps({
         default: ''
     },
     facilityReadiness: {
-        type: String,
-        default: ''
+        type: Object,
+        default: {}
     },
     property: {
         type: Object,
