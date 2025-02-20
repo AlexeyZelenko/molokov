@@ -66,13 +66,6 @@
                         <Select v-model="property.address.area" :options="dropdowns.areas" optionLabel="name" placeholder="Select" />
                     </template>
 
-<!--                    <GoogleMapAddApartment-->
-<!--                        style="width: 100%; height: 500px"-->
-<!--                        :area="property.address.area"-->
-<!--                        :center="property.address.markerPosition"-->
-<!--                        :disabled="true"-->
-<!--                    />-->
-
                     <MapWithMarkerEdit
                         v-if="property.address.markerPosition"
                         :area="property.address.area"
@@ -319,7 +312,6 @@ import { useToast } from 'primevue/usetoast';
 import Toast from 'primevue/toast';
 import { useApartmentsStore } from '@/store/apartments';
 import Select from "primevue/select";
-import GoogleMapAddApartment from "@/components/googleMap/AddApartment.vue";
 import { formatFirebaseTimestamp } from '@/utils/dateUtils';
 import compressWithCompressor from "@/service/Compressor";
 import PriceConverter from '@/components/price/PriceConverter.vue';

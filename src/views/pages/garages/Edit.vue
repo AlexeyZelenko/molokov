@@ -66,13 +66,6 @@
                         <Select v-model="property.address.area" :options="dropdowns.areas" optionLabel="name" placeholder="Select" />
                     </template>
 
-<!--                    <GoogleMapAddApartment-->
-<!--                        style="width: 100%; height: 500px"-->
-<!--                        :area="property.address.area"-->
-<!--                        :center="property.address.markerPosition"-->
-<!--                        :disabled="true"-->
-<!--                    />-->
-
                     <MapWithMarkerEdit
                         v-if="property.address.markerPosition"
                         :area="property.address.area"
@@ -229,18 +222,27 @@
                     <div
                         v-for="(imageUrl, index) in images"
                         :key="imageUrl"
-                        class="col-3 relative m-4"
+                        class="col-3 relative m-4 cursor-move"
+                        draggable="true"
+                        @dragstart="dragStart($event, index)"
+                        @dragover.prevent
+                        @dragenter.prevent
+                        @drop="drop($event, index)"
                     >
                         <img
                             :src="imageUrl"
-                            class="w-full h-auto object-cover"
+                            class="w-full h-auto object-cover border-2"
+                            :class="{'border-primary': draggedIndex === index, 'border-transparent': draggedIndex !== index}"
                             style="height: 100px; width: 100px"
                         />
+                        <div class="absolute top-0 left-0 bg-black bg-opacity-50 text-white px-2 rounded-br">
+                            {{ index + 1 }}
+                        </div>
                         <Button
                             icon="pi pi-trash"
                             class="absolute top-0 right-0 p-button-danger p-button-rounded"
                             @click="removeImage(imageUrl)"
-                            style="margin-top: -25px"
+                            style="margin-top: -10px; margin-right: -10px"
                         />
                     </div>
                 </div>
@@ -248,9 +250,9 @@
         </Fluid>
 
         <Fluid class="flex mt-8">
-            <div class="card flex flex-col gap-4 ье-2">
-                <div class="font-semibold text-xl">Опублікувати</div>
-                <ToggleButton v-model="property.public" onLabel="Yes" offLabel="No" :style="{ width: '10em' }" />
+            <div class="flex items-center">
+                <div class="font-semibold text-xl mr-2">Опублікувати</div>
+                <ToggleSwitch v-model="property.isPublic" />
             </div>
         </Fluid>
 
@@ -310,7 +312,6 @@ import { useToast } from 'primevue/usetoast';
 import Toast from 'primevue/toast';
 import { useApartmentsStore } from '@/store/apartments';
 import Select from "primevue/select";
-import GoogleMapAddApartment from "@/components/googleMap/AddApartment.vue";
 import { formatFirebaseTimestamp } from '@/utils/dateUtils';
 import compressWithCompressor from "@/service/Compressor";
 import PriceConverter from '@/components/price/PriceConverter.vue';
@@ -390,6 +391,67 @@ const id = route.params.id;
 
 const images = computed(() => property.value.images);
 const fileUpload = ref(null)
+
+// Состояние для операций drag-and-drop
+const draggedIndex = ref(null);
+
+// Методы для drag-and-drop
+const dragStart = (event, index) => {
+    draggedIndex.value = index;
+    event.dataTransfer.effectAllowed = 'move';
+    // Устанавливаем прозрачное изображение для более плавного перетаскивания
+    const dragImg = document.createElement('img');
+    dragImg.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+    event.dataTransfer.setDragImage(dragImg, 0, 0);
+};
+
+const drop = async (event, dropIndex) => {
+    event.preventDefault();
+    if (draggedIndex.value === null || draggedIndex.value === dropIndex) {
+        draggedIndex.value = null;
+        return;
+    }
+
+    // Создаем копию массива изображений
+    const updatedImages = [...property.value.images];
+
+    // Перемещаем элемент
+    const [movedItem] = updatedImages.splice(draggedIndex.value, 1);
+    updatedImages.splice(dropIndex, 0, movedItem);
+
+    // Обновляем массив
+    property.value.images = updatedImages;
+
+    // Обновляем порядок в Firestore, если это редактирование существующего объекта
+    if (isEdit.value && id) {
+        try {
+            const propertyDocRef = doc(db, `properties/${category}/${subcategory}`, id);
+            await updateDoc(propertyDocRef, {
+                images: updatedImages
+            });
+
+            toast.add({
+                severity: 'success',
+                summary: 'Порядок обновлен',
+                detail: 'Порядок фотографий успешно обновлен',
+                life: 2000
+            });
+        } catch (error) {
+            console.error('Ошибка при обновлении порядка фото:', error);
+            toast.add({
+                severity: 'error',
+                summary: 'Ошибка',
+                detail: 'Не удалось обновить порядок фотографий',
+                life: 3000
+            });
+            // Возвращаем исходный порядок при ошибке
+            property.value.images = [...property.value.images];
+        }
+    }
+
+    // Сбрасываем индекс перетаскивания
+    draggedIndex.value = null;
+};
 
 const removeImage = async (imageUrl) => {
     try {
@@ -597,5 +659,33 @@ const onFileSelect = async (event) => {
 <style scoped>
 .location-picker {
     width: 100%;
+}
+
+.cursor-move {
+    cursor: move;
+}
+
+.border-primary {
+    border-color: var(--primary-color);
+}
+
+.border-transparent {
+    border-color: transparent;
+}
+
+/* Стили при перетаскивании */
+[draggable="true"] {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+[draggable="true"]:hover {
+    z-index: 10;
+    transform: scale(1.02);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Анимация для перемещения изображений */
+.photo-grid-item {
+    transition: all 0.3s ease-in-out;
 }
 </style>
