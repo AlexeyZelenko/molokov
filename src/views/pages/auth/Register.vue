@@ -13,6 +13,7 @@ const password = ref('');
 const confirmPassword = ref('');
 const name = ref('');
 const phones = ref('');
+const agency = ref('');
 const error = ref('');
 const router = useRouter();
 const authStore = useAuthStore();
@@ -37,7 +38,8 @@ const handleRegister = async () => {
             name: name.value,
             phones: [phones.value],
             role: 'customer',
-            remember: false
+            remember: false,
+            agency: agency.value,
         });
 
         showTemplate();
@@ -53,7 +55,7 @@ const onClose = () => {
 }
 const toDashboard = () => {
     visible.value = false;
-    router.push('/');
+    router.push('/dashboard');
 }
 
 const toHomePage = () => {
@@ -90,7 +92,7 @@ const showTemplate = () => {
 
                     <!-- Форма входа -->
                     <div>
-                        <label for="name1" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Name</label>
+                        <label for="name1" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Name*</label>
                         <InputText
                             id="name1"
                             type="name"
@@ -100,7 +102,7 @@ const showTemplate = () => {
                             @keyup.enter="handleRegister"
                         />
 
-                        <label for="email1" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Email</label>
+                        <label for="email1" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Email*</label>
                         <InputText
                             id="email1"
                             type="email"
@@ -111,7 +113,7 @@ const showTemplate = () => {
                         />
 
                         <div class="flex-auto">
-                            <label for="phone" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Телефон</label>
+                            <label for="phone" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Телефон*</label>
                             <InputMask
                                 id="phone"
                                 v-model="phones"
@@ -123,8 +125,18 @@ const showTemplate = () => {
                             />
                         </div>
 
+                        <label for="email1" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Агенція</label>
+                        <InputText
+                            id="agency1"
+                            type="text"
+                            placeholder="Агенція нерухомості в якій ви працюєте"
+                            class="mb-4" fluid
+                            v-model="agency"
+                            @keyup.enter="handleRegister"
+                        />
+
                         <label for="password1"
-                               class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Password</label>
+                               class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Password*</label>
                         <Password
                             id="password1"
                             v-model="password"
@@ -135,7 +147,7 @@ const showTemplate = () => {
                             @keyup.enter="handleRegister"
                         />
 
-                        <label for="confirmPassword1" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Підтвердження пароля</label>
+                        <label for="confirmPassword1" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Підтвердження пароля*</label>
                         <InputText
                             id="confirmPassword1"
                             type="password"
@@ -147,7 +159,9 @@ const showTemplate = () => {
 
                         <div v-if="error" class="error mb-4">{{ error }}</div>
 
-                        <div class="flex items-center justify-between mt-2 mb-8 gap-8">
+                        <p class="text-muted-color font-medium mb-8">* Обов'язкові поля</p>
+
+                        <div class="flex items-center justify-between mt-2 gap-8 mb-6">
                             <div class="flex items-center">
                                 <Checkbox v-model="remember" id="rememberme1" binary class="mr-2"></Checkbox>
                                 <label for="rememberme1">Запам'ятай мене</label>

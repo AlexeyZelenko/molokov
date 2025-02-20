@@ -33,17 +33,25 @@
 
 <script setup>
 import "leaflet/dist/leaflet.css";
-import {ref, computed, onUnmounted} from 'vue';
+import {ref, computed, onUnmounted, onMounted} from 'vue';
 import {LMap, LTileLayer, LMarker} from "@vue-leaflet/vue-leaflet";
-import L from 'leaflet';
+// Исправление импорта - используем импорт всего модуля, а не default export
+import * as Leaflet from 'leaflet';
 
-// Исправление для иконок маркеров
-delete L.Icon.Default.prototype._getIconUrl;
+// Создание переменной L для совместимости с традиционным использованием Leaflet
+const L = Leaflet;
 
-L.Icon.Default.mergeOptions({
-    iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
-    iconUrl: require('leaflet/dist/images/marker-icon.png'),
-    shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+// Настройка иконок при монтировании компонента
+onMounted(() => {
+    // Проверяем наличие Icon и Icon.Default
+    if (L.Icon && L.Icon.Default) {
+        // Переопределяем пути к иконкам
+        L.Icon.Default.mergeOptions({
+            iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
+            iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
+            shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png'
+        });
+    }
 });
 
 const props = defineProps({

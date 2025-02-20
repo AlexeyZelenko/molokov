@@ -1,35 +1,54 @@
 <template>
-    <div class="card flex flex-col gap-4">
-        <div class="font-semibold text-xl">Мої контакти</div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
+        <!-- Используем h-full для обеих карточек -->
+        <div class="card flex flex-col gap-4 h-full">
+            <div class="font-semibold text-xl mb-2">Мої контакти</div>
 
-        <div class="font-semibold text-sm">Ім'я</div>
-        <InputText
-            :value="contacts?.name"
-            placeholder="Username"
-            disabled
-        />
-
-        <div class="font-semibold text-sm">Телефони</div>
-        <div
-            v-for="(phone, index) in contacts?.phones"
-            :key="index"
-            class="mb-2"
-        >
+            <div class="font-semibold text-sm">Ім'я</div>
             <InputText
-                :value="phone"
+                :value="contacts?.name"
+                placeholder="Username"
                 disabled
-                placeholder="Телефон"
             />
+
+            <div v-if="contacts?.agency" class="w-full">
+                <div class="font-semibold text-sm mb-1">Агенція</div>
+                <InputText
+                    :value="contacts?.agency"
+                    disabled
+                    class="w-full"
+                />
+            </div>
+
+            <div class="font-semibold text-sm">Телефони</div>
+            <div
+                v-for="(phone, index) in contacts?.phones"
+                :key="index"
+                class="mb-2 w-full"
+            >
+                <InputText
+                    :value="phone"
+                    disabled
+                    placeholder="Телефон"
+                    class="w-full"
+                />
+            </div>
+            <!-- Спейсер для выравнивания высоты -->
+            <div class="flex-grow"></div>
         </div>
 
-        <div class="font-semibold text-sm">Додатково</div>
-        <Textarea
-            v-model="modelValue.creator.message"
-            placeholder="Ваш текст"
-            :autoResize="true"
-            rows="3"
-            cols="30"
-        />
+        <!-- Используем h-full для второй карточки -->
+        <div class="card flex flex-col gap-4 h-full">
+            <div class="font-semibold text-xl mb-2">Додатково</div>
+            <Textarea
+                v-model="modelValue.creator.message"
+                placeholder="Повідомлення"
+                :autoResize="true"
+                rows="5"
+                cols="30"
+                class="flex-grow"
+            />
+        </div>
     </div>
 </template>
 

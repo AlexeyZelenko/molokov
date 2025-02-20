@@ -138,13 +138,13 @@
             <PublishToggle v-model="property.isPublic" />
         </Fluid>
 
-        <Fluid class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-            <PropertyContactsInformation
-                ref="contactsInfoForm"
-                v-model="property"
-                :dropdowns="dropdowns"
-                @validation-change="handleValidation('contactsInfo', $event)"
-            />
+        <Fluid class="grid grid-cols-1 md:grid-cols-1 gap-6 mt-8">
+<!--            <PropertyContactsInformation-->
+<!--                ref="contactsInfoForm"-->
+<!--                v-model="property"-->
+<!--                :dropdowns="dropdowns"-->
+<!--                @validation-change="handleValidation('contactsInfo', $event)"-->
+<!--            />-->
 
             <MyContacts
                 v-model="property"

@@ -14,7 +14,8 @@ const isEditing = ref(false);
 const editForm = ref({
     name: '',
     phones: [] as string[],
-    avatar: ''
+    avatar: '',
+    agency: '',
 });
 
 const src = ref(null);
@@ -38,7 +39,8 @@ onMounted(async () => {
         editForm.value = {
             name: userStore.profile.name,
             phones: userStore.profile.phones || [],
-            avatar: userStore.profile.avatar || ''
+            avatar: userStore.profile.avatar || '',
+            agency: userStore.profile.agency || '',
         };
     }
 });
@@ -117,10 +119,13 @@ const onAvatarUpload = async (event: any) => {
                         </div>
                     </div>
                     <div class="space-y-2">
-                        <div v-for="(phone, index) in userStore.profile.phones" :key="index" class="flex items-center space-x-2">
+                        <div v-for="(phone, index) in userStore.profile?.phones" :key="index" class="flex items-center space-x-2">
                             <span class="text-gray-600">Телефон {{ index + 1 }}:</span>
                             <span class="font-medium">{{ phone }}</span>
                         </div>
+                    </div>
+                    <div v-if="userStore.profile?.agency" class="mt-2">
+                        <p class="text-gray-600">Агенція: {{ userStore.profile?.agency }}</p>
                     </div>
                 </div>
                 <Button
@@ -138,6 +143,15 @@ const onAvatarUpload = async (event: any) => {
                         type="text"
                         class="w-full"
                         placeholder="Введіть ваше ім'я"
+                    />
+                </div>
+                <div>
+                    <label class="block mb-2 font-medium">Агенція нерухомості</label>
+                    <InputText
+                        v-model="editForm.agency"
+                        type="text"
+                        class="w-full"
+                        placeholder="Введіть назву агенції в якій працюєте"
                     />
                 </div>
                 <div>
