@@ -10,16 +10,31 @@ const props = defineProps({
 
 <template>
     <div class="card flex flex-col gap-2 shadow-lg">
-        <div class="font-bold text-xl">Площа(м²)</div>
-        <div class="font-bold text-sm">Загальна площа:</div>
-        <div>{{ apartmentArea.totalArea }} м²</div>
+        <div class="font-bold text-xl">Площа(м²) / планування</div>
 
-        <div class="font-bold text-sm">Жила площа квартири:</div>
-        <div>{{ apartmentArea.livingArea }} м² / {{ planning?.name }}</div>
+        <div class="flex items-center gap-2">
+            <div class="font-bold text-md ">Загальна площа:</div>
+            <div>{{ apartmentArea.totalArea }} м²</div>
+        </div>
 
-        <div class="font-bold text-sm">Площа кухні:</div>
-        <div>{{ apartmentArea.kitchenArea }} м²</div>
+        <div class="flex items-center gap-2">
+            <div class="font-bold text-md">Жила площа квартири:</div>
+            <div>{{ apartmentArea.livingArea }} м²}</div>
+        </div>
 
-        <div class="font-semibold text-sm">Санвузел - {{ bathroom?.name }}</div>
+        <div class="flex items-center gap-2">
+            <div class="font-bold text-md">Площа кімнат:</div>
+            <div>{{ apartmentArea.roomArea }} м²</div>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <div class="font-bold text-md">Планування:</div>
+            <div>{{ planning?.name }}</div>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <div class="font-bold text-md">Санвузел:</div>
+            <div>{{ bathroom?.name }}</div>
+        </div>
     </div>
 </template>

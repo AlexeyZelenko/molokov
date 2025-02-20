@@ -7,8 +7,8 @@ const props = defineProps({
 </script>
 
 <template>
-    <div class="card flex flex-col gap-4 shadow-lg">
-        <div class="font-semibold text-xl">Тип опалення</div>
+    <div class="flex items-center gap-4">
+        <div class="font-semibold text-md">Тип опалення: </div>
         <div>{{ property.heatingType?.name }}</div>
     </div>
 </template>

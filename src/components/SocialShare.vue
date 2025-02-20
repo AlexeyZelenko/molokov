@@ -1,11 +1,17 @@
 <template>
     <div class="social-share-container">
+        <div v-if="isOpen" class="speeddial-mask" @click="closeSpeedDial"></div>
+
         <SpeedDial
             :model="shareItems"
             buttonClassName="p-button-outlined p-button-secondary share-button"
             :hideOnClickOutside="true"
-            direction="down-right"
+            direction="left"
             show-icon="pi pi-share-alt"
+            hide-icon="pi pi-times"
+            @show="handleShow"
+            @hide="handleHide"
+            :mask="false"
         />
 
         <Transition v-if="showPreview" name="fade">
@@ -48,7 +54,22 @@ const props = defineProps({
     }
 });
 
-// Format URL helper function
+// Добавляем состояние для отслеживания открытия/закрытия SpeedDial
+const isOpen = ref(false);
+
+const handleShow = () => {
+    isOpen.value = true;
+};
+
+const handleHide = () => {
+    isOpen.value = false;
+};
+
+const closeSpeedDial = () => {
+    isOpen.value = false;
+};
+
+// Остальной код остается без изменений
 const formatUrl = (url) => {
     try {
         const urlObj = new URL(url);
@@ -58,7 +79,6 @@ const formatUrl = (url) => {
     }
 };
 
-// Move shareMetaData computed property before useHead
 const shareMetaData = computed(() => {
     const { property, title, adUrl } = props;
     const description = `Ціна: ${property.price} грн
@@ -74,7 +94,6 @@ const shareMetaData = computed(() => {
     };
 });
 
-// Now useHead can safely access shareMetaData
 onMounted(() => {
     useHead({
         title: shareMetaData.value.title,
@@ -99,7 +118,6 @@ const SHARE_CONFIG = {
     },
     telegram: {
         buildUrl: (data) => {
-            // Используем специальный формат URL для Telegram с поддержкой превью
             const telegramText = `${data.title}\n\n${data.description}`;
             const instantView = data.image ? `&image=${encodeURIComponent(data.image)}` : '';
             return `https://t.me/share/url?url=${encodeURIComponent(data.url)}${instantView}&text=${encodeURIComponent(telegramText)}`;
@@ -122,7 +140,7 @@ const SHARE_CONFIG = {
 };
 
 const toast = useToast();
-const showPreview = ref(true);
+const showPreview = ref(false);
 
 const shareContent = (platform) => {
     try {
@@ -131,9 +149,7 @@ const shareContent = (platform) => {
 
         const url = config.buildUrl(shareMetaData.value);
 
-        // Специальная обработка для Telegram
         if (platform === 'telegram') {
-            // Добавляем небольшую задержку, чтобы meta-теги успели обновиться
             setTimeout(() => {
                 window.open(url, '_blank', 'width=600,height=400');
             }, 100);
@@ -180,8 +196,20 @@ const shareItems = computed(() => [
 
 <style scoped>
 .social-share-container {
-    position: relative;
+    position: absolute;
+    right: 10px;
     display: inline-block;
+}
+
+.speeddial-mask {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(2px);
+    z-index: 998;
 }
 
 .share-button.p-button.p-button-icon-only {
@@ -190,6 +218,15 @@ const shareItems = computed(() => [
     border-radius: 50%;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
     transition: all 0.3s ease;
+    z-index: 999;
+}
+
+:deep(.p-speeddial) {
+    z-index: 999;
+}
+
+:deep(.p-speeddial-list) {
+    z-index: 999;
 }
 
 .share-button:hover {
@@ -208,11 +245,6 @@ const shareItems = computed(() => [
     transform: scale(1.1);
 }
 
-.p-speeddial-mask {
-    background: rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(2px);
-}
-
 .share-preview-card {
     position: absolute;
     top: 100%;
@@ -223,7 +255,7 @@ const shareItems = computed(() => [
     overflow: hidden;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     margin-top: 10px;
-    z-index: 2000;
+    z-index: 999;
     opacity: 0;
     transform: translateY(10px);
     transition: all 0.3s ease;
@@ -271,5 +303,10 @@ const shareItems = computed(() => [
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.3s;
 }
 </style>

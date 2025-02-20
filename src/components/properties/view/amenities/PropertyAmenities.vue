@@ -1,5 +1,5 @@
 <template>
-    <div class="card flex flex-col gap-2 shadow-lg">
+    <div class="flex flex-col gap-2">
         <div class="hidden md:block">
             <Tabs value="0">
                 <TabList class="flex flex-col">
@@ -23,7 +23,7 @@
         <Accordion value="0" class="block md:hidden">
             <AccordionPanel v-for="tab in tabs" :key="tab.title" :value="tab.value">
                 <AccordionHeader>
-                    <span class="font-semibold text-xl">{{ tab.title }}</span>
+                    <span class="font-semibold text-md">{{ tab.title }}</span>
                 </AccordionHeader>
                 <AccordionContent>
                     <p class="m-0">{{ tab.content }}</p>

@@ -33,8 +33,16 @@
         </div>
     </div>
     <div v-else>
-        <div class="flex items-center">
-            <h1 class="font-semibold text-xl mb-2 mr-4">{{ property.title }}</h1>
+        <div class="flex flex-col md:flex-row items-center justify-start mb-4">
+            <h1 class="font-semibold text-2xl mr-4">{{ property.title }}</h1>
+            <SocialShare
+                :property="property"
+                :adUrl="fullUrl"
+                :title="property.title"
+                :description="property.price"
+                :image="property.images[0]"
+                class="ml-4"
+            />
         </div>
 
         <Fluid class="flex flex-col md:flex-row gap-8">
@@ -46,25 +54,36 @@
                     />
                 </div>
 
-                <PropertyLocation
-                    :address="property.address"
-                />
-
-                <PropertyFloors
-                    :property="property"
-                />
-
-                <PropertyAmenities
-                    :property="property"
-                />
-
-                <PropertyReadiness
-                    v-if="property?.facilityReadiness"
-                    :property="property"
+                <PropertyContacts
+                    :creator="property.creator"
+                    :owner="property.owner"
+                    :typeOwner="property.typeOwner"
+                    class="mb-4"
                 />
             </div>
 
             <div class="md:w-1/2">
+                <div class="card flex flex-col gap-4 shadow-lg">
+                    <div class="font-semibold text-xl text-primary-700">
+                        {{ property.category?.name }} / {{ property.subcategory?.name }}
+                    </div>
+                    <PriceConverter
+                        :price="property.price"
+                        :isDisplayUAH=true
+                        class="font-bold text-2xl text-blue-400"
+                    />
+                </div>
+
+                <div class="card shadow-lg flex flex-col md:flex-row justify-between gap-4 mt-8">
+                    <PropertyLocation
+                        :address="property.address"
+                    />
+
+                    <PropertyFloors
+                        :property="property"
+                    />
+                </div>
+
                 <component
                     v-if="property"
                     :is="categoryComponentMap[category] || PropertyOther"
@@ -74,13 +93,9 @@
         </Fluid>
 
         <PropertyDescription
+            :property="property"
+            :facilityReadiness="property.facilityReadiness"
             :description="property.description"
-        />
-
-        <PropertyContacts
-            :creator="property.creator"
-            :owner="property.owner"
-            :typeOwner="property.typeOwner"
             class="mb-4"
         />
 
@@ -90,15 +105,6 @@
             v-if="isRegister"
             :ad="property"
             :propertyId="propertyId"
-        />
-
-        <SocialShare
-            :property="property"
-            :adUrl="fullUrl"
-            :title="property.title"
-            :description="property.price"
-            :image="property.images[0]"
-            class="ml-4"
         />
 
         <DgisMap
@@ -122,8 +128,6 @@ import PropertyGallery from './gallery/PropertyGallery.vue';
 import PropertyLocation from './location/PropertyLocation.vue';
 import PropertyDescription from './descriptions/PropertyDescription.vue';
 import PropertyContacts from './contacts/PropertyContacts.vue';
-import PropertyAmenities from './amenities/PropertyAmenities.vue';
-import PropertyReadiness from './readiness/PropertyReadiness.vue';
 import PropertyFloors from './floors/PropertyFloors.vue';
 
 import PropertyApartment from './categories/apartment/index.vue';
@@ -135,6 +139,7 @@ import PropertyOther from './categories/other/index.vue';
 
 import DgisMap from "@/components/maps/DgisMap.vue";
 import SocialShare from "@/components/SocialShare.vue";
+import PriceConverter from "@/components/price/PriceConverter.vue";
 
 const route = useRoute();
 
@@ -184,7 +189,8 @@ const property = ref({
     creator: {
         username: '',
         phone: '',
-        message: ''
+        message: '',
+        agency: ''
     },
 });
 
