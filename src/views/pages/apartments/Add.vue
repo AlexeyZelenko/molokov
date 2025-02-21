@@ -163,7 +163,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onBeforeMount, onUnmounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import { useApartmentsStore } from '@/store/apartments';
 import { useAuthStore } from '@/store/authFirebase';
@@ -280,9 +280,9 @@ const saveProperty = async () => {
     }
 };
 
-onBeforeMount(async () => {
+onMounted(async () => {
     await authStore.getCurrentUser();
     await userStore.fetchUser();
-    propertyManager.setPropertyType('apartment-sell');
+    propertyManager.setPropertyType('apartments-sell');
 });
 </script>

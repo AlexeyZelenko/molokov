@@ -25,12 +25,18 @@ const isCreator = computed(() => {
 });
 
 const showProperty = () => {
-    router.push(`/pages/${props.item.category.code}/view/${props.item.id}?category=${props.item.category.code}&subcategory=${props.item.subcategory.code}`);
+    const category = props.item.category.code;
+    const subcategory = props.item.subcategory.code;
+    // router.push(`/pages/${category}/view/${props.item.id}?category=${category}&subcategory=${subcategory}`);
+    router.push(`/pages/${category}/view/${subcategory}/${props.item.id}?category=${category}&subcategory=${subcategory}`);
 };
 
 const editProperty = () => {
     if (!isCreator.value) return;
-    router.push(`/pages/apartments/edit/${props.item.id}?category=${props.item.category.code}&subcategory=${props.item.subcategory.code}`);
+    const category = props.item.category.code;
+    const subcategory = props.item.subcategory.code;
+    router.push(`/pages/${category}/edit/${subcategory}/${props.item.id}?category=${category}&subcategory=${subcategory}`);
+    // router.push(`/pages/${category}/edit/${subcategory}/${props.item.id}?category=${category}&subcategory=${subcategory}`);
 };
 
 const deleteProperty = () => {

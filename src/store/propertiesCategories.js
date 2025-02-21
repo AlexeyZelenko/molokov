@@ -18,7 +18,81 @@ export const usePropertiesStore = defineStore('properties', {
         loading: false,
         error: null,
         filters: {},
-        currentComponent: 'ApartmentsSell'
+        currentComponent: 'ApartmentsSell',
+        categoryStructure: {
+            apartments: {
+                name: 'Квартири',
+                subcategories: {
+                    rent: { name: 'Аренда' },
+                    sell: { name: 'Продажа' },
+                    exchange: { name: 'Обмен' },
+                    daily: { name: 'Посуточно' }
+                }
+            },
+            rooms: {
+                name: 'Квартири',
+                subcategories: {
+                    rent: { name: 'Аренда' },
+                    sell: { name: 'Продажа' },
+                    exchange: { name: 'Обмен' },
+                    daily: { name: 'Посуточно' }
+                }
+            },
+            offices: {
+                name: 'Квартири',
+                subcategories: {
+                    rent: { name: 'Аренда' },
+                    sell: { name: 'Продажа' },
+                    exchange: { name: 'Обмен' },
+                    daily: { name: 'Посуточно' }
+                }
+            },
+            houses: {
+                name: 'Будинки',
+                subcategories: {
+                    rent: { name: 'Аренда' },
+                    sell: { name: 'Продажа' },
+                    exchange: { name: 'Обмен' },
+                    daily: { name: 'Посуточно' }
+                }
+            },
+            land: {
+                name: 'Земельні ділянки',
+                subcategories: {
+                    rent: { name: 'Аренда' },
+                    sell: { name: 'Продажа' },
+                    exchange: { name: 'Обмен' },
+                    daily: { name: 'Посуточно' }
+                }
+            },
+            commercial: {
+                name: 'Комерційна нерухомість',
+                subcategories: {
+                    rent: { name: 'Аренда' },
+                    sell: { name: 'Продажа' },
+                    exchange: { name: 'Обмен' },
+                    daily: { name: 'Посуточно' }
+                }
+            },
+            garage: {
+                name: 'Гаражі',
+                subcategories: {
+                    rent: { name: 'Аренда' },
+                    sell: { name: 'Продажа' },
+                    exchange: { name: 'Обмен' },
+                    daily: { name: 'Посуточно' }
+                }
+            },
+            other: {
+                name: 'Інше',
+                subcategories: {
+                    rent: { name: 'Аренда' },
+                    sell: { name: 'Продажа' },
+                    exchange: { name: 'Обмен' },
+                    daily: { name: 'Посуточно' }
+                }
+            }
+        },
     }),
 
     getters: {

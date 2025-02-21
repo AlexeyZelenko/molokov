@@ -55,7 +55,6 @@ const paginatedProducts = computed(() => {
 });
 const showPaginator = computed(() => currentComponent.value !== PropertyMapView);
 
-
 const totalPages = computed(() => {
     return Math.ceil(store.getFilteredProperties.length / pageSize);
 });
@@ -85,7 +84,6 @@ const loadPage = async () => {
         console.error('Ошибка при загрузке данных:', error);
     }
 };
-
 
 const layout = ref('list'); // Начальный layout по умолчанию
 

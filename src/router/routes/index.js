@@ -1,19 +1,10 @@
 import authRoutes from './auth';
 import propertyRoutes from './properties';
-import housesRoutes from './houses';
-import apartmentsRoutes from './apartments';
-import officesRoutes from './offices';
-import commercialRoutes from './commercial';
-import landRoutes from './land';
-import otherRoutes from './other';
 import dashboardRoutes from './dashboard';
 import uikitRoutes from './uikit';
 import categoriesRoutes from './categories';
 import profileRoutes from './profile';
 import adminRoutes from './admin';
-import garageRoutes from './garages';
-import roomRoutes from './rooms';
-
 export default [
     {
         path: '/',
@@ -31,14 +22,6 @@ export default [
         children: [
             ...dashboardRoutes,
             ...uikitRoutes,
-            ...housesRoutes,
-            ...apartmentsRoutes,
-            ...officesRoutes,
-            ...commercialRoutes,
-            ...landRoutes,
-            ...garageRoutes,
-            ...roomRoutes,
-            ...otherRoutes,
             ...profileRoutes,
             ...adminRoutes
         ]

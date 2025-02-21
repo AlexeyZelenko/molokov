@@ -32,16 +32,19 @@ async function initializeApp() {
 
     // Обработчик ошибок
     app.config.errorHandler = (err, instance, info) => {
-        console.error('Vue Error:', err);
-        console.log('Component:', instance);
-        console.log('Error Info:', info);
+        if (typeof window !== 'undefined') {
+            console.error('Vue Error:', err);
+            console.log('Component:', instance);
+            console.log('Error Info:', info);
+        } else {
+            console.error('Server-side error:', err);
+        }
     };
 
+
     // Включение режима разработки
-    if (process.env.NODE_ENV === 'development') {
-        app.config.performance = true;
-        app.config.devtools = true;
-    }
+    const isDev = typeof process !== 'undefined' && process.env.NODE_ENV === 'development';
+
 
     // Регистрация плагинов
     app.use(pinia);
@@ -53,7 +56,10 @@ async function initializeApp() {
 
     try {
         // Дожидаемся готовности роутера
-        await router.isReady();
+        if (typeof window !== 'undefined') {
+            await router.isReady();
+        }
+
 
         // Настройка навигации и хлебных крошек
         router.afterEach((to) => {

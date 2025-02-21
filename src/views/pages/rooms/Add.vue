@@ -289,6 +289,7 @@ const saveProperty = async () => {
 };
 
 onBeforeMount(async () => {
+    console.log('Add item mounted - rooms-sell');
     await authStore.getCurrentUser();
     await userStore.fetchUser();
     propertyManager.setPropertyType('rooms-sell');
