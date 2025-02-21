@@ -103,34 +103,4 @@ export default [
         name: 'documentation',
         component: () => import('@/views/pages/Documentation.vue')
     },
-    {
-        path: '/pages/apartments/add',
-        name: 'addApartments',
-        component: () => import('@/views/pages/apartments/Add.vue')
-    },
-    {
-        path: '/pages/apartments/edit/:id',
-        name: 'editApartments',
-        component: () => import('@/views/pages/apartments/Edit.vue')
-    },
-    {
-        path: '/pages/apartments/view/:id',
-        name: 'viewApartments',
-        component: () => import('@/views/pages/apartments/View.vue')
-    },
-    {
-        path: '/pages/houses/add',
-        name: 'addApartments',
-        component: () => import('@/views/pages/apartments/Add.vue')
-    },
-    {
-        path: '/pages/houses/edit/:id',
-        name: 'editApartments',
-        component: () => import('@/views/pages/apartments/Edit.vue')
-    },
-    {
-        path: '/pages/houses/view/:id',
-        name: 'viewApartments',
-        component: () => import('@/views/pages/apartments/View.vue')
-    },
 ];
