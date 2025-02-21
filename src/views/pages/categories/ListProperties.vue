@@ -26,8 +26,12 @@ function getFirstSubcategory(categoryCode) {
 // Динамическая загрузка компонентов
 const getComponentPath = (category, subcategory) => {
     console.log(category, subcategory)
+    // return defineAsyncComponent(() =>
+    //     import(`@/views/pages/${category}/lists/${subcategory}.vue`)
+    //         .catch(() => import('@/views/pages/NotFound.vue'))
+    // )
     return defineAsyncComponent(() =>
-        import(`@/views/pages/${category}/lists/${subcategory}.vue`)
+        import(`@/components/properties/list/List.vue`)
             .catch(() => import('@/views/pages/NotFound.vue'))
     )
 }
@@ -56,6 +60,7 @@ watch(() => route.params, (newParams) => {
             :is="CurrentComponent"
             :category="activeCategory"
             :subcategory="activeSubcategory"
+            :type="activeSubcategory"
         />
     </div>
 </template>
