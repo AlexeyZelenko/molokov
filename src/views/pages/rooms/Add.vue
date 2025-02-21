@@ -188,7 +188,7 @@ import PropertyContactsInformation from '@/components/forms/PropertyContactsInfo
 import MyContacts from '@/components/forms/MyContacts.vue';
 import FormSection from '@/components/common/FormSection.vue';
 import PropertyDescription from '@/components/forms/PropertyDescription.vue';
-import PropertyImageUpload from '@/components/forms/PropertyImageUpload.vue';
+import PropertyImageUpload from '@/components/forms/images/PropertyImageUpload.vue';
 import PublishToggle from '@/components/common/PublishToggle.vue';
 import UploadProgressToast from '@/components/common/UploadProgressToast.vue';
 

@@ -131,6 +131,7 @@
                 :images="images"
                 @upload="onFileSelect"
                 @remove="removeImage"
+                @reorder="handleReorder"
             />
         </Fluid>
 
@@ -180,7 +181,7 @@ import FormDetails from '@/components/forms/FormDetails.vue';
 import MyContacts from '@/components/forms/MyContacts.vue';
 import FormSection from '@/components/common/FormSection.vue';
 import PropertyDescription from '@/components/forms/PropertyDescription.vue';
-import PropertyImageUpload from '@/components/forms/PropertyImageUpload.vue';
+import PropertyImageUpload from '@/components/forms/images/PropertyImageUpload.vue';
 import PublishToggle from '@/components/common/PublishToggle.vue';
 import UploadProgressToast from '@/components/common/UploadProgressToast.vue';
 
@@ -197,6 +198,10 @@ const authStore = useAuthStore();
 const userStore = useUserStore();
 
 const propertyManager = new PropertyManager(userStore, store, toast);
+
+const handleReorder = (newOrder) => {
+    property.value.images = newOrder; // Обновляем порядок изображений
+};
 
 const formValidations = ref({
     basicInfo: false,

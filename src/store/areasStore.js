@@ -21,7 +21,7 @@ export const useAreasStore = defineStore('areas', {
                 id: 2,
                 title: 'Кімнати',
                 key: 'rooms',
-                image: '/images/other.webp',
+                image: '/images/rooms.webp',
                 actions: [
                     {type: 'sell', label: 'Продаж', icon: 'pi pi-home'},
                     {type: 'rent', label: 'Оренда', icon: 'pi pi-key'},
@@ -33,7 +33,7 @@ export const useAreasStore = defineStore('areas', {
                 id: 3,
                 title: 'Гаражи',
                 key: 'garages',
-                image: '/images/other.webp',
+                image: '/images/garages.webp',
                 actions: [
                     {type: 'sell', label: 'Продаж', icon: 'pi pi-home'},
                     {type: 'rent', label: 'Оренда', icon: 'pi pi-key'},

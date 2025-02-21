@@ -19,7 +19,7 @@
         </div>
 
         <div class="field">
-            <div class="font-semibold text-sm mb-2">Поверховість будівлі *</div>
+            <div class="font-semibold text-sm mb-2">Кількість поверхів у приміщенні *</div>
             <InputNumber
                 v-model="formData.totalFloorsBuilding"
                 showButtons
@@ -33,7 +33,7 @@
         </div>
 
         <div class="field">
-            <div class="font-semibold text-sm mb-2">Кількість поверхів у приміщенні *</div>
+            <div class="font-semibold text-sm mb-2">Поверховість будівлі *</div>
             <InputNumber
                 v-model="formData.totalFloors"
                 showButtons

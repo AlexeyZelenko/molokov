@@ -1,4 +1,5 @@
 import AppCategoryLayout from "@/layout/AppCategoryLayout.vue";
+import AppLayout from "@/layout/AppLayout.vue";
 import EditItemView from "@/views/pages/categories/EditItemView.vue";
 import ItemDetailsView from "@/views/pages/categories/ItemDetailsView.vue";
 import AddItemProperty from "@/views/pages/categories/AddItemProperty.vue";
@@ -7,7 +8,7 @@ import ListProperties from "@/views/pages/categories/ListProperties.vue";
 export default [
     {
         path: '/',
-        component: AppCategoryLayout,
+        component: AppLayout,
         children: [
             {
                 path: '/pages/:category/edit/:subcategory/:id',
@@ -24,7 +25,7 @@ export default [
             },
             {
                 path: '/pages/:category/view/:subcategory/:id',
-                name: `itemDetails - ${new Date().getTime()}`,
+                name: `itemDetails`,
                 component: ItemDetailsView,
                 meta: {
                     breadcrumb: [
@@ -45,6 +46,12 @@ export default [
                     ]
                 },
             },
+        ]
+    },
+    {
+        path: '/',
+        component: AppCategoryLayout,
+        children: [
             {
                 path: '/categories/:category/:subcategory',
                 name: 'listProperties',

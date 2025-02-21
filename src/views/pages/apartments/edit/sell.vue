@@ -572,7 +572,6 @@ const onFileSelect = async (event) => {
 };
 </script>
 
-
 <style scoped>
 .location-picker {
     width: 100%;
