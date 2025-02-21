@@ -40,20 +40,6 @@ const CurrentComponent = computed(() => {
     return getComponentPath(activeCategory.value, activeSubcategory.value)
 })
 
-const navigateToCategory = (category, subcategory, itemId = null) => {
-    const path = itemId
-        ? `/pages/${category}/${subcategory}/${itemId}`
-        : `/pages/${category}/${subcategory}`
-
-    router.push({
-        path,
-        query: {
-            category,
-            subcategory
-        }
-    })
-}
-
 // Наблюдаем за изменением маршрута
 watch(() => route.params, (newParams) => {
     if (newParams.category && categoryStructure.value[newParams.category]) {

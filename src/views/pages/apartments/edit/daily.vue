@@ -528,10 +528,6 @@ const loadPropertyData = async (id, category, subcategory) => {
     }
 };
 
-const updateMarkerPosition = (position) => {
-    property.value.address.markerPosition = position;
-};
-
 const formattedDescription = computed(() => {
     return property.value.description
         .replace(/\n/g, '<br>')
