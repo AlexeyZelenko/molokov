@@ -1,6 +1,6 @@
 <template>
     <div class="field col-12">
-        <label>Фотографії</label>
+        <div class="font-semibold text-xl mb-2">Фотографії</div>
         <UploadArea
             @upload="handleUpload"
         />

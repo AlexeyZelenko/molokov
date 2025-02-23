@@ -158,8 +158,8 @@
 
         <Toast />
 
-        <div v-if="uploadVisible">
-            <UploadProgressToast :visible="uploadVisible"/>
+        <div v-if="imageState.isUploading">
+            <UploadProgressToast :visible="imageState.isUploading"/>
         </div>
     </Form>
 </template>
@@ -228,7 +228,6 @@ const formValidations = ref({
 });
 
 const saving = ref(false);
-const uploadVisible = ref(false);
 
 // Пустой объект для режима добавления
 const emptyProperty = {
