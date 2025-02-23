@@ -346,10 +346,14 @@ const onFileSelect = async (files) => {
         imageState.value.isUploading = true;
         await propertyManager.uploadImages(files);
 
-        // Update images only if upload was successful
-        property.value.images = Array.isArray(propertyManager.property.images)
-            ? [...propertyManager.property.images]
+        // Получаем только новые изображения из propertyManager
+        const newImages = Array.isArray(propertyManager.property.images)
+            ? propertyManager.property.images
             : [];
+
+        // Проверяем на дубликаты перед добавлением
+        const uniqueImages = [...new Set([...property.value.images, ...newImages])];
+        property.value.images = uniqueImages;
 
     } catch (error) {
         console.error('Помилка завантаження:', error);
