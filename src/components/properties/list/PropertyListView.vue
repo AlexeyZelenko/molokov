@@ -64,7 +64,7 @@ onMounted(() => {
                                 <i class="pi pi-map-marker mr-2"></i>
                                 {{ item.address.city.name }} / {{ item.address.area.name }}
                             </div>
-                            <div class="flex items-center">
+                            <div v-if="item.createdAt" class="flex items-center">
                                 <i class="pi pi-calendar mr-2"></i>
                                 <div>{{ formatFirebaseTimestampToTime(item.createdAt) }}</div>
                             </div>

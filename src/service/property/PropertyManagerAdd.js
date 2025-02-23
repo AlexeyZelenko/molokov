@@ -179,10 +179,16 @@ export class PropertyManager {
 
     async saveProperty() {
         try {
-            const utilitiesObject = this.property.utilities.reduce((acc, current) => {
-                acc[current.key] = current;
-                return acc;
-            }, {});
+            let utilitiesObject = {};
+            if(this.property.utilities) {
+                utilitiesObject = this.property.utilities.reduce((acc, current) => {
+                    acc[current.key] = current;
+                    return acc;
+                }, {});
+            } else {
+                utilitiesObject = {};
+            }
+
 
             const lastPropertyId = await this.store.getLastPropertyId;
             const propertyData = {
@@ -200,6 +206,8 @@ export class PropertyManager {
                     message: this.property?.creator?.message || null
                 }
             };
+
+            console.log('Property data:', propertyData);
 
             await addDoc(collection(db, `properties/${this.property.category.code}/${this.property.subcategory.code}`), propertyData);
             await this.store.updateLastPropertyId(lastPropertyId + 1);

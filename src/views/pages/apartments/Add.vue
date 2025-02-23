@@ -185,8 +185,8 @@ import PropertyDescription from '@/components/forms/PropertyDescription.vue';
 import PropertyImageUpload from '@/components/forms/images/PropertyImageUpload.vue';
 import PublishToggle from '@/components/common/PublishToggle.vue';
 import UploadProgressToast from '@/components/common/UploadProgressToast.vue';
-import {addDoc, collection, doc, getDoc, updateDoc, arrayRemove} from "firebase/firestore";
-import {db, storage} from "@/firebase/config";
+import {doc, getDoc, updateDoc, arrayRemove} from "firebase/firestore";
+import {db} from "@/firebase/config";
 import { useRoute, useRouter } from 'vue-router';
 import Toast from 'primevue/toast';
 const route = useRoute();
@@ -196,7 +196,6 @@ const areaDetailsForm = ref(null);
 const floorsForm = ref(null);
 const roomsForm = ref(null);
 const conditionForm = ref(null);
-const contactsInfoForm = ref(null);
 
 const toast = useToast();
 const store = useApartmentsStore();
@@ -226,7 +225,6 @@ const formValidations = ref({
     floors: false,
     rooms: false,
     condition: false,
-    contactsInfo: true
 });
 
 const saving = ref(false);
@@ -277,7 +275,7 @@ const emptyProperty = {
     objectClass: null,
     animal: false,
     facilityReadiness: null,
-    public: false,
+    isPublic: false,
     address: {
         region: null,
         city: '',
@@ -285,15 +283,12 @@ const emptyProperty = {
         markerPosition: null
     },
     creator: {
-        id: null,
-        name: '',
-        phone: '',
-        email: '',
         message: ''
     },
 };
+const property = computed(() => propertyManager.property || { ...emptyProperty });
 
-const property = ref({ ...emptyProperty });
+// const property = ref({ ...emptyProperty });
 const contacts = computed(() => userStore.user);
 const dropdowns = computed(() => store.dropdowns);
 
@@ -380,18 +375,75 @@ const loadPropertyData = async (id, category, subcategory) => {
 };
 
 const validateAllForms = async () => {
+    // Логируем начало валидации
+    console.log("Starting validation of all forms...");
+
+    // Валидация каждой формы
     const validations = await Promise.all([
-        basicInfoForm.value?.validate(),
-        areaDetailsForm.value?.validate(),
-        floorsForm.value?.validate(),
-        roomsForm.value?.validate(),
-        conditionForm.value?.validate(),
-        contactsInfoForm.value?.validate()
+        (async () => {
+            if (!basicInfoForm.value) {
+                console.log("basicInfoForm is undefined or null");
+                return undefined;
+            }
+            console.log("Validating basicInfoForm...");
+            const result = await basicInfoForm.value.validate();
+            console.log("basicInfoForm validation result:", result);
+            return result;
+        })(),
+        (async () => {
+            if (!areaDetailsForm.value) {
+                console.log("areaDetailsForm is undefined or null");
+                return undefined;
+            }
+            console.log("Validating areaDetailsForm...");
+            const result = await areaDetailsForm.value.validate();
+            console.log("areaDetailsForm validation result:", result);
+            return result;
+        })(),
+        (async () => {
+            if (!floorsForm.value) {
+                console.log("floorsForm is undefined or null");
+                return undefined;
+            }
+            console.log("Validating floorsForm...");
+            const result = await floorsForm.value.validate();
+            console.log("floorsForm validation result:", result);
+            return result;
+        })(),
+        (async () => {
+            if (!roomsForm.value) {
+                console.log("roomsForm is undefined or null");
+                return undefined;
+            }
+            console.log("Validating roomsForm...");
+            const result = await roomsForm.value.validate();
+            console.log("roomsForm validation result:", result);
+            return result;
+        })(),
+        (async () => {
+            if (!conditionForm.value) {
+                console.log("conditionForm is undefined or null");
+                return undefined;
+            }
+            console.log("Validating conditionForm...");
+            const result = await conditionForm.value.validate();
+            console.log("conditionForm validation result:", result);
+            return result;
+        })(),
     ]);
 
-    // Убрать undefined/null из массива перед проверкой
+    // Логируем результаты всех валидаций
+    console.log("All validations:", validations);
+
+    // Убираем undefined/null из массива перед проверкой
     const filteredValidations = validations.filter(v => v !== undefined && v !== null);
-    return filteredValidations.length > 0 && filteredValidations.every(v => v === true);
+    console.log("Filtered validations (without undefined/null):", filteredValidations);
+
+    // Проверяем, что все валидации успешны
+    const isAllValid = filteredValidations.length > 0 && filteredValidations.every(v => v === true);
+    console.log("Is all forms valid?", isAllValid);
+
+    return isAllValid;
 };
 
 const formattedDescription = computed(() => {
@@ -418,7 +470,7 @@ const saveOrUpdateProperty = async () => {
                 life: 3000
             });
         } else {
-            await addDoc(collection(db, `properties/${propertyData.category.code}/${propertyData.subcategory.code}`), propertyData);
+            await propertyManager.saveProperty();
             toast.add({
                 severity: 'success',
                 summary: 'Успішно',
@@ -463,15 +515,12 @@ const saveProperty = async () => {
 };
 
 onMounted(async () => {
-    console.log('isEditMode', isEditMode.value);
-    console.log(route.params)
     await authStore.getCurrentUser();
     await userStore.fetchUser();
 
     if (isEditMode.value) {
         await loadPropertyData(id, category.code, subcategory.code);
     } else {
-        property.value = { ...emptyProperty };
         if(route.params.category) {
             property.value.category.code = route.params.category;
             property.value.subcategory = {
