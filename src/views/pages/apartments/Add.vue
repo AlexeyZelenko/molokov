@@ -1,4 +1,5 @@
 <template>
+    <h1>{{ isEditMode ? 'Редагувати об\'єкт нерухомості' : 'Додати об\'єкт нерухомості' }}</h1>
     <Form @submit="saveProperty">
         <Fluid class="flex flex-col md:flex-row gap-8">
             <div class="md:w-1/2">
@@ -51,14 +52,14 @@
 
                 <FormSection
                     title="Готовність об'єкта"
-                    v-model="property?.facilityReadiness"
+                    v-model="property.facilityReadiness"
                     type="date"
                 />
             </div>
         </Fluid>
 
         <Fluid
-            v-if="property.subcategory.code !== 'sell' && property.subcategory.code !== 'exchange'"
+            v-if="property?.subcategory?.code !== 'sell' && property?.subcategory?.code !== 'exchange'"
             class="flex flex-col md:flex-row gap-8 mt-4"
         >
             <div class="md:w-1/2">
@@ -169,7 +170,7 @@ import { useToast } from 'primevue/usetoast';
 import { useApartmentsStore } from '@/store/apartments';
 import { useAuthStore } from '@/store/authFirebase';
 import { useUserStore } from '@/store/userStore';
-import { PropertyManager } from '@/service/property/PropertyManagerAdd';
+import {PropertyManager} from '@/service/property/PropertyManagerAdd';
 
 import PropertyAddress from '@/components/forms/PropertyAddress.vue';
 import PropertyBasicInfo from '@/components/forms/PropertyBasicInfo.vue';
@@ -184,7 +185,12 @@ import PropertyDescription from '@/components/forms/PropertyDescription.vue';
 import PropertyImageUpload from '@/components/forms/images/PropertyImageUpload.vue';
 import PublishToggle from '@/components/common/PublishToggle.vue';
 import UploadProgressToast from '@/components/common/UploadProgressToast.vue';
-
+import {addDoc, collection, doc, getDoc, updateDoc, arrayRemove} from "firebase/firestore";
+import {db, storage} from "@/firebase/config";
+import { useRoute, useRouter } from 'vue-router';
+import Toast from 'primevue/toast';
+const route = useRoute();
+const router = useRouter();
 const basicInfoForm = ref(null);
 const areaDetailsForm = ref(null);
 const floorsForm = ref(null);
@@ -197,10 +203,21 @@ const store = useApartmentsStore();
 const authStore = useAuthStore();
 const userStore = useUserStore();
 
+
+const category = {
+    code: route.query?.category || route.params?.category || 'apartments',
+};
+const subcategory = {
+    code: route.query?.subcategory || 'sell',
+}
+const id = route.params.id;
+
 const propertyManager = new PropertyManager(userStore, store, toast);
 
+const isEditMode = computed(() => !!route.params.id);
+
 const handleReorder = (newOrder) => {
-    property.value.images = newOrder; // Обновляем порядок изображений
+    property.value.images = newOrder;
 };
 
 const formValidations = ref({
@@ -209,14 +226,74 @@ const formValidations = ref({
     floors: false,
     rooms: false,
     condition: false,
-    contactsInfo: false
+    contactsInfo: true
 });
 
 const saving = ref(false);
 const uploadVisible = ref(false);
 
-const property = computed(() => propertyManager.property);
-const images = computed(() => propertyManager.property.images);
+// Пустой объект для режима добавления
+const emptyProperty = {
+    title: '',
+    price: null,
+    rooms: {
+        all: null,
+        bedrooms: null,
+        bathrooms: null,
+        kitchens: null
+    },
+    houseNumber: '',
+    constructionYear: null,
+    heatingType: null,
+    condition: null,
+    balconyCount: 0,
+    description: '',
+    images: [],
+    category: {
+        code: null,
+        name: ''
+    },
+    subcategory: {
+        code: null,
+        name: ''
+    },
+    createdAt: null,
+    updatedAt: null,
+    apartmentArea: {
+        totalArea: null,
+        livingArea: null,
+        kitchenArea: null
+    },
+    floors: {
+        floor: null,
+        totalFloors: null,
+        totalFloorsBuilding: null
+    },
+    reconditioning: null,
+    buildingType: null,
+    furniture: null,
+    parking: null,
+    balconyTerrace: null,
+    objectClass: null,
+    animal: false,
+    facilityReadiness: null,
+    public: false,
+    address: {
+        region: null,
+        city: '',
+        street: '',
+        markerPosition: null
+    },
+    creator: {
+        id: null,
+        name: '',
+        phone: '',
+        email: '',
+        message: ''
+    },
+};
+
+const property = ref({ ...emptyProperty });
 const contacts = computed(() => userStore.user);
 const dropdowns = computed(() => store.dropdowns);
 
@@ -232,15 +309,74 @@ const handleValidation = (formName, isValid) => {
     formValidations.value[formName] = isValid;
 };
 const onFileSelect = async (files) => {
-    uploadVisible.value = true;
-    await propertyManager.uploadImages(files);
-    uploadVisible.value = false;
+    try {
+        console.log("Selected files:", files);
+        uploadVisible.value = true;
+
+        // Загружаем изображения
+        await propertyManager.uploadImages(files);
+
+        // Обновляем property.value.images
+        if (Array.isArray(propertyManager.property.images)) {
+            property.value.images = [...propertyManager.property.images];
+        } else {
+            console.error("propertyManager.property.images is not an array:", propertyManager.property.images);
+        }
+
+        console.log("Updated images:", propertyManager.property.images);
+        console.log("isEditMode:", isEditMode.value);
+    } catch (error) {
+        console.error("Upload failed:", error);
+    } finally {
+        uploadVisible.value = false;
+    }
 };
+
+const images = computed({
+    get: () => {
+        // const source = isEditMode.value ? property.value.images : propertyManager.property.images;
+        const source = property.value.images;
+        return Array.isArray(source) ? source : [];
+    },
+    set: (value) => {
+        if (isEditMode.value) {
+            property.value.images = value;
+        } else {
+            console.warn("Cannot set images directly in non-edit mode.");
+        }
+    },
+});
 
 const removeImage = async (imageUrl) => {
     uploadVisible.value = true;
     await propertyManager.removeImage(imageUrl);
     uploadVisible.value = false;
+};
+
+const loadPropertyData = async (id, category, subcategory) => {
+    try {
+        const propertyRef = doc(db, `properties/${category.code}/${subcategory.code}`, id);
+        const propertyDoc = await getDoc(propertyRef);
+
+        if (propertyDoc.exists()) {
+            property.value = propertyDoc.data(); // Обновляем ref
+        } else {
+            toast.add({
+                severity: 'error',
+                summary: 'Помилка',
+                detail: 'Об\'єкт не знайдений',
+                life: 3000
+            });
+        }
+    } catch (error) {
+        console.error('Помилка при завантаженні об\'єкту:', error);
+        toast.add({
+            severity: 'error',
+            summary: 'Помилка',
+            detail: 'Не вдалося завантажити об\'єкт',
+            life: 3000
+        });
+    }
 };
 
 const validateAllForms = async () => {
@@ -258,23 +394,64 @@ const validateAllForms = async () => {
     return filteredValidations.length > 0 && filteredValidations.every(v => v === true);
 };
 
+const formattedDescription = computed(() => {
+    return property.value.description
+        .replace(/\n/g, '<br>')
+        .replace(/ {2,}/g, match => '&nbsp;'.repeat(match.length));
+});
+
+const saveOrUpdateProperty = async () => {
+    try {
+        saving.value = true;
+        const propertyData = {
+            ...property.value,
+            description: formattedDescription.value,
+            updatedAt: new Date()
+        };
+
+        if (isEditMode.value) {
+            await updateDoc(doc(db, `properties/${category.code}/${subcategory.code}`, id), propertyData);
+            toast.add({
+                severity: 'success',
+                summary: 'Успішно',
+                detail: 'Об\'єкт оновлено',
+                life: 3000
+            });
+        } else {
+            await addDoc(collection(db, `properties/${propertyData.category.code}/${propertyData.subcategory.code}`), propertyData);
+            toast.add({
+                severity: 'success',
+                summary: 'Успішно',
+                detail: 'Об\'єкт додано',
+                life: 3000
+            });
+        }
+
+        try {
+            setTimeout(() => {
+                router.push({ path: `/categories/${propertyData.category.code}/${propertyData.subcategory.code}` });
+            }, 3000);
+        } catch (error) {
+            console.error('Помилка при перенаправленні:', error);
+        }
+
+    } catch (error) {
+        console.error('Помилка при збереженні об\'єкту:', error);
+        toast.add({
+            severity: 'error',
+            summary: 'Помилка',
+            detail: 'Помилка збереження об\'єкту',
+            life: 3000
+        });
+    } finally {
+        saving.value = false;
+    }
+};
+
 const saveProperty = async () => {
     const isValid = await validateAllForms();
     if (isValid) {
-        try {
-            saving.value = true;
-
-            await propertyManager.saveProperty();
-        } catch (error) {
-            toast.add({
-                severity: 'error',
-                summary: 'Помилка',
-                detail: 'Помилка при збереженні оголошення',
-                life: 5000
-            });
-        } finally {
-            saving.value = false;
-        }
+        await saveOrUpdateProperty();
     } else {
         toast.add({
             severity: 'error',
@@ -286,8 +463,23 @@ const saveProperty = async () => {
 };
 
 onMounted(async () => {
+    console.log('isEditMode', isEditMode.value);
+    console.log(route.params)
     await authStore.getCurrentUser();
     await userStore.fetchUser();
-    propertyManager.setPropertyType('apartments-sell');
+
+    if (isEditMode.value) {
+        await loadPropertyData(id, category.code, subcategory.code);
+    } else {
+        property.value = { ...emptyProperty };
+        if(route.params.category) {
+            property.value.category.code = route.params.category;
+            property.value.subcategory = {
+                code: 'sell',
+                name: 'Продаж'
+            };
+            propertyManager.setPropertyType(route.params.category, 'sell');
+        }
+    }
 });
 </script>

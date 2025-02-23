@@ -90,12 +90,12 @@ const validationRules = {
         if (value < 0) {
             return "Не може бути від'ємним";
         }
-        if (data.totalFloorsBuilding && value > data.totalFloorsBuilding) {
+        if (data.totalFloors && value > data.totalFloors) {
             return "Не може перевищувати поверховість будівлі";
         }
         return '';
     },
-    totalFloorsBuilding: (value) => {
+    totalFloors: (value) => {
         if (value === null || value === undefined) {
             return "Поверховість будівлі обов'язкова";
         }
@@ -104,14 +104,14 @@ const validationRules = {
         }
         return '';
     },
-    totalFloors: (value, data) => {
+    totalFloorsBuilding: (value, data) => {
         if (value === null || value === undefined) {
             return "Кількість поверхів у приміщенні обов'язкова";
         }
         if (value < 1) {
             return "Має бути більше нуля";
         }
-        if (data.totalFloorsBuilding && value > data.totalFloorsBuilding) {
+        if (data.totalFloors && value > data.totalFloors) {
             return "Не може перевищувати поверховість будівлі";
         }
         return '';
