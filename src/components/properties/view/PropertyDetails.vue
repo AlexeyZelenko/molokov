@@ -1,36 +1,6 @@
 <template>
     <div v-if="!property.title">
-        <div class="rounded border border-surface-200 dark:border-surface-700 p-6 bg-surface-0 dark:bg-surface-900">
-            <div class="flex mb-4">
-                <Skeleton shape="circle" size="4rem" class="mr-2"></Skeleton>
-                <div>
-                    <Skeleton width="10rem" class="mb-2"></Skeleton>
-                    <Skeleton width="5rem" class="mb-2"></Skeleton>
-                    <Skeleton height=".5rem"></Skeleton>
-                </div>
-            </div>
-            <Skeleton width="100%" height="150px"></Skeleton>
-            <div class="flex justify-between mt-4">
-                <Skeleton width="4rem" height="2rem"></Skeleton>
-                <Skeleton width="4rem" height="2rem"></Skeleton>
-            </div>
-        </div>
-
-        <div class="rounded border border-surface-200 dark:border-surface-700 p-6 bg-surface-0 dark:bg-surface-900">
-            <div class="flex mb-4">
-                <Skeleton shape="circle" size="4rem" class="mr-2"></Skeleton>
-                <div>
-                    <Skeleton width="10rem" class="mb-2"></Skeleton>
-                    <Skeleton width="5rem" class="mb-2"></Skeleton>
-                    <Skeleton height=".5rem"></Skeleton>
-                </div>
-            </div>
-            <Skeleton width="100%" height="150px"></Skeleton>
-            <div class="flex justify-between mt-4">
-                <Skeleton width="4rem" height="2rem"></Skeleton>
-                <Skeleton width="4rem" height="2rem"></Skeleton>
-            </div>
-        </div>
+        <Skeleton />
     </div>
     <div v-else>
         <div class="flex flex-col md:flex-row items-center justify-start mb-4">
@@ -116,6 +86,9 @@ import { db } from '@/firebase/config';
 import { doc, getDoc } from 'firebase/firestore';
 import Toast from 'primevue/toast';
 import { useUserStore } from '@/store/userStore';
+
+import Skeleton from './skeleton/Details.vue';
+
 import AddToListModal from '@/components/AddToListModal.vue';
 
 import PropertyGallery from './gallery/PropertyGallery.vue';

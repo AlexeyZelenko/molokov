@@ -69,10 +69,6 @@ onMounted(() => {
                                 <div>{{ formatFirebaseTimestampToTime(item.createdAt) }}</div>
                             </div>
                             <div class="flex items-center">
-                                Поверх:
-                                <div>{{ item.floors.floor }}</div>
-                            </div>
-                            <div class="flex items-center">
                                 <i class="pi pi-verified mr-2"></i>
                                 <div>id: {{ item.idProperty }}</div>
                             </div>
