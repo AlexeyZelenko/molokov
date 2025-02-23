@@ -36,9 +36,10 @@ const COMPONENTS = {
     apartments: defineAsyncComponent(() => import('@/views/pages/apartments/Manager.vue')),
     houses: defineAsyncComponent(() => import('@/views/pages/houses/Manager.vue')),
     rooms: defineAsyncComponent(() => import('@/views/pages/rooms/Manager.vue')),
-    lands: defineAsyncComponent(() => import('@/views/pages/land/Manager.vue')),
+    land: defineAsyncComponent(() => import('@/views/pages/land/Manager.vue')),
     garages: defineAsyncComponent(() => import('@/views/pages/garages/Manager.vue')),
     commercial: defineAsyncComponent(() => import('@/views/pages/commercial/Manager.vue')),
+    offices: defineAsyncComponent(() => import('@/views/pages/offices/Manager.vue')),
     other: defineAsyncComponent(() => import('@/views/pages/other/Manager.vue')),
 };
 

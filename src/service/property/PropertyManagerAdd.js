@@ -87,6 +87,7 @@ export class PropertyManager {
     }
 
     setPropertyType(propertyType) {
+        console.log('Setting property type:', propertyType);
         const { images, address } = this.property;
 
         // Обновляем объект без потери реактивности

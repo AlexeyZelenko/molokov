@@ -586,13 +586,16 @@ onMounted(async () => {
         await loadPropertyData(id, category.code, subcategory.code);
     } else {
         if (route.params.category) {
-            property.value = propertyManager.property;
-            property.value.category.code = route.params.category;
+            console.log('Setting property category:', route.params.category);
+
+            property.value.category.code = await route.params.category;
             property.value.subcategory = {
                 code: 'sell',
                 name: 'Продаж'
             };
-            propertyManager.setPropertyType(route.params.category, 'sell');
+            await propertyManager.setPropertyType(route.params.category, 'sell');
+            property.value = propertyManager.property;
+            console.log('Property:', property.value);
         }
     }
 });
