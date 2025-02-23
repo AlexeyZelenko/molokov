@@ -74,6 +74,7 @@ export class PropertyManager {
     };
 
     getInitialState(propertyType) {
+        console.log('Getting initial state:', propertyType);
         const [category, subcategory] = propertyType.split('-');
 
         // Безопасная проверка
@@ -96,6 +97,8 @@ export class PropertyManager {
         // Восстанавливаем данные, которые нужно сохранить
         this.property.images = images;
         this.property.address = address;
+
+        console.log('Property after setting type:', this.property);
     };
 
     resetForm(propertyType) {

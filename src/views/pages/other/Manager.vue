@@ -300,7 +300,12 @@ const dropdowns = computed(() => store.dropdowns);
 
 const selectedCategoryName = computed(() => {
     if (!dropdowns.value?.category || !Array.isArray(dropdowns.value.category)) {
+        console.log('Категорія не знайдена');
         return 'Категорія не знайдена';
+    }
+    if(route.params.category) {
+        const category = dropdowns.value.category.find(item => item.code === route.params.category);
+        return category ? category.name : 'Категорія не знайдена';
     }
     const category = dropdowns.value.category.find(item => item.code === property.value.category.code);
     return category ? category.name : 'Категорія не знайдена';
@@ -586,13 +591,17 @@ onMounted(async () => {
         await loadPropertyData(id, category.code, subcategory.code);
     } else {
         if (route.params.category) {
-            property.value = propertyManager.property;
-            property.value.category.code = route.params.category;
+            console.log('Setting property category:', route.params.category);
+
+            property.value.category.code = await route.params.category;
             property.value.subcategory = {
                 code: 'sell',
                 name: 'Продаж'
             };
-            propertyManager.setPropertyType(route.params.category, 'sell');
+            const propertyType = `${route.params.category}-sell`;
+            await propertyManager.setPropertyType(propertyType);
+            property.value = propertyManager.property;
+            console.log('Property:', property.value);
         }
     }
 });
