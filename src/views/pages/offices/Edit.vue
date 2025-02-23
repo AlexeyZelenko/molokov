@@ -190,7 +190,11 @@
 
                 <div class="card flex flex-col gap-4">
                     <div class="font-semibold text-xl">Готовність об'єкта</div>
-                    <DatePicker :showIcon="true" :showButtonBar="true" v-model="formattedFacilityReadiness" />
+                    <DatePicker
+                        :showIcon="true"
+                        :showButtonBar="true"
+                        v-model="formattedFacilityReadiness"
+                    />
                 </div>
             </div>
         </Fluid>

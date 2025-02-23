@@ -51,7 +51,7 @@
 
                 <FormSection
                     title="Готовність об'єкта"
-                    v-model="property.facilityReadiness"
+                    v-model="property?.facilityReadiness"
                     type="date"
                 />
             </div>

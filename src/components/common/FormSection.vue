@@ -30,8 +30,8 @@
             <DatePicker
                 :showIcon="true"
                 :showButtonBar="true"
-                :modelValue="modelValue"
-                @update:modelValue="$emit('update:modelValue', $event)"
+                :modelValue="formattedFacilityReadiness"
+                @update:modelValue="handleDateUpdate"
             />
         </template>
 
@@ -48,7 +48,10 @@
 </template>
 
 <script setup>
-defineProps({
+import { computed } from 'vue';
+import { formatFirebaseTimestamp } from '@/utils/dateUtils';
+
+const props = defineProps({
     title: String,
     modelValue: [Object, Array, String, Boolean, Date],
     options: {
@@ -59,8 +62,23 @@ defineProps({
         type: String,
         default: 'single',
         validator: (value) => ['single', 'multi', 'toggle', 'date'].includes(value)
-    }
+    },
 });
 
-defineEmits(['update:modelValue']);
+const emit = defineEmits(['update:modelValue']);
+
+const formattedFacilityReadiness = computed(() => {
+    return props.modelValue
+        ? formatFirebaseTimestamp(props.modelValue)
+        : null;
+});
+
+const handleDateUpdate = (newValue) => {
+    if (!newValue) return;
+    const timestamp = Math.floor(new Date(newValue).getTime() / 1000);
+    emit('update:modelValue', {
+        seconds: timestamp,
+        nanoseconds: 0
+    });
+};
 </script>
