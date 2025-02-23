@@ -1,5 +1,5 @@
 <template>
-    <h1>{{ isEditMode ? 'Редагувати об\'єкт нерухомості' : 'Додати об\'єкт нерухомості' }}</h1>
+    <h1 class="text-2xl font-semibold mb-2">{{ pageTitle }}</h1>
     <Form @submit="saveProperty">
         <Fluid class="flex flex-col md:flex-row gap-8">
             <div class="md:w-1/2">
@@ -59,7 +59,7 @@
         </Fluid>
 
         <Fluid
-            v-if="property?.subcategory?.code !== 'sell' && property?.subcategory?.code !== 'exchange'"
+            v-if="showRentSection"
             class="flex flex-col md:flex-row gap-8 mt-4"
         >
             <div class="md:w-1/2">
@@ -154,13 +154,13 @@
                 icon="pi pi-check"
                 :loading="saving"
             />
+
+            <Toast />
+
+            <div v-if="imageState.isUploading">
+                <UploadProgressToast :visible="imageState.isUploading"/>
+            </div>
         </Fluid>
-
-        <Toast />
-
-        <div v-if="imageState.isUploading">
-            <UploadProgressToast :visible="imageState.isUploading"/>
-        </div>
     </Form>
 </template>
 
@@ -202,6 +202,13 @@ const store = useApartmentsStore();
 const authStore = useAuthStore();
 const userStore = useUserStore();
 
+// computed
+const showRentSection = computed(() => {
+    return property.value?.subcategory?.code !== 'sell' && property.value?.subcategory?.code !== 'exchange';
+});
+const pageTitle = computed(() =>
+    isEditMode.value ? "Редагувати об'єкт нерухомості" : "Додати об'єкт нерухомості"
+);
 
 const category = {
     code: route.query?.category || route.params?.category || 'apartments',
