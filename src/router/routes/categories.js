@@ -56,6 +56,8 @@ export default [
                 path: '/categories/:category/:subcategory',
                 name: 'listProperties',
                 component: ListProperties,
+                params: true,
+                query: true,
                 meta: {
                     breadcrumb: [
                         { name: 'Головна', route: '/', icon: 'pi pi-home' },

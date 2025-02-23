@@ -291,8 +291,7 @@ const model = ref([
                                 label: 'Продаж',
                                 icon: 'pi pi-fw pi-tag',
                                 to: {
-                                    path: '/categories/apartments/sell',
-                                    name: 'apartmentsSell',
+                                    path: `/categories/apartments/sell`,
                                     query: { user: userId.value } }
                             },
                             {
