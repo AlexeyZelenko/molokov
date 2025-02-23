@@ -288,7 +288,7 @@ const emptyProperty = {
 };
 // const property = computed(() => isEditMode ? propertyManager.property : property.value);
 
-const property = ref({ ...emptyProperty });
+const property = ref({...emptyProperty});
 const contacts = computed(() => userStore.user);
 const dropdowns = computed(() => store.dropdowns);
 
@@ -535,7 +535,7 @@ const saveOrUpdateProperty = async () => {
 
         try {
             setTimeout(() => {
-                router.push({ path: `/categories/${propertyData.category.code}/${propertyData.subcategory.code}` });
+                router.push({path: `/categories/${propertyData.category.code}/${propertyData.subcategory.code}`});
             }, 3000);
         } catch (error) {
             console.error('Помилка при перенаправленні:', error);
@@ -575,7 +575,7 @@ onMounted(async () => {
     if (isEditMode.value) {
         await loadPropertyData(id, category.code, subcategory.code);
     } else {
-        if(route.params.category) {
+        if (route.params.category) {
             property.value = propertyManager.property;
             property.value.category.code = route.params.category;
             property.value.subcategory = {

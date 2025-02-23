@@ -33,13 +33,13 @@ const CONFIG = {
 
 // Мапа компонентов, чтобы избежать динамического импорта
 const COMPONENTS = {
-    apartments: defineAsyncComponent(() => import('@/views/pages/apartments/Add.vue')),
-    houses: defineAsyncComponent(() => import('@/views/pages/houses/Add.vue')),
-    rooms: defineAsyncComponent(() => import('@/views/pages/rooms/Add.vue')),
-    lands: defineAsyncComponent(() => import('@/views/pages/land/Add.vue')),
-    garages: defineAsyncComponent(() => import('@/views/pages/garages/Add.vue')),
-    commercial: defineAsyncComponent(() => import('@/views/pages/commercial/Add.vue')),
-    other: defineAsyncComponent(() => import('@/views/pages/other/Add.vue')),
+    apartments: defineAsyncComponent(() => import('@/views/pages/apartments/Manager.vue')),
+    houses: defineAsyncComponent(() => import('@/views/pages/houses/Manager.vue')),
+    rooms: defineAsyncComponent(() => import('@/views/pages/rooms/Manager.vue')),
+    lands: defineAsyncComponent(() => import('@/views/pages/land/Manager.vue')),
+    garages: defineAsyncComponent(() => import('@/views/pages/garages/Manager.vue')),
+    commercial: defineAsyncComponent(() => import('@/views/pages/commercial/Manager.vue')),
+    other: defineAsyncComponent(() => import('@/views/pages/other/Manager.vue')),
 };
 
 // Текущая категория и передаваемые параметры

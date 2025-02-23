@@ -30,7 +30,7 @@ function getFirstSubcategory(categoryCode) {
 const getComponentPath = (category, subcategory) => {
     console.log(category, subcategory)
     return defineAsyncComponent(() =>
-        import(`@/views/pages/${category}/edit/${subcategory}.vue`)
+        import(`@/views/pages/${category}/Manager.vue`)
             .catch(() => import('@/views/pages/NotFound.vue'))
     )
 }
