@@ -59,7 +59,7 @@
         </Fluid>
 
         <Fluid
-            v-if="property.subcategory.code !== 'sell' && property.subcategory.code !== 'exchange'"
+            v-if="property?.subcategory?.code !== 'sell' && property?.subcategory?.code !== 'exchange'"
             class="flex flex-col md:flex-row gap-8 mt-4"
         >
             <div class="md:w-1/2">
@@ -185,8 +185,8 @@ import PropertyDescription from '@/components/forms/PropertyDescription.vue';
 import PropertyImageUpload from '@/components/forms/images/PropertyImageUpload.vue';
 import PublishToggle from '@/components/common/PublishToggle.vue';
 import UploadProgressToast from '@/components/common/UploadProgressToast.vue';
-import {addDoc, collection, doc, getDoc, updateDoc, arrayRemove} from "firebase/firestore";
-import {db, storage} from "@/firebase/config";
+import {doc, getDoc, updateDoc, arrayRemove} from "firebase/firestore";
+import {db} from "@/firebase/config";
 import { useRoute, useRouter } from 'vue-router';
 import Toast from 'primevue/toast';
 const route = useRoute();
@@ -196,15 +196,19 @@ const areaDetailsForm = ref(null);
 const floorsForm = ref(null);
 const roomsForm = ref(null);
 const conditionForm = ref(null);
-const contactsInfoForm = ref(null);
 
 const toast = useToast();
 const store = useApartmentsStore();
 const authStore = useAuthStore();
 const userStore = useUserStore();
 
-const category = route.query.category || 'apartments';
-const subcategory = route.query.subcategory || 'sell';
+
+const category = {
+    code: route.query?.category || route.params?.category || 'apartments',
+};
+const subcategory = {
+    code: route.query?.subcategory || 'sell',
+}
 const id = route.params.id;
 
 const propertyManager = new PropertyManager(userStore, store, toast);
@@ -212,7 +216,7 @@ const propertyManager = new PropertyManager(userStore, store, toast);
 const isEditMode = computed(() => !!route.params.id);
 
 const handleReorder = (newOrder) => {
-    property.value.images = newOrder; // Обновляем порядок изображений
+    property.value.images = newOrder;
 };
 
 const formValidations = ref({
@@ -221,7 +225,6 @@ const formValidations = ref({
     floors: false,
     rooms: false,
     condition: false,
-    contactsInfo: false
 });
 
 const saving = ref(false);
@@ -244,8 +247,14 @@ const emptyProperty = {
     balconyCount: 0,
     description: '',
     images: [],
-    category: null,
-    subcategory: null,
+    category: {
+        code: null,
+        name: ''
+    },
+    subcategory: {
+        code: null,
+        name: ''
+    },
     createdAt: null,
     updatedAt: null,
     apartmentArea: {
@@ -266,21 +275,20 @@ const emptyProperty = {
     objectClass: null,
     animal: false,
     facilityReadiness: null,
-    public: false,
+    isPublic: false,
     address: {
         region: null,
         city: '',
         street: '',
         markerPosition: null
     },
-    owner: { username: '', phone: '', message: '' }
+    creator: {
+        message: ''
+    },
 };
+// const property = computed(() => isEditMode ? propertyManager.property : property.value);
 
 const property = ref({ ...emptyProperty });
-const images = computed({
-    get: () => property.value.images,
-    set: (value) => (property.value.images = value),
-});
 const contacts = computed(() => userStore.user);
 const dropdowns = computed(() => store.dropdowns);
 
@@ -295,25 +303,112 @@ const selectedCategoryName = computed(() => {
 const handleValidation = (formName, isValid) => {
     formValidations.value[formName] = isValid;
 };
-const onFileSelect = async (files) => {
-    uploadVisible.value = true;
-    await propertyManager.uploadImages(files);
-    uploadVisible.value = false;
+// Image state management
+const imageState = ref({
+    isUploading: false,
+    error: null
+});
+
+// Validate files before upload
+const validateFiles = (files) => {
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+    const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+
+    return Array.from(files).every(file => {
+        if (!ALLOWED_TYPES.includes(file.type)) {
+            toast.add({
+                severity: 'error',
+                summary: 'Помилка',
+                detail: 'Дозволені формати: JPG, PNG, WEBP',
+                life: 3000
+            });
+            return false;
+        }
+
+        if (file.size > MAX_FILE_SIZE) {
+            toast.add({
+                severity: 'error',
+                summary: 'Помилка',
+                detail: 'Максимальний розмір файлу: 5MB',
+                life: 3000
+            });
+            return false;
+        }
+
+        return true;
+    });
 };
 
+// Optimized file upload handler
+const onFileSelect = async (files) => {
+    if (!validateFiles(files)) return;
+
+    try {
+        imageState.value.isUploading = true;
+        await propertyManager.uploadImages(files);
+
+        // Update images only if upload was successful
+        property.value.images = Array.isArray(propertyManager.property.images)
+            ? [...propertyManager.property.images]
+            : [];
+
+    } catch (error) {
+        console.error('Помилка завантаження:', error);
+        imageState.value.error = error;
+        toast.add({
+            severity: 'error',
+            summary: 'Помилка',
+            detail: 'Не вдалося завантажити зображення',
+            life: 3000
+        });
+    } finally {
+        imageState.value.isUploading = false;
+    }
+};
+
+// Simplified computed property for images
+const images = computed({
+    get: () => Array.isArray(property.value.images) ? property.value.images : [],
+    set: (value) => {
+        if (Array.isArray(value)) {
+            property.value.images = value;
+        }
+    }
+});
+
+// Optimized image removal
 const removeImage = async (imageUrl) => {
-    uploadVisible.value = true;
-    await propertyManager.removeImage(imageUrl);
-    uploadVisible.value = false;
+    if (!imageUrl) return;
+
+    try {
+        imageState.value.isUploading = true;
+        await propertyManager.removeImage(imageUrl);
+
+        // Update local state after successful removal
+        property.value.images = property.value.images.filter(img => img !== imageUrl);
+
+    } catch (error) {
+        console.error('Помилка видалення:', error);
+        toast.add({
+            severity: 'error',
+            summary: 'Помилка',
+            detail: 'Не вдалося видалити зображення',
+            life: 3000
+        });
+    } finally {
+        imageState.value.isUploading = false;
+    }
 };
 
 const loadPropertyData = async (id, category, subcategory) => {
+    console.log('Завантаження об\'єкта:', id, category, subcategory);
     try {
         const propertyRef = doc(db, `properties/${category}/${subcategory}`, id);
         const propertyDoc = await getDoc(propertyRef);
 
         if (propertyDoc.exists()) {
             property.value = propertyDoc.data(); // Обновляем ref
+            console.log('Завантажено об\'єкт:', property.value);
         } else {
             toast.add({
                 severity: 'error',
@@ -334,18 +429,75 @@ const loadPropertyData = async (id, category, subcategory) => {
 };
 
 const validateAllForms = async () => {
+    // Логируем начало валидации
+    console.log("Starting validation of all forms...");
+
+    // Валидация каждой формы
     const validations = await Promise.all([
-        basicInfoForm.value?.validate(),
-        areaDetailsForm.value?.validate(),
-        floorsForm.value?.validate(),
-        roomsForm.value?.validate(),
-        conditionForm.value?.validate(),
-        contactsInfoForm.value?.validate()
+        (async () => {
+            if (!basicInfoForm.value) {
+                console.log("basicInfoForm is undefined or null");
+                return undefined;
+            }
+            console.log("Validating basicInfoForm...");
+            const result = await basicInfoForm.value.validate();
+            console.log("basicInfoForm validation result:", result);
+            return result;
+        })(),
+        (async () => {
+            if (!areaDetailsForm.value) {
+                console.log("areaDetailsForm is undefined or null");
+                return undefined;
+            }
+            console.log("Validating areaDetailsForm...");
+            const result = await areaDetailsForm.value.validate();
+            console.log("areaDetailsForm validation result:", result);
+            return result;
+        })(),
+        (async () => {
+            if (!floorsForm.value) {
+                console.log("floorsForm is undefined or null");
+                return undefined;
+            }
+            console.log("Validating floorsForm...");
+            const result = await floorsForm.value.validate();
+            console.log("floorsForm validation result:", result);
+            return result;
+        })(),
+        (async () => {
+            if (!roomsForm.value) {
+                console.log("roomsForm is undefined or null");
+                return undefined;
+            }
+            console.log("Validating roomsForm...");
+            const result = await roomsForm.value.validate();
+            console.log("roomsForm validation result:", result);
+            return result;
+        })(),
+        (async () => {
+            if (!conditionForm.value) {
+                console.log("conditionForm is undefined or null");
+                return undefined;
+            }
+            console.log("Validating conditionForm...");
+            const result = await conditionForm.value.validate();
+            console.log("conditionForm validation result:", result);
+            return result;
+        })(),
     ]);
 
-    // Убрать undefined/null из массива перед проверкой
+    // Логируем результаты всех валидаций
+    console.log("All validations:", validations);
+
+    // Убираем undefined/null из массива перед проверкой
     const filteredValidations = validations.filter(v => v !== undefined && v !== null);
-    return filteredValidations.length > 0 && filteredValidations.every(v => v === true);
+    console.log("Filtered validations (without undefined/null):", filteredValidations);
+
+    // Проверяем, что все валидации успешны
+    const isAllValid = filteredValidations.length > 0 && filteredValidations.every(v => v === true);
+    console.log("Is all forms valid?", isAllValid);
+
+    return isAllValid;
 };
 
 const formattedDescription = computed(() => {
@@ -364,7 +516,7 @@ const saveOrUpdateProperty = async () => {
         };
 
         if (isEditMode.value) {
-            await updateDoc(doc(db, `properties/${category}/${subcategory}`, id), propertyData);
+            await updateDoc(doc(db, `properties/${category.code}/${subcategory.code}`, id), propertyData);
             toast.add({
                 severity: 'success',
                 summary: 'Успішно',
@@ -372,7 +524,7 @@ const saveOrUpdateProperty = async () => {
                 life: 3000
             });
         } else {
-            await addDoc(collection(db, `properties/${propertyData.category}/${propertyData.subcategory}`), propertyData);
+            await propertyManager.saveProperty();
             toast.add({
                 severity: 'success',
                 summary: 'Успішно',
@@ -421,10 +573,17 @@ onMounted(async () => {
     await userStore.fetchUser();
 
     if (isEditMode.value) {
-        await loadPropertyData(id, category, subcategory);
+        await loadPropertyData(id, category.code, subcategory.code);
     } else {
-        property.value = { ...emptyProperty };
-        propertyManager.setPropertyType(category, subcategory);
+        if(route.params.category) {
+            property.value = propertyManager.property;
+            property.value.category.code = route.params.category;
+            property.value.subcategory = {
+                code: 'sell',
+                name: 'Продаж'
+            };
+            propertyManager.setPropertyType(route.params.category, 'sell');
+        }
     }
 });
 </script>

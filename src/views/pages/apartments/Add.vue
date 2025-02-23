@@ -286,9 +286,9 @@ const emptyProperty = {
         message: ''
     },
 };
-const property = computed(() => propertyManager.property || { ...emptyProperty });
+// const property = computed(() => isEditMode ? propertyManager.property : property.value);
 
-// const property = ref({ ...emptyProperty });
+const property = ref({...emptyProperty});
 const contacts = computed(() => userStore.user);
 const dropdowns = computed(() => store.dropdowns);
 
@@ -303,58 +303,112 @@ const selectedCategoryName = computed(() => {
 const handleValidation = (formName, isValid) => {
     formValidations.value[formName] = isValid;
 };
-const onFileSelect = async (files) => {
-    try {
-        console.log("Selected files:", files);
-        uploadVisible.value = true;
+// Image state management
+const imageState = ref({
+    isUploading: false,
+    error: null
+});
 
-        // Загружаем изображения
-        await propertyManager.uploadImages(files);
+// Validate files before upload
+const validateFiles = (files) => {
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+    const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
-        // Обновляем property.value.images
-        if (Array.isArray(propertyManager.property.images)) {
-            property.value.images = [...propertyManager.property.images];
-        } else {
-            console.error("propertyManager.property.images is not an array:", propertyManager.property.images);
+    return Array.from(files).every(file => {
+        if (!ALLOWED_TYPES.includes(file.type)) {
+            toast.add({
+                severity: 'error',
+                summary: 'Помилка',
+                detail: 'Дозволені формати: JPG, PNG, WEBP',
+                life: 3000
+            });
+            return false;
         }
 
-        console.log("Updated images:", propertyManager.property.images);
-        console.log("isEditMode:", isEditMode.value);
+        if (file.size > MAX_FILE_SIZE) {
+            toast.add({
+                severity: 'error',
+                summary: 'Помилка',
+                detail: 'Максимальний розмір файлу: 5MB',
+                life: 3000
+            });
+            return false;
+        }
+
+        return true;
+    });
+};
+
+// Optimized file upload handler
+const onFileSelect = async (files) => {
+    if (!validateFiles(files)) return;
+
+    try {
+        imageState.value.isUploading = true;
+        await propertyManager.uploadImages(files);
+
+        // Update images only if upload was successful
+        property.value.images = Array.isArray(propertyManager.property.images)
+            ? [...propertyManager.property.images]
+            : [];
+
     } catch (error) {
-        console.error("Upload failed:", error);
+        console.error('Помилка завантаження:', error);
+        imageState.value.error = error;
+        toast.add({
+            severity: 'error',
+            summary: 'Помилка',
+            detail: 'Не вдалося завантажити зображення',
+            life: 3000
+        });
     } finally {
-        uploadVisible.value = false;
+        imageState.value.isUploading = false;
     }
 };
 
+// Simplified computed property for images
 const images = computed({
-    get: () => {
-        // const source = isEditMode.value ? property.value.images : propertyManager.property.images;
-        const source = property.value.images;
-        return Array.isArray(source) ? source : [];
-    },
+    get: () => Array.isArray(property.value.images) ? property.value.images : [],
     set: (value) => {
-        if (isEditMode.value) {
+        if (Array.isArray(value)) {
             property.value.images = value;
-        } else {
-            console.warn("Cannot set images directly in non-edit mode.");
         }
-    },
+    }
 });
 
+// Optimized image removal
 const removeImage = async (imageUrl) => {
-    uploadVisible.value = true;
-    await propertyManager.removeImage(imageUrl);
-    uploadVisible.value = false;
+    if (!imageUrl) return;
+
+    try {
+        imageState.value.isUploading = true;
+        await propertyManager.removeImage(imageUrl);
+
+        // Update local state after successful removal
+        property.value.images = property.value.images.filter(img => img !== imageUrl);
+
+    } catch (error) {
+        console.error('Помилка видалення:', error);
+        toast.add({
+            severity: 'error',
+            summary: 'Помилка',
+            detail: 'Не вдалося видалити зображення',
+            life: 3000
+        });
+    } finally {
+        imageState.value.isUploading = false;
+    }
 };
 
 const loadPropertyData = async (id, category, subcategory) => {
+    console.log('Завантаження об\'єкта:', id, category, subcategory);
     try {
-        const propertyRef = doc(db, `properties/${category.code}/${subcategory.code}`, id);
+        const propertyRef = doc(db, `properties/${category}/${subcategory}`, id);
         const propertyDoc = await getDoc(propertyRef);
 
         if (propertyDoc.exists()) {
             property.value = propertyDoc.data(); // Обновляем ref
+            console.log('Завантажено об\'єкт:', property.value);
         } else {
             toast.add({
                 severity: 'error',
@@ -481,7 +535,7 @@ const saveOrUpdateProperty = async () => {
 
         try {
             setTimeout(() => {
-                router.push({ path: `/categories/${propertyData.category.code}/${propertyData.subcategory.code}` });
+                router.push({path: `/categories/${propertyData.category.code}/${propertyData.subcategory.code}`});
             }, 3000);
         } catch (error) {
             console.error('Помилка при перенаправленні:', error);
@@ -521,7 +575,8 @@ onMounted(async () => {
     if (isEditMode.value) {
         await loadPropertyData(id, category.code, subcategory.code);
     } else {
-        if(route.params.category) {
+        if (route.params.category) {
+            property.value = propertyManager.property;
             property.value.category.code = route.params.category;
             property.value.subcategory = {
                 code: 'sell',
