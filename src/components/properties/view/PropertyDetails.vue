@@ -90,7 +90,6 @@ import AddToListModal from '@/components/AddToListModal.vue';
 import PropertyGallery from './gallery/PropertyGallery.vue';
 import PropertyLocation from './location/PropertyLocation.vue';
 import PropertyDescription from './descriptions/PropertyDescription.vue';
-import PropertyFloors from './floors/PropertyFloors.vue';
 
 import PropertyApartment from './categories/apartment/index.vue';
 import PropertyHouse from './categories/house/index.vue';

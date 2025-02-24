@@ -19,12 +19,12 @@ const props = defineProps({
 
         <div class="flex items-center gap-2">
             <div class="font-bold text-md">Жила площа квартири:</div>
-            <div>{{ apartmentArea.livingArea }} м²}</div>
+            <div>{{ apartmentArea.livingArea }} м²</div>
         </div>
 
         <div class="flex items-center gap-2">
-            <div class="font-bold text-md">Площа кімнат:</div>
-            <div>{{ apartmentArea.roomArea }} м²</div>
+            <div class="font-bold text-md">Площа кухні:</div>
+            <div>{{ apartmentArea.kitchenArea }} м²</div>
         </div>
 
         <div class="flex items-center gap-2">
