@@ -1,6 +1,9 @@
 <template>
     <h1 class="text-2xl font-semibold mb-2">{{ pageTitle }}</h1>
-    <Form @submit="saveProperty">
+    <div v-if="showLoader" class="fullscreen-loader h-full">
+        <div class="loader"></div>
+    </div>
+    <Form v-show="!showLoader" @submit="saveProperty">
         <Fluid class="flex flex-col md:flex-row gap-8">
             <div class="md:w-1/2">
                 <PropertyBasicInfo
@@ -80,7 +83,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, reactive } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import { useApartmentsStore } from '@/store/apartments';
 import { useAuthStore } from '@/store/authFirebase';
@@ -105,17 +108,19 @@ const route = useRoute();
 const router = useRouter();
 const basicInfoForm = ref(null);
 const areaDetailsForm = ref(null);
+const floorsForm = ref(null);
+const roomsForm = ref(null);
+const conditionForm = ref(null);
 
 const toast = useToast();
 const store = useApartmentsStore();
 const authStore = useAuthStore();
 const userStore = useUserStore();
 
-defineProps({
-    category: Object
-});
-
 // computed
+const showRentSection = computed(() => {
+    return property.value?.subcategory?.code !== 'sell' && property.value?.subcategory?.code !== 'exchange';
+});
 const pageTitle = computed(() =>
     isEditMode.value ? "Редагувати об'єкт нерухомості" : "Додати об'єкт нерухомості"
 );
@@ -139,6 +144,8 @@ const handleReorder = (newOrder) => {
 const formValidations = ref({
     basicInfo: false,
     area: false,
+    floors: false,
+    rooms: false,
     condition: false,
 });
 
@@ -148,8 +155,17 @@ const saving = ref(false);
 const emptyProperty = {
     title: '',
     price: null,
+    rooms: {
+        all: null,
+        bedrooms: null,
+        bathrooms: null,
+        kitchens: null
+    },
     houseNumber: '',
+    constructionYear: null,
+    heatingType: null,
     condition: null,
+    balconyCount: 0,
     description: '',
     images: [],
     category: {
@@ -164,13 +180,29 @@ const emptyProperty = {
     updatedAt: null,
     apartmentArea: {
         totalArea: null,
+        livingArea: null,
+        kitchenArea: null
+    },
+    floors: {
+        floor: null,
+        totalFloors: null,
+        totalFloorsBuilding: null
     },
     reconditioning: null,
+    buildingType: null,
+    furniture: null,
+    parking: null,
+    balconyTerrace: null,
+    objectClass: null,
+    animal: false,
     facilityReadiness: null,
     isPublic: false,
     address: {
         region: null,
-        city: '',
+        city: {
+            code: null,
+            name: ''
+        },
         street: '',
         markerPosition: null
     },
@@ -179,8 +211,7 @@ const emptyProperty = {
     },
 };
 // const property = computed(() => isEditMode ? propertyManager.property : property.value);
-
-const property = ref({...emptyProperty});
+const property = ref(emptyProperty);
 const contacts = computed(() => userStore.user);
 const dropdowns = computed(() => store.dropdowns);
 
@@ -301,6 +332,7 @@ const removeImage = async (imageUrl) => {
     }
 };
 
+const showLoader = ref(false);
 const loadPropertyData = async (id, category, subcategory) => {
     console.log('Завантаження об\'єкта:', id, category, subcategory);
     try {
@@ -308,6 +340,7 @@ const loadPropertyData = async (id, category, subcategory) => {
         const propertyDoc = await getDoc(propertyRef);
 
         if (propertyDoc.exists()) {
+            console.log("Document data:", propertyDoc.data());
             property.value = propertyDoc.data(); // Обновляем ref
             console.log('Завантажено об\'єкт:', property.value);
         } else {
@@ -326,6 +359,8 @@ const loadPropertyData = async (id, category, subcategory) => {
             detail: 'Не вдалося завантажити об\'єкт',
             life: 3000
         });
+    } finally {
+        showLoader.value = false;
     }
 };
 
@@ -354,7 +389,37 @@ const validateAllForms = async () => {
             const result = await areaDetailsForm.value.validate();
             console.log("areaDetailsForm validation result:", result);
             return result;
-        })()
+        })(),
+        (async () => {
+            if (!floorsForm.value) {
+                console.log("floorsForm is undefined or null");
+                return undefined;
+            }
+            console.log("Validating floorsForm...");
+            const result = await floorsForm.value.validate();
+            console.log("floorsForm validation result:", result);
+            return result;
+        })(),
+        (async () => {
+            if (!roomsForm.value) {
+                console.log("roomsForm is undefined or null");
+                return undefined;
+            }
+            console.log("Validating roomsForm...");
+            const result = await roomsForm.value.validate();
+            console.log("roomsForm validation result:", result);
+            return result;
+        })(),
+        (async () => {
+            if (!conditionForm.value) {
+                console.log("conditionForm is undefined or null");
+                return undefined;
+            }
+            console.log("Validating conditionForm...");
+            const result = await conditionForm.value.validate();
+            console.log("conditionForm validation result:", result);
+            return result;
+        })(),
     ]);
 
     // Логируем результаты всех валидаций
@@ -387,6 +452,7 @@ const saveOrUpdateProperty = async () => {
         };
 
         if (isEditMode.value) {
+            console.log('Updating property:', propertyData);
             await updateDoc(doc(db, `properties/${category.code}/${subcategory.code}`, id), propertyData);
             toast.add({
                 severity: 'success',
@@ -440,25 +506,66 @@ const saveProperty = async () => {
 };
 
 onMounted(async () => {
-    await authStore.getCurrentUser();
-    await userStore.fetchUser();
+    showLoader.value = true;
+    await Promise.all([authStore.getCurrentUser(), userStore.fetchUser()]);
 
     if (isEditMode.value) {
+        property.value = null;
         await loadPropertyData(id, category.code, subcategory.code);
     } else {
-        if (route.params.category) {
-            console.log('Setting property category:', route.params.category);
-
-            property.value.category.code = await route.params.category;
-            property.value.subcategory = {
-                code: 'sell',
-                name: 'Продаж'
-            };
-            const propertyType = `${route.params.category}-sell`;
-            await propertyManager.setPropertyType(propertyType);
-            property.value = propertyManager.property;
-            console.log('Property:', property.value);
-        }
+        initializeNewProperty();
     }
+
+    showLoader.value = false;
 });
+
+// Функция для инициализации нового объекта недвижимости
+const initializeNewProperty = () => {
+    if (!route.params.category) return;
+
+    console.log('Setting property category:', route.params.category);
+
+    property.value = {
+        ...emptyProperty,
+        category: { code: route.params.category },
+        subcategory: { code: 'sell', name: 'Продаж' }
+    };
+
+    const propertyType = `${route.params.category}-sell`;
+    propertyManager.setPropertyType(propertyType);
+    property.value = propertyManager.property;
+
+    console.log('Property:', property.value);
+};
+
 </script>
+
+<style scoped>
+.fullscreen-loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.8);
+    z-index: 9999;
+
+    .loader {
+        width: 50px;
+        height: 50px;
+        border: 5px solid #ccc;
+        border-top-color: #007bff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+</style>

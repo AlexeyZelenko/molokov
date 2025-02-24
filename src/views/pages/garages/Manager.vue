@@ -1,6 +1,9 @@
 <template>
     <h1 class="text-2xl font-semibold mb-2">{{ pageTitle }}</h1>
-    <Form @submit="saveProperty">
+    <div v-if="showLoader" class="fullscreen-loader h-full">
+        <div class="loader"></div>
+    </div>
+    <Form v-show="!showLoader" @submit="saveProperty">
         <Fluid class="flex flex-col md:flex-row gap-8">
             <div class="md:w-1/2">
                 <PropertyBasicInfo
@@ -58,6 +61,71 @@
             </div>
         </Fluid>
 
+        <Fluid
+            v-if="showRentSection"
+            class="flex flex-col md:flex-row gap-8 mt-4"
+        >
+            <div class="md:w-1/2">
+                <div class="card flex flex-col gap-4">
+                    <div class="font-semibold text-xl">Комунальні послуги</div>
+                    <MultiSelect
+                        v-model="property.utilities"
+                        :options="dropdowns.utilities"
+                        optionLabel="name"
+                        placeholder="Комунальні послуги"
+                        :filter="true"
+                    >
+                        <template #value="slotProps">
+                            <div class="inline-flex items-center py-1 px-2 bg-primary text-primary-contrast rounded-border mr-2" v-for="option of slotProps.value" :key="option.code">
+                                <div>{{ option.name }}</div>
+                            </div>
+                            <template v-if="!slotProps.value || slotProps.value.length === 0">
+                                <div class="p-1">Вибрати комунальні послуги</div>
+                            </template>
+                        </template>
+                        <template #option="slotProps">
+                            <div class="flex items-center">
+                                <span :class="'mr-2 flag flag-' + slotProps.option.code.toLowerCase()" style="width: 18px; height: 12px" />
+                                <div>{{ slotProps.option.name }}</div>
+                            </div>
+                        </template>
+                    </MultiSelect>
+                </div>
+
+                <FormSection
+                    title="Тип опалення"
+                    v-model="property.heatingType"
+                    :options="dropdowns.heatingTypes"
+                />
+
+                <FormSection
+                    title="Меблі"
+                    v-model="property.furniture"
+                    :options="dropdowns.furniture"
+                />
+            </div>
+
+            <div class="md:w-1/2">
+                <FormSection
+                    title="Паркування"
+                    v-model="property.parking"
+                    :options="dropdowns.parking"
+                />
+
+                <FormSection
+                    title="Балкон / Тераса"
+                    v-model="property.balconyTerrace"
+                    :options="dropdowns.balconyTerrace"
+                />
+
+                <FormSection
+                    title="Проживання тварин"
+                    v-model="property.animal"
+                    type="toggle"
+                />
+            </div>
+        </Fluid>
+
         <Fluid class="flex flex-col mt-8">
             <PropertyDescription
                 v-model="property.description"
@@ -80,9 +148,7 @@
                 v-model="property"
                 :contacts="contacts"
             />
-        </Fluid>
 
-        <Fluid class="flex my-8">
             <Button
                 type="submit"
                 label="Зберегти"
@@ -100,7 +166,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, reactive } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import { useApartmentsStore } from '@/store/apartments';
 import { useAuthStore } from '@/store/authFirebase';
@@ -138,6 +204,9 @@ const authStore = useAuthStore();
 const userStore = useUserStore();
 
 // computed
+const showRentSection = computed(() => {
+    return property.value?.subcategory?.code !== 'sell' && property.value?.subcategory?.code !== 'exchange';
+});
 const pageTitle = computed(() =>
     isEditMode.value ? "Редагувати об'єкт нерухомості" : "Додати об'єкт нерухомості"
 );
@@ -225,8 +294,7 @@ const emptyProperty = {
     },
 };
 // const property = computed(() => isEditMode ? propertyManager.property : property.value);
-
-const property = ref({...emptyProperty});
+const property = ref(emptyProperty);
 const contacts = computed(() => userStore.user);
 const dropdowns = computed(() => store.dropdowns);
 
@@ -347,6 +415,7 @@ const removeImage = async (imageUrl) => {
     }
 };
 
+const showLoader = ref(false);
 const loadPropertyData = async (id, category, subcategory) => {
     console.log('Завантаження об\'єкта:', id, category, subcategory);
     try {
@@ -354,6 +423,7 @@ const loadPropertyData = async (id, category, subcategory) => {
         const propertyDoc = await getDoc(propertyRef);
 
         if (propertyDoc.exists()) {
+            console.log("Document data:", propertyDoc.data());
             property.value = propertyDoc.data(); // Обновляем ref
             console.log('Завантажено об\'єкт:', property.value);
         } else {
@@ -372,6 +442,8 @@ const loadPropertyData = async (id, category, subcategory) => {
             detail: 'Не вдалося завантажити об\'єкт',
             life: 3000
         });
+    } finally {
+        showLoader.value = false;
     }
 };
 
@@ -463,6 +535,7 @@ const saveOrUpdateProperty = async () => {
         };
 
         if (isEditMode.value) {
+            console.log('Updating property:', propertyData);
             await updateDoc(doc(db, `properties/${category.code}/${subcategory.code}`, id), propertyData);
             toast.add({
                 severity: 'success',
@@ -516,22 +589,70 @@ const saveProperty = async () => {
 };
 
 onMounted(async () => {
-    await authStore.getCurrentUser();
-    await userStore.fetchUser();
+    showLoader.value = true;
+    await Promise.all([authStore.getCurrentUser(), userStore.fetchUser()]);
 
     if (isEditMode.value) {
+        property.value = null;
         await loadPropertyData(id, category.code, subcategory.code);
     } else {
-        if (route.params.category) {
-            property.value.category.code = await route.params.category;
-            property.value.subcategory = {
-                code: 'sell',
-                name: 'Продаж'
-            };
-            const propertyType = `${route.params.category}-sell`;
-            await propertyManager.setPropertyType(propertyType);
-            property.value = propertyManager.property;
-        }
+        initializeNewProperty();
     }
+
+    showLoader.value = false;
 });
+
+// Функция для инициализации нового объекта недвижимости
+const initializeNewProperty = () => {
+    if (!route.params.category) return;
+
+    console.log('Setting property category:', route.params.category);
+
+    property.value = {
+        ...emptyProperty,
+        category: {code: route.params.category},
+        subcategory: {code: 'sell', name: 'Продаж'}
+    };
+
+    const propertyType = `${route.params.category}-sell`;
+    propertyManager.setPropertyType(propertyType);
+    property.value = propertyManager.property;
+
+    console.log('Property:', property.value);
+};
+
 </script>
+
+<style scoped>
+.fullscreen-loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.8);
+    z-index: 9999;
+
+    .loader {
+        width: 50px;
+        height: 50px;
+        border: 5px solid #ccc;
+        border-top-color: #007bff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+</style>

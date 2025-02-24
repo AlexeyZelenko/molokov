@@ -35,7 +35,7 @@
                 v-model="modelValue.city.name"
                 placeholder="Місто"
                 :class="{ 'p-invalid': errors.city }"
-                required
+                name="city"
             />
             <small class="text-red-500" v-if="errors.city">
                 {{ errors.city }}
@@ -46,6 +46,7 @@
         <InputText
             v-model="modelValue.street"
             placeholder="Вулиця"
+            name="street"
         />
 
         <template v-if="modelValue.city?.code === '1'">
@@ -70,7 +71,7 @@
             v-model:marker="property.address.markerPosition"
         />
         <VueLeafle
-            v-else-if="modelValue.city?.code !== '1'"
+            v-else-if="modelValue.region && modelValue.city?.code !== '1'"
             :property="property"
             :marker="property.address.markerPosition"
             v-model:marker="property.address.markerPosition"
@@ -112,7 +113,9 @@ const changeRegion = () => {
         name: null
     };
     props.modelValue.street = "";
-    props.modelValue.city = "";
+    props.modelValue.city = {
+        code: null, name: null
+    };
     props.modelValue.markerPosition = [];
 
 };

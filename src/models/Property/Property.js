@@ -17,7 +17,7 @@ export default class Property {
                         region: "",
                         area: { code: null, name: null },
                         street: "",
-                        city: "",
+                        city: { code: 'other', name: null },
                         markerPosition: null
                     },
                     owner = {
