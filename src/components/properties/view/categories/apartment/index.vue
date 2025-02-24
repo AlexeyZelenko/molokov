@@ -1,4 +1,8 @@
 <template>
+    <PropertyFloors
+        :property="property"
+    />
+
     <AreaDetails
         :apartmentArea="property.apartmentArea"
         :planning="property.planning"
@@ -23,6 +27,7 @@ import SellApartment from './sell/index.vue';
 import RentApartment from './rent/index.vue';
 import ExchangeApartment from './exchange/index.vue';
 import DailyRentApartment from './daily/index.vue';
+import PropertyFloors from "@/components/properties/view/floors/PropertyFloors.vue";
 
 
 const props = defineProps({

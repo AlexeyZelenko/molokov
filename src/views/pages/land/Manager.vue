@@ -1,6 +1,5 @@
 <template>
     <h1 class="text-2xl font-semibold mb-2">{{ pageTitle }}</h1>
-    {{property}}
     <Form @submit="saveProperty">
         <Fluid class="flex flex-col md:flex-row gap-8">
             <div class="md:w-1/2">
@@ -20,7 +19,7 @@
             </div>
 
             <div class="md:w-1/2">
-                <PropertyAreaDetails
+                <LandAreaDetails
                     ref="areaDetailsForm"
                     v-model="property.apartmentArea"
                     @validation-change="handleValidation('area', $event)"
@@ -90,7 +89,7 @@ import {PropertyManager} from '@/service/property/PropertyManagerAdd';
 
 import PropertyAddress from '@/components/forms/PropertyAddress.vue';
 import PropertyBasicInfo from '@/components/forms/PropertyBasicInfo.vue';
-import PropertyAreaDetails from '@/components/forms/PropertyAreaDetails.vue';
+import LandAreaDetails from '@/components/forms/land/LandAreaDetails.vue';
 import FormDetails from '@/components/forms/FormDetails.vue';
 import MyContacts from '@/components/forms/MyContacts.vue';
 import FormSection from '@/components/common/FormSection.vue';
@@ -106,19 +105,17 @@ const route = useRoute();
 const router = useRouter();
 const basicInfoForm = ref(null);
 const areaDetailsForm = ref(null);
-const floorsForm = ref(null);
-const roomsForm = ref(null);
-const conditionForm = ref(null);
 
 const toast = useToast();
 const store = useApartmentsStore();
 const authStore = useAuthStore();
 const userStore = useUserStore();
 
-// computed
-const showRentSection = computed(() => {
-    return property.value?.subcategory?.code !== 'sell' && property.value?.subcategory?.code !== 'exchange';
+defineProps({
+    category: Object
 });
+
+// computed
 const pageTitle = computed(() =>
     isEditMode.value ? "Редагувати об'єкт нерухомості" : "Додати об'єкт нерухомості"
 );
@@ -142,8 +139,6 @@ const handleReorder = (newOrder) => {
 const formValidations = ref({
     basicInfo: false,
     area: false,
-    floors: false,
-    rooms: false,
     condition: false,
 });
 
@@ -153,17 +148,8 @@ const saving = ref(false);
 const emptyProperty = {
     title: '',
     price: null,
-    rooms: {
-        all: null,
-        bedrooms: null,
-        bathrooms: null,
-        kitchens: null
-    },
     houseNumber: '',
-    constructionYear: null,
-    heatingType: null,
     condition: null,
-    balconyCount: 0,
     description: '',
     images: [],
     category: {
@@ -178,21 +164,8 @@ const emptyProperty = {
     updatedAt: null,
     apartmentArea: {
         totalArea: null,
-        livingArea: null,
-        kitchenArea: null
-    },
-    floors: {
-        floor: null,
-        totalFloors: null,
-        totalFloorsBuilding: null
     },
     reconditioning: null,
-    buildingType: null,
-    furniture: null,
-    parking: null,
-    balconyTerrace: null,
-    objectClass: null,
-    animal: false,
     facilityReadiness: null,
     isPublic: false,
     address: {
@@ -381,37 +354,7 @@ const validateAllForms = async () => {
             const result = await areaDetailsForm.value.validate();
             console.log("areaDetailsForm validation result:", result);
             return result;
-        })(),
-        (async () => {
-            if (!floorsForm.value) {
-                console.log("floorsForm is undefined or null");
-                return undefined;
-            }
-            console.log("Validating floorsForm...");
-            const result = await floorsForm.value.validate();
-            console.log("floorsForm validation result:", result);
-            return result;
-        })(),
-        (async () => {
-            if (!roomsForm.value) {
-                console.log("roomsForm is undefined or null");
-                return undefined;
-            }
-            console.log("Validating roomsForm...");
-            const result = await roomsForm.value.validate();
-            console.log("roomsForm validation result:", result);
-            return result;
-        })(),
-        (async () => {
-            if (!conditionForm.value) {
-                console.log("conditionForm is undefined or null");
-                return undefined;
-            }
-            console.log("Validating conditionForm...");
-            const result = await conditionForm.value.validate();
-            console.log("conditionForm validation result:", result);
-            return result;
-        })(),
+        })()
     ]);
 
     // Логируем результаты всех валидаций

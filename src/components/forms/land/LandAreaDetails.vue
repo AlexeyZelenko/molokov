@@ -39,12 +39,12 @@ const errors = ref({
 const validateTotalArea = (value) => {
     if (!value && value !== 0) return 'Загальна площа обов\'язкова';
     if (value <= 0) return 'Загальна площа повинна бути більше 0';
-    if (value > 1000) return 'Загальна площа не може перевищувати 1000 м²';
+    if (value > 100000) return 'Загальна площа не може перевищувати 100000 м²';
     return '';
 };
 
 const validate = () => {
-    const { totalArea, livingArea, kitchenArea } = props.modelValue;
+    const { totalArea } = props.modelValue;
 
     errors.value = {
         totalArea: validateTotalArea(totalArea),

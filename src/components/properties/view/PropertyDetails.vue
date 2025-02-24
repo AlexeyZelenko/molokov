@@ -28,10 +28,6 @@
                     <PropertyLocation
                         :address="property?.address"
                     />
-
-                    <PropertyFloors
-                        :property="property"
-                    />
                 </div>
             </div>
 

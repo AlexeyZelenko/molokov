@@ -14,7 +14,7 @@
 
                         <p class="my-2" v-html="description"></p>
 
-                        <ParkingDetails :parking="property.parking" />
+                        <ParkingDetails v-if="property.parking" :parking="property.parking" />
 
                         <PropertyAmenities
                             class="my-4"
