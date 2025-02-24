@@ -7,6 +7,7 @@
         <Fluid class="flex flex-col md:flex-row gap-8">
             <div class="md:w-1/2">
                 <PropertyBasicInfo
+                    v-if="property"
                     ref="basicInfoForm"
                     v-model="property"
                     :dropdowns="dropdowns"
@@ -15,12 +16,14 @@
                 />
 
                 <PropertyAddress
+                    v-if="property && property.address"
                     v-model="property.address"
                     :property="property"
                     :dropdowns="dropdowns"
                 />
 
                 <PropertyAreaDetails
+                    v-if="property && property.apartmentArea"
                     ref="areaDetailsForm"
                     v-model="property.apartmentArea"
                     @validation-change="handleValidation('area', $event)"
@@ -29,12 +32,14 @@
 
             <div class="md:w-1/2">
                 <PropertyFloors
+                    v-if="property && property.floors"
                     ref="floorsForm"
                     v-model="property.floors"
                     @validation-change="handleValidation('floors', $event)"
                 />
 
                 <PropertyRooms
+                    v-if="property && property.rooms"
                     ref="roomsForm"
                     v-model="property"
                     :dropdowns="dropdowns"
@@ -42,6 +47,7 @@
                 />
 
                 <PropertyCondition
+                    v-if="property && property.condition"
                     ref="conditionForm"
                     v-model="property"
                     :dropdowns="dropdowns"
@@ -49,11 +55,13 @@
                 />
 
                 <FormDetails
+                    v-if="property"
                     ref="detailsForm"
                     v-model="property"
                 />
 
                 <FormSection
+                    v-if="property"
                     title="Готовність об'єкта"
                     v-model="property.facilityReadiness"
                     type="date"
@@ -69,6 +77,7 @@
                 <div class="card flex flex-col gap-4">
                     <div class="font-semibold text-xl">Комунальні послуги</div>
                     <MultiSelect
+                        v-if="property && property.utilities"
                         v-model="property.utilities"
                         :options="dropdowns.utilities"
                         optionLabel="name"
@@ -93,12 +102,14 @@
                 </div>
 
                 <FormSection
+                    v-if="property"
                     title="Тип опалення"
                     v-model="property.heatingType"
                     :options="dropdowns.heatingTypes"
                 />
 
                 <FormSection
+                    v-if="property"
                     title="Меблі"
                     v-model="property.furniture"
                     :options="dropdowns.furniture"
@@ -107,18 +118,21 @@
 
             <div class="md:w-1/2">
                 <FormSection
+                    v-if="property"
                     title="Паркування"
                     v-model="property.parking"
                     :options="dropdowns.parking"
                 />
 
                 <FormSection
+                    v-if="property"
                     title="Балкон / Тераса"
                     v-model="property.balconyTerrace"
                     :options="dropdowns.balconyTerrace"
                 />
 
                 <FormSection
+                    v-if="property"
                     title="Проживання тварин"
                     v-model="property.animal"
                     type="toggle"
@@ -128,6 +142,7 @@
 
         <Fluid class="flex flex-col mt-8">
             <PropertyDescription
+                v-if="property && property.description"
                 v-model="property.description"
             />
 
@@ -140,7 +155,7 @@
         </Fluid>
 
         <Fluid class="flex mt-8">
-            <PublishToggle v-model="property.isPublic" />
+            <PublishToggle v-if="property" v-model="property.isPublic" />
         </Fluid>
 
         <Fluid class="grid grid-cols-1 md:grid-cols-1 gap-6 mt-8">
@@ -383,9 +398,14 @@ const onFileSelect = async (files) => {
 
 // Simplified computed property for images
 const images = computed({
-    get: () => Array.isArray(property.value.images) ? property.value.images : [],
+    get: () => {
+        if (!property.value || !Array.isArray(property.value.images)) {
+            return [];
+        }
+        return property.value.images;
+    },
     set: (value) => {
-        if (Array.isArray(value)) {
+        if (Array.isArray(value) && property.value) {
             property.value.images = value;
         }
     }

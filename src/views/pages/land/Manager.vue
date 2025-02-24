@@ -7,6 +7,7 @@
         <Fluid class="flex flex-col md:flex-row gap-8">
             <div class="md:w-1/2">
                 <PropertyBasicInfo
+                    v-if="property"
                     ref="basicInfoForm"
                     v-model="property"
                     :dropdowns="dropdowns"
@@ -15,6 +16,7 @@
                 />
 
                 <PropertyAddress
+                    v-if="property && property.address"
                     v-model="property.address"
                     :property="property"
                     :dropdowns="dropdowns"
@@ -23,17 +25,20 @@
 
             <div class="md:w-1/2">
                 <LandAreaDetails
+                    v-if="property && property.apartmentArea"
                     ref="areaDetailsForm"
                     v-model="property.apartmentArea"
                     @validation-change="handleValidation('area', $event)"
                 />
 
                 <FormDetails
+                    v-if="property"
                     ref="detailsForm"
                     v-model="property"
                 />
 
                 <FormSection
+                    v-if="property"
                     title="Готовність об'єкта"
                     v-model="property.facilityReadiness"
                     type="date"
@@ -43,10 +48,12 @@
 
         <Fluid class="flex flex-col mt-8">
             <PropertyDescription
+                v-if="property"
                 v-model="property.description"
             />
 
             <PropertyImageUpload
+                v-if="property"
                 :images="images"
                 @upload="onFileSelect"
                 @remove="removeImage"
@@ -55,7 +62,7 @@
         </Fluid>
 
         <Fluid class="flex mt-8">
-            <PublishToggle v-model="property.isPublic" />
+            <PublishToggle v-if="property" v-model="property.isPublic" />
         </Fluid>
 
         <Fluid class="grid grid-cols-1 md:grid-cols-1 gap-6 mt-8">
@@ -300,9 +307,14 @@ const onFileSelect = async (files) => {
 
 // Simplified computed property for images
 const images = computed({
-    get: () => Array.isArray(property.value.images) ? property.value.images : [],
+    get: () => {
+        if (!property.value || !Array.isArray(property.value.images)) {
+            return [];
+        }
+        return property.value.images;
+    },
     set: (value) => {
-        if (Array.isArray(value)) {
+        if (Array.isArray(value) && property.value) {
             property.value.images = value;
         }
     }
@@ -341,7 +353,11 @@ const loadPropertyData = async (id, category, subcategory) => {
 
         if (propertyDoc.exists()) {
             console.log("Document data:", propertyDoc.data());
-            property.value = propertyDoc.data(); // Обновляем ref
+            // Merge with default empty property to ensure all required fields exist
+            property.value = {
+                ...emptyProperty,
+                ...propertyDoc.data()
+            };
             console.log('Завантажено об\'єкт:', property.value);
         } else {
             toast.add({

@@ -1,6 +1,5 @@
 <template>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
-        <!-- Используем h-full для обеих карточек -->
         <div class="card flex flex-col gap-4 h-full">
             <div class="font-semibold text-xl mb-2">Мої контакти</div>
 
@@ -41,7 +40,7 @@
         <div class="card flex flex-col gap-4 h-full">
             <div class="font-semibold text-xl mb-2">Додатково</div>
             <Textarea
-                v-model="modelValue.creator.message"
+                v-model="message"
                 placeholder="Повідомлення"
                 :autoResize="true"
                 rows="5"
@@ -53,28 +52,42 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 
 const props = defineProps({
     contacts: {
         type: Object,
-        required: true
+        required: false,
+        default: () => ({
+            name: '',
+            agency: '',
+            phones: []
+        })
     },
     modelValue: {
         type: Object,
-        required: true
+        required: false,
+        default: () => ({
+            creator: {
+                message: ''
+            }
+        })
     }
 });
 
 const emit = defineEmits(['update:modelValue']);
 
-watch(() => props.modelValue.creator.message, (newMessage) => {
-    emit('update:modelValue', {
-        ...props.modelValue,
-        creator: {
-            ...props.modelValue.creator,
-            message: newMessage
-        }
-    });
+// Безопасное вычисление `message`
+const message = computed({
+    get: () => props.modelValue?.creator?.message || '',
+    set: (newMessage) => {
+        emit('update:modelValue', {
+            ...props.modelValue,
+            creator: {
+                ...(props.modelValue?.creator || {}),
+                message: newMessage
+            }
+        });
+    }
 });
 </script>
