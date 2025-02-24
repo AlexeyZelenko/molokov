@@ -203,6 +203,13 @@ const store = useApartmentsStore();
 const authStore = useAuthStore();
 const userStore = useUserStore();
 
+const props = defineProps({
+    category: {
+        type: String,
+        required: true
+    }
+});
+
 // computed
 const showRentSection = computed(() => {
     return property.value?.subcategory?.code !== 'sell' && property.value?.subcategory?.code !== 'exchange';
@@ -605,8 +612,6 @@ onMounted(async () => {
 // Функция для инициализации нового объекта недвижимости
 const initializeNewProperty = () => {
     if (!route.params.category) return;
-
-    console.log('Setting property category:', route.params.category);
 
     property.value = {
         ...emptyProperty,
