@@ -66,11 +66,13 @@
         <MapWithMarkerEdit
             v-if="modelValue.city?.code === '1' && modelValue.area.code"
             :property="property"
+            :marker="property.address.markerPosition"
             v-model:marker="property.address.markerPosition"
         />
         <VueLeafle
             v-else-if="modelValue.city?.code !== '1'"
             :property="property"
+            :marker="property.address.markerPosition"
             v-model:marker="property.address.markerPosition"
         />
     </div>
