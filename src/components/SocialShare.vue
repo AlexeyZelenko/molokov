@@ -80,15 +80,33 @@ const formatUrl = (url) => {
 };
 
 const shareMetaData = computed(() => {
-    const { property, title, adUrl } = props;
-    const description = `Ціна: ${property.price} грн
-     - Кімнат: ${property.rooms.all}`;
-    const image = property.images?.[0] || '';
+    const { property, title, adUrl, imageUrl  } = props;
+
+    const descriptionParts = [
+        `${property.category.name}/${property.subcategory.name}`,
+        `🏠 Кімнат: ${property.rooms?.all || 'Не вказано'} 💰 Ціна: ${property.price} USD`,
+        `📏 Площа: ${property.apartmentArea?.totalArea} м²  🔝 Поверх: ${property.floors.floor}/${property.floors.totalFloors}`,
+        `🏙️ Адреса: ${property.address.region.name} / ${property.address.city.name || ''} / ${property.address.area.name || ''}`,
+    ].filter(Boolean).join('\n');
+
+    let imageFullUrl = '';
+    if (imageUrl) {
+        // Используем переданный URL изображения, если он есть
+        imageFullUrl = imageUrl;
+    } else if (property.images && property.images.length > 0) {
+        imageFullUrl = property.images[0];
+    }
+
+    // Преобразуем в абсолютный URL, если URL относительный
+    if (imageFullUrl && !imageFullUrl.startsWith('http')) {
+        const baseUrl = window.location.origin;
+        imageFullUrl = new URL(imageFullUrl, baseUrl).href;
+    }
 
     return {
         title,
-        description,
-        image,
+        description: descriptionParts,
+        image: imageFullUrl,
         url: adUrl,
         formattedUrl: formatUrl(adUrl)
     };
@@ -102,9 +120,14 @@ onMounted(() => {
             { property: 'og:title', content: shareMetaData.value.title },
             { property: 'og:description', content: shareMetaData.value.description },
             { property: 'og:image', content: shareMetaData.value.image },
+            { property: 'og:image:width', content: '1200' },
+            { property: 'og:image:height', content: '630' },
             { property: 'og:url', content: shareMetaData.value.url },
             { property: 'og:type', content: 'website' },
-            { name: 'twitter:card', content: 'summary_large_image' }
+            { name: 'twitter:card', content: 'summary_large_image' },
+            { name: 'twitter:title', content: shareMetaData.value.title },
+            { name: 'twitter:description', content: shareMetaData.value.description },
+            { name: 'twitter:image', content: shareMetaData.value.image }
         ]
     });
 });
@@ -112,28 +135,32 @@ onMounted(() => {
 const SHARE_CONFIG = {
     facebook: {
         buildUrl: (data) =>
-            `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(data.url)}&quote=${encodeURIComponent(data.title)}`,
+            `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(data.url)}`,
         icon: 'pi pi-facebook',
         label: 'Facebook'
     },
     telegram: {
         buildUrl: (data) => {
-            const telegramText = `${data.title}\n\n${data.description}`;
-            const instantView = data.image ? `&image=${encodeURIComponent(data.image)}` : '';
-            return `https://t.me/share/url?url=${encodeURIComponent(data.url)}${instantView}&text=${encodeURIComponent(telegramText)}`;
+            // Добавляем URL в конец сообщения отдельной строкой
+            // Telegram автоматически делает URL кликабельным, если он в отдельной строке
+            // const textWithUrl = `${data.description}\n\n${data.url}`;
+
+            const textWithUrl = `\n${data.description}`;
+
+            return `https://t.me/share/url?url=${encodeURIComponent(data.url)}&text=${encodeURIComponent(textWithUrl)}&parse_mode=html`;
         },
         icon: 'pi pi-telegram',
         label: 'Telegram'
     },
     viber: {
         buildUrl: (data) =>
-            `viber://forward?text=${encodeURIComponent(`${data.title}\n${data.url}`)}`,
+            `viber://forward?text=${encodeURIComponent(`${data.url}${data.description}`)}`,
         icon: 'pi pi-phone',
         label: 'Viber'
     },
     whatsapp: {
         buildUrl: (data) =>
-            `https://api.whatsapp.com/send?text=${encodeURIComponent(`${data.title}\n\n${data.url}`)}`,
+            `https://api.whatsapp.com/send?text=${encodeURIComponent(`${data.description}\n\n${data.url}`)}`,
         icon: 'pi pi-whatsapp',
         label: 'WhatsApp'
     }
@@ -147,15 +174,11 @@ const shareContent = (platform) => {
         const config = SHARE_CONFIG[platform];
         if (!config) throw new Error(`Unsupported platform: ${platform}`);
 
+        // Получаем URL для шеринга
         const url = config.buildUrl(shareMetaData.value);
 
-        if (platform === 'telegram') {
-            setTimeout(() => {
-                window.open(url, '_blank', 'width=600,height=400');
-            }, 100);
-        } else {
-            window.open(url, '_blank', 'width=600,height=400');
-        }
+        // Открываем окно шеринга
+        window.open(url, '_blank', 'width=600,height=400');
     } catch (error) {
         showToast('error', 'Помилка', `Неможливо поділитися через ${platform}`);
         console.error(`Share error (${platform}):`, error);
