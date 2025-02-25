@@ -96,6 +96,8 @@ import PropertyHouse from './categories/house/index.vue';
 import PropertyCommercial from './categories/commercial/index.vue';
 import PropertyLand from './categories/land/index.vue';
 import PropertyOffice from './categories/office/index.vue';
+import PropertyRooms from './categories/rooms/index.vue';
+import PropertyGarages from './categories/garages/index.vue';
 import PropertyOther from './categories/other/index.vue';
 
 import DgisMap from "@/components/maps/DgisMap.vue";
@@ -116,7 +118,9 @@ const categoryComponentMap = {
     'commercial': PropertyCommercial,
     'land': PropertyLand,
     'offices': PropertyOffice,
-    'other': PropertyOther
+    'other': PropertyOther,
+    'rooms': PropertyRooms,
+    'garages': PropertyGarages
 };
 
 const fullUrl = computed(() => {

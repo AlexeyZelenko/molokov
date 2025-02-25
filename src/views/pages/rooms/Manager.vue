@@ -552,12 +552,6 @@ const saveOrUpdateProperty = async () => {
             });
         } else {
             await propertyManager.saveProperty();
-            toast.add({
-                severity: 'success',
-                summary: 'Успішно',
-                detail: 'Об\'єкт додано',
-                life: 3000
-            });
         }
 
         try {
