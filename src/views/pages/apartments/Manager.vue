@@ -47,7 +47,7 @@
                 />
 
                 <PropertyCondition
-                    v-if="property && property.condition"
+                    v-if="property"
                     ref="conditionForm"
                     v-model="property"
                     :dropdowns="dropdowns"
@@ -142,7 +142,7 @@
 
         <Fluid class="flex flex-col mt-8">
             <PropertyDescription
-                v-if="property && property.description"
+                v-if="property"
                 v-model="property.description"
             />
 

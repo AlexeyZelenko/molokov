@@ -725,9 +725,6 @@ onMounted(() => {
                     alt="Аватар"
                     class="w-24 h-24 rounded-full object-cover border-4 border-blue-100"
                 />
-                <div v-else class="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center border-4 border-blue-100">
-                    <span class="text-gray-500 text-xl">👤</span>
-                </div>
             </div>
             <div>
                 <p class="text-lg font-semibold">{{ user.displayName }}</p>
