@@ -1,5 +1,4 @@
 <template>
-    sdsadasd
     <div class="map-container">
         <div ref="mapContainer" style="width: 100%; height: 500px"></div>
         <div v-if="hasMarker && isDelete" class="controls">
@@ -15,10 +14,27 @@
 
 <script setup>
 import { ref, onMounted, watch, nextTick, computed, onBeforeUnmount } from 'vue';
-import * as leaflet from 'leaflet/dist/leaflet-src.esm';
+import * as L from 'leaflet/dist/leaflet-src.esm';
 import 'leaflet/dist/leaflet.css';
 import { useAreasStore } from '@/store/areasStore';
-import * as Leaflet from "leaflet";
+
+// Налаштування іконок глобально перед усіма операціями
+// Явно вказуємо шляхи до іконок Leaflet
+const iconUrl = '/leaflet-images/marker-icon.png';
+const iconRetinaUrl = '/leaflet-images/marker-icon-2x.png';
+const shadowUrl = '/leaflet-images/marker-shadow.png';
+
+
+// Створення кастомної іконки як запасного варіанту
+const customIcon = L.icon({
+    iconUrl,
+    iconRetinaUrl,
+    shadowUrl,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+});
 
 const props = defineProps({
     property: {
@@ -82,9 +98,10 @@ const updateMarker = (position) => {
     }
 
     if (!marker.value) {
-        // Создаем маркер, если его еще нет
-        marker.value = leaflet.marker(position, {
-            draggable: props.editable
+        // Создаем маркер с явным указанием иконки
+        marker.value = L.marker(position, {
+            draggable: props.editable,
+            icon: customIcon // Явно указываем иконку
         }).addTo(map.value);
 
         // Добавляем всплывающее окно, если есть данные
@@ -104,6 +121,9 @@ const updateMarker = (position) => {
         // Обновляем существующий маркер
         marker.value.setLatLng(position);
     }
+
+    // Логирование для отладки
+    console.log('Маркер создан/обновлен:', position);
 };
 
 // Удаление маркера
@@ -115,6 +135,8 @@ const removeMarker = () => {
         if (props.editable) {
             updatePropertyMarker(null);
         }
+
+        console.log('Маркер удален');
     }
 };
 
@@ -150,7 +172,7 @@ const updateAreaCircle = () => {
     const center = currentArea.value.position ?? [49.4444, 32.0598];
 
     // Создаем новый круг
-    areaCircle.value = leaflet.circle(center, {
+    areaCircle.value = L.circle(center, {
         color: currentArea.value.color || '#f7f5f5',
         fillColor: currentArea.value.color || '#f7f5f5',
         fillOpacity: 0.1,
@@ -167,6 +189,18 @@ onMounted(async () => {
         return;
     }
 
+    // Проверка наличия файлов иконок (для отладки)
+    try {
+        const testImage = new Image();
+        testImage.onload = () => console.log('Иконка маркера успешно загружена');
+        testImage.onerror = () => console.error('ОШИБКА: Иконка маркера не найдена!');
+        testImage.src = iconUrl;
+
+        console.log('Проверка наличия файлов иконок...', testImage.src);
+    } catch (e) {
+        console.error('Ошибка при тестировании иконки:', e);
+    }
+
     // Определяем начальные координаты и масштаб
     const markerPos = markerPosition.value;
     const areaCenter = currentArea.value?.center;
@@ -174,10 +208,10 @@ onMounted(async () => {
     const initialZoom = 13;
 
     // Создаем карту
-    map.value = leaflet.map(mapContainer.value).setView(initialCoords, initialZoom);
+    map.value = L.map(mapContainer.value).setView(initialCoords, initialZoom);
 
     // Добавление слоя OpenStreetMap
-    leaflet.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '© OpenStreetMap contributors',
     }).addTo(map.value);
@@ -227,21 +261,6 @@ onBeforeUnmount(() => {
     if (map.value) {
         map.value.remove();
         map.value = null;
-    }
-});
-
-
-const L = Leaflet;
-
-// Настройка иконок при монтировании компонента
-onMounted(() => {
-    if (L.Icon && L.Icon.Default) {
-        // Переопределяем пути к иконкам
-        L.Icon.Default.mergeOptions({
-            iconUrl: '/leaflet-images/marker-icon.png',
-            iconRetinaUrl: '/leaflet-images/marker-icon-2x.png',
-            shadowUrl: '/leaflet-images/marker-shadow.png'
-        });
     }
 });
 </script>
