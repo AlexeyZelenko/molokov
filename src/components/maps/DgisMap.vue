@@ -6,7 +6,7 @@
                 @click="removeMarker"
                 class="control-button remove-button"
             >
-                Удалить маркер
+                Видалити маркер
             </button>
         </div>
     </div>

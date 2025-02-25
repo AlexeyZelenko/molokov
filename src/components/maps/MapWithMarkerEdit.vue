@@ -19,6 +19,24 @@ import * as leaflet from 'leaflet/dist/leaflet-src.esm';
 import 'leaflet/dist/leaflet.css';
 import { useAreasStore } from '@/store/areasStore';
 
+import * as L from 'leaflet/dist/leaflet-src.esm';
+import 'leaflet/dist/leaflet.css';
+
+const iconUrl = '/leaflet-images/marker-icon.png';
+const iconRetinaUrl = '/leaflet-images/marker-icon-2x.png';
+const shadowUrl = '/leaflet-images/marker-shadow.png';
+
+
+const customIcon = L.icon({
+    iconUrl,
+    iconRetinaUrl,
+    shadowUrl,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+});
+
 // Принимаем props
 const props = defineProps({
     marker: {
@@ -139,6 +157,18 @@ onMounted(async () => {
     if (!mapContainer.value) {
         console.error("Контейнер для карты не найден!");
         return;
+    }
+
+    // Проверка наличия файлов иконок (для отладки)
+    try {
+        const testImage = new Image();
+        testImage.onload = () => console.log('Иконка маркера успешно загружена');
+        testImage.onerror = () => console.error('ОШИБКА: Иконка маркера не найдена!');
+        testImage.src = iconUrl;
+
+        console.log('Проверка наличия файлов иконок...', testImage.src);
+    } catch (e) {
+        console.error('Ошибка при тестировании иконки:', e);
     }
 
     // Начальные координаты и масштаб
