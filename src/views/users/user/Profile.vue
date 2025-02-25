@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useUserStore } from '@/store/userStore';
+import { useAuthStore } from '@/store/authFirebase';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import FileUpload from 'primevue/fileupload';
@@ -9,6 +10,7 @@ import { useToast } from 'primevue/usetoast';
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 const userStore = useUserStore();
+const authStore = useAuthStore();
 const toast = useToast();
 const isEditing = ref(false);
 const editForm = ref({
@@ -35,6 +37,7 @@ const storage = getStorage();
 
 onMounted(async () => {
     await userStore.fetchUserProfile();
+    console.log('authStore.profile', authStore.user);
     if (userStore.profile) {
         editForm.value = {
             name: userStore.profile.name,
@@ -58,6 +61,12 @@ const saveProfile = async () => {
     isLoading.value = true; // Початок завантаження
     try {
         await userStore.updateProfile(editForm.value);
+        if(authStore.user) {
+            await authStore.updateProfileUser({
+                displayName: editForm.value.name,
+                photoURL: editForm.value.avatar,
+            });
+        }
         isEditing.value = false;
         toast.add({ severity: 'success', summary: 'Успішно', detail: 'Профіль оновлено', life: 3000 });
     } catch (error) {

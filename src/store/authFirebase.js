@@ -326,6 +326,19 @@ export const useAuthStore = defineStore('auth', () => {
         return users;
     }
 
+    async function updateProfileUser({displayName, photoURL}) {
+        try {
+            await updateProfile(auth.currentUser, {
+                displayName: displayName,
+                photoURL: photoURL
+            });
+            user.value.displayName = displayName;
+            user.value.photoURL = photoURL;
+        } catch (error) {
+            console.error('Error updating user display name:', error);
+        }
+    }
+
     return {
         user,
         error,
@@ -340,6 +353,7 @@ export const useAuthStore = defineStore('auth', () => {
         checkAuthPersistence,
         getCurrentUser,
         debugUserState,
-        getUsers
+        getUsers,
+        updateProfileUser
     }
 })

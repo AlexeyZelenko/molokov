@@ -133,7 +133,6 @@ export const useUserStore = defineStore('user', {
         },
 
         async fetchUser() {
-            console.log('Fetching user...');
             this.loading = true;
             const userId = auth.currentUser?.uid;
 
