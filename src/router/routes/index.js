@@ -23,7 +23,7 @@ export default [
             ...dashboardRoutes,
             ...uikitRoutes,
             ...profileRoutes,
-            ...adminRoutes
+            ...adminRoutes,
         ]
     },
     ...categoriesRoutes,

@@ -1,9 +1,11 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useAuthStore } from '@/store/authFirebase';
+import { useUserStore } from '@/store/userStore';
 import AppMenuItem from './AppMenuItem.vue';
 
 const store = useAuthStore();
+const userStore = useUserStore();
 const userId = computed(() => {
     return store?.user?.uid;
 });
@@ -11,9 +13,6 @@ const userId = computed(() => {
 const user = computed(() => {
     return store?.user;
 });
-
-const showMenuUI = ref(false);
-
 
 const model = ref([
     {
@@ -710,6 +709,10 @@ const model = ref([
     //     ]
     // }
 ]);
+
+onMounted(() => {
+    userStore.fetchUser()
+});
 </script>
 
 <template>

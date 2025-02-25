@@ -25,6 +25,7 @@ const themeConfig = {
     }
 };
 
+
 async function initializeApp() {
     const app = createApp(App);
     const pinia = createPinia();

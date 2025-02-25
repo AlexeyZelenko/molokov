@@ -1,11 +1,27 @@
 <script setup>
+import { computed, onMounted } from "vue";
 import AppConfigurator from "@/layout/AppConfigurator.vue";
 import {useLayout} from "@/layout/composables/layout";
 import {useRouter} from "vue-router";
+import { useAuthStore } from '@/store/authFirebase';
+
+const authStore = useAuthStore();
+
+const user = computed(() => {
+    return authStore?.user;
+});
 
 const { toggleDarkMode, isDarkTheme } = useLayout();
 
 const router = useRouter();
+
+const handleLogout = async () => {
+    try {
+        await authStore.logout();
+    } catch (error) {
+        console.error('Помилка при виході:', error);
+    }
+};
 
 function smoothScroll(id) {
     document.body.click();
@@ -21,6 +37,10 @@ function smoothScroll(id) {
 function navigateTo(route) {
     router.push(route);
 }
+
+onMounted(() => {
+    authStore.initializeAuth()
+});
 </script>
 
 <template>
@@ -178,8 +198,26 @@ function navigateTo(route) {
             </Button>
             <AppConfigurator class="mt-10" />
 
-            <Button label="Вхід" text as="router-link" to="/auth/login" rounded></Button>
-            <Button label="Реєстрація" as="router-link" to="/auth/register" rounded></Button>
+            <div>
+                <div v-if="user" class="flex items-center gap-4">
+                    <img
+                        v-if="user.avatar"
+                        :src="user.avatar"
+                        alt="Аватар"
+                        class="w-10 h-10 rounded-full object-cover border-2 border-blue-100"
+                    />
+                    <Button
+                        label="Вихід"
+                        as="button"
+                        @click="handleLogout"
+                        rounded
+                    ></Button>
+                </div>
+                <div v-else class="flex items-center gap-4">
+                    <Button label="Вхід" text as="router-link" to="/auth/login" rounded></Button>
+                    <Button label="Реєстрація" as="router-link" to="/auth/register" rounded></Button>
+                </div>
+            </div>
         </div>
     </div>
 </template>

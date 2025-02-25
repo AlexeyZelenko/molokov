@@ -7,6 +7,9 @@ const { toggleDarkMode, isDarkTheme } = useLayout();
 
 <template>
     <div class="fixed flex gap-4 top-8 right-8">
+        <router-link to="/">
+            <Button type="button" icon="pi pi-home" rounded />
+        </router-link>
         <Button type="button" @click="toggleDarkMode" rounded :icon="isDarkTheme ? 'pi pi-moon' : 'pi pi-sun'" severity="secondary" />
         <div class="relative">
             <Button

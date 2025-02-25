@@ -1,5 +1,5 @@
 <template>
-    <section class="highlights py-6 px-6 lg:px-20 mx-0 my-12 lg:mx-20">
+    <section id="highlights" class="highlights py-6 px-6 lg:px-20 mx-0 my-12 lg:mx-20">
         <!-- Заголовок секции -->
         <header class="text-center">
             <h2 class="text-surface-900 dark:text-surface-0 font-normal mb-2 text-4xl">Потужний всюди</h2>

@@ -223,7 +223,8 @@ export const useAuthStore = defineStore('auth', () => {
                                 username: currentUser.displayName,
                                 role: userDoc.data().role || 'customer',
                                 phones: userDoc.data().phones || null,
-                                emailVerified: currentUser.emailVerified
+                                emailVerified: currentUser.emailVerified,
+                                avatar: userDoc.data().avatar || null,
                             };
 
                             user.value = userData;
@@ -270,6 +271,7 @@ export const useAuthStore = defineStore('auth', () => {
     async function getCurrentUser() {
         const auth = getAuth(); // Получение инстанса Firebase Auth
         const currentUser = auth.currentUser; // Текущий пользователь
+        console.log('Current user:', currentUser);
 
         if (!currentUser) {
             console.warn("No authenticated user found.");
