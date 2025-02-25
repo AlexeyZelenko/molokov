@@ -26,15 +26,12 @@ const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
             </button>
             <router-link to="/" class="layout-topbar-logo">
                 <svg viewBox="0 0 54 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Основная форма дома -->
                     <path
                         fill-rule="evenodd"
                         clip-rule="evenodd"
                         d="M27 2L8 16V38H46V16L27 2ZM27 6L12 16.5V34H42V16.5L27 6Z"
                         fill="var(--primary-color)"
                     />
-
-                    <!-- Крыша с декоративным элементом -->
                     <mask id="mask0" style="mask-type: alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="54" height="20">
                         <path d="M27 0L0 20H54L27 0Z" fill="var(--primary-color)" />
                     </mask>
@@ -44,8 +41,6 @@ const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
                             fill="var(--primary-color)"
                         />
                     </g>
-
-                    <!-- Окна и дверь -->
                     <path
                         fill-rule="evenodd"
                         clip-rule="evenodd"
@@ -55,8 +50,6 @@ const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
                         fill="var(--primary-color)"
                     />
                 </svg>
-
-<!--                <span>SAKAI</span>-->
             </router-link>
         </div>
 
