@@ -94,7 +94,7 @@
                         </template>
                         <template #option="slotProps">
                             <div class="flex items-center">
-                                <span :class="'mr-2 flag flag-' + slotProps.option.code.toLowerCase()" style="width: 18px; height: 12px" />
+                                <span :class="'mr-2 ' + slotProps.option.code.toLowerCase()" style="width: 18px; height: 12px" />
                                 <div>{{ slotProps.option.name }}</div>
                             </div>
                         </template>
@@ -444,15 +444,12 @@ const removeImage = async (imageUrl) => {
 
 const showLoader = ref(false);
 const loadPropertyData = async (id, category, subcategory) => {
-    console.log('Завантаження об\'єкта:', id, category, subcategory);
     try {
         const propertyRef = doc(db, `properties/${category}/${subcategory}`, id);
         const propertyDoc = await getDoc(propertyRef);
 
         if (propertyDoc.exists()) {
-            console.log("Document data:", propertyDoc.data());
             property.value = propertyDoc.data(); // Обновляем ref
-            console.log('Завантажено об\'єкт:', property.value);
         } else {
             toast.add({
                 severity: 'error',
@@ -475,17 +472,12 @@ const loadPropertyData = async (id, category, subcategory) => {
 };
 
 const validateAllForms = async () => {
-    // Логируем начало валидации
-    console.log("Starting validation of all forms...");
-
-    // Валидация каждой формы
     const validations = await Promise.all([
         (async () => {
             if (!basicInfoForm.value) {
                 console.log("basicInfoForm is undefined or null");
                 return undefined;
             }
-            console.log("Validating basicInfoForm...");
             const result = await basicInfoForm.value.validate();
             console.log("basicInfoForm validation result:", result);
             return result;
@@ -495,7 +487,6 @@ const validateAllForms = async () => {
                 console.log("areaDetailsForm is undefined or null");
                 return undefined;
             }
-            console.log("Validating areaDetailsForm...");
             const result = await areaDetailsForm.value.validate();
             console.log("areaDetailsForm validation result:", result);
             return result;
@@ -505,7 +496,6 @@ const validateAllForms = async () => {
                 console.log("floorsForm is undefined or null");
                 return undefined;
             }
-            console.log("Validating floorsForm...");
             const result = await floorsForm.value.validate();
             console.log("floorsForm validation result:", result);
             return result;
@@ -515,7 +505,6 @@ const validateAllForms = async () => {
                 console.log("roomsForm is undefined or null");
                 return undefined;
             }
-            console.log("Validating roomsForm...");
             const result = await roomsForm.value.validate();
             console.log("roomsForm validation result:", result);
             return result;
@@ -525,7 +514,6 @@ const validateAllForms = async () => {
                 console.log("conditionForm is undefined or null");
                 return undefined;
             }
-            console.log("Validating conditionForm...");
             const result = await conditionForm.value.validate();
             console.log("conditionForm validation result:", result);
             return result;
@@ -537,7 +525,6 @@ const validateAllForms = async () => {
 
     // Убираем undefined/null из массива перед проверкой
     const filteredValidations = validations.filter(v => v !== undefined && v !== null);
-    console.log("Filtered validations (without undefined/null):", filteredValidations);
 
     // Проверяем, что все валидации успешны
     const isAllValid = filteredValidations.length > 0 && filteredValidations.every(v => v === true);
@@ -572,12 +559,6 @@ const saveOrUpdateProperty = async () => {
             });
         } else {
             await propertyManager.saveProperty();
-            toast.add({
-                severity: 'success',
-                summary: 'Успішно',
-                detail: 'Об\'єкт додано',
-                life: 3000
-            });
         }
 
         try {

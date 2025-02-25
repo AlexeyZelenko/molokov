@@ -85,7 +85,7 @@
                         </template>
                         <template #option="slotProps">
                             <div class="flex items-center">
-                                <span :class="'mr-2 flag flag-' + slotProps.option.code.toLowerCase()" style="width: 18px; height: 12px" />
+                                <span :class="'mr-2' + slotProps.option.code.toLowerCase()" style="width: 18px; height: 12px" />
                                 <div>{{ slotProps.option.name }}</div>
                             </div>
                         </template>
@@ -552,12 +552,6 @@ const saveOrUpdateProperty = async () => {
             });
         } else {
             await propertyManager.saveProperty();
-            toast.add({
-                severity: 'success',
-                summary: 'Успішно',
-                detail: 'Об\'єкт додано',
-                life: 3000
-            });
         }
 
         try {
