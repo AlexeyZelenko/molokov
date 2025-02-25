@@ -14,18 +14,15 @@
 
 <script setup>
 import { ref, onMounted, watch, nextTick, computed, onBeforeUnmount } from 'vue';
+import { useAreasStore } from '@/store/areasStore';
 import * as L from 'leaflet/dist/leaflet-src.esm';
 import 'leaflet/dist/leaflet.css';
-import { useAreasStore } from '@/store/areasStore';
 
-// Налаштування іконок глобально перед усіма операціями
-// Явно вказуємо шляхи до іконок Leaflet
 const iconUrl = '/leaflet-images/marker-icon.png';
 const iconRetinaUrl = '/leaflet-images/marker-icon-2x.png';
 const shadowUrl = '/leaflet-images/marker-shadow.png';
 
 
-// Створення кастомної іконки як запасного варіанту
 const customIcon = L.icon({
     iconUrl,
     iconRetinaUrl,
