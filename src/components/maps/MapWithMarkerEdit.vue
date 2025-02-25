@@ -16,7 +16,6 @@
 <script setup>
 import { ref, onMounted, watch, nextTick, computed } from 'vue';
 import * as leaflet from 'leaflet/dist/leaflet-src.esm';
-import 'leaflet/dist/leaflet.css';
 import { useAreasStore } from '@/store/areasStore';
 
 import * as L from 'leaflet/dist/leaflet-src.esm';
@@ -91,9 +90,10 @@ const updateMarker = (position) => {
     }
 
     if (!marker.value) {
-        // Создаем маркер, если его еще нет
-        marker.value = leaflet.marker(position, {
-            draggable: props.editable
+        // Создаем маркер с явным указанием иконки
+        marker.value = L.marker(position, {
+            draggable: props.editable,
+            icon: customIcon // Явно указываем иконку
         }).addTo(map.value);
 
         // Добавляем всплывающее окно, если есть данные
