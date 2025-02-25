@@ -1,4 +1,5 @@
 <template>
+    sdsadasd
     <div class="map-container">
         <div ref="mapContainer" style="width: 100%; height: 500px"></div>
         <div v-if="hasMarker && isDelete" class="controls">
@@ -17,6 +18,7 @@ import { ref, onMounted, watch, nextTick, computed, onBeforeUnmount } from 'vue'
 import * as leaflet from 'leaflet/dist/leaflet-src.esm';
 import 'leaflet/dist/leaflet.css';
 import { useAreasStore } from '@/store/areasStore';
+import * as Leaflet from "leaflet";
 
 const props = defineProps({
     property: {
@@ -225,6 +227,21 @@ onBeforeUnmount(() => {
     if (map.value) {
         map.value.remove();
         map.value = null;
+    }
+});
+
+
+const L = Leaflet;
+
+// Настройка иконок при монтировании компонента
+onMounted(() => {
+    if (L.Icon && L.Icon.Default) {
+        // Переопределяем пути к иконкам
+        L.Icon.Default.mergeOptions({
+            iconUrl: '/leaflet-images/marker-icon.png',
+            iconRetinaUrl: '/leaflet-images/marker-icon-2x.png',
+            shadowUrl: '/leaflet-images/marker-shadow.png'
+        });
     }
 });
 </script>
