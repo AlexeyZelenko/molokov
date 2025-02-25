@@ -61,9 +61,11 @@ const props = defineProps({
 const emit = defineEmits(['close-modal']);
 const router = useRouter();
 // Логика кнопок
-const showProperty = (marker) => {
-    console.log('Show property:', marker.item);
-    router.push(`/pages/apartments/view/${marker.item.id}?category=${marker.item.category.code}&subcategory=${marker.item.subcategory.code}`);
+const showProperty = () => {
+    const category = props.marker.item.category.code;
+    const subcategory = props.marker.item.subcategory.code;
+    const id = props.marker.item.id;
+    router.push(`/pages/${category}/view/${subcategory}/${id}?category=${category}&subcategory=${subcategory}`);
 };
 
 const closeModal = () => {

@@ -68,7 +68,7 @@ const createMarkerPopupContent = (marker) => {
    <div class="marker-popup">
      <p>${marker.text || 'No description'}</p>
      <div class="popup-buttons">
-       <button class="edit-btn">Деталі</button>
+       <button class="edit-btn" style="color: #0d6efd">Деталі</button>
      </div>
    </div>
  `;
