@@ -178,6 +178,22 @@
             </div>
         </Fluid>
     </Form>
+
+    <Toast position="bottom-center" group="property-action" @close="onClose">
+        <template #message="slotProps">
+            <div class="flex flex-col items-start flex-auto">
+                <div class="flex items-center gap-2">
+                    <i class="pi pi-check-circle text-green-500 text-2xl"></i>
+                    <span class="font-bold text-lg">{{ slotProps.message.summary }}</span>
+                </div>
+                <div class="font-medium my-4">{{ slotProps.message.detail }}</div>
+                <div class="flex gap-2">
+                    <Button size="small" label="Додати ще оголошення" severity="secondary" @click="onAddMore()"></Button>
+                    <Button size="small" label="Перейти до оголошення" severity="success" @click="onViewProperty()"></Button>
+                </div>
+            </div>
+        </template>
+    </Toast>
 </template>
 
 <script setup>
@@ -561,13 +577,13 @@ const saveOrUpdateProperty = async () => {
             await propertyManager.saveProperty();
         }
 
-        try {
-            setTimeout(() => {
-                router.push({path: `/categories/${propertyData.category.code}/${propertyData.subcategory.code}`});
-            }, 3000);
-        } catch (error) {
-            console.error('Помилка при перенаправленні:', error);
-        }
+        toast.add({
+            severity: 'success',
+            summary: 'Оголошення збережено',
+            detail: 'Оберіть дію для продовження',
+            group: 'property-action',
+            life: 10000
+        });
 
     } catch (error) {
         console.error('Помилка при збереженні об\'єкту:', error);
@@ -580,6 +596,27 @@ const saveOrUpdateProperty = async () => {
     } finally {
         saving.value = false;
     }
+};
+
+const onAddMore = () => {
+    propertyManager.resetForm();
+    toast.removeGroup('property-action');
+
+    toast.add({
+        severity: 'info',
+        summary: 'Нове оголошення',
+        detail: 'Форма очищена для створення нового оголошення',
+        life: 3000
+    });
+};
+
+const onViewProperty = () => {
+    toast.removeGroup('property-action');
+    router.push({path: `/categories/${category.code}/${subcategory.code}`});
+};
+
+const onClose = () => {
+    toast.removeGroup('property-action');
 };
 
 const saveProperty = async () => {
