@@ -252,6 +252,53 @@ const model = ref([
         roles: ['admin', 'customer'],
         items: [
             {
+                label: 'Додати нерухомість',
+                icon: 'pi pi-fw pi-plus',
+                roles: ['admin', 'customer'],
+                items: [
+                    {
+                        label: 'Квартиру',
+                        icon: 'pi pi-fw pi-plus',
+                        to: '/pages/apartments/add'
+                    },
+                    {
+                        label: 'Кімнату',
+                        icon: 'pi pi-fw pi-plus',
+                        to: '/pages/rooms/add'
+                    },
+                    {
+                        label: 'Будинок',
+                        icon: 'pi pi-fw pi-plus',
+                        to: '/pages/houses/add'
+                    },
+                    {
+                        label: 'Приміщення',
+                        icon: 'pi pi-fw pi-plus',
+                        to: '/pages/offices/add'
+                    },
+                    {
+                        label: 'Гаражи',
+                        icon: 'pi pi-fw pi-plus',
+                        to: '/pages/garages/add'
+                    },
+                    {
+                        label: 'Будівлі',
+                        icon: 'pi pi-fw pi-plus',
+                        to: '/pages/commercial/add'
+                    },
+                    {
+                        label: 'Земельні ділянки',
+                        icon: 'pi pi-fw pi-plus',
+                        to: '/pages/land/add'
+                    },
+                    {
+                        label: 'Інше',
+                        icon: 'pi pi-fw pi-plus',
+                        to: '/pages/other/add'
+                    },
+                ]
+            },
+            {
                 label: 'Налаштування',
                 icon: 'pi pi-fw pi-cog',
                 items: [
@@ -503,54 +550,7 @@ const model = ref([
                         ]
                     },
                 ]
-            },
-            {
-                label: 'Додати нерухомість',
-                icon: 'pi pi-fw pi-plus',
-                roles: ['admin', 'customer'],
-                items: [
-                    {
-                        label: 'Квартиру',
-                        icon: 'pi pi-fw pi-plus',
-                        to: '/pages/apartments/add'
-                    },
-                    {
-                        label: 'Кімнату',
-                        icon: 'pi pi-fw pi-plus',
-                        to: '/pages/rooms/add'
-                    },
-                    {
-                        label: 'Будинок',
-                        icon: 'pi pi-fw pi-plus',
-                        to: '/pages/houses/add'
-                    },
-                    {
-                        label: 'Приміщення',
-                        icon: 'pi pi-fw pi-plus',
-                        to: '/pages/offices/add'
-                    },
-                    {
-                        label: 'Гаражи',
-                        icon: 'pi pi-fw pi-plus',
-                        to: '/pages/garages/add'
-                    },
-                    {
-                        label: 'Будівлі',
-                        icon: 'pi pi-fw pi-plus',
-                        to: '/pages/commercial/add'
-                    },
-                    {
-                        label: 'Земельні ділянки',
-                        icon: 'pi pi-fw pi-plus',
-                        to: '/pages/land/add'
-                    },
-                    {
-                        label: 'Інше',
-                        icon: 'pi pi-fw pi-plus',
-                        to: '/pages/other/add'
-                    },
-                ]
-            },
+            }
         ]
     },
     {
