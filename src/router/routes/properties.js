@@ -10,6 +10,15 @@ export default [
                 name: 'properties',
                 component: () => import('@/views/pages/categories/index.vue')
             },
+            {
+                path: '/add-properties',
+                name: 'pageAddProperties',
+                component: () => import('@/views/pages/AddProperties.vue'),
+                meta: {
+                    requiresAuth: true,
+                    title: 'Додати нерухомість'
+                }
+            },
         ]
     },
     {

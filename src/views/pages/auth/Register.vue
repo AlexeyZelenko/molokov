@@ -53,9 +53,9 @@ const onClose = () => {
     visible.value = false;
     router.push('/');
 }
-const toDashboard = () => {
+const toAddProperties = () => {
     visible.value = false;
-    router.push('/dashboard');
+    router.push('/add-properties');
 }
 
 const toHomePage = () => {
@@ -194,9 +194,9 @@ const showTemplate = () => {
                 <div class="font-medium text-lg my-4">{{ slotProps.message.summary }}</div>
                 <Button
                     size="small"
-                    label="Перейти в адмінку >>"
+                    label="Додати нерухомість >>"
                     severity="success"
-                    @click="toDashboard()"
+                    @click="toAddProperties()"
                     class="m-4" fluid
                 ></Button>
                 <Button

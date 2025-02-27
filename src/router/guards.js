@@ -61,13 +61,22 @@ export const authGuard = async (to, from, next) => {
     }
 
     // Standard authentication check
-    if (to.meta.requiresAuth && !authStore.user) {
+    const isAuthRequired = !!to.meta?.requiresAuth || !!to.requiresAuth;
+    const isUserAuthenticated = !!authStore.user;
+    console.log('Auth Guard:', {
+        isAuthRequired,
+        isUserAuthenticated,
+        route: to.fullPath
+    });
+    if (isAuthRequired && !isUserAuthenticated) {
+        console.log('Auth Guard: Redirecting unauthenticated user to login page');
         finishLoading();
-        next('/auth/login');
-    } else {
-        finishLoading();
-        next();
+        return next('/auth/login');
     }
+
+// User is either authenticated or accessing a non-protected route
+    finishLoading();
+    next();
 };
 
 // Функция для завершения загрузки с минимальной задержкой
