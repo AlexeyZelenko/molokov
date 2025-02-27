@@ -2,6 +2,9 @@
 import { useLayout } from '@/layout/composables/layout';
 import AppConfigurator from './AppConfigurator.vue';
 import { useAuthStore } from '@/store/authFirebase';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const authStore = useAuthStore();
 const user = authStore.user;
@@ -9,7 +12,7 @@ const user = authStore.user;
 const handleLogout = async () => {
     try {
         await authStore.logout();
-        await router.push('/auth/login');
+        await router.push('/');
     } catch (error) {
         console.error('Ошибка при выходе:', error);
     }

@@ -74,7 +74,6 @@ export class PropertyManager {
     };
 
     getInitialState(propertyType) {
-        console.log('Getting initial state:', propertyType);
         const [category, subcategory] = propertyType.split('-');
 
         // Безопасная проверка
@@ -88,7 +87,6 @@ export class PropertyManager {
     }
 
     setPropertyType(propertyType) {
-        console.log('Setting property type:', propertyType);
         const { images, address } = this.property;
 
         // Обновляем объект без потери реактивности
@@ -97,8 +95,6 @@ export class PropertyManager {
         // Восстанавливаем данные, которые нужно сохранить
         this.property.images = images;
         this.property.address = address;
-
-        console.log('Property after setting type:', this.property);
     };
 
     resetForm(propertyType) {

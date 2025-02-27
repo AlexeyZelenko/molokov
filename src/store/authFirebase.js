@@ -29,7 +29,7 @@ export const useAuthStore = defineStore('auth', () => {
         return user.value.role || 'guest'
     })
 
-    async function register({ email, password, name, phones, role = 'customer', remember = false }) {
+    async function register({ email, password, name, phones, agency, role = 'customer', remember = false }) {
         try {
             loading.value = true;
 
@@ -47,6 +47,7 @@ export const useAuthStore = defineStore('auth', () => {
                 email,
                 role,
                 phones,
+                agency,
                 id: authUser.uid,
                 createdAt: serverTimestamp(),
                 lastLogin: serverTimestamp()
@@ -64,7 +65,8 @@ export const useAuthStore = defineStore('auth', () => {
                 email: authUser.email || null,
                 displayName: name || null,
                 role: role || 'customer',
-                phoneNumbers: phones || null
+                phoneNumbers: phones || null,
+                agency: agency || null
             };
 
             // Optional: Store some user info in localStorage for persistence

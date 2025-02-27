@@ -11,6 +11,8 @@
                 :class="{'p-invalid': errors[field.code]}"
                 class="w-full"
                 size="small"
+                @change="validateField(field.code)"
+                @blur="validateField(field.code)"
             />
             <small class="text-red-500" v-if="errors[field.code]">{{ errors[field.code] }}</small>
         </label>
@@ -18,7 +20,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import SelectButton from 'primevue/selectbutton';
 import Select from 'primevue/select';
 
@@ -55,12 +57,33 @@ const fields = computed(() => ({
     }
 }));
 
-const validateFields = () => {
+// Watch for modelValue changes to validate in real-time
+watch(() => props.modelValue, () => {
+    validateAllFields();
+}, {deep: true});
+
+// Validate a specific field
+const validateField = (code) => {
+    if (!props.modelValue[code]) {
+        const field = Object.values(fields.value).find(f => f.code === code);
+        errors.value[code] = `${field.label} обов'язковий`;
+    } else {
+        delete errors.value[code];
+    }
+
+    const isValid = Object.keys(errors.value).length === 0;
+    emit('validation-change', isValid);
+
+    return isValid;
+};
+
+// Validate all fields at once
+const validateAllFields = () => {
     errors.value = {};
 
-    Object.entries(fields.value).forEach(([key, field]) => {
+    Object.values(fields.value).forEach((field) => {
         if (!props.modelValue[field.code]) {
-            errors.value[key] = `${field.label} обов'язковий`;
+            errors.value[field.code] = `${field.label} обов'язковий`;
         }
     });
 
@@ -70,13 +93,19 @@ const validateFields = () => {
     return isValid;
 };
 
-defineExpose({ validate: validateFields });
+// Initial validation on mount
+onMounted(() => {
+    validateAllFields();
+});
+
+defineExpose({validate: validateAllFields});
 </script>
 
 <style scoped>
 .p-invalid {
     border-color: #dc3545;
 }
+
 .p-invalid:focus {
     box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
 }

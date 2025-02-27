@@ -37,7 +37,6 @@ const storage = getStorage();
 
 onMounted(async () => {
     await userStore.fetchUserProfile();
-    console.log('authStore.profile', authStore.user);
     if (userStore.profile) {
         editForm.value = {
             name: userStore.profile.name,
