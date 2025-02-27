@@ -24,6 +24,10 @@ const isCreator = computed(() => {
     return userStore.user?.id === props.item.creator?.id;
 });
 
+const isAdmin = computed(() => {
+    return userStore.user?.role === 'admin';
+});
+
 const showProperty = () => {
     const category = props.item.category.code;
     const subcategory = props.item.subcategory.code;
@@ -39,13 +43,23 @@ const editProperty = () => {
     // router.push(`/pages/${category}/edit/${subcategory}/${props.item.id}?category=${category}&subcategory=${subcategory}`);
 };
 
-const deleteProperty = () => {
-    if (!isCreator.value) return;
+const deleteProperty = (event) => {
+    if (!isCreator.value && !isAdmin) return;
 
     confirm.require({
+        target: event.currentTarget,
+        group: 'templating',
         message: 'Ви впевнені, що хочете видалити цей об\'єкт?',
-        header: 'Підтвердження видалення',
-        icon: 'pi pi-exclamation-triangle',
+        icon: 'pi pi-info-circle',
+        rejectProps: {
+            label: 'Відміна',
+            severity: 'secondary',
+            outlined: true
+        },
+        acceptProps: {
+            label: 'Видалити',
+            severity: 'danger',
+        },
         accept: async () => {
             try {
                 if (props.item.images?.length > 0) {
@@ -84,6 +98,9 @@ const deleteProperty = () => {
                     life: 3000
                 });
             }
+        },
+        reject: () => {
+            toast.add({ severity: 'error', summary: 'Відхилено', detail: 'Ви відхилили видалення', life: 3000 });
         }
     });
 };
@@ -91,14 +108,22 @@ const deleteProperty = () => {
 </script>
 
 <template>
+    <Toast />
+    <ConfirmPopup group="templating" class="mx-4">
+        <template #message="slotProps">
+            <div class="flex flex-col items-center w-full gap-4 border-b border-surface-200 dark:border-surface-700 p-4 mb-4 pb-0">
+                <i :class="slotProps.message.icon" class="text-6xl text-primary-500"></i>
+                <p>{{ slotProps.message.message }}</p>
+            </div>
+        </template>
+    </ConfirmPopup>
     <div class="flex gap-2">
         <Button
             label="Переглянути деталі"
             class="p-button-info mr-2"
             @click="showProperty"
         />
-        <!-- Show edit and delete buttons only for creator -->
-        <template v-if="isCreator">
+        <template v-if="isCreator || isAdmin">
             <Button
                 icon="pi pi-pencil"
                 class="p-button-warning mr-2"
