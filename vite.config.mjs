@@ -43,6 +43,15 @@ export default defineConfig({
                 assetFileNames: 'assets/[name].[ext]'
             }
         }
+    },
+    server: {
+        host: '0.0.0.0', // Чтобы принимать запросы со всех IP
+        port: 5173, // Порт по умолчанию
+        strictPort: true,
+        hmr: {
+            clientPort: 443, // Нужно для работы через ngrok
+        },
+        allowedHosts: ['.ngrok-free.app'], // Разрешаем ngrok-домены
     }
 
 });

@@ -19,6 +19,11 @@ export default [
                     title: 'Додати нерухомість'
                 }
             },
+            {
+                path: '/нерухомість?:id',
+                name: 'pageFindProperty',
+                component: () => import('@/views/pages/FindPropertiesFromId.vue'),
+            },
         ]
     },
     {

@@ -63,13 +63,7 @@ export const authGuard = async (to, from, next) => {
     // Standard authentication check
     const isAuthRequired = !!to.meta?.requiresAuth || !!to.requiresAuth;
     const isUserAuthenticated = !!authStore.user;
-    console.log('Auth Guard:', {
-        isAuthRequired,
-        isUserAuthenticated,
-        route: to.fullPath
-    });
     if (isAuthRequired && !isUserAuthenticated) {
-        console.log('Auth Guard: Redirecting unauthenticated user to login page');
         finishLoading();
         return next('/auth/login');
     }

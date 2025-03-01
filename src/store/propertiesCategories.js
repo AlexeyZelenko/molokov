@@ -337,5 +337,52 @@ export const usePropertiesStore = defineStore('properties', {
         setFilters(filters) {
             this.filters = filters;
         },
+
+        /**
+         * Найти продукт по его ID во всех коллекциях и подколлекциях
+         * @param {string} id - ID продукта
+         * @returns {object|null} - Найденный продукт или null, если не найден
+         */
+        async findPropertyById(id) {
+            if (!id) {
+                console.warn('❗ ID продукта не указан.');
+                return null;
+            }
+
+            this.loading = true;
+            this.error = null;
+
+            try {
+                // Основные коллекции (например, "apartments", "houses", "land" и т.д.)
+                const mainCollections = ['apartments', 'houses', 'land', 'commercial', 'garage', 'other', 'rooms', 'offices'];
+
+                for (const mainCollection of mainCollections) {
+                    const subcollections = ['sell', 'rent', 'exchange', 'daily'];
+
+                    for (const subcollection of subcollections) {
+                        const collectionPath = `properties/${mainCollection}/${subcollection}`;
+                        const q = query(collection(db, collectionPath), where('__name__', '==', id));
+
+                        const querySnapshot = await getDocs(q);
+
+                        if (!querySnapshot.empty) {
+                            const doc = querySnapshot.docs[0];
+                            console.log('✅ Продукт найден:', doc.id, doc.data());
+                            this.loading = false;
+                            return { id: doc.id, ...doc.data() };
+                        }
+                    }
+                }
+
+                console.warn('⚠️ Продукт с таким ID не найден.');
+                return null;
+            } catch (error) {
+                console.error('❌ Ошибка при поиске продукта:', error);
+                this.error = error.message;
+                return null;
+            } finally {
+                this.loading = false;
+            }
+        },
     },
 });

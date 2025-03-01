@@ -27,6 +27,10 @@ export default {
             init() {
                 if (!this.isAvailable) return false;
 
+                console.log('✅ Telegram WebApp:', this.webApp);
+                console.log('📌 User Data:', this.webApp.initDataUnsafe);
+                console.log('🌍 Platform:', this.webApp.platform);
+
                 // Сообщаем Telegram, что приложение готово
                 this.webApp.ready();
 
@@ -121,25 +125,17 @@ export default {
 
             // Поделиться контентом через Telegram
             shareContent(text, url) {
-                console.log('Share content request:', { text, url });
+                console.log('📤 Share content request:', { text, url });
 
+                // Проверка наличия текста
                 if (!text) {
                     console.warn('❗ Text is required for sharing.');
                     return false;
                 }
 
-                const shortUrl = '➡️ [Далее](https://t.me/share/url?url=' + encodeURIComponent(url) + ')';
-                const shareText = `${text}\n\n${shortUrl}`;
-
-                if (this.isAvailable && this.webApp && this.webApp.switchInlineQuery) {
-                    console.log('✅ Using Telegram WebApp API for sharing.');
-                    this.webApp.switchInlineQuery(shareText, ['users', 'groups', 'channels']);
-                    return true;
-                } else {
-                    console.log('⚠️ Telegram WebApp API is NOT available. Fallback to browser sharing.');
-                    window.open(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`, '_blank');
-                    return false;
-                }
+                // Формируем текст для публикации
+                const shortUrl = url ? `➡️ [Детальніше](${url})` : '';
+                const shareText = `${text}`;
             }
         };
 
