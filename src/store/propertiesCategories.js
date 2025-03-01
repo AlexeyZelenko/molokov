@@ -343,7 +343,7 @@ export const usePropertiesStore = defineStore('properties', {
          * @param {string} id - ID продукта
          * @returns {object|null} - Найденный продукт или null, если не найден
          */
-        async findPropertyById(id) {
+        async findPropertyById(category, subcategory, id) {
             if (!id) {
                 console.warn('❗ ID продукта не указан.');
                 return null;
@@ -356,22 +356,17 @@ export const usePropertiesStore = defineStore('properties', {
                 // Основные коллекции (например, "apartments", "houses", "land" и т.д.)
                 const mainCollections = ['apartments', 'houses', 'land', 'commercial', 'garage', 'other', 'rooms', 'offices'];
 
-                for (const mainCollection of mainCollections) {
-                    const subcollections = ['sell', 'rent', 'exchange', 'daily'];
+                const collectionPath = `properties/${category}/${subcategory}`;
+                console.log(`🔍 Поиск в коллекции: ${collectionPath}`);
 
-                    for (const subcollection of subcollections) {
-                        const collectionPath = `properties/${mainCollection}/${subcollection}`;
-                        const q = query(collection(db, collectionPath), where('__name__', '==', id));
+                const q = query(collection(db, collectionPath), where('idProperty', '==', Number(id)));
+                const querySnapshot = await getDocs(q);
 
-                        const querySnapshot = await getDocs(q);
-
-                        if (!querySnapshot.empty) {
-                            const doc = querySnapshot.docs[0];
-                            console.log('✅ Продукт найден:', doc.id, doc.data());
-                            this.loading = false;
-                            return { id: doc.id, ...doc.data() };
-                        }
-                    }
+                if (!querySnapshot.empty) {
+                    const doc = querySnapshot.docs[0];
+                    console.log('✅ Продукт найден:', doc.id, doc.data());
+                    this.loading = false;
+                    return { id: doc.id, ...doc.data() };
                 }
 
                 console.warn('⚠️ Продукт с таким ID не найден.');
@@ -383,6 +378,6 @@ export const usePropertiesStore = defineStore('properties', {
             } finally {
                 this.loading = false;
             }
-        },
+        }
     },
 });

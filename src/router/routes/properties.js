@@ -20,7 +20,7 @@ export default [
                 }
             },
             {
-                path: '/нерухомість?:id',
+                path: '/:category/:subcategory/:id',
                 name: 'pageFindProperty',
                 component: () => import('@/views/pages/FindPropertiesFromId.vue'),
             },

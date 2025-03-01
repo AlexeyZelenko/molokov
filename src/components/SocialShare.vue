@@ -101,6 +101,8 @@ const formatUrl = (url) => {
 
 const shareMetaData = computed(() => {
     const { property, title, adUrl, imageUrl  } = props;
+    const urlFindProperty = `/${property.category.code}/${property.subcategory.code}/${property.idProperty}`;
+    const newUrl = new URL(urlFindProperty, window.location.origin).href;
 
     const descriptionParts = [
         `🏠 Кімнат: ${property.rooms?.all || 'Не вказано'} 💰 Ціна: ${property.price} USD`,
@@ -127,14 +129,13 @@ const shareMetaData = computed(() => {
         `🏠 Кімнат: ${property.rooms?.all || 'Не вказано'} 💰 Ціна: ${property.price} USD`,
         `📏 Площа: ${property.apartmentArea?.totalArea} м²  🔝 Поверх: ${property.floors.floor}/${property.floors.totalFloors}`,
         `🏙️ Адреса: ${property.address.region.name} / ${property.address.city.name || ''} / ${property.address.area.name || ''}`,
-        `<a href="${adUrl}">Детальніше</a>`
     ].filter(Boolean).join('\n');
 
     return {
         title,
         description: descriptionParts,
         image: imageFullUrl,
-        url: adUrl,
+        url: newUrl || adUrl,
         formattedUrl: formatUrl(adUrl),
         descriptionPartsTelegram
     };
