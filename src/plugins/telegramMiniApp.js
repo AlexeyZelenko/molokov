@@ -121,18 +121,22 @@ export default {
 
             // Поделиться контентом через Telegram
             shareContent(text, url) {
-                console.log('Share content:', text, url);
-                if (this.isAvailable && this.webApp.switchInlineQuery) {
-                    console.log('Using Telegram WebApp API for sharing.');
-                    // Формируем сообщение для шаринга
-                    const shareText = url ? `${text} ${url}` : text;
+                console.log('Share content request:', { text, url });
 
-                    // Открываем диалог для выбора чата, куда будет отправлено сообщение
+                if (!text) {
+                    console.warn('❗ Text is required for sharing.');
+                    return false;
+                }
+
+                const shortUrl = '➡️ [Далее](https://t.me/share/url?url=' + encodeURIComponent(url) + ')';
+                const shareText = `${text}\n\n${shortUrl}`;
+
+                if (this.isAvailable && this.webApp && this.webApp.switchInlineQuery) {
+                    console.log('✅ Using Telegram WebApp API for sharing.');
                     this.webApp.switchInlineQuery(shareText, ['users', 'groups', 'channels']);
                     return true;
                 } else {
-                    console.log('Telegram WebApp API is not available. Fallback to default sharing.');
-                    // Запасной вариант для обычного веб-приложения
+                    console.log('⚠️ Telegram WebApp API is NOT available. Fallback to browser sharing.');
                     window.open(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`, '_blank');
                     return false;
                 }
