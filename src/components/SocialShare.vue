@@ -14,6 +14,14 @@
             :mask="false"
         />
 
+        <button @click="shareProduct" class="share-button">
+        <span class="icon">
+          <svg viewBox="0 0 24 24" width="20" height="20">
+            <path fill="currentColor" d="M18,16.08C17.24,16.08 16.56,16.38 16.04,16.85L8.91,12.7C8.96,12.47 9,12.24 9,12C9,11.76 8.96,11.53 8.91,11.3L15.96,7.19C16.5,7.69 17.21,8 18,8A3,3 0 0,0 21,5A3,3 0 0,0 18,2A3,3 0 0,0 15,5C15,5.24 15.04,5.47 15.09,5.7L8.04,9.81C7.5,9.31 6.79,9 6,9A3,3 0 0,0 3,12A3,3 0 0,0 6,15C6.79,15 7.5,14.69 8.04,14.19L15.16,18.34C15.11,18.55 15.08,18.77 15.08,19C15.08,20.61 16.39,21.91 18,21.91C19.61,21.91 20.92,20.61 20.92,19A2.92,2.92 0 0,0 18,16.08Z" />
+          </svg>
+        </span>
+        </button>
+
         <Transition v-if="showPreview" name="fade">
             <div class="share-preview-card">
                 <div v-if="shareMetaData.image" class="preview-image">
@@ -30,10 +38,12 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount, inject } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import SpeedDial from 'primevue/speeddial';
 import { useHead } from '@vueuse/head'
+
+const telegram = inject('telegram');
 
 const props = defineProps({
     adUrl: {
@@ -53,6 +63,14 @@ const props = defineProps({
         required: true
     }
 });
+
+const shareProduct = () => {
+    const text = `Подивіться на цей об'єкт: ${props.property.title} - ${props.property.price} $`;
+    const url = props.adUrl;
+
+    // Используем Telegram WebApp API для шаринга, если доступно
+    telegram.shareContent(text, url);
+}
 
 // Добавляем состояние для отслеживания открытия/закрытия SpeedDial
 const isOpen = ref(false);
@@ -83,10 +101,9 @@ const shareMetaData = computed(() => {
     const { property, title, adUrl, imageUrl  } = props;
 
     const descriptionParts = [
-        `${property.category.name}/${property.subcategory.name}`,
         `🏠 Кімнат: ${property.rooms?.all || 'Не вказано'} 💰 Ціна: ${property.price} USD`,
         `📏 Площа: ${property.apartmentArea?.totalArea} м²  🔝 Поверх: ${property.floors.floor}/${property.floors.totalFloors}`,
-        `🏙️ Адреса: ${property.address.region.name} / ${property.address.city.name || ''} / ${property.address.area.name || ''}`,
+        `🏙️ Адреса: ${property.address.region.name} / ${property.address.city.name || ''} / ${property.address.area.name || ''}/n`,
     ].filter(Boolean).join('\n');
 
     let imageFullUrl = '';
@@ -103,33 +120,22 @@ const shareMetaData = computed(() => {
         imageFullUrl = new URL(imageFullUrl, baseUrl).href;
     }
 
+    const descriptionPartsTelegram = [
+        `${property.category.name}/${property.subcategory.name}`,
+        `🏠 Кімнат: ${property.rooms?.all || 'Не вказано'} 💰 Ціна: ${property.price} USD`,
+        `📏 Площа: ${property.apartmentArea?.totalArea} м²  🔝 Поверх: ${property.floors.floor}/${property.floors.totalFloors}`,
+        `🏙️ Адреса: ${property.address.region.name} / ${property.address.city.name || ''} / ${property.address.area.name || ''}`,
+        `<a href="${adUrl}">Детальніше</a>`
+    ].filter(Boolean).join('\n');
+
     return {
         title,
         description: descriptionParts,
         image: imageFullUrl,
         url: adUrl,
-        formattedUrl: formatUrl(adUrl)
+        formattedUrl: formatUrl(adUrl),
+        descriptionPartsTelegram
     };
-});
-
-onMounted(() => {
-    useHead({
-        title: shareMetaData.value.title,
-        meta: [
-            { name: 'description', content: shareMetaData.value.description },
-            { property: 'og:title', content: shareMetaData.value.title },
-            { property: 'og:description', content: shareMetaData.value.description },
-            { property: 'og:image', content: shareMetaData.value.image },
-            { property: 'og:image:width', content: '1200' },
-            { property: 'og:image:height', content: '630' },
-            { property: 'og:url', content: shareMetaData.value.url },
-            { property: 'og:type', content: 'website' },
-            { name: 'twitter:card', content: 'summary_large_image' },
-            { name: 'twitter:title', content: shareMetaData.value.title },
-            { name: 'twitter:description', content: shareMetaData.value.description },
-            { name: 'twitter:image', content: shareMetaData.value.image }
-        ]
-    });
 });
 
 const SHARE_CONFIG = {
@@ -145,7 +151,7 @@ const SHARE_CONFIG = {
             // Telegram автоматически делает URL кликабельным, если он в отдельной строке
             // const textWithUrl = `${data.description}\n\n${data.url}`;
 
-            const textWithUrl = `\n${data.description}`;
+            const textWithUrl = `\n${data.descriptionPartsTelegram}`;
 
             return `https://t.me/share/url?url=${encodeURIComponent(data.url)}&text=${encodeURIComponent(textWithUrl)}&parse_mode=html`;
         },
@@ -215,6 +221,43 @@ const shareItems = computed(() => [
         command: copyLink
     }
 ]);
+
+onMounted(() => {
+    useHead({
+        title: shareMetaData.value.title,
+        meta: [
+            { name: 'description', content: shareMetaData.value.description },
+            { property: 'og:title', content: shareMetaData.value.title },
+            { property: 'og:description', content: shareMetaData.value.description },
+            { property: 'og:image', content: shareMetaData.value.image },
+            { property: 'og:image:width', content: '1200' },
+            { property: 'og:image:height', content: '630' },
+            { property: 'og:url', content: shareMetaData.value.url },
+            { property: 'og:type', content: 'website' },
+            { name: 'twitter:card', content: 'summary_large_image' },
+            { name: 'twitter:title', content: shareMetaData.value.title },
+            { name: 'twitter:description', content: shareMetaData.value.description },
+            { name: 'twitter:image', content: shareMetaData.value.image }
+        ]
+    });
+
+    if (telegram.isAvailable) {
+        // Настраиваем навигацию
+        telegram.enableBackButton(true);
+        telegram.onBackButtonClicked(() => {
+            router.go(-1);
+        });
+
+        // Деактивируем главную кнопку (мы используем собственную кнопку в форме)
+        telegram.enableMainButton(false);
+    }
+});
+
+onBeforeUnmount(() => {
+    if (telegram.isAvailable) {
+        telegram.enableBackButton(false);
+    }
+});
 </script>
 
 <style scoped>

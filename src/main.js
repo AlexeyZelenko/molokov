@@ -17,6 +17,9 @@ import '@/assets/tailwind.css';
 import 'animate.css';
 import 'leaflet/dist/leaflet.css';
 
+//Telegram API
+import TelegramPlugin from '@/plugins/telegramMiniApp';
+
 // Конфигурация темы
 const themeConfig = {
     preset: Aura,
@@ -53,6 +56,7 @@ async function initializeApp() {
     app.use(head);
     app.use(PrimeVue, { theme: themeConfig });
     app.use(ToastService);
+    app.use(TelegramPlugin);
     app.use(ConfirmationService);
 
     try {
