@@ -1,41 +1,79 @@
 import axios from "axios";
 
 const olxApiRegions = "https://getolxregions-ngadaglvca-uc.a.run.app";
+const olxApiCities = "https://getolxcities-ngadaglvca-uc.a.run.app";
+const olxApiCityDetails = "https://getolxcitydetails-ngadaglvca-uc.a.run.app";
 const olxTokenUrl = "https://getolxtoken-ngadaglvca-uc.a.run.app";
-
 let isLoading = false;
-export async function fetchOlxRegions() {
-    isLoading = true; // Set loading state to true
+
+async function getOlxToken() {
     try {
         console.log("Fetching OLX access token...");
         const tokenResponse = await axios.get(olxTokenUrl);
         console.log("OLX token response:", tokenResponse.data);
-        const accessToken = tokenResponse.data.access_token;
+        return tokenResponse.data.access_token;
+    } catch (error) {
+        console.error("Error fetching OLX token:", error);
+        throw new Error("Failed to fetch OLX token");
+    }
+}
 
+export async function fetchOlxRegions() {
+    isLoading = true;
+    try {
+        const accessToken = await getOlxToken();
         console.log("Fetching OLX regions...");
-        const adsResponse = await axios.get(olxApiRegions, {
+        const regionsResponse = await axios.get(olxApiRegions, {
             headers: {
                 Authorization: `Bearer ${accessToken}`,
             },
         });
-
-        console.log("OLX regions response:", adsResponse.data);
-        return adsResponse.data.data; // Assuming data is in adsResponse.data.data
+        console.log("OLX regions response:", regionsResponse.data);
+        return regionsResponse.data.data;
     } catch (error) {
         console.error("Error fetching OLX regions:", error);
-        if (error.response) {
-            console.error("Error response data:", error.response.data);
-            console.error("Error response status:", error.response.status);
-            if (error.response.status === 401) {
-                // Handle unauthorized error (e.g., token expired)
-                this.error = "Сессия истекла. Пожалуйста, авторизуйтесь снова.";
-            } else {
-                this.error = "Ошибка при получении объявлений.";
-            }
-        } else {
-            this.error = "Ошибка сети.";
-        }
+        throw new Error("Failed to fetch OLX regions");
     } finally {
-        isLoading = false; // Set loading state to false
+        isLoading = false;
+    }
+}
+
+export async function fetchOlxCities(regionId) {
+    isLoading = true;
+    try {
+        const accessToken = await getOlxToken();
+        console.log(`Fetching OLX cities for region ${regionId}...`);
+        const citiesResponse = await axios.get(`${olxApiCities}/${regionId}`, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        });
+        console.log("OLX cities response:", citiesResponse.data);
+        return citiesResponse.data.data;
+    } catch (error) {
+        console.error("Error fetching OLX cities:", error);
+        throw new Error("Failed to fetch OLX cities");
+    } finally {
+        isLoading = false;
+    }
+}
+
+export async function fetchOlxCityDetails(cityId) {
+    isLoading = true;
+    try {
+        const accessToken = await getOlxToken();
+        console.log(`Fetching OLX city details for city ${cityId}...`);
+        const cityDetailsResponse = await axios.get(`${olxApiCityDetails}/${cityId}`, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        });
+        console.log("OLX city details response:", cityDetailsResponse.data);
+        return cityDetailsResponse.data.data;
+    } catch (error) {
+        console.error("Error fetching OLX city details:", error);
+        throw new Error("Failed to fetch OLX city details");
+    } finally {
+        isLoading = false;
     }
 }
