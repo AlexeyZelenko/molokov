@@ -49,5 +49,17 @@ export default [
                 { name: 'Деталі', route: '/pages/users/user/propertyListId' }
             ]
         }
+    },
+    {
+        path: '/users/user/olx',
+        name: 'userProfileClientsOlx',
+        component: () => import('@/views/users/user/Olx.vue'),
+        meta: {
+            requiresAuth: true,
+            breadcrumb: [
+                { name: 'Головна', route: '/', icon: 'pi pi-home' },
+                { name: 'OLX', route: '/pages/users/user/olx' }
+            ]
+        }
     }
 ]

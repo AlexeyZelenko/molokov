@@ -550,6 +550,11 @@ const model = ref([
                         ]
                     },
                 ]
+            },
+            {
+                label: 'OLX',
+                icon: 'pi pi-fw pi-external-link',
+                to: '/users/user/olx'
             }
         ]
     },
