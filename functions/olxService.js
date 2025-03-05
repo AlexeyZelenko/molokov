@@ -15,7 +15,6 @@ async function getTokenOlx() {
 
     try {
         console.log(`[INFO] [${new Date().toISOString()}] getOlxToken: Запрос нового токена...`);
-        console.log(`[INFO] [${new Date().toISOString()}] getOlxToken: CLIENT_ID: ${CLIENT_ID}, CLIENT_SECRET: ${CLIENT_SECRET}`);
 
         const data = qs.stringify({
             grant_type: "client_credentials",

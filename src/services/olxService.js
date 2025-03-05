@@ -10,7 +10,6 @@ async function getOlxToken() {
     try {
         console.log("Fetching OLX access token...");
         const tokenResponse = await axios.get(olxTokenUrl);
-        console.log("OLX token response:", tokenResponse.data);
         return tokenResponse.data.access_token;
     } catch (error) {
         console.error("Error fetching OLX token:", error);
