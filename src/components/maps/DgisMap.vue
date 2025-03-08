@@ -118,9 +118,6 @@ const updateMarker = (position) => {
         // Обновляем существующий маркер
         marker.value.setLatLng(position);
     }
-
-    // Логирование для отладки
-    console.log('Маркер создан/обновлен:', position);
 };
 
 // Удаление маркера
@@ -192,8 +189,6 @@ onMounted(async () => {
         testImage.onload = () => console.log('Иконка маркера успешно загружена');
         testImage.onerror = () => console.error('ОШИБКА: Иконка маркера не найдена!');
         testImage.src = iconUrl;
-
-        console.log('Проверка наличия файлов иконок...', testImage.src);
     } catch (e) {
         console.error('Ошибка при тестировании иконки:', e);
     }

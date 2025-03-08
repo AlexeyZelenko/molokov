@@ -226,7 +226,6 @@ const shareItems = computed(() => [
 ]);
 
 onMounted(() => {
-    console.log('Share mounted', props.property);
     useHead({
         title: shareMetaData.value.title,
         meta: [

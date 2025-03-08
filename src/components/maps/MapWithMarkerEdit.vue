@@ -165,8 +165,6 @@ onMounted(async () => {
         testImage.onload = () => console.log('Иконка маркера успешно загружена');
         testImage.onerror = () => console.error('ОШИБКА: Иконка маркера не найдена!');
         testImage.src = iconUrl;
-
-        console.log('Проверка наличия файлов иконок...', testImage.src);
     } catch (e) {
         console.error('Ошибка при тестировании иконки:', e);
     }

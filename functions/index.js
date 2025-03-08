@@ -30,43 +30,58 @@ exports.getOlxToken = onRequest({ region: "us-central1" }, async (req, res) => {
     });
 });
 
-exports.getOlxRegions = onRequest({ region: "us-central1" }, async (req, res) => {
-    console.log(`[INFO] [${new Date().toISOString()}] getOlxRegions: Начало запроса...`);
-    cors(req, res, async () => {
-        console.log(`[INFO] [${new Date().toISOString()}] getOlxRegions: CORS middleware выполнено.`);
-        try {
-            console.log(`[INFO] [${new Date().toISOString()}] getOlxRegions: Начало запроса.`);
-            console.log(`[INFO] [${new Date().toISOString()}] getOlxRegions: Запрос headers: ${JSON.stringify(req.headers)}`);
+exports.getOlxRegions = onRequest({ region: "us-central1" }, (req, res) => {
+    console.log(`[INFO] [${new Date().toISOString()}] getOlxRegions: Запрос начат.`);
 
-            verifyToken(req, res, async () => {
-                console.log(`[INFO] [${new Date().toISOString()}] getOlxRegions: Проверка токена прошла успешно.`);
-                const data = await fetchOlxData('https://www.olx.ua/api/partner/regions', req.token)
-                console.log(
-                    `[INFO] [${new Date().toISOString()}] getOlxRegions: Объявления OLX успешно получены. Статус: 200, данные: ${JSON.stringify(data)}`
-                );
-                return res.status(200).json(data);
-            })
+    cors(req, res, async () => {
+        console.log(`[INFO] [${new Date().toISOString()}] getOlxRegions: CORS выполнен.`);
+        console.log(`[INFO] [${new Date().toISOString()}] getOlxRegions: Запрос headers: ${JSON.stringify(req.headers)}`);
+
+        try {
+            await verifyToken(req, res);
+            console.log(`[INFO] [${new Date().toISOString()}] getOlxRegions: Токен подтвержден.`);
+
+            const data = await fetchOlxData('https://www.olx.ua/api/partner/regions', req.token);
+            console.log(`[INFO] [${new Date().toISOString()}] getOlxRegions: Данные получены (${data.length} записей).`);
+
+            return res.status(200).json(data);
         } catch (error) {
-            return res.status(error.message === 'Invalid token' ? 401 : 500).json({ error: error.message });
+            console.error(`[ERROR] [${new Date().toISOString()}] getOlxRegions: Ошибка: ${error.message}`);
+            if (!res.headersSent) {
+                return res.status(error.message === 'Invalid token' ? 401 : 500).json({ error: error.message });
+            }
         }
     });
 });
 
 exports.getOlxCities = onRequest({ region: "us-central1" }, async (req, res) => {
-    console.log(`[INFO] [${new Date().toISOString()}] getOlxCities: Начало запроса...`);
-    cors(req, res, async () => {
-        console.log(`[INFO] [${new Date().toISOString()}] getOlxCities: CORS middleware выполнено.`);
-        try {
-            console.log(`[INFO] [${new Date().toISOString()}] getOlxCities: Начало запроса.`);
+    console.log(`[INFO] [${new Date().toISOString()}] getOlxCities: Запрос начат.`);
 
-            verifyToken(req, res, async () => {
-                const data = await fetchOlxData("https://www.olx.ua/api/partner/cities", req.token)
-                console.log(
-                    `[INFO] [${new Date().toISOString()}] getOlxCities: Города OLX успешно получены. Статус: 200, данные: ${JSON.stringify(data)}`
-                );
-                return res.status(200).json(data);
-            })
+    cors(req, res, async () => {
+        try {
+            console.log(`[INFO] [${new Date().toISOString()}] getOlxCities: CORS выполнен.`);
+
+            await verifyToken(req, res);
+            console.log(`[INFO] [${new Date().toISOString()}] getOlxCities: Токен подтвержден.`);
+
+            const limit = req.query.limit || 2000;
+            const offset = req.query.offset || 5000;
+            console.log(`[INFO] [${new Date().toISOString()}] getOlxCities: limit=${limit}, offset=${offset}`);
+            const url = `https://www.olx.ua/api/partner/cities?offset=${offset}&limit=${limit}`;
+            console.log(`[INFO] [${new Date().toISOString()}] getOlxCities: Запрос URL=${url}`);
+
+            const cities = await fetchOlxData(url, req.token);
+
+            if (!cities || cities.length === 0) {
+                console.log(`[INFO] [${new Date().toISOString()}] getOlxCities: Нет данных.`);
+                return res.status(200).json([]);
+            }
+
+            console.log(`[INFO] [${new Date().toISOString()}] getOlxCities: Получено ${cities.length} записей.`);
+            return res.status(200).json(cities);
+
         } catch (error) {
+            console.error(`[ERROR] [${new Date().toISOString()}] getOlxCities: Ошибка: ${error.message}`);
             return res.status(error.message === 'Invalid token' ? 401 : 500).json({ error: error.message });
         }
     });
@@ -74,26 +89,32 @@ exports.getOlxCities = onRequest({ region: "us-central1" }, async (req, res) => 
 
 exports.getOlxCityDetails = onRequest({ region: "us-central1" }, async (req, res) => {
     console.log(`[INFO] [${new Date().toISOString()}] getOlxCityDetails: Начало запроса...`);
+
     cors(req, res, async () => {
-        console.log(`[INFO] [${new Date().toISOString()}] getOlxCityDetails: CORS middleware выполнено.`);
         try {
-            console.log(`[INFO] [${new Date().toISOString()}] getOlxCityDetails: Начало запроса.`);
+            console.log(`[INFO] [${new Date().toISOString()}] getOlxCityDetails: CORS middleware выполнено.`);
             console.log(`[INFO] [${new Date().toISOString()}] getOlxCityDetails: Запрос headers: ${JSON.stringify(req.headers)}`);
 
-            verifyToken(req, res, async () => {
-                const cityId = req.params[0]; // Предполагается, что cityId передается в URL
-                if (!cityId) {
-                    console.error(`[ERROR] [${new Date().toISOString()}] getOlxCityDetails: cityId не предоставлен.`);
-                    return res.status(400).json({ error: "cityId не предоставлен." });
-                }
-                const data = await fetchOlxData(`https://www.olx.ua/api/partner/cities/${cityId}`, req.token)
-                console.log(
-                    `[INFO] [${new Date().toISOString()}] getOlxCityDetails: Информация о городе OLX успешно получена. Статус: 200, данные: ${JSON.stringify(data)}`
-                );
-                return res.status(200).json(data);
-            })
+            await verifyToken(req, res);
+            console.log(`[INFO] [${new Date().toISOString()}] getOlxCityDetails: Токен подтвержден.`);
+
+            const cityId = req.query.cityId || req.params.cityId;
+            if (!cityId) {
+                console.error(`[ERROR] [${new Date().toISOString()}] getOlxCityDetails: cityId не предоставлен.`);
+                return res.status(400).json({ error: "cityId не предоставлен." });
+            }
+
+            console.log(`[INFO] [${new Date().toISOString()}] getOlxCityDetails: Запрос к OLX API: /cities/${cityId}`);
+            const data = await fetchOlxData(`https://www.olx.ua/api/partner/cities/${cityId}`, req.token);
+
+            console.log(`[INFO] [${new Date().toISOString()}] getOlxCityDetails: Данные успешно получены.`);
+            return res.status(200).json(data);
+
         } catch (error) {
-            return res.status(error.message === 'Invalid token' ? 401 : 500).json({ error: error.message });
+            console.error(`[ERROR] [${new Date().toISOString()}] getOlxCityDetails: Ошибка: ${error.message}`);
+            if (!res.headersSent) {
+                return res.status(error.message === 'Invalid token' ? 401 : 500).json({ error: error.message });
+            }
         }
     });
 });

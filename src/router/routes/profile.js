@@ -53,7 +53,7 @@ export default [
     {
         path: '/users/user/olx',
         name: 'userProfileClientsOlx',
-        component: () => import('@/views/users/user/Olx.vue'),
+        component: () => import('@/views/users/user/olx/Olx.vue'),
         meta: {
             requiresAuth: true,
             breadcrumb: [

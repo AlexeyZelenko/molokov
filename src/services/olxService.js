@@ -37,12 +37,12 @@ export async function fetchOlxRegions() {
     }
 }
 
-export async function fetchOlxCities(regionId) {
+export async function fetchOlxCities(offset) {
     isLoading = true;
     try {
         const accessToken = await getOlxToken();
-        console.log(`Fetching OLX cities for region ${regionId}...`);
-        const citiesResponse = await axios.get(`${olxApiCities}/${regionId}`, {
+        console.log(`Fetching OLX cities for region ${offset}...`);
+        const citiesResponse = await axios.get(`${olxApiCities}?offset=${offset}`, {
             headers: {
                 Authorization: `Bearer ${accessToken}`,
             },
@@ -62,7 +62,7 @@ export async function fetchOlxCityDetails(cityId) {
     try {
         const accessToken = await getOlxToken();
         console.log(`Fetching OLX city details for city ${cityId}...`);
-        const cityDetailsResponse = await axios.get(`${olxApiCityDetails}/${cityId}`, {
+        const cityDetailsResponse = await axios.get(`${olxApiCityDetails}?cityId=${cityId}`, {
             headers: {
                 Authorization: `Bearer ${accessToken}`,
             },
