@@ -19,7 +19,8 @@ const model = ref([
         label: 'Головна',
         items: [
             { label: 'Головна', icon: 'pi pi-fw pi-home', to: '/landing' },
-            { label: 'Аналітика', icon: 'pi pi-fw pi-chart-line', to: '/dashboard' }
+            { label: 'Додати нерухомість', icon: 'pi pi-fw pi-plus', to: '/add-properties', roles: ['admin', 'customer'] },
+            // { label: 'Аналітика', icon: 'pi pi-fw pi-chart-line', to: '/dashboard' }
         ]
     },
     {
