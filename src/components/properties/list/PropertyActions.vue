@@ -120,7 +120,7 @@ const deleteProperty = (event) => {
     <div class="flex gap-2">
         <Button
             label="Переглянути деталі"
-            class="p-button-info mr-2"
+            class="p-button-warning mr-2"
             @click="showProperty"
         />
         <template v-if="isCreator || isAdmin">

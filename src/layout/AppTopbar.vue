@@ -14,7 +14,16 @@ const handleLogout = async () => {
         await authStore.logout();
         await router.push('/');
     } catch (error) {
-        console.error('Ошибка при выходе:', error);
+        console.error('Помилка при виході:', error);
+    }
+};
+
+const handleLogin = async () => {
+    try {
+        await authStore.login();
+        await router.push('/');
+    } catch (error) {
+        console.error('Помилка при вході:', error);
     }
 };
 
@@ -48,8 +57,8 @@ const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
                         fill-rule="evenodd"
                         clip-rule="evenodd"
                         d="M24 24H30V34H24V24ZM26 26H28V32H26V26Z
-           M16 20H22V28H16V20ZM18 22H20V26H18V22Z
-           M32 20H38V28H32V20ZM34 22H36V26H34V22Z"
+                           M16 20H22V28H16V20ZM18 22H20V26H18V22Z
+                           M32 20H38V28H32V20ZM34 22H36V26H34V22Z"
                         fill="var(--primary-color)"
                     />
                 </svg>
@@ -94,10 +103,12 @@ const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
                         <i class="pi pi-sign-out"></i>
                         <span>Вихід</span>
                     </button>
-                    <button v-else @click="handleLogout" type="button" class="layout-topbar-action">
-                        <i class="pi pi-sign-in"></i>
-                        <span>Увійти</span>
-                    </button>
+                    <router-link v-else to="/auth/login">
+                        <button type="button" class="layout-topbar-action">
+                            <i class="pi pi-sign-in"></i>
+                            <span>Увійти</span>
+                        </button>
+                    </router-link>
                 </div>
             </div>
         </div>

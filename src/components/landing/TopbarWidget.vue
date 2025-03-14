@@ -48,9 +48,9 @@ onMounted(() => {
         <img
             src="@/assets/layout/images/logo.svg"
             alt="logo"
-            class="w-18 h-18"
+            class="w-18 h-18 mr-20"
         />
-        <span class="text-surface-900 dark:text-surface-0 font-medium text-2xl leading-normal ml-5 mr-20">Нерухомість</span>
+<!--        <span class="text-surface-900 dark:text-surface-0 font-medium text-2xl leading-normal ml-5 mr-20">Нерухомість</span>-->
     </a>
     <Button
         class="lg:!hidden"

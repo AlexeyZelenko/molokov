@@ -179,6 +179,9 @@ export const useAuthStore = defineStore('auth', () => {
             // Clear remembered user data
             localStorage.removeItem('userRemembered');
             localStorage.removeItem('userEmail');
+
+            console.log('logout')
+            window.location.reload(true);
         } catch (err) {
             const errorMessage = getFirebaseErrorMessage(err.message);
             throw new Error(errorMessage);
