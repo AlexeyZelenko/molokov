@@ -16,7 +16,7 @@ export function useSocialShare(props, toast) {
 
     // Share metadata computation
     const shareMetaData = computed(() => {
-        const defaultImage = '/images/apartments.webp';
+        const defaultImage = 'https://friendlychat-you-tube-short.web.app/images/share.jpg';
         const { property, title, adUrl, imageUrl } = props;
         const urlFindProperty = `/${property.category.code}/${property.subcategory.code}/${property.idProperty}`;
         const newUrl = new URL(urlFindProperty, window.location.origin).href;
