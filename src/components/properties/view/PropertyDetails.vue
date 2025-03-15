@@ -101,7 +101,7 @@ import PropertyGarages from './categories/garages/index.vue';
 import PropertyOther from './categories/other/index.vue';
 
 import DgisMap from "@/components/maps/DgisMap.vue";
-import SocialShare from "@/components/SocialShare.vue";
+import SocialShare from "@/components/socialShare/SocialShare.vue";
 import PriceConverter from "@/components/price/PriceConverter.vue";
 import PropertyUserInfo from "@/components/properties/list/PropertyUserInfo.vue";
 

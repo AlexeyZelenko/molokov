@@ -44,14 +44,14 @@ export default defineConfig({
             }
         }
     },
-    server: {
-        host: '0.0.0.0', // Чтобы принимать запросы со всех IP
-        port: 5173, // Порт по умолчанию
-        strictPort: true,
-        hmr: {
-            clientPort: 443, // Нужно для работы через ngrok
-        },
-        allowedHosts: ['.ngrok-free.app'], // Разрешаем ngrok-домены
-    }
+    // server: {
+    //     host: '0.0.0.0',
+    //     port: 5173,
+    //     strictPort: true,
+    //     hmr: {
+    //         clientPort: 443,
+    //     },
+    //     allowedHosts: ['.ngrok-free.app'],
+    // }
 
 });
