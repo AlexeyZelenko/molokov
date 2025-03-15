@@ -16,12 +16,17 @@ export function useSocialShare(props, toast) {
 
     // Share metadata computation
     const shareMetaData = computed(() => {
+        const defaultImage = '/images/apartments.webp';
         const { property, title, adUrl, imageUrl } = props;
         const urlFindProperty = `/${property.category.code}/${property.subcategory.code}/${property.idProperty}`;
         const newUrl = new URL(urlFindProperty, window.location.origin).href;
 
         const descriptionParts = buildShareDescription(property);
-        const imageFullUrl = getFullImageUrl(getImageUrl(property, imageUrl));
+        let imageFullUrl = getFullImageUrl(getImageUrl(property, imageUrl));
+
+        if (!imageFullUrl) {
+            imageFullUrl = new URL(defaultImage, window.location.origin).href;
+        }
         const descriptionPartsTelegram = buildTelegramShareDescription(property);
 
         return {

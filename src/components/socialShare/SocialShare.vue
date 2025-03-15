@@ -14,7 +14,7 @@
 <script setup>
 import {ref, computed, onMounted, onBeforeUnmount, inject} from 'vue';
 import {useToast} from 'primevue/usetoast';
-import {useHead} from '@vueuse/head';
+import { useHead } from '@unhead/vue';
 import SocialShareSpeedDial from './SocialShareSpeedDial.vue';
 import {useSocialShare} from '@/composables/useSocialShare';
 import {useTelegram} from '@/composables/useTelegram';
@@ -63,6 +63,7 @@ const {setupTelegram, cleanupTelegram} = useTelegram(telegram);
 
 // Setup meta tags
 onMounted(() => {
+    console.log("shareMetaData>>>", shareMetaData.value)
     useHead({
         title: shareMetaData.value.title,
         meta: [
