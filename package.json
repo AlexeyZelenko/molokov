@@ -1,5 +1,5 @@
 {
-    "name": "Нерухомість Черкас",
+    "name": "Нерухомість",
     "version": "4.2.0",
     "scripts": {
         "dev": "vite --mode development",

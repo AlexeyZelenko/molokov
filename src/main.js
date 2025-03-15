@@ -3,7 +3,7 @@ import App from './App.vue';
 import router from './router';
 import { useBreadcrumbStore } from '@/store/breadcrumb';
 import { createPinia } from 'pinia';
-import { createHead } from '@vueuse/head';
+import { createHead } from '@unhead/vue/client';
 
 // UI и темы
 import PrimeVue from 'primevue/config';
@@ -51,9 +51,9 @@ async function initializeApp() {
 
 
     // Регистрация плагинов
+    app.use(head);
     app.use(pinia);
     app.use(router);
-    app.use(head);
     app.use(PrimeVue, { theme: themeConfig });
     app.use(ToastService);
     app.use(TelegramPlugin);

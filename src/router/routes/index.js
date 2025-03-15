@@ -1,7 +1,6 @@
 import authRoutes from './auth';
 import propertyRoutes from './properties';
 import dashboardRoutes from './dashboard';
-import uikitRoutes from './uikit';
 import categoriesRoutes from './categories';
 import profileRoutes from './profile';
 import adminRoutes from './admin';
@@ -21,7 +20,6 @@ export default [
         component: () => import('@/layout/AppLayout.vue'),
         children: [
             ...dashboardRoutes,
-            ...uikitRoutes,
             ...profileRoutes,
             ...adminRoutes,
         ]

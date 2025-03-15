@@ -63,7 +63,6 @@ const {setupTelegram, cleanupTelegram} = useTelegram(telegram);
 
 // Setup meta tags
 onMounted(() => {
-    console.log("shareMetaData>>>", shareMetaData.value)
     useHead({
         title: shareMetaData.value.title,
         meta: [
@@ -75,6 +74,7 @@ onMounted(() => {
             {property: 'og:image:height', content: '630'},
             {property: 'og:url', content: shareMetaData.value.url},
             {property: 'og:type', content: 'website'},
+            {property: 'og:site_name', content: 'Нерухомість'},
             {name: 'twitter:card', content: 'summary_large_image'},
             {name: 'twitter:title', content: shareMetaData.value.title},
             {name: 'twitter:description', content: shareMetaData.value.description},
