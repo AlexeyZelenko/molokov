@@ -118,3 +118,101 @@ exports.getOlxCityDetails = onRequest({ region: "us-central1" }, async (req, res
         }
     });
 });
+
+async function getPropertyData(propertyId) {
+    try {
+        console.log('getPropertyData: Начало выполнения функции');
+        console.log('getPropertyData: propertyId:', propertyId);
+
+        // Получаем ссылку на коллекцию
+        const collectionRef = admin
+            .firestore()
+            .collection('properties/apartments/rent');
+        console.log('getPropertyData: Получена ссылка на коллекцию:', collectionRef.path);
+
+        // Преобразуем propertyId в число
+        const numericPropertyId = Number(propertyId);
+        console.log('getPropertyData: Преобразованный propertyId в число:', numericPropertyId);
+
+        // Создаем запрос с фильтром по propertyId
+        const query = collectionRef.where('idProperty', '==', numericPropertyId).limit(1);
+        console.log('getPropertyData: Создан запрос:', query.toString());
+
+        const querySnapshot = await query.get();
+        console.log('getPropertyData: Результат запроса:', querySnapshot);
+
+        if (querySnapshot.empty) {
+            console.log('getPropertyData: Документ не найден');
+            throw new Error('Property not found');
+        }
+
+        // Получаем первый документ из результата запроса
+        const doc = querySnapshot.docs[0];
+        console.log('getPropertyData: Получен документ:', doc.id);
+
+        const data = doc.data();
+        console.log('getPropertyData: Данные документа:', data);
+
+        const result = { id: doc.id, ...data };
+        console.log('getPropertyData: Результат функции:', result);
+
+        console.log('getPropertyData: Завершение выполнения функции');
+        return result;
+    } catch (error) {
+        console.error('getPropertyData: Ошибка:', error);
+        return null;
+    }
+}
+
+exports.ogShare = functions.https.onRequest(async (req, res) => {
+    return cors(req, res, async () => {
+        try {
+            const propertyId = req.query.id;
+
+            if (!propertyId) {
+                return res.status(400).send('Property ID is required');
+            }
+
+            const propertyData = await getPropertyData(propertyId);
+
+            if (!propertyData) {
+                return res.status(404).send('Property not found');
+            }
+
+            console.log('propertyData', propertyData);
+            const redirectUrl = `https://friendlychat-you-tube-short.web.app/pages/${propertyData.category.code}/view/${propertyData.subcategory.code}/${propertyData.id}?category=${propertyData.category.code}&subcategory=${propertyData.subcategory.code}&id=${propertyData.id}`;
+
+            let imageUrl = '';
+            if (propertyData.images && propertyData.images.length > 0) {
+                imageUrl = propertyData.images[0];
+            }
+
+            const html = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>${propertyData.title || 'Нерухомість'}</title>
+                    <meta name="description" content="${propertyData.description || 'Опис нерухомості'}">
+                    <meta property="og:title" content="${propertyData.title || 'Нерухомість'}">
+                    <meta property="og:description" content="${propertyData.description || 'Опис нерухомості'}">
+                    <meta property="og:image" content="${imageUrl}">
+                    <meta property="og:url" content="${redirectUrl}">
+                    <meta property="og:type" content="website">
+                    <meta property="og:site_name" content="Нерухомість">
+                    <meta http-equiv="refresh" content="0;url=${redirectUrl}">
+                    <script>window.location.href = "${redirectUrl}";</script>
+                </head>
+                <body>
+                    <p>Перенаправлення на <a href="${redirectUrl}">${propertyData.title || 'Нерухомість'}</a>...</p>
+                </body>
+                </html>
+            `;
+
+            res.set('Cache-Control', 'public, max-age=300, s-maxage=600');
+            res.send(html);
+        } catch (error) {
+            console.error('Error processing request:', error);
+            res.status(500).send('Internal Server Error');
+        }
+    });
+});

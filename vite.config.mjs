@@ -8,6 +8,7 @@ import vueDevTools from 'vite-plugin-vue-devtools';
 import commonjs from 'vite-plugin-commonjs';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 
+
 export default defineConfig({
     base: '/',
     optimizeDeps: {

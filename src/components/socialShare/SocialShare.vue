@@ -1,20 +1,7 @@
-<template>
-    <div class="social-share-container">
-        <div v-if="isOpen" class="speeddial-mask" @click="closeSpeedDial"></div>
-
-        <SocialShareSpeedDial
-            :shareItems="shareItems"
-            :isOpen="isOpen"
-            @show="handleShow"
-            @hide="handleHide"
-        />
-    </div>
-</template>
-
 <script setup>
-import {ref, computed, onMounted, onBeforeUnmount, inject} from 'vue';
+import {ref, inject, onMounted, onBeforeUnmount } from 'vue';
 import {useToast} from 'primevue/usetoast';
-import { useHead } from '@unhead/vue';
+import {useHead} from '@unhead/vue';
 import SocialShareSpeedDial from './SocialShareSpeedDial.vue';
 import {useSocialShare} from '@/composables/useSocialShare';
 import {useTelegram} from '@/composables/useTelegram';
@@ -41,6 +28,11 @@ const props = defineProps({
     }
 });
 
+// Создание URL для шеринга
+const createShareUrl = () => {
+    return `https://ogshare-ngadaglvca-uc.a.run.app/ogShare?id=${props.property.idProperty}`;
+};
+
 // State management
 const isOpen = ref(false);
 
@@ -57,31 +49,35 @@ const closeSpeedDial = () => {
     isOpen.value = false;
 };
 
+// Создаем модифицированные props для useSocialShare
+const modifiedProps = {
+    ...props,
+    adUrl: createShareUrl() // Заменяем URL на URL для шеринга
+};
+
 // Use our composables
-const {shareMetaData, shareItems, shareProductTelegramWebApp} = useSocialShare(props, toast);
+const {shareMetaData, shareItems, shareProductTelegramWebApp} = useSocialShare(modifiedProps, toast);
 const {setupTelegram, cleanupTelegram} = useTelegram(telegram);
 
-// Setup meta tags
-onMounted(() => {
-    useHead({
-        title: shareMetaData.value.title,
-        meta: [
-            {name: 'description', content: shareMetaData.value.description},
-            {property: 'og:title', content: shareMetaData.value.title},
-            {property: 'og:description', content: shareMetaData.value.description},
-            {property: 'og:image', content: shareMetaData.value.image},
-            {property: 'og:image:width', content: '1200'},
-            {property: 'og:image:height', content: '630'},
-            {property: 'og:url', content: shareMetaData.value.url},
-            {property: 'og:type', content: 'website'},
-            {property: 'og:site_name', content: 'Нерухомість'},
-            {name: 'twitter:card', content: 'summary_large_image'},
-            {name: 'twitter:title', content: shareMetaData.value.title},
-            {name: 'twitter:description', content: shareMetaData.value.description},
-            {name: 'twitter:image', content: shareMetaData.value.image}
-        ]
-    });
+// Setup meta tags для логированных пользователей (все равно нужны)
+useHead({
+    title: shareMetaData.value.title,
+    meta: [
+        {name: 'description', content: shareMetaData.value.description},
+        {property: 'og:title', content: shareMetaData.value.title},
+        {property: 'og:description', content: shareMetaData.value.description},
+        {property: 'og:image', content: shareMetaData.value.image},
+        {property: 'og:url', content: shareMetaData.value.url},
+        {property: 'og:type', content: 'website'},
+        {property: 'og:site_name', content: 'Нерухомість'},
+        {name: 'twitter:card', content: 'summary_large_image'},
+        {name: 'twitter:title', content: shareMetaData.value.title},
+        {name: 'twitter:description', content: shareMetaData.value.description},
+        {name: 'twitter:image', content: shareMetaData.value.image}
+    ]
+});
 
+onMounted(() => {
     setupTelegram();
 });
 
@@ -89,6 +85,19 @@ onBeforeUnmount(() => {
     cleanupTelegram();
 });
 </script>
+
+<template>
+    <div class="social-share-container">
+        <div v-if="isOpen" class="speeddial-mask" @click="closeSpeedDial"></div>
+
+        <SocialShareSpeedDial
+            :shareItems="shareItems"
+            :isOpen="isOpen"
+            @show="handleShow"
+            @hide="handleHide"
+        />
+    </div>
+</template>
 
 <style scoped>
 .social-share-container {
