@@ -1,7 +1,10 @@
 <template>
     <div class="card flex flex-col gap-4">
         <label v-for="(field, key) in fields" :key="key" class="font-semibold text-xl">
-            <p class="mb-2">{{ field.label }} *</p>
+            <p class="mb-2">
+                <span>{{ field.label }}</span>
+                <span class="ml-1 text-red-500">*</span>                 
+            </p>
             <component
                 :is="field.component"
                 v-model="modelValue[field.code]"

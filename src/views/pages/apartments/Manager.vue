@@ -166,10 +166,18 @@
 
             <Button
                 type="submit"
-                label="Зберегти"
+                label="ЗБЕРЕГТИ"
                 icon="pi pi-check"
                 :loading="saving"
+                raised
+                class="w-full :hover:bg-primary-contrast"                
+                style="letter-spacing: 2px;"               
             />
+
+            <section>
+                <span class="text-red-500 mr-2 text-2xl">*</span>
+                <span>Поля з зірочкою, обов'язкові для заповнення!</span>
+            </section>
 
             <Toast />
 

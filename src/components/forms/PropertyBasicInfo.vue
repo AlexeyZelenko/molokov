@@ -7,7 +7,10 @@
             disabled
         />
 
-        <div class="font-semibold text-xl">Мета використання</div>
+        <div class="font-semibold text-xl">
+            <span>Мета використання</span>
+            <span class="ml-1 text-red-500">*</span>            
+        </div>
         <Select
             v-model="modelValue.subcategory"
             :options="dropdowns.subcategory"
@@ -21,7 +24,10 @@
             {{ errors.subcategory }}
         </small>
 
-        <div class="font-semibold text-xl">Заголовок оголошення</div>
+        <div class="font-semibold text-xl">
+            <span>Заголовок оголошення</span>
+            <span class="ml-1 text-red-500">*</span>
+        </div>
         <FloatLabel>
             <InputText
                 v-model="modelValue.title"
@@ -34,7 +40,10 @@
             {{ errors.title }}
         </small>
 
-        <div class="font-semibold text-xl">Вартість</div>
+        <div class="font-semibold text-xl">
+            <span>Вартість</span>
+            <span class="ml-1 text-red-500">*</span>            
+        </div>
         <InputGroup>
             <InputGroupAddon>$</InputGroupAddon>
             <InputNumber

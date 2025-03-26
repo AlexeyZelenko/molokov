@@ -3,7 +3,10 @@
         <div class="font-semibold text-xl">Поверховість</div>
 
         <template v-for="(label, key) in floorLabels" :key="key">
-            <div class="font-semibold text-sm">{{ label }} *</div>
+            <div class="font-semibold text-md">
+                <span>{{ label }}</span>
+                <span class="ml-1 text-red-500">*</span>                
+            </div>
             <InputNumber
                 :model-value="props.modelValue[key]"
                 @update:model-value="updateValue(key, $event)"

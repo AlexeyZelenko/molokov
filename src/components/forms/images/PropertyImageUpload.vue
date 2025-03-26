@@ -1,6 +1,9 @@
 <template>
     <div class="field col-12">
         <div class="font-semibold text-xl mb-2">Фотографії</div>
+        <div class="text-gray-600 mb-4">
+            <strong>Оберіть</strong> та <strong>завантажте</strong> фотографії перед збереженням оголошення.         
+        </div>
         <UploadArea
             @upload="handleUpload"
         />

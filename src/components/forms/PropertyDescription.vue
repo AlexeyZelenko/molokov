@@ -17,6 +17,9 @@
                         <select class="ql-color"></select>
                         <select class="ql-background"></select>
                     </span>
+                    <span class="ql-formats">                        
+                        <button class="ql-blockquote"></button>                        
+                    </span>
                 </template>
             </Editor>
         </div>

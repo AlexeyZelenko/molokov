@@ -3,7 +3,10 @@
         <div class="font-semibold text-xl">Кількість кімнат</div>
 
         <template v-for="(label, key) in roomLabels" :key="key">
-            <div class="font-semibold text-sm">{{ label }} *</div>
+            <div class="font-semibold text-md">
+                <span>{{ label }}</span>
+                <span class="ml-1 text-red-500">*</span>                
+            </div>
             <InputNumber
                 v-model="modelValue.rooms[key]"
                 showButtons
@@ -16,7 +19,10 @@
 
         <div class="font-semibold text-xl mt-4">Планування</div>
 
-        <div class="font-semibold text-sm">Планування квартири *</div>
+        <div class="font-semibold text-md">
+            <span>Планування квартири</span>
+            <span class="ml-1 text-red-500">*</span>            
+        </div>
         <Select
             v-model="modelValue.planning"
             :options="dropdowns.planning"
@@ -26,7 +32,10 @@
         />
         <small class="text-red-500" v-if="showErrors && errors.planning">{{ errors.planning }}</small>
 
-        <div class="font-semibold text-sm">Планування санвузла *</div>
+        <div class="font-semibold text-md">
+            <span> Планування санвузла</span>
+            <span class="ml-1 text-red-500">*</span>           
+        </div>
         <Select
             v-model="modelValue.bathroom"
             :options="dropdowns.bathroom"

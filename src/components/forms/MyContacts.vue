@@ -3,7 +3,7 @@
         <div class="card flex flex-col gap-4 w-full h-full">
             <div class="font-semibold text-xl mb-2">Мої контакти</div>
 
-            <div class="font-semibold text-sm">Ім'я</div>
+            <div class="font-semibold text-md">Ім'я</div>
             <InputText
                 :value="contacts?.name"
                 placeholder="Username"
@@ -11,7 +11,7 @@
             />
 
             <div v-if="contacts?.agency" class="w-full">
-                <div class="font-semibold text-sm mb-1">Агенція</div>
+                <div class="font-semibold text-md mb-4">Агенція</div>
                 <InputText
                     :value="contacts?.agency"
                     disabled
@@ -19,7 +19,7 @@
                 />
             </div>
 
-            <div class="font-semibold text-sm">Телефони</div>
+            <div class="font-semibold text-md">Телефони</div>
             <div
                 v-for="(phone, index) in contacts?.phones"
                 :key="index"
