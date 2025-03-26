@@ -98,7 +98,9 @@ export class PropertyManager {
     };
 
     resetForm(propertyType) {
-        this.setPropertyType(propertyType);
+        console.log('Resetting form with type:', propertyType, this.property);
+        this.getInitialState(propertyType);
+
         this.property.images = [];
     }
 

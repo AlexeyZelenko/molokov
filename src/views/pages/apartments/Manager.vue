@@ -170,8 +170,18 @@
                 icon="pi pi-check"
                 :loading="saving"
                 raised
-                class="w-full :hover:bg-primary-contrast"                
-                style="letter-spacing: 2px;"               
+                class="w-full"
+                style="letter-spacing: 2px;"
+            />
+
+            <Button
+                label="ОЧИСТИТИ ФОРМУ"
+                @click="resetForm"
+                icon="pi pi-refresh"
+                raised
+                severity="help"
+                class="w-full"
+                style="letter-spacing: 2px;"
             />
 
             <section>
@@ -227,8 +237,9 @@ import PublishToggle from '@/components/common/PublishToggle.vue';
 import UploadProgressToast from '@/components/common/UploadProgressToast.vue';
 import {doc, getDoc, updateDoc, arrayRemove} from "firebase/firestore";
 import {db} from "@/firebase/config";
-import { useRoute, useRouter } from 'vue-router';
+import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router';
 import Toast from 'primevue/toast';
+
 const route = useRoute();
 const router = useRouter();
 const basicInfoForm = ref(null);
@@ -563,6 +574,7 @@ const formattedDescription = computed(() => {
         .replace(/ {2,}/g, match => '&nbsp;'.repeat(match.length));
 });
 
+const savedProperty = ref(false);
 const saveOrUpdateProperty = async () => {
     try {
         saving.value = true;
@@ -583,16 +595,16 @@ const saveOrUpdateProperty = async () => {
             });
         } else {
             await propertyManager.saveProperty();
+            savedProperty.value = true;
+
+            toast.add({
+                severity: 'success',
+                summary: 'Оголошення збережено',
+                detail: 'Оберіть дію для продовження',
+                group: 'property-action',
+                life: 10000
+            });
         }
-
-        toast.add({
-            severity: 'success',
-            summary: 'Оголошення збережено',
-            detail: 'Оберіть дію для продовження',
-            group: 'property-action',
-            life: 10000
-        });
-
     } catch (error) {
         console.error('Помилка при збереженні об\'єкту:', error);
         toast.add({
@@ -605,10 +617,23 @@ const saveOrUpdateProperty = async () => {
         saving.value = false;
     }
 };
+onBeforeRouteLeave(async (to, from, next) => {
+    if (!isEditMode.value && property.value?.images?.length && !savedProperty.value) {
+        // Если объявление не сохранено, удаляем изображения
+        await Promise.all(property.value.images.map(imageUrl => removeImage(imageUrl)));
+        property.value.images = [];
+        console.log('Images removed:', property.value.images);
+    }
+    next();
+});
 
-const onAddMore = () => {
-    propertyManager.resetForm();
-    toast.removeGroup('property-action');
+const resetForm = () => {
+    property.value = {...emptyProperty};
+    const propertyType = `${property.value.category.code}-${property.value.subcategory.code}`;
+    propertyManager.resetForm(propertyType);
+    savedProperty.value = false;
+
+    window.scroll(0, 0);
 
     toast.add({
         severity: 'info',
@@ -616,6 +641,23 @@ const onAddMore = () => {
         detail: 'Форма очищена для створення нового оголошення',
         life: 3000
     });
+};
+
+const onAddMore = () => {
+    try {
+        resetForm();
+        toast.removeGroup('property-action');
+        savedProperty.value = false;
+    } catch (error) {
+        console.error('Помилка при очищенні форми:', error);
+        toast.add({
+            severity: 'error',
+            summary: 'Помилка',
+            detail: 'Помилка очищення форми',
+            life: 3000
+        });
+        window.location.reload();
+    }
 };
 
 const onViewProperty = () => {
