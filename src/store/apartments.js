@@ -184,36 +184,24 @@ export const useApartmentsStore = defineStore('apartments', {
             ],
             reconditioning: [
                 {
-                    name: 'Євроремонт',
-                    value: 'euro'
-                },
-                {
-                    name: 'Житловий стан',
-                    value: 'living'
-                },
-                {
-                    name: 'Косметичний ремонт',
-                    value: 'cosmetic'
+                    name: 'Після будівельників',
+                    value: 'afterBuilders'
                 },
                 {
                     name: 'Потребує ремонту',
                     value: 'needsRepair'
                 },
                 {
-                    name: 'Від забудовника',
-                    value: 'developer'
+                    name: 'Євроремонт',
+                    value: 'euro'
                 },
                 {
-                    name: 'Після будівельників',
-                    value: 'afterBuilders'
+                    name: 'Жилий стан',
+                    value: 'living'
                 },
                 {
-                    name: 'Після ремонту',
-                    value: 'afterRepair'
-                },
-                {
-                    name: 'Без обробки',
-                    value: 'withoutFinishing'
+                    name: 'Косметичний ремонт',
+                    value: 'cosmetic'
                 },
                 {
                     name: 'Інше',

@@ -78,7 +78,7 @@ onMounted(() => {
                     <span>Райони</span>
                 </a>
             </li>
-            <li>
+            <li class="bg-primary-500 dark:bg-primary-400 rounded-full px-4 py-2">
                 <a @click="navigateTo('/add-properties')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium text-xl">
                     <span>Додати нерухомість</span>
                 </a>

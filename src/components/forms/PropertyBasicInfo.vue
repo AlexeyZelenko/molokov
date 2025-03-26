@@ -21,14 +21,14 @@
             {{ errors.subcategory }}
         </small>
 
-        <div class="font-semibold text-xl">Назва</div>
+        <div class="font-semibold text-xl">Заголовок оголошення</div>
         <FloatLabel>
             <InputText
                 v-model="modelValue.title"
                 :class="{ 'p-invalid': errors.title }"
                 required
             />
-            <label>Назва оголошення</label>
+            <label>Додати заголовок оголошення</label>
         </FloatLabel>
         <small class="text-red-500" v-if="errors.title">
             {{ errors.title }}

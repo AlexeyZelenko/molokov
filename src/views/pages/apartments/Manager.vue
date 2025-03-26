@@ -1,11 +1,11 @@
 <template>
-    <h1 class="text-2xl font-semibold mb-2">{{ pageTitle }}</h1>
+    <h1 class="md:w-1/2 mx-auto text-2xl font-semibold mb-2">{{ pageTitle }}</h1>
     <div v-if="showLoader" class="fullscreen-loader h-full">
         <div class="loader"></div>
     </div>
-    <Form v-show="!showLoader" @submit="saveProperty">
-        <Fluid class="flex flex-col md:flex-row gap-8">
-            <div class="md:w-1/2">
+    <Form v-show="!showLoader" @submit="saveProperty" class="flex flex-col md:w-1/2 justify-center items-center mx-auto">
+        <Fluid class="w-full flex flex-col justify-center items-center gap-4">
+            <div class="w-full">
                 <PropertyBasicInfo
                     v-if="property"
                     ref="basicInfoForm"
@@ -30,7 +30,7 @@
                 />
             </div>
 
-            <div class="md:w-1/2">
+            <div class="w-full">
                 <PropertyFloors
                     v-if="property && property.floors"
                     ref="floorsForm"
@@ -71,7 +71,7 @@
 
         <Fluid
             v-if="showRentSection"
-            class="flex flex-col md:flex-row gap-8 mt-4"
+            class="w-full flex flex-col md:flex-row gap-8 mt-4"
         >
             <div class="md:w-1/2">
                 <div class="card flex flex-col gap-4">
@@ -140,7 +140,7 @@
             </div>
         </Fluid>
 
-        <Fluid class="flex flex-col mt-8">
+        <Fluid class="w-full mt-8">
             <PropertyDescription
                 v-if="property"
                 v-model="property.description"
@@ -154,11 +154,11 @@
             />
         </Fluid>
 
-        <Fluid class="flex mt-8">
+        <Fluid class="w-full flex justify-center mt-8">
             <PublishToggle v-if="property" v-model="property.isPublic" />
         </Fluid>
 
-        <Fluid class="grid grid-cols-1 md:grid-cols-1 gap-6 mt-8">
+        <Fluid class="w-full grid grid-cols-1 md:grid-cols-1 gap-6 mt-8">
             <MyContacts
                 v-model="property"
                 :contacts="contacts"

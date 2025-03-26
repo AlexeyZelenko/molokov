@@ -1,6 +1,6 @@
 <template>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
-        <div class="card flex flex-col gap-4 h-full">
+    <div class="grid grid-cols-1 ms:grid-cols-2 gap-4 md:gap-8 w-full">
+        <div class="card flex flex-col gap-4 w-full h-full">
             <div class="font-semibold text-xl mb-2">Мої контакти</div>
 
             <div class="font-semibold text-sm">Ім'я</div>

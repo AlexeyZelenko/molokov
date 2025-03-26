@@ -38,7 +38,7 @@ const fields = computed(() => ({
         code: 'condition'
     },
     buildingTypes: {
-        label: "Тип будівлі",
+        label: "Матеріал будівлі",
         component: Select,
         placeholder: "Оберіть тип будівлі",
         code: 'buildingType'
@@ -50,9 +50,9 @@ const fields = computed(() => ({
         code: 'objectClass'
     },
     reconditioning: {
-        label: "Ремонт",
+        label: "Стан об'єкта",
         component: Select,
-        placeholder: "Оберіть тип ремонту",
+        placeholder: "Оберіть стан об'єкта",
         code: 'reconditioning'
     }
 }));

@@ -19,12 +19,11 @@ export const buildTelegramShareDescription = (property) => {
     return [
         `${property.category.name}/${property.subcategory.name}`,
         `- - - - - - - - - - - - - `,
-        `🏠  Кімнат:   ${property.rooms?.all || 'Не вказано'}`,
-        `💰  Ціна:     ${property.price} USD`,
-        `📏  Площа:    ${property.apartmentArea?.totalArea} м²`,
-        `🔝  Поверх:   ${property.floors.floor}/${property.floors.totalFloors}`,
-        `🏙️  Адреса:   ${property.address.region.name} / ${property.address.city.name || ''} / ${property.address.area.name || ''}`,
-        ``,
+        `🏠  Кімнат:  ${property.rooms?.all || 'Не вказано'}`,
+        `💰  Ціна:    ${property.price} USD`,
+        `📏  Площа:   ${property.apartmentArea?.totalArea} м²`,
+        `🔝  Поверх:  ${property.floors.floor}/${property.floors.totalFloors}`,
+        `🏙️  Адреса:  ${property.address.region.name} / ${property.address.city.name || ''} / ${property.address.area.name || ''}`,
     ].filter(Boolean).join('\n');
 };
 
