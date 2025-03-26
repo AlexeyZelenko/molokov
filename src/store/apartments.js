@@ -336,7 +336,45 @@ export const useApartmentsStore = defineStore('apartments', {
                 { name: 'Індивідуальне садівництво', code: 'gardening' },
                 { name: 'Будівництво', code: 'construction' },
                 { name: 'Інше', code: 'other' }
-            ]
+            ],
+            buildingTypesGarages: [
+                {
+                    name: 'Цегляний',
+                    value: 'brick'
+                },
+                {
+                    name: 'Металевий',
+                    value: 'metal'
+                },
+                {
+                    name: 'Панельний',
+                    value: 'panel'
+                },
+                {
+                    name: 'Монолітний',
+                    value: 'monolith'
+                },
+                {
+                    name: 'Блочний',
+                    value: 'foamBlock'
+                },
+                {
+                    name: 'Дерев\'яний',
+                    value: 'wooden'
+                },
+                {
+                    name: 'Дерево-цегла',
+                    value: 'skirt'
+                },
+                {
+                    name: 'Газоблок',
+                    value: 'gasBlock'
+                },
+                {
+                    name: 'Інше',
+                    value: 'other'
+                }
+            ],
         },
         saving: false,
         displayCurrency: [{ name: '$', value: 'USD' }]

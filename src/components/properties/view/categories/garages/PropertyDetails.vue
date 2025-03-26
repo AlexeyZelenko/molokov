@@ -3,9 +3,7 @@ import { defineProps } from "vue";
 
 const props = defineProps({
     condition: Object,
-    buildingType: Object,
-    objectClass: Object,
-    reconditioning: Object,
+    buildingTypesGarages: Object,
 });
 </script>
 
@@ -17,18 +15,8 @@ const props = defineProps({
         </div>
 
         <div class="flex wrap">
-            <div class="font-bold text-md mr-2">Тип будівлі:</div>
-            <div>{{ buildingType?.name }}</div>
-        </div>
-
-        <div class="flex wrap">
-            <div class="font-bold text-md mr-2">Клас об'єкта:</div>
-            <div>{{ objectClass?.name }}</div>
-        </div>
-
-        <div class="flex wrap">
-            <div class="font-bold text-md mr-2">Ремонт:</div>
-            <div>{{ reconditioning?.name }}</div>
+            <div class="font-bold text-md mr-2">Тип матеріалу:</div>
+            <div>{{ buildingTypesGarages?.name }}</div>
         </div>
     </div>
 </template>

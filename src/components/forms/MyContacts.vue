@@ -37,17 +37,17 @@
         </div>
 
         <!-- Используем h-full для второй карточки -->
-        <div class="card flex flex-col gap-4 h-full">
-            <div class="font-semibold text-xl mb-2">Додатково</div>
-            <Textarea
-                v-model="message"
-                placeholder="Повідомлення"
-                :autoResize="true"
-                rows="5"
-                cols="30"
-                class="flex-grow"
-            />
-        </div>
+<!--        <div class="card flex flex-col gap-4 h-full">-->
+<!--            <div class="font-semibold text-xl mb-2">Додатково</div>-->
+<!--            <Textarea-->
+<!--                v-model="message"-->
+<!--                placeholder="Повідомлення"-->
+<!--                :autoResize="true"-->
+<!--                rows="5"-->
+<!--                cols="30"-->
+<!--                class="flex-grow"-->
+<!--            />-->
+<!--        </div>-->
     </div>
 </template>
 

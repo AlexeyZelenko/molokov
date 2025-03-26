@@ -21,7 +21,7 @@
                     :dropdowns="dropdowns"
                 />
 
-                <PropertyAreaDetails
+                <GaragesAreaDetails
                     ref="areaDetailsForm"
                     v-model="property.apartmentArea"
                     @validation-change="handleValidation('area', $event)"
@@ -29,20 +29,13 @@
             </div>
 
             <div class="w-full">
-                <PropertyFloors
+                <GaragesPropertyFloors
                     ref="floorsForm"
                     v-model="property.floors"
                     @validation-change="handleValidation('floors', $event)"
                 />
 
-                <PropertyRooms
-                    ref="roomsForm"
-                    v-model="property"
-                    :dropdowns="dropdowns"
-                    @validation-change="handleValidation('rooms', $event)"
-                />
-
-                <PropertyCondition
+                <GaragesPropertyCondition
                     ref="conditionForm"
                     v-model="property"
                     :dropdowns="dropdowns"
@@ -58,71 +51,6 @@
                     title="Готовність об'єкта"
                     v-model="property.facilityReadiness"
                     type="date"
-                />
-            </div>
-        </Fluid>
-
-        <Fluid
-            v-if="showRentSection"
-            class="w-full flex flex-col gap-8 mt-4"
-        >
-            <div class="w-full">
-                <div class="card flex flex-col gap-4">
-                    <div class="font-semibold text-xl">Комунальні послуги</div>
-                    <MultiSelect
-                        v-model="property.utilities"
-                        :options="dropdowns.utilities"
-                        optionLabel="name"
-                        placeholder="Комунальні послуги"
-                        :filter="true"
-                    >
-                        <template #value="slotProps">
-                            <div class="inline-flex items-center py-1 px-2 bg-primary text-primary-contrast rounded-border mr-2" v-for="option of slotProps.value" :key="option.code">
-                                <div>{{ option.name }}</div>
-                            </div>
-                            <template v-if="!slotProps.value || slotProps.value.length === 0">
-                                <div class="p-1">Вибрати комунальні послуги</div>
-                            </template>
-                        </template>
-                        <template #option="slotProps">
-                            <div class="flex items-center">
-                                <span :class="'mr-2 flag flag-' + slotProps.option.code.toLowerCase()" style="width: 18px; height: 12px" />
-                                <div>{{ slotProps.option.name }}</div>
-                            </div>
-                        </template>
-                    </MultiSelect>
-                </div>
-
-                <FormSection
-                    title="Тип опалення"
-                    v-model="property.heatingType"
-                    :options="dropdowns.heatingTypes"
-                />
-
-                <FormSection
-                    title="Меблі"
-                    v-model="property.furniture"
-                    :options="dropdowns.furniture"
-                />
-            </div>
-
-            <div class="md:w-1/2">
-                <FormSection
-                    title="Паркування"
-                    v-model="property.parking"
-                    :options="dropdowns.parking"
-                />
-
-                <FormSection
-                    title="Балкон / Тераса"
-                    v-model="property.balconyTerrace"
-                    :options="dropdowns.balconyTerrace"
-                />
-
-                <FormSection
-                    title="Проживання тварин"
-                    v-model="property.animal"
-                    type="toggle"
                 />
             </div>
         </Fluid>
@@ -177,10 +105,9 @@ import {PropertyManager} from '@/service/property/PropertyManagerAdd';
 
 import PropertyAddress from '@/components/forms/PropertyAddress.vue';
 import PropertyBasicInfo from '@/components/forms/PropertyBasicInfo.vue';
-import PropertyAreaDetails from '@/components/forms/PropertyAreaDetails.vue';
-import PropertyFloors from '@/components/forms/PropertyFloors.vue';
-import PropertyRooms from '@/components/forms/PropertyRooms.vue';
-import PropertyCondition from '@/components/forms/PropertyCondition.vue';
+import GaragesAreaDetails from '@/components/forms/garages/GaragesAreaDetails.vue';
+import GaragesPropertyFloors from '@/components/forms/garages/GaragesPropertyFloors.vue';
+import GaragesPropertyCondition from '@/components/forms/garages/GaragesPropertyCondition.vue';
 import FormDetails from '@/components/forms/FormDetails.vue';
 import MyContacts from '@/components/forms/MyContacts.vue';
 import FormSection from '@/components/common/FormSection.vue';
@@ -554,12 +481,6 @@ const saveOrUpdateProperty = async () => {
             });
         } else {
             await propertyManager.saveProperty();
-            toast.add({
-                severity: 'success',
-                summary: 'Успішно',
-                detail: 'Об\'єкт додано',
-                life: 3000
-            });
         }
 
         try {

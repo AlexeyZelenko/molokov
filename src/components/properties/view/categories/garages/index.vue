@@ -1,15 +1,11 @@
 <template>
     <AreaDetails
         :apartmentArea="property.apartmentArea"
-        :planning="property.planning"
-        :bathroom="property.bathroom"
     />
 
     <PropertyDetails
         :condition="property.condition"
-        :buildingType="property.buildingType"
-        :objectClass="property.objectClass"
-        :reconditioning="property.reconditioning"
+        :buildingTypesGarages="property.buildingTypesGarages"
     />
 </template>
 
