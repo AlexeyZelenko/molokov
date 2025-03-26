@@ -7,6 +7,7 @@ export default class Land extends Property {
         this.soilType = props.soilType || null;
         this.category = "land";
         this.category = { name: 'Земельна ділянка', code: 'land' };
+        this.appointment = { name: 'Інше', code: 'other' };
     }
 }
 

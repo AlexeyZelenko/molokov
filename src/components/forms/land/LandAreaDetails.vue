@@ -1,8 +1,10 @@
 <template>
-    <div class="card flex flex-col gap-4">
-        <div class="font-semibold text-xl">Площа</div>
+    <div class="card flex flex-col gap-2">
+        <div class="font-semibold text-xl">
+            <span>Загальна площа</span>
+            <span class="text-red-500 ml-2">*</span>
+        </div>
 
-        <div class="font-semibold text-sm">Загальна площа *</div>
         <InputNumber
             v-model="modelValue.totalArea"
             showButtons

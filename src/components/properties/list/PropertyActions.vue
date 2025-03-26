@@ -31,16 +31,22 @@ const isAdmin = computed(() => {
 const showProperty = () => {
     const category = props.item.category.code;
     const subcategory = props.item.subcategory.code;
-    // router.push(`/pages/${category}/view/${props.item.id}?category=${category}&subcategory=${subcategory}`);
     router.push(`/pages/${category}/view/${subcategory}/${props.item.id}?category=${category}&subcategory=${subcategory}`);
 };
 
 const editProperty = () => {
-    if (!isCreator.value) return;
+    if (!isCreator.value) {
+        toast.add({
+            severity: 'error',
+            summary: 'Помилка',
+            detail: 'Ви не маєте права редагувати цей об\'єкт',
+            life: 3000
+        });
+        return;
+    };
     const category = props.item.category.code;
     const subcategory = props.item.subcategory.code;
     router.push(`/pages/${category}/edit/${subcategory}/${props.item.id}?category=${category}&subcategory=${subcategory}`);
-    // router.push(`/pages/${category}/edit/${subcategory}/${props.item.id}?category=${category}&subcategory=${subcategory}`);
 };
 
 const deleteProperty = (event) => {

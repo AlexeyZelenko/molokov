@@ -329,6 +329,13 @@ export const useApartmentsStore = defineStore('apartments', {
                 { name: 'Агенція', code: 'AGENT' },
                 { name: 'Забудовник', code: 'DEVELOPER' },
                 { name: 'Інше', code: 'OTHER' }
+            ],
+            appointment: [
+                { name: 'ОСГ', code: 'osg' },
+                { name: 'Приватна', code: 'private' },
+                { name: 'Індивідуальне садівництво', code: 'gardening' },
+                { name: 'Будівництво', code: 'construction' },
+                { name: 'Інше', code: 'other' }
             ]
         },
         saving: false,

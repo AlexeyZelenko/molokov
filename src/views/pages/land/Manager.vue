@@ -1,92 +1,101 @@
 <template>
-    <h1 class="text-2xl font-semibold mb-2">{{ pageTitle }}</h1>
-    <div v-if="showLoader" class="fullscreen-loader h-full">
-        <div class="loader"></div>
-    </div>
-    <Form v-show="!showLoader" @submit="saveProperty">
-        <Fluid class="flex flex-col md:flex-row gap-8">
-            <div class="md:w-1/2">
-                <PropertyBasicInfo
+    <section class="w-full md:w-1/2 mx-auto">
+        <h1 class="text-2xl font-semibold mb-2">{{ pageTitle }}</h1>
+        <div v-if="showLoader" class="fullscreen-loader h-full">
+            <div class="loader"></div>
+        </div>
+        <Form v-show="!showLoader" @submit="saveProperty">
+            <Fluid class="flex flex-col w-full gap-8">
+                <div class="w-full">
+                    <PropertyBasicInfo
+                        v-if="property"
+                        ref="basicInfoForm"
+                        v-model="property"
+                        :dropdowns="dropdowns"
+                        @validation-change="handleValidation('basicInfo', $event)"
+                        :selectedCategoryName="selectedCategoryName"
+                    />
+
+                    <PropertyAddress
+                        v-if="property && property.address"
+                        v-model="property.address"
+                        :property="property"
+                        :dropdowns="dropdowns"
+                    />
+
+                    <PropertyAppointment
+                        v-if="property && property.appointment"
+                        v-model="property.appointment"
+                        :property="property"
+                        :dropdowns="dropdowns"
+                    />
+                </div>
+
+                <div class="w-full">
+                    <LandAreaDetails
+                        v-if="property && property.apartmentArea"
+                        ref="areaDetailsForm"
+                        v-model="property.apartmentArea"
+                        @validation-change="handleValidation('area', $event)"
+                    />
+
+                    <FormDetails
+                        v-if="property"
+                        ref="detailsForm"
+                        v-model="property"
+                    />
+
+                    <FormSection
+                        v-if="property"
+                        title="Готовність об'єкта"
+                        v-model="property.facilityReadiness"
+                        type="date"
+                    />
+                </div>
+            </Fluid>
+
+            <Fluid class="flex flex-col mt-8">
+                <PropertyDescription
                     v-if="property"
-                    ref="basicInfoForm"
+                    v-model="property.description"
+                />
+
+                <PropertyImageUpload
+                    v-if="property"
+                    :images="images"
+                    @upload="onFileSelect"
+                    @remove="removeImage"
+                    @reorder="handleReorder"
+                />
+            </Fluid>
+
+            <Fluid class="flex mt-8">
+                <PublishToggle v-if="property" v-model="property.isPublic" />
+            </Fluid>
+
+            <Fluid class="grid grid-cols-1 md:grid-cols-1 gap-6 mt-8">
+                <MyContacts
                     v-model="property"
-                    :dropdowns="dropdowns"
-                    @validation-change="handleValidation('basicInfo', $event)"
-                    :selectedCategoryName="selectedCategoryName"
+                    :contacts="contacts"
+                />
+            </Fluid>
+
+            <Fluid class="flex my-8">
+                <Button
+                    type="submit"
+                    label="Зберегти"
+                    icon="pi pi-check"
+                    :loading="saving"
                 />
 
-                <PropertyAddress
-                    v-if="property && property.address"
-                    v-model="property.address"
-                    :property="property"
-                    :dropdowns="dropdowns"
-                />
-            </div>
+                <Toast />
 
-            <div class="md:w-1/2">
-                <LandAreaDetails
-                    v-if="property && property.apartmentArea"
-                    ref="areaDetailsForm"
-                    v-model="property.apartmentArea"
-                    @validation-change="handleValidation('area', $event)"
-                />
-
-                <FormDetails
-                    v-if="property"
-                    ref="detailsForm"
-                    v-model="property"
-                />
-
-                <FormSection
-                    v-if="property"
-                    title="Готовність об'єкта"
-                    v-model="property.facilityReadiness"
-                    type="date"
-                />
-            </div>
-        </Fluid>
-
-        <Fluid class="flex flex-col mt-8">
-            <PropertyDescription
-                v-if="property"
-                v-model="property.description"
-            />
-
-            <PropertyImageUpload
-                v-if="property"
-                :images="images"
-                @upload="onFileSelect"
-                @remove="removeImage"
-                @reorder="handleReorder"
-            />
-        </Fluid>
-
-        <Fluid class="flex mt-8">
-            <PublishToggle v-if="property" v-model="property.isPublic" />
-        </Fluid>
-
-        <Fluid class="grid grid-cols-1 md:grid-cols-1 gap-6 mt-8">
-            <MyContacts
-                v-model="property"
-                :contacts="contacts"
-            />
-        </Fluid>
-
-        <Fluid class="flex my-8">
-            <Button
-                type="submit"
-                label="Зберегти"
-                icon="pi pi-check"
-                :loading="saving"
-            />
-
-            <Toast />
-
-            <div v-if="imageState.isUploading">
-                <UploadProgressToast :visible="imageState.isUploading"/>
-            </div>
-        </Fluid>
-    </Form>
+                <div v-if="imageState.isUploading">
+                    <UploadProgressToast :visible="imageState.isUploading"/>
+                </div>
+            </Fluid>
+        </Form>
+    </section>
 </template>
 
 <script setup>
@@ -97,6 +106,7 @@ import { useAuthStore } from '@/store/authFirebase';
 import { useUserStore } from '@/store/userStore';
 import {PropertyManager} from '@/service/property/PropertyManagerAdd';
 
+import PropertyAppointment from '@/components/forms/PropertyAppointment.vue';
 import PropertyAddress from '@/components/forms/PropertyAddress.vue';
 import PropertyBasicInfo from '@/components/forms/PropertyBasicInfo.vue';
 import LandAreaDetails from '@/components/forms/land/LandAreaDetails.vue';
@@ -486,12 +496,6 @@ const saveOrUpdateProperty = async () => {
             });
         } else {
             await propertyManager.saveProperty();
-            toast.add({
-                severity: 'success',
-                summary: 'Успішно',
-                detail: 'Об\'єкт додано',
-                life: 3000
-            });
         }
 
         try {

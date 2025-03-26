@@ -1,11 +1,12 @@
 <template>
-    <h1 class="text-2xl font-semibold mb-2">{{ pageTitle }}</h1>
-    <div v-if="showLoader" class="fullscreen-loader h-full">
-        <div class="loader"></div>
-    </div>
-    <Form v-show="!showLoader" @submit="saveProperty">
-        <Fluid class="flex flex-col md:flex-row gap-8">
-            <div class="md:w-1/2">
+    <section class="w-full md:w-1/2 mx-auto">
+        <h1 class="text-2xl font-semibold mb-2">{{ pageTitle }}</h1>
+        <div v-if="showLoader" class="fullscreen-loader h-full">
+            <div class="loader"></div>
+        </div>
+        <Form v-show="!showLoader" @submit="saveProperty">
+        <Fluid class="w-full flex flex-col gap-8">
+            <div class="w-full">
                 <PropertyBasicInfo
                     ref="basicInfoForm"
                     v-model="property"
@@ -27,7 +28,7 @@
                 />
             </div>
 
-            <div class="md:w-1/2">
+            <div class="w-full">
                 <PropertyFloors
                     ref="floorsForm"
                     v-model="property.floors"
@@ -163,6 +164,7 @@
             </div>
         </Fluid>
     </Form>
+    </section>
 </template>
 
 <script setup>

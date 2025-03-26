@@ -1,170 +1,171 @@
 <template>
-    <h1 class="text-2xl font-semibold mb-2">{{ pageTitle }}</h1>
-    <div v-if="showLoader" class="fullscreen-loader h-full">
-        <div class="loader"></div>
-    </div>
-    <Form v-show="!showLoader" @submit="saveProperty">
-        <Fluid class="flex flex-col md:flex-row gap-8">
-            <div class="md:w-1/2">
-                <PropertyBasicInfo
-                    ref="basicInfoForm"
-                    v-model="property"
-                    :dropdowns="dropdowns"
-                    @validation-change="handleValidation('basicInfo', $event)"
-                    :selectedCategoryName="selectedCategoryName"
-                />
+    <section class="w-full md:w-1/2 mx-auto">
+        <h1 class="text-2xl font-semibold mb-2">{{ pageTitle }}</h1>
+        <div v-if="showLoader" class="fullscreen-loader h-full">
+            <div class="loader"></div>
+        </div>
+        <Form v-show="!showLoader" @submit="saveProperty">
+            <Fluid class="flex flex-col gap-8">
+                <div class="w-full">
+                    <PropertyBasicInfo
+                        ref="basicInfoForm"
+                        v-model="property"
+                        :dropdowns="dropdowns"
+                        @validation-change="handleValidation('basicInfo', $event)"
+                        :selectedCategoryName="selectedCategoryName"
+                    />
 
-                <PropertyAddress
-                    v-model="property.address"
-                    :property="property"
-                    :dropdowns="dropdowns"
-                />
+                    <PropertyAddress
+                        v-model="property.address"
+                        :property="property"
+                        :dropdowns="dropdowns"
+                    />
 
-                <PropertyAreaDetails
-                    ref="areaDetailsForm"
-                    v-model="property.apartmentArea"
-                    @validation-change="handleValidation('area', $event)"
-                />
-            </div>
-
-            <div class="md:w-1/2">
-                <PropertyFloors
-                    ref="floorsForm"
-                    v-model="property.floors"
-                    @validation-change="handleValidation('floors', $event)"
-                />
-
-                <PropertyRooms
-                    ref="roomsForm"
-                    v-model="property"
-                    :dropdowns="dropdowns"
-                    @validation-change="handleValidation('rooms', $event)"
-                />
-
-                <PropertyCondition
-                    ref="conditionForm"
-                    v-model="property"
-                    :dropdowns="dropdowns"
-                    @validation-change="handleValidation('condition', $event)"
-                />
-
-                <FormDetails
-                    ref="detailsForm"
-                    v-model="property"
-                />
-
-                <FormSection
-                    title="Готовність об'єкта"
-                    v-model="property.facilityReadiness"
-                    type="date"
-                />
-            </div>
-        </Fluid>
-
-        <Fluid
-            v-if="showRentSection"
-            class="flex flex-col md:flex-row gap-8 mt-4"
-        >
-            <div class="md:w-1/2">
-                <div class="card flex flex-col gap-4">
-                    <div class="font-semibold text-xl">Комунальні послуги</div>
-                    <MultiSelect
-                        v-model="property.utilities"
-                        :options="dropdowns.utilities"
-                        optionLabel="name"
-                        placeholder="Комунальні послуги"
-                        :filter="true"
-                    >
-                        <template #value="slotProps">
-                            <div class="inline-flex items-center py-1 px-2 bg-primary text-primary-contrast rounded-border mr-2" v-for="option of slotProps.value" :key="option.code">
-                                <div>{{ option.name }}</div>
-                            </div>
-                            <template v-if="!slotProps.value || slotProps.value.length === 0">
-                                <div class="p-1">Вибрати комунальні послуги</div>
-                            </template>
-                        </template>
-                        <template #option="slotProps">
-                            <div class="flex items-center">
-                                <span :class="'mr-2' + slotProps.option.code.toLowerCase()" style="width: 18px; height: 12px" />
-                                <div>{{ slotProps.option.name }}</div>
-                            </div>
-                        </template>
-                    </MultiSelect>
+                    <PropertyAreaDetails
+                        ref="areaDetailsForm"
+                        v-model="property.apartmentArea"
+                        @validation-change="handleValidation('area', $event)"
+                    />
                 </div>
 
-                <FormSection
-                    title="Тип опалення"
-                    v-model="property.heatingType"
-                    :options="dropdowns.heatingTypes"
+                <div class="w-full">
+                    <PropertyFloors
+                        ref="floorsForm"
+                        v-model="property.floors"
+                        @validation-change="handleValidation('floors', $event)"
+                    />
+
+                    <PropertyRooms
+                        ref="roomsForm"
+                        v-model="property"
+                        :dropdowns="dropdowns"
+                        @validation-change="handleValidation('rooms', $event)"
+                    />
+
+                    <PropertyCondition
+                        ref="conditionForm"
+                        v-model="property"
+                        :dropdowns="dropdowns"
+                        @validation-change="handleValidation('condition', $event)"
+                    />
+
+                    <FormDetails
+                        ref="detailsForm"
+                        v-model="property"
+                    />
+
+                    <FormSection
+                        title="Готовність об'єкта"
+                        v-model="property.facilityReadiness"
+                        type="date"
+                    />
+                </div>
+            </Fluid>
+
+            <Fluid
+                v-if="showRentSection"
+                class="w-full flex flex-col gap-8 mt-4"
+            >
+                <div class="w-full">
+                    <div class="card flex flex-col gap-4">
+                        <div class="font-semibold text-xl">Комунальні послуги</div>
+                        <MultiSelect
+                            v-model="property.utilities"
+                            :options="dropdowns.utilities"
+                            optionLabel="name"
+                            placeholder="Комунальні послуги"
+                            :filter="true"
+                        >
+                            <template #value="slotProps">
+                                <div class="inline-flex items-center py-1 px-2 bg-primary text-primary-contrast rounded-border mr-2" v-for="option of slotProps.value" :key="option.code">
+                                    <div>{{ option.name }}</div>
+                                </div>
+                                <template v-if="!slotProps.value || slotProps.value.length === 0">
+                                    <div class="p-1">Вибрати комунальні послуги</div>
+                                </template>
+                            </template>
+                            <template #option="slotProps">
+                                <div class="flex items-center">
+                                    <span :class="'mr-2' + slotProps.option.code.toLowerCase()" style="width: 18px; height: 12px" />
+                                    <div>{{ slotProps.option.name }}</div>
+                                </div>
+                            </template>
+                        </MultiSelect>
+                    </div>
+
+                    <FormSection
+                        title="Тип опалення"
+                        v-model="property.heatingType"
+                        :options="dropdowns.heatingTypes"
+                    />
+
+                    <FormSection
+                        title="Меблі"
+                        v-model="property.furniture"
+                        :options="dropdowns.furniture"
+                    />
+                </div>
+
+                <div class="md:w-1/2">
+                    <FormSection
+                        title="Паркування"
+                        v-model="property.parking"
+                        :options="dropdowns.parking"
+                    />
+
+                    <FormSection
+                        title="Балкон / Тераса"
+                        v-model="property.balconyTerrace"
+                        :options="dropdowns.balconyTerrace"
+                    />
+
+                    <FormSection
+                        title="Проживання тварин"
+                        v-model="property.animal"
+                        type="toggle"
+                    />
+                </div>
+            </Fluid>
+
+            <Fluid class="flex flex-col mt-8">
+                <PropertyDescription
+                    v-model="property.description"
                 />
 
-                <FormSection
-                    title="Меблі"
-                    v-model="property.furniture"
-                    :options="dropdowns.furniture"
+                <PropertyImageUpload
+                    :images="images"
+                    @upload="onFileSelect"
+                    @remove="removeImage"
+                    @reorder="handleReorder"
                 />
-            </div>
+            </Fluid>
 
-            <div class="md:w-1/2">
-                <FormSection
-                    title="Паркування"
-                    v-model="property.parking"
-                    :options="dropdowns.parking"
-                />
+            <Fluid class="flex mt-8">
+                <PublishToggle v-model="property.isPublic" />
+            </Fluid>
 
-                <FormSection
-                    title="Балкон / Тераса"
-                    v-model="property.balconyTerrace"
-                    :options="dropdowns.balconyTerrace"
+            <Fluid class="grid grid-cols-1 md:grid-cols-1 gap-6 mt-8">
+                <MyContacts
+                    v-model="property"
+                    :contacts="contacts"
                 />
 
-                <FormSection
-                    title="Проживання тварин"
-                    v-model="property.animal"
-                    type="toggle"
+                <Button
+                    type="submit"
+                    label="Зберегти"
+                    icon="pi pi-check"
+                    :loading="saving"
                 />
-            </div>
-        </Fluid>
 
-        <Fluid class="flex flex-col mt-8">
-            <PropertyDescription
-                v-model="property.description"
-            />
+                <Toast />
 
-            <PropertyImageUpload
-                :images="images"
-                @upload="onFileSelect"
-                @remove="removeImage"
-                @reorder="handleReorder"
-            />
-        </Fluid>
+                <div v-if="imageState.isUploading">
+                    <UploadProgressToast :visible="imageState.isUploading"/>
+                </div>
+            </Fluid>
+        </Form>
 
-        <Fluid class="flex mt-8">
-            <PublishToggle v-model="property.isPublic" />
-        </Fluid>
-
-        <Fluid class="grid grid-cols-1 md:grid-cols-1 gap-6 mt-8">
-            <MyContacts
-                v-model="property"
-                :contacts="contacts"
-            />
-
-            <Button
-                type="submit"
-                label="Зберегти"
-                icon="pi pi-check"
-                :loading="saving"
-            />
-
-            <Toast />
-
-            <div v-if="imageState.isUploading">
-                <UploadProgressToast :visible="imageState.isUploading"/>
-            </div>
-        </Fluid>
-    </Form>
-
-    <Toast position="bottom-center" group="property-action" @close="onClose">
+        <Toast position="bottom-center" group="property-action" @close="onClose">
         <template #message="slotProps">
             <div class="flex flex-col items-start flex-auto">
                 <div class="flex items-center gap-2">
@@ -179,6 +180,7 @@
             </div>
         </template>
     </Toast>
+    </section>
 </template>
 
 <script setup>
