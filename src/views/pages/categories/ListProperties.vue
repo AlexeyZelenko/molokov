@@ -1,18 +1,16 @@
 <script setup>
-import { ref, computed, defineAsyncComponent, watch } from 'vue'
+import { ref, computed, defineAsyncComponent, watch, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { usePropertiesStore } from '@/store/propertiesCategories'
 
 const useProperties = usePropertiesStore()
 const route = useRoute()
 
-const { category, subcategory } = route.params
+// Use reactive approach for route params
+const activeCategory = ref(route.params.category || '')
+const activeSubcategory = ref(route.params.subcategory || '')
 
 const categoryStructure = ref(useProperties.categoryStructure)
-
-// Активные значения
-const activeCategory = ref(category)
-const activeSubcategory = ref(subcategory || getFirstSubcategory(activeCategory.value))
 
 // Получаем первую подкатегорию для категории
 function getFirstSubcategory(categoryCode) {
@@ -25,11 +23,6 @@ function getFirstSubcategory(categoryCode) {
 
 // Динамическая загрузка компонентов
 const getComponentPath = (category, subcategory) => {
-    console.log(category, subcategory)
-    // return defineAsyncComponent(() =>
-    //     import(`@/views/pages/${category}/lists/${subcategory}.vue`)
-    //         .catch(() => import('@/views/pages/NotFound.vue'))
-    // )
     return defineAsyncComponent(() =>
         import(`@/components/properties/list/List.vue`)
             .catch(() => import('@/views/pages/NotFound.vue'))
@@ -41,17 +34,46 @@ const CurrentComponent = computed(() => {
     return getComponentPath(activeCategory.value, activeSubcategory.value)
 })
 
-// Наблюдаем за изменением маршрута
-watch(() => route.params, (newParams) => {
-    if (newParams.category && categoryStructure.value[newParams.category]) {
-        activeCategory.value = newParams.category
-    }
+// Comprehensive route params watcher
+const updateRouteParams = () => {
+    const { category, subcategory } = route.params
 
-    if (newParams.subcategory &&
-        categoryStructure.value[activeCategory.value]?.subcategories[newParams.subcategory]) {
-        activeSubcategory.value = newParams.subcategory
+    // Validate category
+    if (category && categoryStructure.value[category]) {
+        activeCategory.value = category
+
+        // If no subcategory provided, try to get the first subcategory
+        if (!subcategory) {
+            const firstSubcategory = getFirstSubcategory(category)
+            activeSubcategory.value = firstSubcategory || ''
+        } else {
+            // Validate subcategory
+            if (categoryStructure.value[category]?.subcategories?.[subcategory]) {
+                activeSubcategory.value = subcategory
+            } else {
+                // Fallback to first subcategory if invalid
+                const firstSubcategory = getFirstSubcategory(category)
+                activeSubcategory.value = firstSubcategory || ''
+            }
+        }
+    } else {
+        // Reset if category is invalid
+        activeCategory.value = ''
+        activeSubcategory.value = ''
     }
-}, { immediate: true })
+}
+
+// Initial update and watch for route changes
+updateRouteParams()
+watch(() => route.params, updateRouteParams, { immediate: true })
+
+onMounted(() => {
+    console.log('ListProperties mounted', {
+        category: activeCategory.value,
+        subcategory: activeSubcategory.value,
+        routeParams: route.params
+    })
+})
 </script>
 
 <template>

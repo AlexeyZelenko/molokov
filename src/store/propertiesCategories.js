@@ -74,7 +74,7 @@ export const usePropertiesStore = defineStore('properties', {
                     daily: { name: 'Посуточно' }
                 }
             },
-            garage: {
+            garages: {
                 name: 'Гаражі',
                 subcategories: {
                     rent: { name: 'Аренда' },
