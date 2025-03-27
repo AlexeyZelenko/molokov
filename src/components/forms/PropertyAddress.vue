@@ -24,7 +24,7 @@
             <span class="ml-1 text-red-500">*</span>
         </div>
 
-        <p v-if="modelValue.city.Description" class="text-cyan-600 font-semibold">
+        <p v-if="modelValue.city?.Description" class="text-cyan-600 font-semibold">
             Вибране місто: {{ modelValue.city.Description.toUpperCase() }}
         </p>
 
@@ -133,8 +133,7 @@ const centerMap = ref(null);
 const selectCity = (city) => {
     console.log(city);
     centerMap.value = [Number(city.Latitude), Number(city.Longitude)];
-    props.modelValue.city.name = city.Description;
-    props.modelValue.city.code = city.Ref;
+    props.modelValue.city = city;
     selectedSettlement.value = city;
     searchQuery.value = '';
 };
