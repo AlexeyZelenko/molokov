@@ -4,7 +4,7 @@
 
         <div class="font-semibold text-md">
             <span>Область</span>
-            <span class="ml-1 text-red-500">*</span>             
+            <span class="ml-1 text-red-500">*</span>
         </div>
         <Select
             v-model="modelValue.region"
@@ -21,32 +21,30 @@
 
         <div class="font-semibold text-md">
             <span>Місто</span>
-            <span class="ml-1 text-red-500">*</span>            
+            <span class="ml-1 text-red-500">*</span>
         </div>
-        <template v-if="modelValue.region?.code === 'CHK'">
-            <Select
-                v-model="modelValue.city"
-                :options="dropdowns.cities"
-                optionLabel="name"
-                placeholder="Виберіть місто"
-                :class="{ 'p-invalid': errors.city }"
-                required
-            />
-            <small class="text-red-500" v-if="errors.city">
-                {{ errors.city }}
-            </small>
-        </template>
-        <template v-else-if="modelValue.region?.code !== 'CHK'">
+
+        <p v-if="modelValue.city.Description" class="text-cyan-600 font-semibold">
+            Вибране місто: {{ modelValue.city.Description.toUpperCase() }}
+        </p>
+
+        <div class="mb-6">
             <InputText
-                v-model="modelValue.city.name"
-                placeholder="Місто"
+                v-model="searchQuery"
+                placeholder="Пошук міста"
+                class="w-full mt-1"
                 :class="{ 'p-invalid': errors.city }"
-                name="city"
             />
-            <small class="text-red-500" v-if="errors.city">
-                {{ errors.city }}
-            </small>
-        </template>
+            <ul v-if="filteredCities.length" class="mt-2 bg-gray-100 rounded-lg shadow-md divide-y">
+                <li v-for="city in filteredCities" :key="city.Ref"
+                    @click="selectCity(city)"
+                    class="p-2 cursor-pointer hover:bg-blue-100">
+                    <span>{{ city.Description }}</span>
+                    <span v-if="city.RegionsDescription">({{ city.RegionsDescription }} р-н)</span>
+                </li>
+            </ul>
+            <p v-if="!modelValue.region" class="mt-1 text-grey-600 text-sm">виберіть спочатку область</p>
+        </div>
 
         <div class="font-semibold text-md">Вулиця</div>
         <InputText
@@ -55,7 +53,7 @@
             name="street"
         />
 
-        <template v-if="modelValue.city?.code === '1'">
+        <template v-if="modelValue.city?.Description === 'Черкаси'">
             <div class="font-semibold text-md">Мікрорайон міста Черкаси</div>
             <Select
                 v-model="modelValue.area"
@@ -71,14 +69,15 @@
         </template>
 
         <MapWithMarkerEdit
-            v-if="modelValue.city?.code === '1' && modelValue.area.code"
+            v-if="modelValue.city?.Description === 'Черкаси' && modelValue.area.code"
             :property="property"
             :marker="property.address.markerPosition"
             v-model:marker="property.address.markerPosition"
         />
         <VueLeafle
-            v-else-if="modelValue.region && modelValue.city?.code !== '1'"
+            v-else-if="modelValue.region && modelValue.city?.Description !== 'Черкаси' && modelValue.city.Description"
             :property="property"
+            :centerMap="centerMap"
             :marker="property.address.markerPosition"
             v-model:marker="property.address.markerPosition"
         />
@@ -86,9 +85,10 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import MapWithMarkerEdit from "@/components/maps/MapWithMarkerEdit.vue";
 import VueLeafle from "@/components/maps/VueLeafle.vue";
+import {getSettlements} from '@/services/novaPoshtaService';
 
 const props = defineProps({
     modelValue: {
@@ -125,6 +125,46 @@ const changeRegion = () => {
     props.modelValue.markerPosition = [];
 
 };
+
+const searchQuery = ref('');
+const selectedSettlement = ref(null);
+const citiesNova = ref([]);
+const centerMap = ref(null);
+const selectCity = (city) => {
+    console.log(city);
+    centerMap.value = [Number(city.Latitude), Number(city.Longitude)];
+    props.modelValue.city.name = city.Description;
+    props.modelValue.city.code = city.Ref;
+    selectedSettlement.value = city;
+    searchQuery.value = '';
+};
+const filteredCities = computed(() => {
+    if(!props.modelValue.region) {
+        return [];
+    }
+    return citiesNova.value.filter(city =>
+        city.Description.toLowerCase().includes(searchQuery.value.toLowerCase()) &&
+        city.AreaDescription.toLowerCase() === props.modelValue.region?.name.toLowerCase()
+    );
+});
+
+watch(searchQuery, async () => {
+    if(!props.modelValue.region) {
+
+        return;
+    }
+    if (!searchQuery.value) {
+        citiesNova.value = [];
+        return;
+    }
+
+    try {
+        citiesNova.value = await getSettlements({FindByString: searchQuery.value});
+    } catch (error) {
+        console.error("Ошибка поиска городов:", error);
+        citiesNova.value = [];
+    }
+});
 
 // Validation rules
 const validateFields = () => {

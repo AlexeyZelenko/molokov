@@ -1,5 +1,7 @@
 <template>
     <div class="p-4 max-w-md mx-auto space-y-4">
+        <NovaPoshta />
+
         <div>
             <label for="region-select" class="block text-sm font-medium text-gray-700 mb-2">
                 Виберіть регіон
@@ -111,6 +113,7 @@
 
 <script>
 import { ref, reactive, onMounted, computed } from 'vue';
+import NovaPoshta from './NovaPoshta.vue';
 import {
     fetchOlxRegions,
     fetchOlxCities,
@@ -118,9 +121,10 @@ import {
 } from "@/services/olxService";
 
 export default {
+    components: {
+        NovaPoshta,
+    },
     setup() {
-        const regions = ref([]);
-        const cities = reactive({});
         const cityDetails = ref(null);
         const error = ref(null);
         const isLoading = ref(false);
@@ -222,9 +226,17 @@ export default {
             }
         };
 
-
         // Fetch regions on component mount
         onMounted(fetchRegions);
+        onMounted(async () => {
+            try {
+                areas.value = await getAreas();
+                console.log("areas", areas.value);
+            } catch (error) {
+                // Обработка ошибки
+                console.error("Ошибка при получении областей", error)
+            }
+        });
 
         return {
             regions,

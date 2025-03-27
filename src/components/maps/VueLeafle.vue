@@ -59,23 +59,38 @@ const props = defineProps({
         type: Array,
         required: false,
         default: () => []
+    },
+    centerMap: {
+        type: Array,
+        required: false,
+        default: () => [49.4444, 32.0598]
     }
 });
 
 const emit = defineEmits(['update:marker']);
 
-const zoom = ref(6);
-const defaultCenter = [49.4444, 32.0598];
+const zoom = ref(13);
+const center = computed(() => {
+    // Проверяем наличие маркера и его валидность
+    if (markerExists.value) {
+        return props.marker;
+    }
+
+    // Проверяем centerMap на валидность
+    if (Array.isArray(props.centerMap) && props.centerMap.length === 2 &&
+        typeof props.centerMap[0] === 'number' && typeof props.centerMap[1] === 'number') {
+        return props.centerMap;
+    }
+
+    // Возвращаем значение по умолчанию
+    return [49.4444, 32.0598];
+});
 
 const markerExists = computed(() => {
     return Array.isArray(props.marker) &&
         props.marker.length === 2 &&
         !isNaN(props.marker[0]) &&
         !isNaN(props.marker[1]);
-});
-
-const center = computed(() => {
-    return markerExists.value ? props.marker : defaultCenter;
 });
 
 const handleMapClick = (e) => {

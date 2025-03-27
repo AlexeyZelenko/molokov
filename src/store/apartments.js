@@ -115,7 +115,7 @@ export const useApartmentsStore = defineStore('apartments', {
                 { name: 'Волинська', code: 'VOL' },
                 { name: 'Дніпропетровська', code: 'DNE' },
                 { name: 'Донецька', code: 'DON' },
-                { name: 'Крим', code: 'CRR' },
+                { name: 'АРК', code: 'CRR' },
                 { name: 'Житомирська', code: 'ZHM' },
                 { name: 'Закарпатська', code: 'ZAK' },
                 { name: 'Запорізька', code: 'ZAP' },
