@@ -4,12 +4,12 @@
         <div class="font-bold text-md">
             <span>Область / </span>
             <span v-if="address?.city.RegionsDescription">Район / </span>
-            <span>{{ address?.city.SettlementTypeDescription || 'Населений пункт' }}</span>            
+            <span>{{ address?.city.SettlementTypeDescription || 'Населений пункт' }}</span>
         </div>
         <div>
             <span>{{ address?.region?.name }} / </span>
-            <span v-if="address?.city.RegionsDescription"> {{ address?.city.RegionsDescription }} / </span> 
-            <sapn>{{ address?.city.Description || address?.city?.name || address?.city }}</sapn>
+            <span v-if="address?.city.RegionsDescription"> {{ address?.city.RegionsDescription }} / </span>
+            <span>{{ address?.city.Description || address?.city?.name || address?.city }}</span>
         </div>
 
         <div v-if="address.area?.name">

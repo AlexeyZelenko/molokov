@@ -215,7 +215,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, reactive } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import { useApartmentsStore } from '@/store/apartments';
 import { useAuthStore } from '@/store/authFirebase';
@@ -235,7 +235,7 @@ import PropertyDescription from '@/components/forms/PropertyDescription.vue';
 import PropertyImageUpload from '@/components/forms/images/PropertyImageUpload.vue';
 import PublishToggle from '@/components/common/PublishToggle.vue';
 import UploadProgressToast from '@/components/common/UploadProgressToast.vue';
-import {doc, getDoc, updateDoc, arrayRemove} from "firebase/firestore";
+import {doc, getDoc, updateDoc} from "firebase/firestore";
 import {db} from "@/firebase/config";
 import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router';
 import Toast from 'primevue/toast';
@@ -617,14 +617,13 @@ const saveOrUpdateProperty = async () => {
         saving.value = false;
     }
 };
-onBeforeRouteLeave(async (to, from, next) => {
+onBeforeRouteLeave(async () => {
     if (!isEditMode.value && property.value?.images?.length && !savedProperty.value) {
-        // Если объявление не сохранено, удаляем изображения
         await Promise.all(property.value.images.map(imageUrl => removeImage(imageUrl)));
         property.value.images = [];
         console.log('Images removed:', property.value.images);
     }
-    next();
+    return true;
 });
 
 const resetForm = () => {

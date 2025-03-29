@@ -35,7 +35,7 @@ export const useApartmentsStore = defineStore('apartments', {
                 { name: 'Шкільна', code: 'SHK', position: { lat: 49.41011721110426, lng: 32.055765689692656 }, radius: 700, color: '#50bf5f' },
                 { name: 'Руставі', code: 'RUST', position: { lat: 49.43854424498209, lng: 32.00961112976074 }, radius: 900, color: '#c7eda3' },
                 { name: 'Школа майстрів', code: 'SHKM', position: { lat: 49.4285, lng: 32.0675 }, radius: 300, color: '#50cf7d' },
-                { name: 'Пилипенка', code: 'KPP', position: { lat: 49.42395487625772, lng: 32.05377564145998 }, radius: 300, color: '#7cb3a1' },
+                { name: 'Пилипенка', code: 'KPP', position: { lat: 49.42395487625772, lng: 32.05377564145998 }, radius: 300, color: '#7cb3a1' }
             ],
             cities: [
                 { name: 'Черкаси', code: '1' },

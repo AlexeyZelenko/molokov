@@ -15,7 +15,6 @@
 
 <script setup>
 import { defineProps } from 'vue';
-import PriceConverter from "@/components/price/PriceConverter.vue";
 import AreaDetails from "./AreaDetails.vue";
 import PropertyDetails from "./PropertyDetails.vue";
 

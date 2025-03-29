@@ -98,7 +98,6 @@ export class PropertyManager {
     };
 
     resetForm(propertyType) {
-        console.log('Resetting form with type:', propertyType, this.property);
         this.getInitialState(propertyType);
 
         this.property.images = [];
@@ -208,9 +207,6 @@ export class PropertyManager {
                     message: this.property?.creator?.message || null
                 }
             };
-
-            console.log('Property data:', propertyData);
-
             await addDoc(collection(db, `properties/${this.property.category.code}/${this.property.subcategory.code}`), propertyData);
             await this.store.updateLastPropertyId(lastPropertyId + 1);
 
