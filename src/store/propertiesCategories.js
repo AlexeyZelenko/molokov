@@ -9,6 +9,7 @@ export const usePropertiesStore = defineStore('properties', {
         loading: false,
         error: null,
         filters: {},
+        selectedSort: 'relevance',
         currentComponent: 'ApartmentsSell',
         categoryStructure: {
             apartments: {
@@ -99,58 +100,66 @@ export const usePropertiesStore = defineStore('properties', {
         },
 
         getFilteredProperties: (state) => {
-            const { filters, properties } = state;
+            const { filters, properties, selectedSort } = state;
 
-            if (Object.keys(filters).length === 0) {
-                return properties; // Если нет фильтров, возвращаем все объекты
+            let filteredProperties = properties;
+
+            if (Object.keys(filters).length > 0) {
+                filteredProperties = properties.filter((property) => {
+                    let isMatch = true;
+
+                    Object.entries(filters).forEach(([key, value]) => {
+                        if (value === null || value === undefined) return;
+
+                        // Фильтр по цене
+                        if (key === 'minPrice') isMatch &&= property.price >= Number(value);
+                        if (key === 'maxPrice') isMatch &&= property.price <= Number(value);
+
+                        // Фильтр по этажности
+                        if (key === 'minFloor') isMatch &&= property.floors?.floor >= Number(value);
+                        if (key === 'maxFloor') isMatch &&= property.floors?.floor <= Number(value);
+
+                        // Фильтр по площади
+                        if (key === 'minArea') isMatch &&= property.apartmentArea?.totalArea >= Number(value);
+                        if (key === 'maxArea') isMatch &&= property.apartmentArea?.totalArea <= Number(value);
+                        if (key === 'minAreaLiving') isMatch &&= property.apartmentArea?.livingArea >= Number(value);
+                        if (key === 'maxAreaLiving') isMatch &&= property.apartmentArea?.livingArea <= Number(value);
+                        if (key === 'minAreaKitchen') isMatch &&= property.apartmentArea?.kitchenArea >= Number(value);
+                        if (key === 'maxAreaKitchen') isMatch &&= property.apartmentArea?.kitchenArea <= Number(value);
+
+                        // Фильтр по количеству комнат
+                        if (key === 'rooms.all' && Array.isArray(value) && value.length > 0) {
+                            isMatch &&= value.includes(property.rooms?.all);
+                        }
+
+                        // Фильтр по вложенным объектам (например, category.code, subcategory.code)
+                        else if (key.includes('.')) {
+                            const fieldValue = key.split('.').reduce((obj, subKey) => obj?.[subKey], property);
+                            isMatch &&= fieldValue === value;
+                        }
+
+                        // Обычные фильтры (если ключ совпадает с полем объекта)
+                        if (property[key] !== undefined) {
+                            isMatch &&= String(property[key]) === String(value);
+                        }
+                    });
+
+                    return isMatch;
+                });
             }
 
-            return properties.filter((property) => {
-                let isMatch = true;
+            // Добавляем сортировку
+            if (selectedSort === 'price_asc') {
+                filteredProperties.sort((a, b) => a.price - b.price);
+            } else if (selectedSort === 'price_desc') {
+                filteredProperties.sort((a, b) => b.price - a.price);
+            } else if (selectedSort === 'area_asc') {
+                filteredProperties.sort((a, b) => (a.apartmentArea?.totalArea || 0) - (b.apartmentArea?.totalArea || 0));
+            } else if (selectedSort === 'area_desc') {
+                filteredProperties.sort((a, b) => (b.apartmentArea?.totalArea || 0) - (a.apartmentArea?.totalArea || 0));
+            }
 
-                Object.entries(filters).forEach(([key, value]) => {
-                    if (value === null || value === undefined) return;
-
-                    // Фильтр по цене
-                    if (key === 'minPrice') isMatch &&= property.price >= Number(value);
-                    if (key === 'maxPrice') isMatch &&= property.price <= Number(value);
-
-                    // Фильтр по этажности
-                    if (key === 'minFloor') isMatch &&= property.floors?.floor >= Number(value);
-                    if (key === 'maxFloor') isMatch &&= property.floors?.floor <= Number(value);
-
-                    // Фильтр по площади
-                    if (key === 'minArea') isMatch &&= property.apartmentArea?.totalArea >= Number(value);
-                    if (key === 'maxArea') isMatch &&= property.apartmentArea?.totalArea <= Number(value);
-                    if (key === 'minAreaLiving') isMatch &&= property.apartmentArea?.livingArea >= Number(value);
-                    if (key === 'maxAreaLiving') isMatch &&= property.apartmentArea?.livingArea <= Number(value);
-                    if (key === 'minAreaKitchen') isMatch &&= property.apartmentArea?.kitchenArea >= Number(value);
-                    if (key === 'maxAreaKitchen') isMatch &&= property.apartmentArea?.kitchenArea <= Number(value);
-
-                    // Фильтр по количеству комнат
-                    if (key === 'rooms.all' && Array.isArray(value) && value.length > 0) {
-                        isMatch &&= value.includes(property.rooms?.all);
-                    }
-
-                    // Фильтр по этажности строения
-                    if (key === 'floors.totalFloors' && Array.isArray(value) && value.length > 0) {
-                        isMatch &&= value.includes(property.floors?.totalFloors);
-                    }
-
-                    // Фильтр по вложенным объектам (например, category.code, subcategory.code)
-                    else if (key.includes('.') && key !== 'rooms.all' && key !== 'floors.totalFloors') {
-                        const fieldValue = key.split('.').reduce((obj, subKey) => obj?.[subKey], property);
-                        isMatch &&= fieldValue === value;
-                    }
-
-                    // Обычные фильтры (если ключ совпадает с полем объекта)
-                    if (property[key] !== undefined) {
-                        isMatch &&= String(property[key]) === String(value);
-                    }
-                });
-
-                return isMatch;
-            });
+            return filteredProperties;
         }
     },
 
@@ -365,6 +374,10 @@ export const usePropertiesStore = defineStore('properties', {
             } finally {
                 this.loading = false;
             }
+        },
+
+        setSelectedSort(sortType) {
+            this.selectedSort = sortType;
         }
     }
 });

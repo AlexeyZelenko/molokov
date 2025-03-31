@@ -14,7 +14,7 @@ import PropertyListCurrency from './PropertyListCurrency.vue';
 
 const props = defineProps({
     category: String,
-    type: String,
+    type: String
 });
 
 const userStore = useUserStore();
@@ -23,28 +23,23 @@ const route = useRoute();
 const store = usePropertiesStore();
 const storeAreas = useAreasStore();
 const currentPage = ref(1);
-const pageSize = 3;
+const pageSize = 100;
 
-const categoryName = computed(() =>
-    storeAreas.realEstateItems.find(item => item.key === props.category)?.title
-);
+const categoryName = computed(() => storeAreas.realEstateItems.find((item) => item.key === props.category)?.title);
 
-const subcategoryName = computed(() =>
-    storeAreas.realEstateItems.find(item => item.key === props.category)?.actions
-        .find(subcategory => subcategory.type === props.type)?.label
-);
+const subcategoryName = computed(() => storeAreas.realEstateItems.find((item) => item.key === props.category)?.actions.find((subcategory) => subcategory.type === props.type)?.label);
 
 const filters = ref({
     category: props.category,
-    subcategory: props.type,
+    subcategory: props.type
 });
 
 const paginatedProducts = computed(() => {
     let propertiesList = [];
-    if(route?.query?.user) {
-        propertiesList = store.getFilteredProperties.filter(item => item.creator.id === route?.query?.user);
+    if (route?.query?.user) {
+        propertiesList = store.getFilteredProperties.filter((item) => item.creator.id === route?.query?.user);
     } else {
-        propertiesList = store.getFilteredProperties.filter(item => item.isPublic === true);
+        propertiesList = store.getFilteredProperties.filter((item) => item.isPublic === true);
     }
 
     if (currentComponent.value === PropertyMapView) {
@@ -63,23 +58,20 @@ const loadPage = async () => {
     try {
         let searchFilters = {};
 
-        if(route?.query?.user) {
+        if (route?.query?.user) {
             searchFilters = {
                 ...filters.value,
-                "creator.id": route?.query?.user || null
+                'creator.id': route?.query?.user || null
             };
         } else {
             searchFilters = {
                 ...filters.value,
-                "creator.id": null,
-                "listId": null
+                'creator.id': null,
+                listId: null
             };
         }
 
-        await Promise.all([
-            store.getProperties(searchFilters),
-            userStore.fetchUser()
-        ]);
+        await Promise.all([store.getProperties(searchFilters), userStore.fetchUser()]);
     } catch (error) {
         console.error('Ошибка при загрузке данных:', error);
     }
@@ -96,13 +88,11 @@ const first = computed(() => Math.min((currentPage.value - 1) * pageSize, store.
 watch(filters, loadPage, { deep: true });
 watch(() => route.query.user, loadPage, { deep: true });
 
-
 watch(totalPages, () => {
     if (currentPage.value > totalPages.value) {
         currentPage.value = totalPages.value || 1;
     }
 });
-
 
 const currentComponent = computed(() => {
     switch (layout.value) {
@@ -123,27 +113,29 @@ onMounted(() => {
     }
 });
 
-watch(() => store.properties.length, () => {
-    currentPage.value = 1;
-});
-
+watch(
+    () => store.properties.length,
+    () => {
+        currentPage.value = 1;
+    }
+);
 </script>
 
 <template>
     <div class="flex flex-col">
         <ConfirmationModal />
         <div class="card p-3">
-            <div class="font-semibold text-xl">{{categoryName}} / {{subcategoryName}}</div>
+            <div class="font-semibold text-xl">{{ categoryName }} / {{ subcategoryName }}</div>
             <LoadingSkeleton v-if="store.loading" />
             <template v-else>
                 <div class="flex justify-end">
-                    <PropertyListCurrency class="m-1"/>
-                    <PropertyListHeader
-                        class="m-1"
-                        v-model:layout="layout"
-                    />
+                    <PropertyListCurrency class="m-1" />
+                    <PropertyListHeader class="m-1" v-model:layout="layout" />
                 </div>
-                <component :is="currentComponent" :items="paginatedProducts" />
+                <component
+                    :is="currentComponent"
+                    :items="paginatedProducts"
+                />
 
                 <Paginator
                     v-if="showPaginator && store.getFilteredProperties.length"
@@ -156,12 +148,7 @@ watch(() => store.properties.length, () => {
                     @prev-page="currentPage--"
                     @next-page="currentPage++"
                 />
-                <Message
-                    v-else-if="store.getFilteredProperties.length === 0"
-                    severity="info"
-                    icon="pi pi-send"
-                    class="m-7"
-                >
+                <Message v-else-if="store.getFilteredProperties.length === 0" severity="info" icon="pi pi-send" class="m-7">
                     <template #default>
                         <span>Немає оголошень</span>
                     </template>
