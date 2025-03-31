@@ -24,6 +24,16 @@ export function usePropertySave({
             .replace(/ {2,}/g, match => '&nbsp;'.repeat(match.length));
     });
 
+    // eslint-disable-next-line vue/return-in-computed-property
+    const formattedCity = computed(() => {
+        return {
+            ...property.value.address.city,
+            name: property.value.address.city.Description,
+            code: property.value.address.city.Ref,
+        }
+
+    });
+
     const saveProperty = async () => {
         saving.value = true;
         try {
@@ -40,6 +50,10 @@ export function usePropertySave({
 
             const propertyData = {
                 ...property.value,
+                address: {
+                    ...property.value.address,
+                    city: formattedCity.value
+                },
                 description: formattedDescription.value,
                 updatedAt: new Date()
             };
@@ -62,11 +76,11 @@ export function usePropertySave({
 
         } catch (error) {
             savedProperty.value = false;
-            console.error('Помилка при збереженні об\'єкту:', error);
+            console.error("Помилка при збереженні об'єкту:", error);
             toast.add({
                 severity: 'error',
                 summary: 'Помилка',
-                detail: 'Помилка збереження об\'єкту',
+                detail: "Помилка збереження об'єкту",
                 life: 3000
             });
             throw error;
@@ -83,7 +97,7 @@ export function usePropertySave({
     const useResetForm = (emptyProperty) => {
         const propertyType = `${property.value.category.code}-${property.value.subcategory.code}`;
         propertyManager.resetForm(propertyType);
-        property.value = {...emptyProperty};
+        property.value = { ...emptyProperty };
         savedProperty.value = false;
         toast.removeGroup('property-action');
 

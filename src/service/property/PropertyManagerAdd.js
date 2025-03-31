@@ -4,13 +4,14 @@ import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import compressWithCompressor from '@/service/Compressor';
 import { HouseSell, HouseRent, HouseRentDaily, HouseExchange } from '@/models/Property/House';
-import { ApartmentSell, ApartmentExchange, ApartmentRent, ApartmentRentDaily} from '@/models/Property/Apartment';
-import { OfficeSell, OfficeExchange, OfficeRent, OfficeRentDaily} from '@/models/Property/Office';
-import { LandSell, LandExchange, LandRent, LandRentDaily} from '@/models/Property/Land';
-import { CommercialSell, CommercialExchange, CommercialRent, CommercialRentDaily} from '@/models/Property/Commercial';
-import { OtherSell, OtherExchange, OtherRent, OtherRentDaily} from '@/models/Property/Other';
-import { RoomSell, RoomExchange, RoomRent, RoomRentDaily} from '@/models/Property/Rooms';
-import { GarageSell, GarageExchange, GarageRent, GarageRentDaily} from '@/models/Property/Garages';
+import { ApartmentSell, ApartmentExchange, ApartmentRent, ApartmentRentDaily } from '@/models/Property/Apartment';
+import { OfficeSell, OfficeExchange, OfficeRent, OfficeRentDaily } from '@/models/Property/Office';
+import { LandSell, LandExchange, LandRent, LandRentDaily } from '@/models/Property/Land';
+import { CommercialSell, CommercialExchange, CommercialRent, CommercialRentDaily } from '@/models/Property/Commercial';
+import { OtherSell, OtherExchange, OtherRent, OtherRentDaily } from '@/models/Property/Other';
+import { RoomSell, RoomExchange, RoomRent, RoomRentDaily } from '@/models/Property/Rooms';
+import { GarageSell, GarageExchange, GarageRent, GarageRentDaily } from '@/models/Property/Garages';
+import { useAuthStore } from "@/store/authFirebase";
 
 export class PropertyManager {
     constructor(authStore, store, toast) {
@@ -70,7 +71,7 @@ export class PropertyManager {
             rent: GarageRent,
             daily: GarageRentDaily,
             exchange: GarageExchange
-        },
+        }
     };
 
     getInitialState(propertyType) {
@@ -95,7 +96,7 @@ export class PropertyManager {
         // Восстанавливаем данные, которые нужно сохранить
         this.property.images = images;
         this.property.address = address;
-    };
+    }
 
     resetForm(propertyType) {
         this.getInitialState(propertyType);
@@ -109,7 +110,7 @@ export class PropertyManager {
             const imageRef = storageRef(storage, imagePath);
             await deleteObject(imageRef);
 
-            this.property.images = this.property.images.filter(url => url !== imageUrl);
+            this.property.images = this.property.images.filter((url) => url !== imageUrl);
             this.toast.add({ severity: 'success', summary: 'Deleted', detail: 'Зображення успішно видалено', life: 3000 });
         } catch (error) {
             console.error('Error deleting image:', error);
@@ -126,7 +127,7 @@ export class PropertyManager {
             return;
         }
 
-        const validFiles = files.filter(file => {
+        const validFiles = files.filter((file) => {
             const isValidType = ['image/jpeg', 'image/png', 'image/webp'].includes(file.type);
             const isValidSize = file.size <= 10 * 1024 * 1024;
 
@@ -156,9 +157,7 @@ export class PropertyManager {
         });
 
         const uploadedUrls = await Promise.allSettled(uploadPromises);
-        const successfulUploads = uploadedUrls
-            .filter(result => result.status === 'fulfilled')
-            .map(result => result.value);
+        const successfulUploads = uploadedUrls.filter((result) => result.status === 'fulfilled').map((result) => result.value);
 
         this.property.images.push(...successfulUploads);
 
@@ -175,13 +174,22 @@ export class PropertyManager {
     }
 
     getFormattedDescription() {
-        return this.property.description.replace(/\n/g, '<br>').replace(/ {2,}/g, match => '&nbsp;'.repeat(match.length));
+        return this.property.description.replace(/\n/g, '<br>').replace(/ {2,}/g, (match) => '&nbsp;'.repeat(match.length));
     }
+
+    // eslint-disable-next-line vue/return-in-computed-property
+    formattedCity(property) {
+        return {
+            ...property.address.city,
+            name: property.address.city.Description,
+            code: property.address.city.Ref,
+        }
+    };
 
     async saveProperty() {
         try {
             let utilitiesObject = {};
-            if(this.property.utilities) {
+            if (this.property.utilities) {
                 utilitiesObject = this.property.utilities.reduce((acc, current) => {
                     acc[current.key] = current;
                     return acc;
@@ -190,10 +198,17 @@ export class PropertyManager {
                 utilitiesObject = {};
             }
 
+            console.log('this.contact', this.contact);
+            const user = useAuthStore();
+            console.log('useAuthStore', user);
 
             const lastPropertyId = await this.store.getLastPropertyId;
             const propertyData = {
                 ...this.property,
+                address: {
+                    ...this.property.address,
+                    city: this.formattedCity(this.property)
+                },
                 utilities: utilitiesObject,
                 createdAt: serverTimestamp(),
                 updatedAt: serverTimestamp(),
@@ -213,10 +228,10 @@ export class PropertyManager {
             const propertyType = `${this.property.category.code}-${this.property.subcategory.code}`;
             this.resetForm(propertyType);
 
-            this.toast.add({ severity: 'success', summary: 'Успішно', detail: 'Об\'єкт додано', life: 3000 });
+            this.toast.add({ severity: 'success', summary: 'Успішно', detail: "Об'єкт додано", life: 3000 });
         } catch (error) {
             console.error('Error saving property:', error);
-            this.toast.add({ severity: 'error', summary: 'Помилка', detail: 'Помилка збереження об\'єкту', life: 3000 });
+            this.toast.add({ severity: 'error', summary: 'Помилка', detail: "Помилка збереження об'єкту", life: 3000 });
         }
     }
 }

@@ -1,19 +1,6 @@
 import { defineStore } from 'pinia';
 import { auth, db } from '@/firebase/config';
-import {
-    doc,
-    getDoc,
-    updateDoc,
-    collection,
-    addDoc,
-    query,
-    where,
-    getDocs,
-    serverTimestamp,
-    getFirestore,
-    deleteDoc,
-    setDoc
-} from 'firebase/firestore';
+import { doc, getDoc, updateDoc, collection, addDoc, query, where, getDocs, serverTimestamp, getFirestore, deleteDoc, setDoc } from 'firebase/firestore';
 
 export const useUserStore = defineStore('user', {
     state: () => ({
@@ -43,15 +30,7 @@ export const useUserStore = defineStore('user', {
             this.profile = { ...this.profile, ...data };
         },
 
-        async createPropertyList({name, client, properties, category, subcategory}) {
-            console.log(
-                '%cData:', 'color: blue; font-weight: bold;',
-                '\nName:', name,
-                '\nClient:', client,
-                '\nProperties:', properties,
-                '\nCategory:', category,
-                '\nSubcategory:', subcategory
-            );
+        async createPropertyList({ name, client, properties, category, subcategory }) {
             if (!auth.currentUser) return;
 
             const newList = {
@@ -74,7 +53,7 @@ export const useUserStore = defineStore('user', {
                 const listRef = doc(db, 'propertyLists', listId);
                 await deleteDoc(listRef);
                 // Обновляем локальный список
-                this.propertyLists = this.propertyLists.filter(list => list.id !== listId);
+                this.propertyLists = this.propertyLists.filter((list) => list.id !== listId);
             } catch (error) {
                 console.error('Error deleting property list:', error);
                 throw error;
@@ -84,13 +63,10 @@ export const useUserStore = defineStore('user', {
         async fetchPropertyLists() {
             if (!auth.currentUser) return;
 
-            const q = query(
-                collection(db, 'propertyLists'),
-                where('userId', '==', auth.currentUser.uid)
-            );
+            const q = query(collection(db, 'propertyLists'), where('userId', '==', auth.currentUser.uid));
 
             const querySnapshot = await getDocs(q);
-            this.propertyLists = querySnapshot.docs.map(doc => ({
+            this.propertyLists = querySnapshot.docs.map((doc) => ({
                 id: doc.id,
                 ...doc.data()
             }));
@@ -102,10 +78,7 @@ export const useUserStore = defineStore('user', {
                 const userId = auth.currentUser?.uid;
 
                 // Отримати дані користувача та клієнтів паралельно
-                const [userDoc, clientsSnapshot] = await Promise.all([
-                    getDoc(doc(db, 'users', userId)),
-                    getDocs(collection(db, 'users', userId, 'clients'))
-                ]);
+                const [userDoc, clientsSnapshot] = await Promise.all([getDoc(doc(db, 'users', userId)), getDocs(collection(db, 'users', userId, 'clients'))]);
 
                 if (userDoc.exists()) {
                     this.user = { id: userDoc.id, ...userDoc.data() };
@@ -138,7 +111,7 @@ export const useUserStore = defineStore('user', {
 
             try {
                 const db = getFirestore();
-                if(!userId) return;
+                if (!userId) return;
                 const userRef = doc(db, 'users', userId);
                 const userDoc = await getDoc(userRef);
 
@@ -223,9 +196,7 @@ export const useUserStore = defineStore('user', {
                 await updateDoc(clientRef, updatedData);
 
                 // Оновлюємо локальний стан клієнтів
-                const updatedClients = this.clients.map((client) =>
-                    client.id === clientId ? { ...client, ...updatedData } : client
-                );
+                const updatedClients = this.clients.map((client) => (client.id === clientId ? { ...client, ...updatedData } : client));
 
                 this.clients = updatedClients; // Оновлюємо локальний стан
                 console.log('Клієнт успішно оновлено. Оновлені клієнти:', updatedClients);
@@ -286,11 +257,7 @@ export const useUserStore = defineStore('user', {
                 const properties = listDoc.data().properties || [];
 
                 // Check if property already exists using propertyId
-                const propertyExists = properties.some(
-                    prop => typeof prop === 'object'
-                        ? prop.propertyId === propertyId
-                        : prop === propertyId
-                );
+                const propertyExists = properties.some((prop) => (typeof prop === 'object' ? prop.propertyId === propertyId : prop === propertyId));
 
                 if (!propertyExists) {
                     await updateDoc(listRef, {
@@ -300,12 +267,12 @@ export const useUserStore = defineStore('user', {
             }
         },
 
-        async fetchUsers(){
+        async fetchUsers() {
             try {
                 this.loading = true;
                 this.error = null;
                 const querySnapshot = await getDocs(collection(db, 'users'));
-                this.users = querySnapshot.docs.map(doc => ({
+                this.users = querySnapshot.docs.map((doc) => ({
                     id: doc.id,
                     ...doc.data()
                 }));
@@ -331,7 +298,7 @@ export const useUserStore = defineStore('user', {
                     // If the document doesn't exist, create it with the new role
                     await setDoc(userRef, {
                         role: newRole,
-                        email: this.users.find(u => u.id === userId)?.email || ''
+                        email: this.users.find((u) => u.id === userId)?.email || ''
                     });
                 } else {
                     // Update the existing document

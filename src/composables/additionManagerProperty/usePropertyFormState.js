@@ -54,7 +54,7 @@ export function usePropertyFormState() {
         },
         creator: {
             message: ''
-        },
+        }
     };
 
     const property = ref(structuredClone(emptyProperty));
@@ -63,7 +63,7 @@ export function usePropertyFormState() {
         area: false,
         floors: false,
         rooms: false,
-        condition: false,
+        condition: false
     });
 
     const initializeNewProperty = (categoryCode, propertyManager) => {

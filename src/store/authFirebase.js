@@ -1,33 +1,22 @@
-import { ref, computed } from 'vue'
-import { defineStore } from 'pinia'
-import { auth, db } from '@/firebase/config'
-import {
-    createUserWithEmailAndPassword,
-    signInWithEmailAndPassword,
-    signOut,
-    onAuthStateChanged,
-    getAuth,
-    sendPasswordResetEmail,
-    setPersistence,
-    updateProfile,
-    browserLocalPersistence,
-    browserSessionPersistence
-} from 'firebase/auth'
-import { doc, setDoc, serverTimestamp, getDoc, getDocs, collection } from 'firebase/firestore'
-import { getFirebaseErrorMessage } from '@/utils/firebaseErrors'
-import { useToast } from 'primevue/usetoast'
+import { ref, computed } from 'vue';
+import { defineStore } from 'pinia';
+import { auth, db } from '@/firebase/config';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, getAuth, sendPasswordResetEmail, setPersistence, updateProfile, browserLocalPersistence, browserSessionPersistence } from 'firebase/auth';
+import { doc, setDoc, serverTimestamp, getDoc, getDocs, collection } from 'firebase/firestore';
+import { getFirebaseErrorMessage } from '@/utils/firebaseErrors';
+import { useToast } from 'primevue/usetoast';
 
 export const useAuthStore = defineStore('auth', () => {
-    const user = ref(null)
-    const error = ref(null)
-    const loading = ref(false)
-    const toast = useToast()
+    const user = ref(null);
+    const error = ref(null);
+    const loading = ref(false);
+    const toast = useToast();
 
-    const isAuthenticated = computed(() => auth.currentUser)
+    const isAuthenticated = computed(() => auth.currentUser);
     const userRole = computed(() => {
-        if (!user.value) return 'guest'
-        return user.value.role || 'guest'
-    })
+        if (!user.value) return 'guest';
+        return user.value.role || 'guest';
+    });
 
     async function register({ email, password, name, phones, agency, role = 'customer', remember = false }) {
         try {
@@ -38,7 +27,7 @@ export const useAuthStore = defineStore('auth', () => {
 
             // Update user profile with display name
             await updateProfile(authUser, {
-                displayName: name,
+                displayName: name
             });
 
             // Set user document in Firestore with additional details
@@ -54,10 +43,7 @@ export const useAuthStore = defineStore('auth', () => {
             });
 
             // Set persistence if remember is true
-            await setPersistence(
-                auth,
-                remember ? browserLocalPersistence : browserSessionPersistence
-            );
+            await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence);
 
             // Store user data
             user.value = {
@@ -89,10 +75,7 @@ export const useAuthStore = defineStore('auth', () => {
             loading.value = true;
 
             // Set persistence based on remember me option
-            await setPersistence(
-                auth,
-                remember ? browserLocalPersistence : browserSessionPersistence
-            );
+            await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence);
 
             // Perform login
             const { user: authUser } = await signInWithEmailAndPassword(auth, email, password);
@@ -180,7 +163,7 @@ export const useAuthStore = defineStore('auth', () => {
             localStorage.removeItem('userRemembered');
             localStorage.removeItem('userEmail');
 
-            console.log('logout')
+            console.log('logout');
             window.location.reload(true);
         } catch (err) {
             const errorMessage = getFirebaseErrorMessage(err.message);
@@ -190,22 +173,22 @@ export const useAuthStore = defineStore('auth', () => {
 
     async function resetPassword(email) {
         try {
-            await sendPasswordResetEmail(auth, email)
+            await sendPasswordResetEmail(auth, email);
             toast.add({
                 severity: 'success',
                 summary: 'Success',
                 detail: 'Електронний лист для зміни пароля надіслано. Будь ласка, перевірте свою поштову скриньку',
                 life: 7000
-            })
+            });
         } catch (err) {
-            error.value = getFirebaseErrorMessage(err.message)
+            error.value = getFirebaseErrorMessage(err.message);
             toast.add({
                 severity: 'error',
                 summary: 'Error',
                 detail: error.value,
                 life: 3000
-            })
-            throw new Error(error.value)
+            });
+            throw new Error(error.value);
         }
     }
 
@@ -229,7 +212,7 @@ export const useAuthStore = defineStore('auth', () => {
                                 role: userDoc.data().role || 'customer',
                                 phones: userDoc.data().phones || null,
                                 emailVerified: currentUser.emailVerified,
-                                avatar: userDoc.data().avatar || null,
+                                avatar: userDoc.data().avatar || null
                             };
 
                             user.value = userData;
@@ -266,10 +249,9 @@ export const useAuthStore = defineStore('auth', () => {
 
     function debugUserState() {
         if (auth.currentUser) {
-            getDoc(doc(db, 'users', auth.currentUser.uid))
-                .then(doc => {
-                    console.log('Current Firestore data:', doc.data());
-                });
+            getDoc(doc(db, 'users', auth.currentUser.uid)).then((doc) => {
+                console.log('Current Firestore data:', doc.data());
+            });
         }
     }
 
@@ -278,24 +260,24 @@ export const useAuthStore = defineStore('auth', () => {
         const currentUser = auth.currentUser; // Текущий пользователь
 
         if (!currentUser) {
-            console.warn("No authenticated user found.");
+            console.warn('No authenticated user found.');
             return null; // Возвращаем null, если пользователь не авторизован
         }
 
         try {
             // Получение документа пользователя из Firestore
-            const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+            const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
 
             // Обновляем данные, если документ существует
             if (userDoc.exists()) {
                 const userData = {
                     uid: currentUser.uid,
                     email: currentUser.email,
-                    displayName: currentUser.displayName || "",
-                    username: currentUser.displayName || "",
-                    role: userDoc.data().role || "customer",
+                    displayName: currentUser.displayName || '',
+                    username: currentUser.displayName || '',
+                    role: userDoc.data().role || 'customer',
                     phones: userDoc.data().phones || [],
-                    emailVerified: currentUser.emailVerified,
+                    emailVerified: currentUser.emailVerified
                 };
                 user.value = userData; // Обновляем реактивные данные
                 return userData; // Возвращаем объект
@@ -305,17 +287,16 @@ export const useAuthStore = defineStore('auth', () => {
             const defaultUser = {
                 uid: currentUser.uid,
                 email: currentUser.email,
-                displayName: currentUser.displayName || "",
-                username: currentUser.displayName || "",
-                role: "customer",
+                displayName: currentUser.displayName || '',
+                username: currentUser.displayName || '',
+                role: 'customer',
                 phones: [],
-                emailVerified: currentUser.emailVerified,
+                emailVerified: currentUser.emailVerified
             };
             user.value = defaultUser; // Обновляем реактивные данные
             return defaultUser; // Возвращаем объект
-
         } catch (error) {
-            console.error("Error fetching user data from Firestore:", error);
+            console.error('Error fetching user data from Firestore:', error);
             user.value = null; // Сбрасываем пользователя в случае ошибки
             return null;
         }
@@ -330,7 +311,7 @@ export const useAuthStore = defineStore('auth', () => {
         return users;
     }
 
-    async function updateProfileUser({displayName, photoURL}) {
+    async function updateProfileUser({ displayName, photoURL }) {
         try {
             await updateProfile(auth.currentUser, {
                 displayName: displayName,
@@ -359,5 +340,5 @@ export const useAuthStore = defineStore('auth', () => {
         debugUserState,
         getUsers,
         updateProfileUser
-    }
-})
+    };
+});
