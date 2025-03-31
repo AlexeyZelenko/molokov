@@ -1,16 +1,7 @@
 import { defineStore } from 'pinia';
 import { db } from '@/firebase/config';
-import {
-    collection,
-    query,
-    where,
-    getDocs,
-    orderBy,
-    limit,
-    documentId,
-    FieldPath
-} from 'firebase/firestore';
-import {log10} from "chart.js/helpers";
+import { collection, query, where, getDocs, orderBy, limit, documentId, FieldPath } from 'firebase/firestore';
+import { log10 } from 'chart.js/helpers';
 
 export const usePropertiesStore = defineStore('properties', {
     state: () => ({
@@ -92,12 +83,12 @@ export const usePropertiesStore = defineStore('properties', {
                     daily: { name: 'Посуточно' }
                 }
             }
-        },
+        }
     }),
 
     getters: {
         getPropertiesByCategoryAndSubcategory: (state) => (category, subcategory) => {
-            return state.properties.filter((property) => property.category.code === category && property.subcategory.code === subcategory)
+            return state.properties.filter((property) => property.category.code === category && property.subcategory.code === subcategory);
         },
         getPropertiesByCategory: (state) => (category) => {
             return state.properties.filter((property) => property.category.name === category);
@@ -141,8 +132,13 @@ export const usePropertiesStore = defineStore('properties', {
                         isMatch &&= value.includes(property.rooms?.all);
                     }
 
+                    // Фильтр по этажности строения
+                    if (key === 'floors.totalFloors' && Array.isArray(value) && value.length > 0) {
+                        isMatch &&= value.includes(property.floors?.totalFloors);
+                    }
+
                     // Фильтр по вложенным объектам (например, category.code, subcategory.code)
-                    else if (key.includes('.')) {
+                    else if (key.includes('.') && key !== 'rooms.all' && key !== 'floors.totalFloors') {
                         const fieldValue = key.split('.').reduce((obj, subKey) => obj?.[subKey], property);
                         isMatch &&= fieldValue === value;
                     }
@@ -160,25 +156,25 @@ export const usePropertiesStore = defineStore('properties', {
 
     actions: {
         componentMap: {
-            'apartments': {
-                'sell': 'ApartmentsSell',
-                'rent': 'ApartmentsRent'
+            apartments: {
+                sell: 'ApartmentsSell',
+                rent: 'ApartmentsRent'
             },
-            'house': {
-                'sell': 'HousesSell',
-                'rent': 'HousesRent'
+            house: {
+                sell: 'HousesSell',
+                rent: 'HousesRent'
             }
         },
 
         determineComponent(category, subcategory) {
             const componentMap = {
-                'apartments': {
-                    'sell': 'ApartmentsSell',
-                    'rent': 'ApartmentsRent'
+                apartments: {
+                    sell: 'ApartmentsSell',
+                    rent: 'ApartmentsRent'
                 },
-                'house': {
-                    'sell': 'HousesSell',
-                    'rent': 'HousesRent'
+                house: {
+                    sell: 'HousesSell',
+                    rent: 'HousesRent'
                 }
             };
 
@@ -229,11 +225,7 @@ export const usePropertiesStore = defineStore('properties', {
                     const results = await Promise.all(
                         batches.map(async (batchIds) => {
                             if (batchIds.length > 0) {
-                                const q = query(
-                                    collection(db, collectionPath),
-                                    where(documentId(), 'in', batchIds),
-                                    orderBy('createdAt', 'desc')
-                                );
+                                const q = query(collection(db, collectionPath), where(documentId(), 'in', batchIds), orderBy('createdAt', 'desc'));
                                 const snapshot = await getDocs(q);
                                 return snapshot.docs;
                             }
@@ -241,16 +233,13 @@ export const usePropertiesStore = defineStore('properties', {
                         })
                     );
 
-                    this.properties = results.flat().map(doc => ({
+                    this.properties = results.flat().map((doc) => ({
                         id: doc.id,
                         ...this.processDocumentData(doc.data())
                     }));
                 } else {
                     for (const [key, value] of Object.entries(filters)) {
-                        if (['category', 'subcategory'].includes(key) ||
-                            value === undefined ||
-                            value === null ||
-                            value === '') {
+                        if (['category', 'subcategory'].includes(key) || value === undefined || value === null || value === '') {
                             continue;
                         }
 
@@ -281,7 +270,7 @@ export const usePropertiesStore = defineStore('properties', {
                     const q = query(collection(db, collectionPath), ...constraints);
                     const querySnapshot = await getDocs(q);
 
-                    this.properties = querySnapshot.docs.map(doc => ({
+                    this.properties = querySnapshot.docs.map((doc) => ({
                         id: doc.id,
                         ...this.processDocumentData(doc.data())
                     }));
@@ -297,7 +286,7 @@ export const usePropertiesStore = defineStore('properties', {
         // Вспомогательный метод для обработки данных документа
         processDocumentData(data) {
             const timestamps = ['createdAt', 'updatedAt'];
-            timestamps.forEach(field => {
+            timestamps.forEach((field) => {
                 if (data[field]?.toDate) {
                     data[field] = data[field].toDate();
                 }
@@ -326,9 +315,7 @@ export const usePropertiesStore = defineStore('properties', {
                 message: error.message,
                 filters,
                 specificIds,
-                collectionPath: filters.category && filters.subcategory ?
-                    `properties/${filters.category}/${filters.subcategory}` :
-                    'unknown'
+                collectionPath: filters.category && filters.subcategory ? `properties/${filters.category}/${filters.subcategory}` : 'unknown'
             });
 
             throw error;
@@ -379,5 +366,5 @@ export const usePropertiesStore = defineStore('properties', {
                 this.loading = false;
             }
         }
-    },
+    }
 });

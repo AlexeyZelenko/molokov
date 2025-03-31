@@ -9,6 +9,7 @@ const storeCategories = usePropertiesStore();
 const filters = ref({
     'condition.value': null,
     'rooms.all': null,
+    'floors.totalFloors': null,
     minPrice: null,
     maxPrice: null,
     maxFloor: null,
@@ -29,7 +30,7 @@ const filters = ref({
 // Состояние для управления открытием/закрытием всех панелей
 const allPanelsOpen = ref(false);
 // Значения всех панелей
-const panelValues = ['location', 'rooms', 'area', 'building', 'details'];
+const panelValues = ['location', 'rooms', 'area', 'building', 'details', 'building-floors'];
 // Активные панели
 const activePanels = ref([]);
 
@@ -74,6 +75,7 @@ const clearFilters = () => {
     filters.value = {
         'condition.value': null,
         'rooms.all': null,
+        'floors.totalFloors': null,
         minPrice: null,
         maxPrice: null,
         maxFloor: null,
@@ -118,10 +120,28 @@ const condition = getUniqueValues('condition');
 const objectClass = getUniqueValues('objectClass');
 const reconditioning = getUniqueValues('reconditioning');
 
+const buildingFloors = computed(() => {
+    // Получаем все значения этажности из всех объектов
+    const values = storeCategories.properties
+        .map(property => property.floors?.totalFloors)
+        .filter(value => value !== null && value !== undefined);
+
+    // Убираем дубликаты и сортируем
+    const uniqueValues = [...new Set(values)].sort((a, b) => a - b);
+
+    return {
+        name: 'Етажність будівлі',
+        key: 'floors.totalFloors',
+        value: uniqueValues
+    };
+});
+
 const roomsAll = computed(() => {
     // Функция для обработки и исключения дубликатов
     const processRoomsField = (field) => {
-        const values = storeCategories.properties.map((property) => property.rooms[field]).filter((value) => value !== null && value !== undefined); // Исключаем пустые значения
+        const values = storeCategories.properties
+            .map((property) => property.rooms[field])
+            .filter((value) => value !== null && value !== undefined); // Исключаем пустые значения
 
         // Убираем дубликаты
         const uniqueValues = [...new Set(values)];
@@ -185,6 +205,10 @@ const getSelectedFilters = computed(() => {
     const filterTypeMap = {
         rooms: (key, value, parts) => ({
             displayName: roomsAll.value[parts[1]].name,
+            displayValue: value
+        }),
+        floors: (key, value) => ({
+            displayName: 'Етажність будівлі',
             displayValue: value
         }),
         address: (key, value, parts) => {
@@ -288,7 +312,14 @@ const getSelectedFilters = computed(() => {
                     <AccordionContent>
                         <div v-for="(item, key) in address" :key="key" class="flex flex-col">
                             <label>{{ item.name }}</label>
-                            <Select v-model="filters[`address.${key}.code`]" :options="item.value.map((i) => ({ name: i.name, value: i.code }))" optionLabel="name" optionValue="value" placeholder="Вибрати" @change="applyFilters" />
+                            <Select
+                                v-model="filters[`address.${key}.code`]"
+                                :options="item.value.map((i) => ({ name: i.name, value: i.code }))"
+                                optionLabel="name"
+                                optionValue="value"
+                                placeholder="Вибрати"
+                                @change="applyFilters"
+                            />
                         </div>
                     </AccordionContent>
                 </AccordionPanel>
@@ -299,7 +330,7 @@ const getSelectedFilters = computed(() => {
                         <div v-for="(rooms, key) in roomsAll" :key="key" class="flex flex-col">
                             <MultiSelect
                                 v-model="filters['rooms.all']"
-                                :options="rooms.value.map((room) => ({ name: room, value: room }))"
+                                :options="rooms.value.map((room) => ({ name: String(room), value: room }))"
                                 optionLabel="name"
                                 optionValue="value"
                                 placeholder="Вибрати"
@@ -368,10 +399,24 @@ const getSelectedFilters = computed(() => {
                     <AccordionContent>
                         <div class="flex flex-col">
                             <label>Стан об'єкта</label>
-                            <Select v-model="filters['reconditioning.value']" :options="reconditioning" optionLabel="name" optionValue="value" placeholder="Вибрати стан" @change="applyFilters" />
+                            <Select v-model="filters['reconditioning.value']" :options="reconditioning" optionLabel="name" optionValue="value" placeholder="Вибрати" @change="applyFilters" />
                         </div>
 
-                        <div class="flex flex-col">
+                        <div class="flex flex-col mt-1">
+                            <label>Етажність будівлі</label>
+                            <MultiSelect
+                                v-model="filters['floors.totalFloors']"
+                                :options="buildingFloors.value.map((floor) => ({ name: String(floor), value: floor }))"
+                                optionLabel="name"
+                                optionValue="value"
+                                placeholder="Вибрати"
+                                display="chip"
+                                @change="applyFilters"
+                                class="w-full"
+                            />
+                        </div>
+
+                        <div class="flex flex-col mt-1">
                             <label>Поверх</label>
                             <div class="flex flex-col gap-1">
                                 <InputNumber v-model="filters.minFloor" placeholder="Мінімальна" :min="0" :max="filters.maxFloor" />
