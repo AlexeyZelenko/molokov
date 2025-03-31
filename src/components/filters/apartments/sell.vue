@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { usePropertiesStore } from '@/store/propertiesCategories';
 import Select from 'primevue/select';
 
@@ -44,6 +44,44 @@ const emit = defineEmits(['closeFilters']);
 const handleClose = () => {
     emit('closeFilters');
 };
+
+const filteredCities = computed(() => {
+    if (!filters.value['address.region.code']) {
+        // Если область не выбрана, показываем все города
+        return address.value.city.value;
+    }
+
+    // Фильтруем города, оставляя только те, которые относятся к выбранной области
+    return storeCategories.properties
+        .filter((property) => property.address?.region?.code === filters.value['address.region.code'])
+        .map((property) => property.address?.city)
+        .filter((city) => city) // Убираем null/undefined
+        .reduce((unique, city) => {
+            if (!unique.some((item) => item.code === city.code)) {
+                unique.push(city);
+            }
+            return unique;
+        }, [])
+        .sort((a, b) => a.name.localeCompare(b.name));
+});
+watch(
+    () => filters.value['address.region.code'],
+    (newVal) => {
+        if (newVal) {
+            filters.value['address.city.code'] = null;
+            filters.value['address.area.code'] = null;
+        }
+    }
+);
+
+watch(
+    () => filters.value['address.city.code'],
+    (newVal) => {
+        if (!newVal) {
+            filters.value['address.area.code'] = null;
+        }
+    }
+);
 
 const countFilterParams = computed(() => {
     const count = Object.keys(filters.value).filter((key) => {
@@ -122,9 +160,7 @@ const reconditioning = getUniqueValues('reconditioning');
 
 const buildingFloors = computed(() => {
     // Получаем все значения этажности из всех объектов
-    const values = storeCategories.properties
-        .map(property => property.floors?.totalFloors)
-        .filter(value => value !== null && value !== undefined);
+    const values = storeCategories.properties.map((property) => property.floors?.totalFloors).filter((value) => value !== null && value !== undefined);
 
     // Убираем дубликаты и сортируем
     const uniqueValues = [...new Set(values)].sort((a, b) => a - b);
@@ -139,9 +175,7 @@ const buildingFloors = computed(() => {
 const roomsAll = computed(() => {
     // Функция для обработки и исключения дубликатов
     const processRoomsField = (field) => {
-        const values = storeCategories.properties
-            .map((property) => property.rooms[field])
-            .filter((value) => value !== null && value !== undefined); // Исключаем пустые значения
+        const values = storeCategories.properties.map((property) => property.rooms[field]).filter((value) => value !== null && value !== undefined); // Исключаем пустые значения
 
         // Убираем дубликаты
         const uniqueValues = [...new Set(values)];
@@ -161,18 +195,36 @@ const roomsAll = computed(() => {
 
 const address = computed(() => {
     const processAddressField = (field) => {
-        const values = storeCategories.properties
+        let filteredProperties = storeCategories.properties;
+
+        // Если выбран город, фильтруем свойства по этому городу (для районов)
+        if (field === 'area' && filters.value['address.city.code']) {
+            filteredProperties = filteredProperties.filter((property) => property.address?.city?.code === filters.value['address.city.code']);
+        }
+
+        // Для городов - дополнительная фильтрация по выбранному региону
+        if (field === 'city' && filters.value['address.region.code']) {
+            filteredProperties = filteredProperties.filter((property) => property.address?.region?.code === filters.value['address.region.code']);
+        }
+
+        const values = filteredProperties
             .filter((property) => property.address && property.address[field])
             .map((property) => property.address[field])
             .flat()
             .filter((value) => value !== null && value !== '' && value !== undefined);
 
-        const uniqueValues = [];
+        // Используем Map для гарантированного устранения дубликатов по code
+        const uniqueValuesMap = new Map();
         values.forEach((value) => {
-            if (value && value.code && !uniqueValues.some((item) => item.code === value.code)) {
-                uniqueValues.push(value);
+            if (value && value.code) {
+                if (!uniqueValuesMap.has(value.code)) {
+                    uniqueValuesMap.set(value.code, value);
+                }
             }
         });
+
+        // Преобразуем Map обратно в массив
+        const uniqueValues = Array.from(uniqueValuesMap.values());
 
         return uniqueValues.sort((a, b) => {
             if (!a.name || !b.name) return 0;
@@ -310,14 +362,33 @@ const getSelectedFilters = computed(() => {
                 <AccordionPanel value="location">
                     <AccordionHeader class="font-semibold text-xl mb-4">Росташування</AccordionHeader>
                     <AccordionContent>
-                        <div v-for="(item, key) in address" :key="key" class="flex flex-col">
-                            <label>{{ item.name }}</label>
+                        <div class="flex flex-col">
+                            <label>Область</label>
+                            <Select v-model="filters['address.region.code']" :options="address.region.value.map((i) => ({ name: i.name, value: i.code }))" optionLabel="name" optionValue="value" placeholder="Вибрати" @change="applyFilters" />
+                        </div>
+
+                        <div class="flex flex-col mt-2">
+                            <label>Місто</label>
                             <Select
-                                v-model="filters[`address.${key}.code`]"
-                                :options="item.value.map((i) => ({ name: i.name, value: i.code }))"
+                                v-model="filters['address.city.code']"
+                                :options="filteredCities.map((i) => ({ name: i.name, value: i.code }))"
                                 optionLabel="name"
                                 optionValue="value"
                                 placeholder="Вибрати"
+                                :disabled="!filters['address.region.code']"
+                                @change="applyFilters"
+                            />
+                        </div>
+
+                        <div v-if="filters['address.city.code'] && address.area.value.length > 0" class="flex flex-col mt-2">
+                            <label>Район</label>
+                            <Select
+                                v-model="filters['address.area.code']"
+                                :options="address.area.value.map((i) => ({ name: i.name, value: i.code }))"
+                                optionLabel="name"
+                                optionValue="value"
+                                placeholder="Вибрати"
+                                :disabled="!filters['address.city.code']"
                                 @change="applyFilters"
                             />
                         </div>
