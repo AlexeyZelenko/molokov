@@ -1,89 +1,73 @@
 <script setup>
-import { ref, computed, defineAsyncComponent, watch, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
-import { usePropertiesStore } from '@/store/propertiesCategories'
+import { ref, computed, defineAsyncComponent, watch } from 'vue';
+import { useRoute } from 'vue-router';
+import { usePropertiesStore } from '@/store/propertiesCategories';
 
-const useProperties = usePropertiesStore()
-const route = useRoute()
+const useProperties = usePropertiesStore();
+const route = useRoute();
 
 // Use reactive approach for route params
-const activeCategory = ref(route.params.category || '')
-const activeSubcategory = ref(route.params.subcategory || '')
+const activeCategory = ref(route.params.category || '');
+const activeSubcategory = ref(route.params.subcategory || '');
 
-const categoryStructure = ref(useProperties.categoryStructure)
+const categoryStructure = ref(useProperties.categoryStructure);
 
 // Получаем первую подкатегорию для категории
 function getFirstSubcategory(categoryCode) {
-    const category = categoryStructure.value[categoryCode]
+    const category = categoryStructure.value[categoryCode];
     if (category && category.subcategories) {
-        return Object.keys(category.subcategories)[0]
+        return Object.keys(category.subcategories)[0];
     }
-    return null
+    return null;
 }
 
 // Динамическая загрузка компонентов
-const getComponentPath = (category, subcategory) => {
-    return defineAsyncComponent(() =>
-        import(`@/components/properties/list/List.vue`)
-            .catch(() => import('@/views/pages/NotFound.vue'))
-    )
-}
+const getComponentPath = () => {
+    return defineAsyncComponent(() => import(`@/components/properties/list/List.vue`).catch(() => import('@/views/pages/NotFound.vue')));
+};
 
 // Получаем текущий компонент
 const CurrentComponent = computed(() => {
-    return getComponentPath(activeCategory.value, activeSubcategory.value)
-})
+    return getComponentPath(activeCategory.value, activeSubcategory.value);
+});
 
 // Comprehensive route params watcher
 const updateRouteParams = () => {
-    const { category, subcategory } = route.params
+    const { category, subcategory } = route.params;
 
     // Validate category
     if (category && categoryStructure.value[category]) {
-        activeCategory.value = category
+        activeCategory.value = category;
 
         // If no subcategory provided, try to get the first subcategory
         if (!subcategory) {
-            const firstSubcategory = getFirstSubcategory(category)
-            activeSubcategory.value = firstSubcategory || ''
+            const firstSubcategory = getFirstSubcategory(category);
+            activeSubcategory.value = firstSubcategory || '';
         } else {
             // Validate subcategory
             if (categoryStructure.value[category]?.subcategories?.[subcategory]) {
-                activeSubcategory.value = subcategory
+                activeSubcategory.value = subcategory;
             } else {
                 // Fallback to first subcategory if invalid
-                const firstSubcategory = getFirstSubcategory(category)
-                activeSubcategory.value = firstSubcategory || ''
+                const firstSubcategory = getFirstSubcategory(category);
+                activeSubcategory.value = firstSubcategory || '';
             }
         }
     } else {
         // Reset if category is invalid
-        activeCategory.value = ''
-        activeSubcategory.value = ''
+        activeCategory.value = '';
+        activeSubcategory.value = '';
     }
-}
+};
 
 // Initial update and watch for route changes
-updateRouteParams()
-watch(() => route.params, updateRouteParams, { immediate: true })
-
-onMounted(() => {
-    console.log('ListProperties mounted', {
-        category: activeCategory.value,
-        subcategory: activeSubcategory.value,
-        routeParams: route.params
-    })
-})
+updateRouteParams();
+watch(() => route.params, updateRouteParams, { immediate: true });
 </script>
 
 <template>
     <div class="category-container">
-        <component
-            :is="CurrentComponent"
-            :category="activeCategory"
-            :subcategory="activeSubcategory"
-            :type="activeSubcategory"
-        />
+        <component :is="CurrentComponent" :category="activeCategory" :subcategory="activeSubcategory" :type="activeSubcategory" />
     </div>
 </template>
 

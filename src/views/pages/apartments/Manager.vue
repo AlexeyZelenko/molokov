@@ -61,7 +61,7 @@ const propertyManager = new PropertyManager(userStore, store, toast);
 // Meta data
 const dropdowns = computed(() => store.dropdowns);
 const contacts = computed(() => userStore.user);
-const { isEditMode, category, subcategory, pageTitle, selectedCategoryName, showRentSection } = usePropertyMeta(route, dropdowns, property);
+const { isEditMode, category, subcategory, pageTitle, selectedCategoryName, showRentSection, id } = usePropertyMeta(route, dropdowns, property);
 
 const handleReorder = (newOrder) => {
     property.value.images = newOrder;
@@ -105,8 +105,8 @@ const { saving, saveProperty, onViewProperty, useResetForm, savedProperty } = us
     propertyManager,
     updateProperty,
     id: route.params.id,
-    category: { code: route.query?.category || route.params?.category || 'apartments' },
-    subcategory: { code: route.query?.subcategory || 'sell' },
+    category: { code: property.value.category.code || route.query?.category || route.params?.category || 'apartments' },
+    subcategory: { code: property.value.subcategory.code || route.query?.subcategory || 'sell' },
     router
 });
 const onClose = () => {

@@ -1,18 +1,3 @@
-<template>
-    <div class="map-container">
-        <div ref="mapContainer" style="width: 100%; height: 500px"></div>
-        <div class="controls">
-            <button
-                v-if="hasMarker"
-                @click="removeMarker"
-                class="control-button remove-button"
-            >
-                Видалити маркер
-            </button>
-        </div>
-    </div>
-</template>
-
 <script setup>
 import { ref, onMounted, watch, nextTick, computed } from 'vue';
 import * as leaflet from 'leaflet/dist/leaflet-src.esm';
@@ -24,7 +9,6 @@ import 'leaflet/dist/leaflet.css';
 const iconUrl = '/leaflet-images/marker-icon.png';
 const iconRetinaUrl = '/leaflet-images/marker-icon-2x.png';
 const shadowUrl = '/leaflet-images/marker-shadow.png';
-
 
 const customIcon = L.icon({
     iconUrl,
@@ -67,7 +51,7 @@ const currentArea = computed(() => {
         const areaCode = props.property?.address?.area?.code;
         if (!areaCode) return null;
 
-        return areasStore?.areas?.find(area => area.code === areaCode) ?? null;
+        return areasStore?.areas?.find((area) => area.code === areaCode) ?? null;
     } catch (error) {
         console.error('Error computing current area:', error);
         return null;
@@ -77,12 +61,11 @@ const currentArea = computed(() => {
 // Функция для создания или обновления маркера
 const updateMarker = (position) => {
     if (!map.value) {
-        console.warn("Карта еще не инициализирована, пропускаем updateMarker");
+        console.warn('Карта еще не инициализирована, пропускаем updateMarker');
         return;
     }
 
-    if (!position || !Array.isArray(position) || position.length !== 2 ||
-        isNaN(position[0]) || isNaN(position[1])) {
+    if (!position || !Array.isArray(position) || position.length !== 2 || isNaN(position[0]) || isNaN(position[1])) {
         if (marker.value) {
             removeMarker();
         }
@@ -137,12 +120,14 @@ const updateAreaCircle = () => {
 
     // Создаем новый круг
     const center = currentArea.value.position || [49.4444, 32.0598]; // Используем центр из area или значение по умолчанию
-    areaCircle.value = leaflet.circle(center, {
-        color: currentArea.value.color || '#f7f5f5',
-        fillColor: currentArea.value.color || '#f7f5f5',
-        fillOpacity: 0.2,
-        radius: currentArea.value.radius || 1000
-    }).addTo(map.value);
+    areaCircle.value = leaflet
+        .circle(center, {
+            color: currentArea.value.color || '#f7f5f5',
+            fillColor: currentArea.value.color || '#f7f5f5',
+            fillOpacity: 0.2,
+            radius: currentArea.value.radius || 1000
+        })
+        .addTo(map.value);
 
     // Если нет маркера, центрируем карту на районе
     if (!marker.value && !props.marker?.length) {
@@ -155,34 +140,34 @@ onMounted(async () => {
     await nextTick();
 
     if (!mapContainer.value) {
-        console.error("Контейнер для карты не найден!");
+        console.error('Контейнер для карты не найден!');
         return;
     }
 
     // Проверка наличия файлов иконок (для отладки)
-    try {
-        const testImage = new Image();
-        testImage.onload = () => console.log('Иконка маркера успешно загружена');
-        testImage.onerror = () => console.error('ОШИБКА: Иконка маркера не найдена!');
-        testImage.src = iconUrl;
-    } catch (e) {
-        console.error('Ошибка при тестировании иконки:', e);
-    }
+    // try {
+    //     const testImage = new Image();
+    //     testImage.onload = () => console.log('Иконка маркера успешно загружена');
+    //     testImage.onerror = () => console.error('ОШИБКА: Иконка маркера не найдена!');
+    //     testImage.src = iconUrl;
+    // } catch (e) {
+    //     console.error('Ошибка при тестировании иконки:', e);
+    // }
 
     // Начальные координаты и масштаб
-    const initialCoords = props.marker?.length === 2
-        ? props.marker
-        : currentArea.value?.center || area.value?.center || [0, 0];
+    const initialCoords = props.marker?.length === 2 ? props.marker : currentArea.value?.center || area.value?.center || [0, 0];
 
     const initialZoom = area.value?.zoom || 13;
 
     map.value = leaflet.map(mapContainer.value).setView(initialCoords, initialZoom);
 
     // Добавление слоя OpenStreetMap
-    leaflet.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '© OpenStreetMap contributors',
-    }).addTo(map.value);
+    leaflet
+        .tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap contributors'
+        })
+        .addTo(map.value);
 
     await nextTick(); // Дожидаемся обновления DOM
 
@@ -211,7 +196,7 @@ watch(
             removeMarker();
         }
     },
-    {deep: true}
+    { deep: true }
 );
 
 // Следим за изменением района
@@ -220,9 +205,18 @@ watch(
     () => {
         updateAreaCircle();
     },
-    {deep: true}
+    { deep: true }
 );
 </script>
+
+<template>
+    <div class="map-container">
+        <div ref="mapContainer" style="width: 100%; height: 500px"></div>
+        <div class="controls">
+            <button v-if="hasMarker" @click="removeMarker" class="control-button remove-button">Видалити маркер</button>
+        </div>
+    </div>
+</template>
 
 <style scoped>
 .map-container {

@@ -1,16 +1,16 @@
 <script setup>
 import { ref, onMounted, watch, computed, onUnmounted } from 'vue';
-import { useApartmentsStore } from "@/store/apartments";
+import { useApartmentsStore } from '@/store/apartments';
 
 const useApartments = useApartmentsStore();
 
 const displayCurrency = computed(() => {
-    return useApartments.getDisplayCurrency.map(currency => currency.value);
+    return useApartments.getDisplayCurrency.map((currency) => currency.value);
 });
 
 const props = defineProps({
     price: Number,
-    subcategory: Object,
+    subcategory: Object
 });
 
 const exchangeRate = ref(null);
@@ -110,9 +110,7 @@ onMounted(() => {
 <template>
     <div class="price-converter">
         <!-- Загрузка -->
-        <div v-show="loading" class="text-gray-500 text-sm">
-            Завантаження курсу валют...
-        </div>
+        <div v-show="loading" class="text-gray-500 text-sm">Завантаження курсу валют...</div>
 
         <!-- Ошибка -->
         <div v-show="error" class="text-red-500">
@@ -122,9 +120,9 @@ onMounted(() => {
         <!-- Цены -->
         <div v-if="!loading && !error" class="flex" :key="priceUSD">
             <div class="flex items-center gap-2">
-                <span v-if="priceUAH && displayCurrency.includes('UAH')">₴ {{ priceUAH }} </span>
-                <span v-if="priceUSD && displayCurrency.includes('USD')">$ {{ priceUSD }} </span>
-                <span v-if="priceEUR && displayCurrency.includes('EUR')">€ {{ priceEUR }} </span>
+                <span v-if="priceUAH && displayCurrency.includes('UAH')">{{ Math.round(priceUAH) }} грн </span>
+                <span v-if="priceUSD && displayCurrency.includes('USD')">{{ Math.round(priceUSD) }} $ </span>
+                <span v-if="priceEUR && displayCurrency.includes('EUR')">{{ Math.round(priceEUR) }} € </span>
             </div>
             <div class="flex justify-end">
                 <Button icon="pi pi-undo" severity="contrast" variant="text" aria-label="Star" @click="toggle" />
@@ -151,28 +149,15 @@ onMounted(() => {
                         <div class="flex flex-col gap-2">
                             <div class="flex flex-col gap-1">
                                 <label for="sourceCurrency">З:</label>
-                                <Dropdown
-                                    v-model="sourceCurrency"
-                                    :options="['UAH', 'USD', 'EUR']"
-                                    placeholder="Оберіть валюту"
-                                />
+                                <Dropdown v-model="sourceCurrency" :options="['UAH', 'USD', 'EUR']" placeholder="Оберіть валюту" />
                             </div>
                             <div class="flex flex-col gap-1">
                                 <label for="targetCurrency">В:</label>
-                                <Dropdown
-                                    v-model="targetCurrency"
-                                    :options="['UAH', 'USD', 'EUR']"
-                                    placeholder="Оберіть валюту"
-                                />
+                                <Dropdown v-model="targetCurrency" :options="['UAH', 'USD', 'EUR']" placeholder="Оберіть валюту" />
                             </div>
                             <div class="flex flex-col gap-1">
                                 <label for="amountToConvert">Сума:</label>
-                                <InputNumber
-                                    v-model="amountToConvert"
-                                    mode="decimal"
-                                    :min="0"
-                                    placeholder="Введіть суму"
-                                />
+                                <InputNumber v-model="amountToConvert" mode="decimal" :min="0" placeholder="Введіть суму" />
                             </div>
                             <Button label="Конвертувати" @click="convertCurrency" />
                         </div>
@@ -183,9 +168,7 @@ onMounted(() => {
                             <div class="font-semibold">{{ amountToConvert }} {{ sourceCurrency }} = {{ convertedAmount }} {{ targetCurrency }}</div>
                         </div>
                     </div>
-                    <div v-else class="text-sm text-gray-500">
-                        Курс валют недоступний
-                    </div>
+                    <div v-else class="text-sm text-gray-500">Курс валют недоступний</div>
                 </Popover>
             </div>
         </div>

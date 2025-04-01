@@ -1,13 +1,13 @@
 <script setup>
 import { ref } from 'vue';
-import { useApartmentsStore} from "@/store/apartments";
+import { useApartmentsStore } from '@/store/apartments';
 
 const store = useApartmentsStore();
 
 const options = ref([
     { name: '$', value: 'USD' },
     { name: '€', value: 'EUR' },
-    { name: '₴', value: 'UAH' }
+    { name: 'грн', value: 'UAH' }
 ]);
 const listCurrency = ref([{ name: '$', value: 'USD' }]);
 
