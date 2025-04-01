@@ -1,23 +1,13 @@
 import { defineStore } from 'pinia';
 import { db } from '@/firebase/config';
-import {
-    collection,
-    query,
-    where,
-    getDocs,
-    collectionGroup,
-    Timestamp,
-    orderBy,
-    limit,
-    documentId
-} from 'firebase/firestore';
+import { query, where, getDocs, collectionGroup, Timestamp } from 'firebase/firestore';
 
 export const useAnalyticsStore = defineStore('analytics', {
     state: () => ({
         properties: {},
         loading: false,
         propertiesLastWeek: {},
-        customers: [],
+        customers: []
     }),
     actions: {
         async getPropertiesByCategories(categories, lastWeek = false) {
@@ -34,11 +24,11 @@ export const useAnalyticsStore = defineStore('analytics', {
                         const sevenDaysTimestamp = Timestamp.fromDate(sevenDaysAgo);
 
                         // Фильтруем по дате
-                        q = query(q, where("createdAt", ">=", sevenDaysTimestamp));
+                        q = query(q, where('createdAt', '>=', sevenDaysTimestamp));
                     }
 
                     const querySnapshot = await getDocs(q);
-                    const products = querySnapshot.docs.map(doc => ({
+                    const products = querySnapshot.docs.map((doc) => ({
                         id: doc.id,
                         ...doc.data()
                     }));
@@ -47,7 +37,7 @@ export const useAnalyticsStore = defineStore('analytics', {
                 };
 
                 // Выполняем запросы для всех категорий параллельно
-                const results = await Promise.all(categories.map(categoryCode => getCategoryData(categoryCode)));
+                const results = await Promise.all(categories.map((categoryCode) => getCategoryData(categoryCode)));
 
                 // Обрабатываем результаты
                 results.forEach(({ categoryCode, products }) => {

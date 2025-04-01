@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { db, storage } from '@/firebase/config';
-import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, serverTimestamp, collection, query, where, getDocs } from 'firebase/firestore';
 import { ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 
 export const usePropertyStore = defineStore('property', () => {
@@ -26,9 +26,9 @@ export const usePropertyStore = defineStore('property', () => {
         description: '',
         images: [],
         category: '',
-        subcategory: '',
+        subcategory: ''
     });
-
+    const error = ref(null);
     const loading = ref(true);
     const saving = ref(false);
 
@@ -117,6 +117,51 @@ export const usePropertyStore = defineStore('property', () => {
         }
     };
 
+    const fetchUserProperties = async (userId) => {
+        loading.value = true;
+        try {
+            const allProperties = [];
+
+            const mainCollections = [
+                'apartments',
+                'houses',
+                'land',
+            ];
+
+            const subCollections = [
+                'sell',
+                'rent',
+            ];
+
+            // 2. Функция для получения объявлений из конкретной подколлекции
+            const getPropertiesFromSubCollection = async (mainCollection, subCollection) => {
+                const currentSubCollection = collection(db, `properties/${mainCollection}/${subCollection}`);
+                const q = query(currentSubCollection, where('creator.id', '==', userId));
+                const querySnapshot = await getDocs(q);
+                return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            };
+
+            // 3. Получаем данные из ВСЕХ подколлекций
+            const fetchPromises = [];
+            for (const main of mainCollections) {
+                for (const sub of subCollections) {
+                    fetchPromises.push(getPropertiesFromSubCollection(main, sub));
+                }
+            }
+
+            const results = await Promise.all(fetchPromises);
+            results.forEach(properties => allProperties.push(...properties));
+
+            return allProperties;
+
+        } catch (error) {
+            console.error('Ошибка при получении объявлений пользователя:', error);
+            throw error;
+        } finally {
+            loading.value = false;
+        }
+    };
+
     return {
         property,
         loading,
@@ -124,9 +169,11 @@ export const usePropertyStore = defineStore('property', () => {
         wallMaterials,
         heatingTypes,
         conditions,
+        error,
         getProperty,
         updateProperty,
         onFileSelect,
-        removeImage
+        removeImage,
+        fetchUserProperties
     };
 });
