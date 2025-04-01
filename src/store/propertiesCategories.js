@@ -132,8 +132,13 @@ export const usePropertiesStore = defineStore('properties', {
                             isMatch &&= value.includes(property.rooms?.all);
                         }
 
+                        // Фильтр по поверховості
+                        if (key === 'floors.totalFloors' && Array.isArray(value) && value.length > 0) {
+                            isMatch &&= value.includes(property.floors?.totalFloors);
+                        }
+
                         // Фильтр по вложенным объектам (например, category.code, subcategory.code)
-                        else if (key.includes('.')) {
+                        else if (key.includes('.') && key !== 'rooms.all' && key !== 'floors.totalFloors') {
                             const fieldValue = key.split('.').reduce((obj, subKey) => obj?.[subKey], property);
                             isMatch &&= fieldValue === value;
                         }
