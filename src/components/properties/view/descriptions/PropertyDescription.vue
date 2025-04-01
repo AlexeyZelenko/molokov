@@ -1,3 +1,35 @@
+<script setup>
+import { formatFirebaseTimestamp } from '@/utils/dateUtils';
+import PropertyAmenities from '@/components/properties/view/amenities/PropertyAmenities.vue';
+import ParkingDetails from '@/components/properties/view/categories/apartment/ParkingDetails.vue';
+import SellApartment from '@/components/properties/view/categories/apartment/sell/index.vue';
+import RentApartment from '@/components/properties/view/categories/apartment/rent/index.vue';
+import ExchangeApartment from '@/components/properties/view/categories/apartment/exchange/index.vue';
+import DailyRentApartment from '@/components/properties/view/categories/apartment/daily/index.vue';
+
+const subcategoryComponentMap = {
+    sell: SellApartment,
+    rent: RentApartment,
+    exchange: ExchangeApartment,
+    daily: DailyRentApartment
+};
+
+defineProps({
+    description: {
+        type: String,
+        default: ''
+    },
+    facilityReadiness: {
+        type: Object,
+        default: () => ({})
+    },
+    property: {
+        type: Object,
+        default: () => ({})
+    }
+});
+</script>
+
 <template>
     <Fluid class="flex flex-col mt-8 shadow-lg">
         <div class="card flex flex-col gap-4 w-full">
@@ -16,51 +48,12 @@
 
                         <ParkingDetails v-if="property.parking" :parking="property.parking" />
 
-                        <PropertyAmenities
-                            class="my-4"
-                            :property="property"
-                        />
+                        <PropertyAmenities class="my-4" :property="property" />
 
-                        <component
-                            v-if="property"
-                            :is="subcategoryComponentMap[property?.subcategory?.code] || SellApartment"
-                            :property="property"
-                        />
+                        <component v-if="property" :is="subcategoryComponentMap[property?.subcategory?.code] || SellApartment" :property="property" />
                     </AccordionContent>
                 </AccordionPanel>
             </Accordion>
         </div>
     </Fluid>
 </template>
-
-<script setup>
-import {formatFirebaseTimestamp} from "@/utils/dateUtils";
-import PropertyAmenities from "@/components/properties/view/amenities/PropertyAmenities.vue";
-import ParkingDetails from "@/components/properties/view/categories/apartment/ParkingDetails.vue";
-import SellApartment from "@/components/properties/view/categories/apartment/sell/index.vue";
-import RentApartment from "@/components/properties/view/categories/apartment/rent/index.vue";
-import ExchangeApartment from "@/components/properties/view/categories/apartment/exchange/index.vue";
-import DailyRentApartment from "@/components/properties/view/categories/apartment/daily/index.vue";
-
-const subcategoryComponentMap = {
-    sell: SellApartment,
-    rent: RentApartment,
-    exchange: ExchangeApartment,
-    daily: DailyRentApartment
-};
-
-defineProps({
-    description: {
-        type: String,
-        default: ''
-    },
-    facilityReadiness: {
-        type: Object,
-        default: {}
-    },
-    property: {
-        type: Object,
-        default: () => ({})
-    }
-});
-</script>

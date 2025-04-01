@@ -1,9 +1,9 @@
 <script setup>
 import { useRouter } from 'vue-router';
-import { useConfirm } from "primevue/useconfirm";
-import { deleteObject, ref as storageRef } from "firebase/storage";
-import { deleteDoc, doc } from "firebase/firestore";
-import { db, storage } from "@/firebase/config";
+import { useConfirm } from 'primevue/useconfirm';
+import { deleteObject, ref as storageRef } from 'firebase/storage';
+import { deleteDoc, doc } from 'firebase/firestore';
+import { db, storage } from '@/firebase/config';
 import { usePropertiesStore } from '@/store/propertiesCategories';
 import { useUserStore } from '@/store/userStore';
 import { computed } from 'vue';
@@ -35,27 +35,27 @@ const showProperty = () => {
 };
 
 const editProperty = () => {
-    if (!isCreator.value) {
+    if (!isCreator.value && !isAdmin.value) {
         toast.add({
             severity: 'error',
             summary: 'Помилка',
-            detail: 'Ви не маєте права редагувати цей об\'єкт',
+            detail: "Ви не маєте права редагувати цей об'єкт",
             life: 3000
         });
         return;
-    };
+    }
     const category = props.item.category.code;
     const subcategory = props.item.subcategory.code;
     router.push(`/pages/${category}/edit/${subcategory}/${props.item.id}?category=${category}&subcategory=${subcategory}`);
 };
 
 const deleteProperty = (event) => {
-    if (!isCreator.value && !isAdmin) return;
+    if (!isCreator.value && !isAdmin.value) return;
 
     confirm.require({
         target: event.currentTarget,
         group: 'templating',
-        message: 'Ви впевнені, що хочете видалити цей об\'єкт?',
+        message: "Ви впевнені, що хочете видалити цей об'єкт?",
         icon: 'pi pi-info-circle',
         rejectProps: {
             label: 'Відміна',
@@ -64,43 +64,43 @@ const deleteProperty = (event) => {
         },
         acceptProps: {
             label: 'Видалити',
-            severity: 'danger',
+            severity: 'danger'
         },
         accept: async () => {
             try {
                 if (props.item.images?.length > 0) {
-                    await Promise.allSettled(props.item.images.map(async (imageUrl) => {
-                        try {
-                            const imagePath = decodeURIComponent(new URL(imageUrl).pathname)
-                                .split('/o/')[1]
-                                .split('?')[0];
-                            const imageRef = storageRef(storage, imagePath);
-                            await deleteObject(imageRef);
-                        } catch (error) {
-                            console.error('Помилка видалення фото:', error);
-                        }
-                    }));
+                    await Promise.allSettled(
+                        props.item.images.map(async (imageUrl) => {
+                            try {
+                                const imagePath = decodeURIComponent(new URL(imageUrl).pathname).split('/o/')[1].split('?')[0];
+                                const imageRef = storageRef(storage, imagePath);
+                                await deleteObject(imageRef);
+                            } catch (error) {
+                                console.error('Помилка видалення фото:', error);
+                            }
+                        })
+                    );
                 }
 
                 await deleteDoc(doc(db, `properties/${props.item.category.code}/${props.item.subcategory.code}`, props.item.id));
 
                 await store.getProperties({
                     category: props.item.category.code,
-                    subcategory: props.item.subcategory.code}
-                );
+                    subcategory: props.item.subcategory.code
+                });
 
                 toast.add({
                     severity: 'success',
                     summary: 'Успішно',
-                    detail: 'Об\'єкт видалено',
+                    detail: "Об'єкт видалено",
                     life: 3000
                 });
             } catch (error) {
-                console.error('Помилка видалення об\'єкту:', error);
+                console.error("Помилка видалення об'єкту:", error);
                 toast.add({
                     severity: 'error',
                     summary: 'Помилка',
-                    detail: 'Не вдалося видалити об\'єкт',
+                    detail: "Не вдалося видалити об'єкт",
                     life: 3000
                 });
             }
@@ -110,7 +110,6 @@ const deleteProperty = (event) => {
         }
     });
 };
-
 </script>
 
 <template>
@@ -124,22 +123,10 @@ const deleteProperty = (event) => {
         </template>
     </ConfirmPopup>
     <div class="flex gap-2">
-        <Button
-            label="Переглянути деталі"
-            class="p-button-warning mr-2"
-            @click="showProperty"
-        />
+        <Button label="Переглянути деталі" class="p-button-warning mr-2" @click="showProperty" />
         <template v-if="isCreator || isAdmin">
-            <Button
-                icon="pi pi-pencil"
-                class="p-button-warning mr-2"
-                @click="editProperty"
-            />
-            <Button
-                icon="pi pi-trash"
-                class="p-button-danger"
-                @click="deleteProperty"
-            />
+            <Button icon="pi pi-pencil" class="p-button-warning mr-2" @click="editProperty" />
+            <Button icon="pi pi-trash" class="p-button-danger" @click="deleteProperty" />
         </template>
     </div>
 </template>

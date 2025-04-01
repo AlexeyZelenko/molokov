@@ -38,7 +38,8 @@ onMounted(() => {
         <div v-for="(item, index) in items" :key="index">
             <div class="property-card flex flex-col sm:flex-row sm:items-center mt-4 p-4 gap-6 shadow-md">
                 <div class="md:w-40 relative h-40">
-                    <img class="block mx-auto rounded w-full h-full object-cover" :src="item.images[0]" :alt="item.title" />
+                    <img v-if="item.images?.length" class="block mx-auto rounded w-full h-full object-cover" :src="item.images[0]" :alt="item.title" />
+                    <img v-else class="block mx-auto rounded w-full h-full object-cover" src="/images/placeholder-image.webp" alt="Placeholder" />
                     <Tag v-if="user?.id === item?.creator?.id && route?.query?.user === user?.id" :value="item?.isPublic ? 'Опубліковано' : 'Не опубліковано'" :severity="getSeverity(item.isPublic)" class="absolute" style="left: 5px; top: 5px" />
                 </div>
                 <div class="flex flex-col md:flex-row justify-between md:items-center flex-1 gap-6">
