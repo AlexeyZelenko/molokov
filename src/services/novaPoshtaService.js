@@ -3,7 +3,7 @@ import axios from 'axios';
 const API_KEY = '4c67e63d2df6b72cf0bbbafef4771787'; // Замініть на свій API ключ
 
 const novaPoshtaApi = axios.create({
-    baseURL: 'https://api.novaposhta.ua/v2.0/json/',
+    baseURL: 'https://api.novaposhta.ua/v2.0/json/'
 });
 
 export const getAreas = async () => {
@@ -11,7 +11,7 @@ export const getAreas = async () => {
         apiKey: API_KEY,
         modelName: 'AddressGeneral',
         calledMethod: 'getAreas',
-        methodProperties: {},
+        methodProperties: {}
     };
 
     try {
@@ -32,7 +32,7 @@ export const getSettlements = async (params) => {
         methodProperties: {
             ...params,
             Warehouse: params.Warehouse || '1'
-        },
+        }
     };
 
     try {

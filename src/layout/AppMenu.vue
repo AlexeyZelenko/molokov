@@ -652,12 +652,12 @@ const model = ref([
                     }
                 ]
             },
-            {
-                label: 'OLX',
-                icon: 'pi pi-fw pi-external-link',
-                to: '/users/user/olx',
-                roles: ['admin']
-            }
+            // {
+            //     label: 'OLX',
+            //     icon: 'pi pi-fw pi-external-link',
+            //     to: '/users/user/olx',
+            //     roles: ['admin']
+            // }
         ]
     },
     {

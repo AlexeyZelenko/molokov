@@ -1,58 +1,7 @@
-<template>
-    <div class="add-property-page">
-        <h1 class="page-title">Додати об'єкт</h1>
-
-        <div class="category-container">
-            <h2 class="category-title">Виберіть категорію нерухомості</h2>
-
-            <div class="form-actions my-4" v-if="selectedCategory">
-                <h3 class="selected-category-info">
-                    Вибрано: <span>{{ selectedCategory.title }}</span>
-                </h3>
-
-                <Button
-                    label="Створити оголошення"
-                    icon="pi pi-plus"
-                    class="continue-button"
-                    @click="navigateToAddForm"
-                />
-            </div>
-
-            <div class="categories-grid">
-                <div
-                    v-for="category in realEstateCategories"
-                    :key="category.id"
-                    class="category-card"
-                    @click="selectCategory(category)"
-                    :class="{'selected': selectedCategory && selectedCategory.id === category.id}"
-                >
-                    <div class="category-image">
-                        <img :src="category.image" :alt="category.title" />
-                    </div>
-                    <h3 class="category-name">{{ category.title }}</h3>
-                </div>
-            </div>
-        </div>
-
-        <div class="form-actions" v-if="selectedCategory">
-            <h3 class="selected-category-info">
-                Вибрано: <span>{{ selectedCategory.title }}</span>
-            </h3>
-
-            <Button
-                label="Створити оголошення"
-                icon="pi pi-plus"
-                class="continue-button"
-                @click="navigateToAddForm"
-            />
-        </div>
-    </div>
-</template>
-
 <script setup>
-import {ref, computed, onMounted} from 'vue';
-import {useAreasStore} from '@/store/areasStore';
-import {useRouter} from 'vue-router';
+import { ref, computed, onMounted } from 'vue';
+import { useAreasStore } from '@/store/areasStore';
+import { useRouter } from 'vue-router';
 
 const store = useAreasStore();
 const router = useRouter();
@@ -77,6 +26,41 @@ onMounted(() => {
     }
 });
 </script>
+
+<template>
+    <div class="add-property-page">
+        <h1 class="page-title">Додати об'єкт</h1>
+
+        <div class="category-container">
+            <h2 class="category-title">Виберіть категорію нерухомості</h2>
+
+            <div class="form-actions my-4" v-if="selectedCategory">
+                <h3 class="selected-category-info">
+                    Вибрано: <span>{{ selectedCategory.title }}</span>
+                </h3>
+
+                <Button label="Створити оголошення" icon="pi pi-plus" class="continue-button" @click="navigateToAddForm" />
+            </div>
+
+            <div class="categories-grid">
+                <div v-for="category in realEstateCategories" :key="category.id" class="category-card" @click="selectCategory(category)" :class="{ selected: selectedCategory && selectedCategory.id === category.id }">
+                    <div class="category-image">
+                        <img :src="category.image" :alt="category.title" />
+                    </div>
+                    <h3 class="category-name">{{ category.title }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-actions" v-if="selectedCategory">
+            <h3 class="selected-category-info">
+                Вибрано: <span>{{ selectedCategory.title }}</span>
+            </h3>
+
+            <Button label="Створити оголошення" icon="pi pi-plus" class="continue-button" @click="navigateToAddForm" />
+        </div>
+    </div>
+</template>
 
 <style scoped lang="scss">
 .add-property-page {
@@ -122,7 +106,7 @@ onMounted(() => {
                 }
 
                 &.selected {
-                    border: 3px solid #4CAF50;
+                    border: 3px solid #4caf50;
                     box-shadow: 0 0 15px rgba(76, 175, 80, 0.5);
                 }
 
@@ -169,12 +153,12 @@ onMounted(() => {
 
             span {
                 font-weight: 600;
-                color: #4CAF50;
+                color: #4caf50;
             }
         }
 
         .continue-button {
-            background-color: #4CAF50;
+            background-color: #4caf50;
             border: none;
             color: white;
             padding: 0.8rem 1.5rem;
