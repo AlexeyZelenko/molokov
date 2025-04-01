@@ -19,7 +19,7 @@ const model = ref([
         label: 'Головна',
         items: [
             { label: 'Головна', icon: 'pi pi-fw pi-home', to: '/landing' },
-            { label: 'Додати нерухомість', icon: 'pi pi-fw pi-plus', to: '/add-properties', roles: ['admin', 'customer'] },
+            { label: 'Додати нерухомість', icon: 'pi pi-fw pi-plus', to: '/add-properties', roles: ['admin', 'customer'] }
             // { label: 'Аналітика', icon: 'pi pi-fw pi-chart-line', to: '/dashboard' }
         ]
     },
@@ -54,7 +54,7 @@ const model = ref([
                     {
                         label: 'Інше',
                         icon: 'pi pi-fw pi-ellipsis-h',
-                        to: '/categories/apartments/other',
+                        to: '/categories/apartments/other'
                     }
                 ]
             },
@@ -85,7 +85,7 @@ const model = ref([
                     {
                         label: 'Інше',
                         icon: 'pi pi-fw pi-ellipsis-h',
-                        to: '/categories/rooms/other',
+                        to: '/categories/rooms/other'
                     }
                 ]
             },
@@ -244,7 +244,7 @@ const model = ref([
                         to: '/categories/other/daily'
                     }
                 ]
-            },
+            }
         ]
     },
     {
@@ -296,7 +296,7 @@ const model = ref([
                         label: 'Інше',
                         icon: 'pi pi-fw pi-plus',
                         to: '/pages/other/add'
-                    },
+                    }
                 ]
             },
             {
@@ -307,7 +307,7 @@ const model = ref([
                         label: 'Мій профіль',
                         icon: 'pi pi-fw pi-user-edit',
                         to: '/users/user/profile'
-                    },
+                    }
                 ]
             },
             {
@@ -323,7 +323,7 @@ const model = ref([
                         label: 'Виборка для клієнтів',
                         icon: 'pi pi-fw pi-filter',
                         to: '/users/user/propertyLists'
-                    },
+                    }
                 ]
             },
             {
@@ -339,27 +339,40 @@ const model = ref([
                                 icon: 'pi pi-fw pi-tag',
                                 to: {
                                     path: `/categories/apartments/sell`,
-                                    query: { user: userId.value } }
+                                    query: { user: userId.value }
+                                }
                             },
                             {
                                 label: 'Оренда',
                                 icon: 'pi pi-fw pi-calendar',
-                                to: '/categories/apartments/rent'
+                                to: {
+                                    path: '/categories/apartments/rent',
+                                    query: { user: userId.value }
+                                }
                             },
                             {
                                 label: 'Обмін',
                                 icon: 'pi pi-fw pi-sync',
-                                to: '/categories/apartments/exchange'
+                                to: {
+                                    path: '/categories/apartments/exchange',
+                                    query: { user: userId.value }
+                                }
                             },
                             {
                                 label: 'Подобово',
                                 icon: 'pi pi-fw pi-clock',
-                                to: '/categories/apartments/daily'
+                                to: {
+                                    path: '/categories/apartments/daily',
+                                    query: { user: userId.value }
+                                }
                             },
                             {
                                 label: 'Інше',
                                 icon: 'pi pi-fw pi-ellipsis-h',
-                                to: '/categories/apartments/other',
+                                to: {
+                                    path: '/categories/apartments/other',
+                                    query: { user: userId.value }
+                                }
                             }
                         ]
                     },
@@ -370,27 +383,42 @@ const model = ref([
                             {
                                 label: 'Продаж',
                                 icon: 'pi pi-fw pi-tag',
-                                to: '/categories/rooms/sell'
+                                to: {
+                                    path: '/categories/rooms/sell',
+                                    query: { user: userId.value }
+                                }
                             },
                             {
                                 label: 'Оренда',
                                 icon: 'pi pi-fw pi-calendar',
-                                to: '/categories/rooms/rent'
+                                to: {
+                                    path: '/categories/rooms/rent',
+                                    query: { user: userId.value }
+                                }
                             },
                             {
                                 label: 'Обмін',
                                 icon: 'pi pi-fw pi-sync',
-                                to: '/categories/rooms/exchange'
+                                to: {
+                                    path: '/categories/rooms/exchange',
+                                    query: { user: userId.value }
+                                }
                             },
                             {
                                 label: 'Подобово',
                                 icon: 'pi pi-fw pi-clock',
-                                to: '/categories/rooms/daily'
+                                to: {
+                                    path: '/categories/rooms/daily',
+                                    query: { user: userId.value }
+                                }
                             },
                             {
                                 label: 'Інше',
                                 icon: 'pi pi-fw pi-ellipsis-h',
-                                to: '/categories/rooms/other',
+                                to: {
+                                    path: '/categories/rooms/other',
+                                    query: { user: userId.value }
+                                }
                             }
                         ]
                     },
@@ -401,22 +429,34 @@ const model = ref([
                             {
                                 label: 'Продаж',
                                 icon: 'pi pi-fw pi-tag',
-                                to: '/categories/houses/sell'
+                                to: {
+                                    path: '/categories/houses/sell',
+                                    query: { user: userId.value }
+                                }
                             },
                             {
                                 label: 'Оренда',
                                 icon: 'pi pi-fw pi-calendar',
-                                to: '/categories/houses/rent'
+                                to: {
+                                    path: '/categories/houses/rent',
+                                    query: { user: userId.value }
+                                }
                             },
                             {
                                 label: 'Обмін',
                                 icon: 'pi pi-fw pi-sync',
-                                to: '/categories/houses/exchange'
+                                to: {
+                                    path: '/categories/houses/exchange',
+                                    query: { user: userId.value }
+                                }
                             },
                             {
                                 label: 'Подобово',
                                 icon: 'pi pi-fw pi-clock',
-                                to: '/categories/houses/daily'
+                                to: {
+                                    path: '/categories/houses/daily',
+                                    query: { user: userId.value }
+                                }
                             }
                         ]
                     },
@@ -427,22 +467,34 @@ const model = ref([
                             {
                                 label: 'Продаж',
                                 icon: 'pi pi-fw pi-tag',
-                                to: '/categories/offices/sell'
+                                to: {
+                                    path: '/categories/offices/sell',
+                                    query: { user: userId.value }
+                                }
                             },
                             {
                                 label: 'Оренда',
                                 icon: 'pi pi-fw pi-calendar',
-                                to: '/categories/offices/rent'
+                                to: {
+                                    path: '/categories/offices/rent',
+                                    query: { user: userId.value }
+                                }
                             },
                             {
                                 label: 'Обмін',
                                 icon: 'pi pi-fw pi-sync',
-                                to: '/categories/offices/exchange'
+                                to: {
+                                    path: '/categories/offices/exchange',
+                                    query: { user: userId.value }
+                                }
                             },
                             {
                                 label: 'Подобово',
                                 icon: 'pi pi-fw pi-clock',
-                                to: '/categories/offices/daily'
+                                to: {
+                                    path: '/categories/offices/daily',
+                                    query: { user: userId.value }
+                                }
                             }
                         ]
                     },
@@ -453,22 +505,34 @@ const model = ref([
                             {
                                 label: 'Продаж',
                                 icon: 'pi pi-fw pi-tag',
-                                to: '/categories/garages/sell'
+                                to: {
+                                    path: '/categories/garages/sell',
+                                    query: { user: userId.value }
+                                }
                             },
                             {
                                 label: 'Оренда',
                                 icon: 'pi pi-fw pi-calendar',
-                                to: '/categories/garages/rent'
+                                to: {
+                                    path: '/categories/garages/rent',
+                                    query: { user: userId.value }
+                                }
                             },
                             {
                                 label: 'Обмін',
                                 icon: 'pi pi-fw pi-sync',
-                                to: '/categories/garages/exchange'
+                                to: {
+                                    path: '/categories/garages/exchange',
+                                    query: { user: userId.value }
+                                }
                             },
                             {
                                 label: 'Подобово',
                                 icon: 'pi pi-fw pi-clock',
-                                to: '/categories/garages/daily'
+                                to: {
+                                    path: '/categories/garages/daily',
+                                    query: { user: userId.value }
+                                }
                             }
                         ]
                     },
@@ -479,22 +543,34 @@ const model = ref([
                             {
                                 label: 'Продаж',
                                 icon: 'pi pi-fw pi-tag',
-                                to: '/categories/commercial/sell'
+                                to: {
+                                    path: '/categories/commercial/sell',
+                                    query: { user: userId.value }
+                                }
                             },
                             {
                                 label: 'Оренда',
                                 icon: 'pi pi-fw pi-calendar',
-                                to: '/categories/commercial/rent'
+                                to: {
+                                    path: '/categories/commercial/rent',
+                                    query: { user: userId.value }
+                                }
                             },
                             {
                                 label: 'Обмін',
                                 icon: 'pi pi-fw pi-sync',
-                                to: '/categories/commercial/exchange'
+                                to: {
+                                    path: '/categories/commercial/exchange',
+                                    query: { user: userId.value }
+                                }
                             },
                             {
                                 label: 'Подобово',
                                 icon: 'pi pi-fw pi-clock',
-                                to: '/categories/commercial/daily'
+                                to: {
+                                    path: '/categories/commercial/daily',
+                                    query: { user: userId.value }
+                                }
                             }
                         ]
                     },
@@ -505,22 +581,34 @@ const model = ref([
                             {
                                 label: 'Продаж',
                                 icon: 'pi pi-fw pi-tag',
-                                to: '/categories/land/sell'
+                                to: {
+                                    path: '/categories/land/sell',
+                                    query: { user: userId.value }
+                                }
                             },
                             {
                                 label: 'Оренда',
                                 icon: 'pi pi-fw pi-calendar',
-                                to: '/categories/land/rent'
+                                to: {
+                                    path: '/categories/land/rent',
+                                    query: { user: userId.value }
+                                }
                             },
                             {
                                 label: 'Обмін',
                                 icon: 'pi pi-fw pi-sync',
-                                to: '/categories/land/exchange'
+                                to: {
+                                    path: '/categories/land/exchange',
+                                    query: { user: userId.value }
+                                }
                             },
                             {
                                 label: 'Подобово',
                                 icon: 'pi pi-fw pi-clock',
-                                to: '/categories/land/daily'
+                                to: {
+                                    path: '/categories/land/daily',
+                                    query: { user: userId.value }
+                                }
                             }
                         ]
                     },
@@ -531,32 +619,44 @@ const model = ref([
                             {
                                 label: 'Продаж',
                                 icon: 'pi pi-fw pi-tag',
-                                to: '/categories/other/sell'
+                                to: {
+                                    path: '/categories/other/sell',
+                                    query: { user: userId.value }
+                                }
                             },
                             {
                                 label: 'Оренда',
                                 icon: 'pi pi-fw pi-calendar',
-                                to: '/categories/other/rent'
+                                to: {
+                                    path: '/categories/other/rent',
+                                    query: { user: userId.value }
+                                }
                             },
                             {
                                 label: 'Обмін',
                                 icon: 'pi pi-fw pi-sync',
-                                to: '/categories/other/exchange'
+                                to: {
+                                    path: '/categories/other/exchange',
+                                    query: { user: userId.value }
+                                }
                             },
                             {
                                 label: 'Подобово',
                                 icon: 'pi pi-fw pi-clock',
-                                to: '/categories/other/daily'
+                                to: {
+                                    path: '/categories/other/daily',
+                                    query: { user: userId.value }
+                                }
                             }
                         ]
-                    },
+                    }
                 ]
             },
             {
                 label: 'OLX',
                 icon: 'pi pi-fw pi-external-link',
                 to: '/users/user/olx',
-                roles: ['admin'],
+                roles: ['admin']
             }
         ]
     },
@@ -573,20 +673,20 @@ const model = ref([
                         label: 'Таблиця',
                         icon: 'pi pi-fw pi-table',
                         to: '/users/admin/customers'
-                    },
+                    }
                 ]
             },
             {
                 label: 'Карта',
                 icon: 'pi pi-fw pi-map',
                 to: '/users/admin/map'
-            },
+            }
         ]
     }
 ]);
 
 onMounted(() => {
-    userStore.fetchUser()
+    userStore.fetchUser();
 });
 </script>
 
@@ -594,12 +694,7 @@ onMounted(() => {
     <div v-if="user" class="flex text-green-500 my-4">
         <div class="flex flex-col justify-center items-center space-x-6 mb-2">
             <div class="relative">
-                <img
-                    v-if="user.avatar"
-                    :src="user.avatar"
-                    alt="Аватар"
-                    class="w-24 h-24 rounded-full object-cover border-4 border-blue-100"
-                />
+                <img v-if="user.avatar" :src="user.avatar" alt="Аватар" class="w-24 h-24 rounded-full object-cover border-4 border-blue-100" />
             </div>
             <div>
                 <p class="text-lg font-semibold">{{ user.displayName }}</p>
@@ -608,12 +703,7 @@ onMounted(() => {
     </div>
     <ul class="layout-menu">
         <template v-for="(item, i) in model" :key="item">
-            <app-menu-item
-                v-if="!item.separator"
-                :item="item"
-                :index="i"
-                :user="user"
-            ></app-menu-item>
+            <app-menu-item v-if="!item.separator" :item="item" :index="i" :user="user"></app-menu-item>
             <li v-if="item.separator" class="menu-separator"></li>
         </template>
     </ul>
