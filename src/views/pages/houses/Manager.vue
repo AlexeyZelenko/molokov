@@ -105,8 +105,8 @@ const { saving, saveProperty, onViewProperty, useResetForm, savedProperty } = us
     propertyManager,
     updateProperty,
     id: route.params.id,
-    category: { code: route.query?.category || route.params?.category || 'apartments' },
-    subcategory: { code: route.query?.subcategory || 'sell' },
+    category: { code: property.value.category.code || route.query?.category || route.params?.category || 'apartments' },
+    subcategory: { code: property.value.subcategory.code || route.query?.subcategory || 'sell' },
     router
 });
 const onClose = () => {
