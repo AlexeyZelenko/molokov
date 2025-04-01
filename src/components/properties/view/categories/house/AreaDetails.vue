@@ -1,10 +1,11 @@
 <script setup>
 import { defineProps } from 'vue';
 
-const props = defineProps({
+defineProps({
     apartmentArea: Object,
     planning: Object,
-    bathroom: Object
+    bathroom: Object,
+    landArea: Number
 });
 </script>
 
@@ -29,7 +30,7 @@ const props = defineProps({
 
         <div class="flex items-center gap-2">
             <div class="font-bold text-md">Площа ділянки:</div>
-            <div>{{ apartmentArea.landArea }} м²</div>
+            <div>{{ landArea }} м²</div>
         </div>
 
         <div class="flex items-center gap-2">

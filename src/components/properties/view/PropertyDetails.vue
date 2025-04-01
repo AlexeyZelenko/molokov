@@ -64,6 +64,7 @@ const property = ref({
         livingArea: null,
         kitchenArea: null
     },
+    landArea: null,
     address: {
         region: null,
         city: '',
