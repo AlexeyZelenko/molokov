@@ -126,11 +126,18 @@ export const usePropertyStore = defineStore('property', () => {
                 'apartments',
                 'houses',
                 'land',
+                'rooms',
+                'offices',
+                'commercial',
+                'garages',
+                'other'
             ];
 
             const subCollections = [
                 'sell',
                 'rent',
+                'exchange',
+                'daily'
             ];
 
             // 2. Функция для получения объявлений из конкретной подколлекции

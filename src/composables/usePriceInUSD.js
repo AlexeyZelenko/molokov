@@ -2,7 +2,6 @@
 import { ref, computed } from 'vue';
 
 export function usePriceInUSD(currency) {
-    console.log("usePriceInUSD called with currency:", currency.value);
     const exchangeRates = ref(null);
     const loading = ref(false);
     const error = ref(null);

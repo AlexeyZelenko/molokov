@@ -5,12 +5,15 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, on
 import { doc, setDoc, serverTimestamp, getDoc, getDocs, collection } from 'firebase/firestore';
 import { getFirebaseErrorMessage } from '@/utils/firebaseErrors';
 import { useToast } from 'primevue/usetoast';
+import { useUserStore } from '@/store/userStore';
 
 export const useAuthStore = defineStore('auth', () => {
     const user = ref(null);
     const error = ref(null);
     const loading = ref(false);
     const toast = useToast();
+
+    const userStore = useUserStore();
 
     const isAuthenticated = computed(() => auth.currentUser);
     const userRole = computed(() => {
@@ -163,8 +166,10 @@ export const useAuthStore = defineStore('auth', () => {
             localStorage.removeItem('userRemembered');
             localStorage.removeItem('userEmail');
 
+            userStore.clearUserData();
+
             console.log('logout');
-            window.location.reload(true);
+            // window.location.reload(true);
         } catch (err) {
             const errorMessage = getFirebaseErrorMessage(err.message);
             throw new Error(errorMessage);

@@ -1,33 +1,35 @@
 import { useAuthStore } from '@/store/authFirebase';
-import { auth } from '@/firebase/config'
-import {
-    onAuthStateChanged,
-} from 'firebase/auth'
-import { storeToRefs } from 'pinia'
+import { auth } from '@/firebase/config';
+import { onAuthStateChanged } from 'firebase/auth';
 import { ref } from 'vue';
+import { useToast } from 'primevue/usetoast';
 
-// Создаем реактивное состояние для лоадера
 export const loading = ref(false);
 
-// Время для минимального отображения лоадера
 const MIN_LOADING_TIME = 1000;
 let loadingStartTime = 0;
 
 export const authGuard = async (to, from, next) => {
-    // Запускаем лоадер
     loadingStartTime = Date.now();
     loading.value = true;
-
     const authStore = useAuthStore();
+    const toast = useToast();
 
-    // Check for persisted login
-    const rememberedUser = localStorage.getItem('userRemembered');
-    const storedEmail = localStorage.getItem('userEmail');
+    try {
+        const currentUser = await authStore.getCurrentUser();
 
-    // If not authenticated but user wants to be remembered
-    if (rememberedUser && storedEmail) {
-        try {
-            // Verify current authentication state
+        const isAuthRequired = to.meta?.requiresAuth || to.requiresAuth;
+        const isUserAuthenticated = authStore.user;
+
+        if (currentUser && authStore.userRole === 'blocked' && to.path !== '/auth/access' && isAuthRequired) {
+            finishLoading();
+            return next('/auth/access');
+        }
+
+        const rememberedUser = localStorage.getItem('userRemembered');
+        const storedEmail = localStorage.getItem('userEmail');
+
+        if (rememberedUser && storedEmail) {
             await new Promise((resolve, reject) => {
                 onAuthStateChanged(
                     auth,
@@ -47,33 +49,35 @@ export const authGuard = async (to, from, next) => {
                     reject
                 );
             });
-        } catch (error) {
-            // Clear remembered user if authentication fails
-            localStorage.removeItem('userRemembered');
-            localStorage.removeItem('userEmail');
         }
-    }
 
-    if (to.meta.requiresAdmin && authStore.userRole !== 'admin') {
+        if (isAuthRequired && !isUserAuthenticated) {
+            finishLoading();
+            return next('/auth/login');
+        }
+
+        if (to.meta?.requiresAdmin && authStore.userRole !== 'admin') {
+            finishLoading();
+            return next('/');
+        }
+
         finishLoading();
-        next('/');
-        return;
-    }
-
-    // Standard authentication check
-    const isAuthRequired = !!to.meta?.requiresAuth || !!to.requiresAuth;
-    const isUserAuthenticated = !!authStore.user;
-    if (isAuthRequired && !isUserAuthenticated) {
+        next();
+    } catch (error) {
+        console.error('Error in authGuard:', error);
+        localStorage.removeItem('userRemembered');
+        localStorage.removeItem('userEmail');
+        toast.add({
+            severity: 'error',
+            summary: 'Помилка',
+            detail: 'Помилка відновлення сесії.',
+            life: 3000
+        });
         finishLoading();
-        return next('/auth/login');
+        next(false);
     }
-
-// User is either authenticated or accessing a non-protected route
-    finishLoading();
-    next();
 };
 
-// Функция для завершения загрузки с минимальной задержкой
 function finishLoading() {
     const elapsed = Date.now() - loadingStartTime;
     const delay = Math.max(0, MIN_LOADING_TIME - elapsed);
@@ -83,9 +87,7 @@ function finishLoading() {
     }, delay);
 }
 
-// Функция для настройки других хуков маршрутизации
 export function setupRouterGuards(router) {
-    // Регистрируем обработчик ошибок
     router.onError((error) => {
         console.error('Navigation error:', error);
         loading.value = false;

@@ -316,6 +316,14 @@ export const useUserStore = defineStore('user', {
             } finally {
                 this.loading = false;
             }
+        },
+
+        clearUserData() {
+            this.profile = null;
+            this.propertyLists = [];
+            this.user = null;
+            this.clients = [];
+            this.loading = false;
         }
     }
 });

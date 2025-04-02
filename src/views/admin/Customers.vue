@@ -10,7 +10,7 @@ import Avatar from 'primevue/avatar';
 import Toast from 'primevue/toast';
 import ProgressSpinner from 'primevue/progressspinner';
 import Button from 'primevue/button';
-import PropertiesUser from './PropertiesUser.vue'; // Замените на правильный путь
+import PropertiesUser from './PropertiesUser.vue';
 
 import { usePropertyStore } from '@/store/propertyStore';
 const propertyStore = usePropertyStore();
@@ -108,10 +108,6 @@ const formatDate = (timestamp) => {
     }
 };
 
-const expandAll = () => {
-    expandedRows.value = [...filteredUsers.value];
-};
-
 const collapseAll = () => {
     expandedRows.value = [];
 };
@@ -146,10 +142,9 @@ const showError = (message) => {
                 <div class="flex justify-between items-center">
                     <h1 class="text-2xl font-bold">Керування користувачами</h1>
                     <div class="flex gap-2">
-                        <Button icon="pi pi-plus" label="Розгорнути всі" @click="expandAll" class="p-button-text" />
                         <Button icon="pi pi-minus" label="Згорнути всі" @click="collapseAll" class="p-button-text" />
                         <span class="p-input-icon-left">
-                            <i class="pi pi-search" />
+                            <i class="pi pi-search mr-2" />
                             <InputText v-model="searchQuery" placeholder="Пошук користувачів..." class="w-64" />
                         </span>
                     </div>
@@ -217,6 +212,8 @@ const showError = (message) => {
                                     <div v-else-if="userProperties.length > 0">
                                         <PropertiesUser
                                             :userProperties="userProperties"
+                                            :userId="data.id"
+                                            @updateUserProperties = "fetchPropertiesForUser"
                                         />
                                     </div>
                                     <div v-else>
