@@ -31,7 +31,7 @@ defineProps({
 </script>
 
 <template>
-    <Fluid class="flex flex-col mt-8 shadow-lg">
+    <Fluid class="flex flex-col shadow-lg">
         <div class="card flex flex-col gap-4 w-full">
             <Accordion value="0">
                 <AccordionPanel>

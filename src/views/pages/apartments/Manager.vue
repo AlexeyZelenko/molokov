@@ -239,7 +239,7 @@ onMounted(async () => {
                     </div>
                     <div class="font-medium my-4">{{ slotProps.message.detail }}</div>
                     <div class="flex gap-2">
-                        <Button v-if="!isEditMode" size="small" label="Додати ще оголошення" severity="secondary" @click="resetForm()"></Button>
+                        <Button v-if="!isEditMode" size="small" label="Додати ще оголошення" severity="secondary" @click="resetForm"></Button>
                         <Button size="small" label="Перейти до оголошення" severity="success" @click="onViewProperty()"></Button>
                     </div>
                 </div>

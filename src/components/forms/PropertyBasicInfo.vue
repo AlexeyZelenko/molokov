@@ -76,19 +76,17 @@ defineExpose({ validate: validateFields });
         <div class="font-semibold text-xl">Тип нерухомості</div>
         <InputText id="categoryProperty" :value="selectedCategoryName" disabled />
 
-        <div class="font-semibold text-xl">
-            <span>Мета використання</span>
-            <span class="ml-1 text-red-500">*</span>
+        <div class="font-semibold text-xl"><span>Мета використання</span><span class="ml-1 text-red-500">*</span>
         </div>
-        <Select v-model="modelValue.subcategory" :options="dropdowns.subcategory" optionLabel="name" placeholder="Select" :class="{ 'p-invalid': errors.subcategory }" required @change="handleSubcategoryChange" />
+        <Select
+            v-model="modelValue.subcategory"
+            :options="dropdowns.subcategory"
+            optionLabel="name" placeholder="Select" :class="{ 'p-invalid': errors.subcategory }" required @change="handleSubcategoryChange" />
         <small class="text-red-500" v-if="errors.subcategory">
             {{ errors.subcategory }}
         </small>
 
-        <div class="font-semibold text-xl">
-            <span>Заголовок оголошення</span>
-            <span class="ml-1 text-red-500">*</span>
-        </div>
+        <div class="font-semibold text-xl"><span>Заголовок оголошення</span><span class="ml-1 text-red-500">*</span></div>
         <FloatLabel>
             <InputText v-model="modelValue.title" :class="{ 'p-invalid': errors.title }" required />
             <label>Додати заголовок оголошення</label>
@@ -97,10 +95,7 @@ defineExpose({ validate: validateFields });
             {{ errors.title }}
         </small>
 
-        <PriceInput
-            v-model="modelValue.price"
-            :error="errors.price"
-        />
+        <PriceInput v-model="modelValue.price" :error="errors.price" />
     </div>
 </template>
 

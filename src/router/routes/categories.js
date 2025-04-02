@@ -1,9 +1,9 @@
-import AppCategoryLayout from "@/layout/AppCategoryLayout.vue";
-import AppLayout from "@/layout/AppLayout.vue";
-import EditItemView from "@/views/pages/categories/EditItemView.vue";
-import ItemDetailsView from "@/views/pages/categories/ItemDetailsView.vue";
-import AddItemProperty from "@/views/pages/categories/AddItemProperty.vue";
-import ListProperties from "@/views/pages/categories/ListProperties.vue";
+import AppCategoryLayout from '@/layout/AppCategoryLayout.vue';
+import AppLayout from '@/layout/AppLayout.vue';
+import EditItemView from '@/views/pages/categories/EditItemView.vue';
+import ItemDetailsView from '@/views/pages/categories/ItemDetailsView.vue';
+import AddItemProperty from '@/views/pages/categories/AddItemProperty.vue';
+import ListProperties from '@/views/pages/categories/ListProperties.vue';
 
 export default [
     {
@@ -17,10 +17,7 @@ export default [
                 // props: true,
                 meta: {
                     requiresAuth: true,
-                    breadcrumb: [
-                        { name: 'Головна', route: '/', icon: 'pi pi-home' },
-                        { name: 'Редагування об\'єкта нерухомості' }
-                    ]
+                    breadcrumb: [{ name: 'Головна', route: '/', icon: 'pi pi-home' }, { name: "Редагування об'єкта нерухомості" }]
                 }
             },
             {
@@ -29,8 +26,14 @@ export default [
                 component: ItemDetailsView,
                 meta: {
                     breadcrumb: [
-                        { name: 'Головна', route: '/', icon: 'pi pi-home' },
-                        { name: 'Деталі об\'єкта нерухомості' }
+                        {
+                            name: 'Головна',
+                            route: '/',
+                            icon: 'pi pi-home'
+                        },
+                        {
+                            name: "Деталі об'єкта нерухомості"
+                        }
                     ]
                 }
             },
@@ -40,12 +43,9 @@ export default [
                 component: AddItemProperty,
                 meta: {
                     requiresAuth: true,
-                    breadcrumb: [
-                        { name: 'Головна', route: '/', icon: 'pi pi-home' },
-                        { name: 'Додати об\'єкт нерухомості' }
-                    ]
-                },
-            },
+                    breadcrumb: [{ name: 'Головна', route: '/', icon: 'pi pi-home' }, { name: "Додати об'єкт нерухомості" }]
+                }
+            }
         ]
     },
     {
@@ -59,12 +59,9 @@ export default [
                 params: true,
                 query: true,
                 meta: {
-                    breadcrumb: [
-                        { name: 'Головна', route: '/', icon: 'pi pi-home' },
-                        { name: 'Список об\'єктів нерухомості' }
-                    ]
+                    breadcrumb: [{ name: 'Головна', route: '/', icon: 'pi pi-home' }, { name: "Список об'єктів нерухомості" }]
                 }
-            },
+            }
         ]
-    },
+    }
 ];

@@ -27,6 +27,7 @@ import DgisMap from '@/components/maps/DgisMap.vue';
 import SocialShare from '@/components/socialShare/SocialShare.vue';
 import PriceConverter from '@/components/price/PriceConverter.vue';
 import PropertyUserInfo from '@/components/properties/list/PropertyUserInfo.vue';
+import PropertyListCurrency from "@/components/PropertyListCurrency.vue";
 
 const route = useRoute();
 
@@ -102,6 +103,18 @@ const loadPropertyData = async (category, subcategory, id) => {
         console.error('Ошибка при загрузке объекта:', error);
     }
 };
+
+const viewMode = ref('single');
+
+function setViewMode(mode) {
+    viewMode.value = mode;
+    localStorage.setItem('propertyViewMode', mode);
+}
+
+const savedViewMode = localStorage.getItem('propertyViewMode');
+if (savedViewMode) {
+    viewMode.value = savedViewMode;
+}
 </script>
 
 <template>
@@ -109,39 +122,90 @@ const loadPropertyData = async (category, subcategory, id) => {
         <Skeleton />
     </div>
     <div v-else>
-        <div class="flex flex-col md:flex-row items-center justify-start mb-4">
-            <h1 class="font-semibold text-2xl mr-4">{{ property.title }}</h1>
-            <SocialShare :property="property" :adUrl="fullUrl" :title="property.title" :description="property.price" :image="property.images[0]" class="ml-4" />
-        </div>
+        <Fluid>
+            <div
+                class="flex flex-col md:flex-row items-start justify-start mb-4"
+                :class="{
+                    'flex-col': true,
+                    'md:flex-row': viewMode === 'double',
+                    'md:w-1/2 m-auto': viewMode === 'single'
+                }"
+            >
+                <section>
+                    <h1 class="font-semibold text-2xl">{{ property.title }}</h1>
+                    <p class="text-sm">{{ property.category?.name }} / {{ property.subcategory?.name }}</p>
+                </section>
 
-        <Fluid class="flex flex-col md:flex-row gap-6">
-            <div class="md:w-1/2">
-                <div v-if="property.images?.length">
-                    <PropertyGallery v-if="property.images?.length" :images="property.images" />
+                <div class="flex items-center mt-2 md:mt-0">
+                    <SocialShare :property="property" :adUrl="fullUrl" :title="property.title" :description="property.price" :image="property.images[0]" />
+                </div>
+            </div>
+            <!-- Dynamic layout container -->
+            <div
+                class="flex item-start justify-between mb-1"
+                :class="{
+                    'md:flex-row': viewMode === 'double',
+                    'md:w-1/2 m-auto': viewMode === 'single'
+                }"
+            >
+                <section class="flex items-center">
+                    <button @click="setViewMode('single')" class="p-2 rounded-l transition" :class="viewMode === 'single' ? 'bg-primary-700 text-white' : 'bg-gray-200 hover:bg-gray-300'">
+                        <i class="pi pi-list text-sm"></i>
+                    </button>
+                    <button @click="setViewMode('double')" class="p-2 rounded-r transition" :class="viewMode === 'double' ? 'bg-primary-700 text-white' : 'bg-gray-200 hover:bg-gray-300'">
+                        <i class="pi pi-table text-sm"></i>
+                    </button>
+                </section>
+            </div>
+            <div
+                class="flex flex-wrap"
+                :class="{
+                    'flex-row w-full': viewMode === 'double',
+                    'md:w-1/2 m-auto': viewMode === 'single'
+                }"
+            >
+                <!-- Images and location section -->
+                <div :class="['flex flex-col', viewMode === 'single' ? 'w-full' : 'md:w-1/2 md:pr-3']">
+                    <div v-if="property.images?.length">
+                        <PropertyGallery :images="property.images" />
+                    </div>
+
+                    <div class="card shadow-lg flex flex-col md:flex-row justify-between gap-2 mt-2">
+                        <PropertyLocation :address="property?.address" />
+                    </div>
                 </div>
 
-                <div class="card shadow-lg flex flex-col md:flex-row justify-between gap-2 mt-6">
-                    <PropertyLocation :address="property?.address" />
+                <!-- Details section -->
+                <div :class="['flex flex-col', viewMode === 'single' ? 'w-full' : 'md:w-1/2 md:pl-3']">
+                    <div class="card flex flex-col shadow-lg mt-2">
+                        <div class="flex justify-between items-center font-semibold text-xl text-primary-700">
+                            <div>{{ property.category?.name }} / {{ property.subcategory?.name }}</div>
+                            <PropertyListCurrency class="p-2" />
+                        </div>
+                        <PriceConverter :price="property.price" :isDisplayUAH="true" class="font-bold text-2xl text-blue-400" />
+                        <PropertyUserInfo :creator="property.creator" />
+                    </div>
+
+                    <component v-if="property" :is="categoryComponentMap[category] || PropertyOther" :property="property" />
+
+                    <PropertyDescription :property="property" :facilityReadiness="property.facilityReadiness" :description="property.description" class="mb-4" />
                 </div>
             </div>
 
-            <div class="md:w-1/2">
-                <div class="card flex flex-col shadow-lg">
-                    <div class="font-semibold text-xl text-primary-700">{{ property.category?.name }} / {{ property.subcategory?.name }}</div>
-                    <PriceConverter :price="property.price" :isDisplayUAH="true" class="font-bold text-2xl text-blue-400" />
-                    <PropertyUserInfo :creator="property.creator" />
-                </div>
-
-                <component v-if="property" :is="categoryComponentMap[category] || PropertyOther" :property="property" />
-            </div>
+            <DgisMap
+                :property="property"
+                :isDelete="false"
+                class="my-6"
+                :class="{
+                    'flex-col': true,
+                    'md:flex-row': viewMode === 'double',
+                    'md:w-1/2 m-auto': viewMode === 'single'
+                }"
+            />
         </Fluid>
-
-        <PropertyDescription :property="property" :facilityReadiness="property.facilityReadiness" :description="property.description" class="mb-4" />
 
         <Toast />
 
         <AddToListModal v-if="isRegister" :ad="property" :propertyId="propertyId" />
-
-        <DgisMap :property="property" :isDelete="false" class="my-6" />
     </div>
 </template>

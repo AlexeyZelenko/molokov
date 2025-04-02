@@ -1,10 +1,24 @@
+<script setup>
+import { ref } from 'vue';
+import { galleriaResponsiveOptions } from './constants';
+
+defineProps({
+    images: {
+        type: Array,
+        required: true
+    }
+});
+
+const responsiveOptions = ref(galleriaResponsiveOptions);
+</script>
+
 <template>
     <div class="card shadow-lg">
         <Galleria
             :value="images"
             :responsiveOptions="responsiveOptions"
             :numVisible="5"
-            containerStyle="max-width: 640px"
+            containerStyle="max-width: 640px; border: none"
         >
             <template #item="slotProps">
                 <Image
@@ -22,27 +36,8 @@
                 />
             </template>
             <template #thumbnail="slotProps">
-                <img
-                    :src="slotProps.item"
-                    :alt="slotProps.item.title"
-                    width="100"
-                    style="height: 65px; object-fit: cover; padding: 0 5px"
-                />
+                <img :src="slotProps.item" :alt="slotProps.item.title" width="100" style="height: 65px; object-fit: cover; padding: 0 5px" />
             </template>
         </Galleria>
     </div>
 </template>
-
-<script setup>
-import { ref } from 'vue';
-import { galleriaResponsiveOptions } from './constants';
-
-defineProps({
-    images: {
-        type: Array,
-        required: true
-    }
-});
-
-const responsiveOptions = ref(galleriaResponsiveOptions);
-</script>

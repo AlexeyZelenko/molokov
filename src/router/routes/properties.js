@@ -1,4 +1,4 @@
-import AppCategoryLayout from "@/layout/AppCategoryLayout.vue";
+import AppCategoryLayout from '@/layout/AppCategoryLayout.vue';
 
 export default [
     {
@@ -22,8 +22,8 @@ export default [
             {
                 path: '/:category/:subcategory/:id',
                 name: 'pageFindProperty',
-                component: () => import('@/views/pages/FindPropertiesFromId.vue'),
-            },
+                component: () => import('@/views/pages/FindPropertiesFromId.vue')
+            }
         ]
     },
     {
