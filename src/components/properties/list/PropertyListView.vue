@@ -54,18 +54,17 @@ onMounted(() => {
                                 <i class="pi pi-map-marker mr-2"></i>
                                 <span
                                     v-if="item.address?.city?.AreaDescription"
-                                    class="mr-2"
-                                >{{ item.address.city.AreaDescription }} обл. /</span>
-                                <span v-if="item.address?.city?.RegionsDescription"> {{ item.address.city.RegionsDescription }} р-н</span>
+                                >{{ item.address.city.AreaDescription }} обл.</span>
+                                <span v-if="item.address?.city?.RegionsDescription">/{{ item.address.city.RegionsDescription }} р-н</span>
                             </div>
                             <div class="flex items-center">
                                 <i class="pi pi-map-marker mr-2"></i>
-                                <span class="mr-2">{{ item.address.city.name }} </span>
-                                <span v-if="item.address?.area?.name">/ {{ item.address.area.name }}</span>
+                                <span> {{ item.address.city.name }} </span>
+                                <span v-if="item.address?.area?.name">/{{ item.address.area.name }}</span>
                             </div>
                             <div v-if="item.createdAt" class="flex items-center">
                                 <i class="pi pi-calendar mr-2"></i>
-                                <div>{{ formatFirebaseTimestampToTime(item.createdAt) }}</div>
+                                <div> {{ formatFirebaseTimestampToTime(item.createdAt) }}</div>
                             </div>
                             <div class="flex items-center">
                                 <i class="pi pi-verified mr-2"></i>
