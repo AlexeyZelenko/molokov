@@ -28,9 +28,9 @@ defineProps({
             <div>{{ apartmentArea.kitchenArea }} м²</div>
         </div>
 
-        <div class="flex items-center gap-2">
+        <div v-if="apartmentArea?.landArea" class="flex items-center gap-2">
             <div class="font-bold text-md">Площа ділянки:</div>
-            <div>{{ landArea }} м²</div>
+            <div>{{ apartmentArea.landArea }} м²</div>
         </div>
 
         <div class="flex items-center gap-2">

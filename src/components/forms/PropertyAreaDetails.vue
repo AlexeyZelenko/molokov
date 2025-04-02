@@ -13,7 +13,8 @@ const emit = defineEmits(['update:modelValue', 'validation-change']);
 const errors = ref({
     totalArea: '',
     livingArea: '',
-    kitchenArea: ''
+    kitchenArea: '',
+    landArea: ''
 });
 
 // Validation rules
@@ -78,6 +79,11 @@ watch(
     () => validate()
 );
 
+watch(
+    () => props.modelValue.landArea,
+    () => validate()
+);
+
 // Export validation method for parent component
 defineExpose({ validate });
 </script>
@@ -115,7 +121,6 @@ defineExpose({ validate });
 
         <div class="font-semibold text-md">
             <span>Площа ділянки</span>
-            <span class="ml-1 text-red-500">*</span>
         </div>
         <InputNumber v-model="modelValue.landArea" showButtons :minFractionDigits="1" :maxFractionDigits="2" :class="{ 'p-invalid': errors.landArea }" :min="0" fluid />
         <small class="text-red-500" v-if="errors.landArea">
