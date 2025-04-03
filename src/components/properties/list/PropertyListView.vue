@@ -34,7 +34,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="flex flex-col">
+    <div v-if="items.length > 0" class="flex flex-col">
         <div v-for="(item, index) in items" :key="index">
             <div class="property-card flex flex-col sm:flex-row sm:items-center mt-4 p-4 gap-6 shadow-md">
                 <div class="md:w-40 relative h-40">
@@ -83,6 +83,9 @@ onMounted(() => {
                 </div>
             </div>
         </div>
+    </div>
+    <div v-else class="flex justify-center items-center h-full">
+        <p class="text-lg text-surface-500">Немає жодної пропозиції</p>
     </div>
 </template>
 

@@ -1,4 +1,5 @@
 <script setup>
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useConfirm } from 'primevue/useconfirm';
 import { deleteObject, ref as storageRef } from 'firebase/storage';
@@ -6,11 +7,15 @@ import { deleteDoc, doc } from 'firebase/firestore';
 import { db, storage } from '@/firebase/config';
 import { usePropertiesStore } from '@/store/propertiesCategories';
 import { useUserStore } from '@/store/userStore';
-import { computed } from 'vue';
 import { useToast } from 'primevue/usetoast';
+import Button from 'primevue/button'; // Import PrimeVue Button
+import ProgressSpinner from 'primevue/progressspinner'; // Import PrimeVue ProgressSpinner
 
 const props = defineProps({
-    item: Object
+    item: {
+        type: Object,
+        required: true,
+    },
 });
 
 const router = useRouter();
@@ -18,6 +23,8 @@ const confirm = useConfirm();
 const store = usePropertiesStore();
 const toast = useToast();
 const userStore = useUserStore();
+
+const deleting = ref(false); // Ref to track deletion state
 
 // Check if current user is the creator
 const isCreator = computed(() => {
@@ -40,7 +47,7 @@ const editProperty = () => {
             severity: 'error',
             summary: 'Помилка',
             detail: "Ви не маєте права редагувати цей об'єкт",
-            life: 3000
+            life: 3000,
         });
         return;
     }
@@ -60,13 +67,14 @@ const deleteProperty = (event) => {
         rejectProps: {
             label: 'Відміна',
             severity: 'secondary',
-            outlined: true
+            outlined: true,
         },
         acceptProps: {
             label: 'Видалити',
-            severity: 'danger'
+            severity: 'danger',
         },
         accept: async () => {
+            deleting.value = true;
             try {
                 if (props.item.images?.length > 0) {
                     await Promise.allSettled(
@@ -86,28 +94,31 @@ const deleteProperty = (event) => {
 
                 await store.getProperties({
                     category: props.item.category.code,
-                    subcategory: props.item.subcategory.code
+                    subcategory: props.item.subcategory.code,
                 });
+                deleting.value = false;
 
                 toast.add({
                     severity: 'success',
                     summary: 'Успішно',
                     detail: "Об'єкт видалено",
-                    life: 3000
+                    life: 3000,
                 });
             } catch (error) {
+                deleting.value = false;
                 console.error("Помилка видалення об'єкту:", error);
                 toast.add({
                     severity: 'error',
                     summary: 'Помилка',
                     detail: "Не вдалося видалити об'єкт",
-                    life: 3000
+                    life: 3000,
                 });
             }
         },
         reject: () => {
+            deleting.value = false;
             toast.add({ severity: 'error', summary: 'Відхилено', detail: 'Ви відхилили видалення', life: 3000 });
-        }
+        },
     });
 };
 </script>
@@ -123,10 +134,23 @@ const deleteProperty = (event) => {
         </template>
     </ConfirmPopup>
     <div class="flex gap-2">
-        <Button label="Переглянути деталі" class="p-button-warning mr-2" @click="showProperty" />
+        <Button label="Переглянути деталі" class="p-button-warning" @click="showProperty" />
+
         <template v-if="isCreator || isAdmin">
-            <Button icon="pi pi-pencil" class="p-button-warning mr-2" @click="editProperty" />
-            <Button icon="pi pi-trash" class="p-button-danger" @click="deleteProperty" />
+            <Button
+                icon="pi pi-pencil"
+                class="p-button-warning"
+                @click="editProperty"
+            />
+            <Button
+                v-if="!deleting"
+                icon="pi pi-trash"
+                class="p-button-danger"
+                @click="deleteProperty"
+            ></Button>
+            <ProgressSpinner v-else style="width: 16px; height: 16px; margin-top: 8px" strokeWidth="8" fill="transparent"
+                             animationDuration=".7s" aria-label="Custom ProgressSpinner" />
+
         </template>
     </div>
 </template>

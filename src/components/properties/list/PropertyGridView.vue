@@ -37,7 +37,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="grid grid-cols-12 gap-4">
+    <div v-if="items.length > 0" class="grid grid-cols-12 gap-4">
         <div v-for="(item, index) in items" :key="index" class="col-span-12 sm:col-span-6 lg:col-span-4">
             <div class="p-6 border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-900 rounded flex flex-col h-full">
                 <div class="flex justify-center rounded">
@@ -83,5 +83,8 @@ onMounted(() => {
                 </div>
             </div>
         </div>
+    </div>
+    <div v-else class="flex justify-center items-center h-full">
+        <p class="text-lg text-surface-500">Немає жодної пропозиції</p>
     </div>
 </template>
