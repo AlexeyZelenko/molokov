@@ -363,7 +363,14 @@ const getSelectedFilters = computed(() => {
                             <AccordionContent>
                                 <div class="flex flex-col">
                                     <label>Область</label>
-                                    <Select v-model="filters['address.region.code']" :options="address.region.value.map((i) => ({ name: i.name, value: i.code }))" optionLabel="name" optionValue="value" placeholder="Вибрати" @change="applyFilters" />
+                                    <Select
+                                        v-model="filters['address.region.code']"
+                                        :options="address.region.value.map((i) => ({ name: i.name, value: i.code }))"
+                                        optionLabel="name"
+                                        optionValue="value"
+                                        placeholder="Вибрати"
+                                        @change="applyFilters"
+                                    />
                                 </div>
 
                                 <div class="flex flex-col mt-2">

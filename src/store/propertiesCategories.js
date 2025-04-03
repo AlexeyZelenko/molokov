@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia';
 import { db } from '@/firebase/config';
-import { collection, query, where, getDocs, orderBy, limit, documentId, FieldPath } from 'firebase/firestore';
-import { log10 } from 'chart.js/helpers';
+import { collection, query, where, getDocs, orderBy, limit, documentId } from 'firebase/firestore';
 
 export const usePropertiesStore = defineStore('properties', {
     state: () => ({
@@ -184,11 +183,15 @@ export const usePropertiesStore = defineStore('properties', {
             const componentMap = {
                 apartments: {
                     sell: 'ApartmentsSell',
-                    rent: 'ApartmentsRent'
+                    rent: 'ApartmentsRent',
+                    exchange: 'ApartmentsExchange',
+                    daily: 'ApartmentsRentDaily'
                 },
-                house: {
+                houses: {
                     sell: 'HousesSell',
-                    rent: 'HousesRent'
+                    rent: 'HousesRent',
+                    exchange: 'HousesExchange',
+                    daily: 'HousesRentDaily'
                 }
             };
 
@@ -198,9 +201,11 @@ export const usePropertiesStore = defineStore('properties', {
 
             // Check for exact match and nested access
             const component = componentMap[normalizedCategory]?.[normalizedSubcategory];
+            console.log(`Category: ${normalizedCategory}, Subcategory: ${normalizedSubcategory}, Component: ${component}`);
 
             if (component) {
                 this.currentComponent = component;
+                console.log(`Component determined: ${component}`);
                 return component;
             }
 
@@ -354,9 +359,6 @@ export const usePropertiesStore = defineStore('properties', {
             this.error = null;
 
             try {
-                // Основные коллекции (например, "apartments", "houses", "land" и т.д.)
-                const mainCollections = ['apartments', 'houses', 'land', 'commercial', 'garage', 'other', 'rooms', 'offices'];
-
                 const collectionPath = `properties/${category}/${subcategory}`;
                 console.log(`🔍 Поиск в коллекции: ${collectionPath}`);
 

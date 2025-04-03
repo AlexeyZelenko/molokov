@@ -2,10 +2,10 @@
 import AppFooter from './AppFooter.vue';
 import AppCategoriesMenu from './properties/Menu.vue';
 import AppTopbar from './AppTopbar.vue';
-import {computed, ref, watch} from "vue";
-import {useLayout} from "@/layout/composables/layout";
-import AppSidebar from "@/layout/AppSidebar.vue";
-import Breadcrumb from "@/components/Breadcrumb.vue";
+import { computed, ref, watch } from 'vue';
+import { useLayout } from '@/layout/composables/layout';
+import AppSidebar from '@/layout/AppSidebar.vue';
+import Breadcrumb from '@/components/Breadcrumb.vue';
 import { usePropertiesStore } from '@/store/propertiesCategories';
 
 const { layoutConfig, layoutState, isSidebarActive } = useLayout();
@@ -13,11 +13,11 @@ const isFiltersActive = ref(false);
 const outsideClickListener = ref(null);
 const filtersOutsideClickListener = ref(null);
 
-const componentStore = usePropertiesStore()
+const componentStore = usePropertiesStore();
 const filtersLength = computed(() => {
-    const length = Object.keys(componentStore.filters).length
-    return length > 0 ? String(length) : null
-})
+    const length = Object.keys(componentStore.filters).length;
+    return length > 0 ? String(length) : null;
+});
 
 watch(isSidebarActive, (newVal) => {
     if (newVal) {
@@ -90,10 +90,7 @@ function isFiltersOutsideClicked(event) {
         return false;
     }
 
-    return !(filtersEl.isSameNode(event.target) ||
-        filtersEl.contains(event.target) ||
-        filtersButtonEl.isSameNode(event.target) ||
-        filtersButtonEl.contains(event.target));
+    return !(filtersEl.isSameNode(event.target) || filtersEl.contains(event.target) || filtersButtonEl.isSameNode(event.target) || filtersButtonEl.contains(event.target));
 }
 
 function toggleFilters() {
@@ -139,8 +136,7 @@ function handleSidebarClick(event) {
         <app-sidebar></app-sidebar>
         <Button
             label="Фільтри"
-            raised
-            icon="pi pi-filter"
+            raised icon="pi pi-filter"
             :badge="filtersLength"
             class="filters-button p-button"
             @click="toggleFilters"
@@ -148,14 +144,7 @@ function handleSidebarClick(event) {
 
         <div class="layout-main-container">
             <div class="layout-main">
-                <div
-                    class="filters-sidebar animate-fadein p-shadow-2 p-sidebar-right"
-                    :class="{ 'active': isFiltersActive }"
-                    @click.stop="handleSidebarClick"
-                    role="complementary"
-                    aria-label="Фільтри"
-                    :inert="!isFiltersActive"
-                >
+                <div class="filters-sidebar animate-fadein p-shadow-2 p-sidebar-right" :class="{ active: isFiltersActive }" @click.stop="handleSidebarClick" role="complementary" aria-label="Фільтри" :inert="!isFiltersActive">
                     <slot name="filters">
                         <app-categories-menu
                             @close-filters="closeFilters"
@@ -189,7 +178,10 @@ function handleSidebarClick(event) {
     width: 300px;
     height: 100%;
     background: var(--surface-overlay); /* используем переменную темы */
-    box-shadow: 0 2px 4px -1px rgba(0,0,0,.2),0 4px 5px 0 rgba(0,0,0,.14),0 1px 10px 0 rgba(0,0,0,.12);
+    box-shadow:
+        0 2px 4px -1px rgba(0, 0, 0, 0.2),
+        0 4px 5px 0 rgba(0, 0, 0, 0.14),
+        0 1px 10px 0 rgba(0, 0, 0, 0.12);
     transition: right 0.3s ease;
     z-index: 1000;
     padding: 1rem;
