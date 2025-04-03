@@ -1,18 +1,16 @@
+<script>
+export default {
+    setup() {
+        return {};
+    }
+};
+</script>
+
 <template>
     <div class="fullscreen-loader h-full">
         <div class="loader"></div>
     </div>
 </template>
-
-<script>
-export default {
-    setup() {
-
-
-        return {}
-    }
-}
-</script>
 
 <style scoped>
 .fullscreen-loader {
@@ -45,5 +43,4 @@ export default {
         transform: rotate(360deg);
     }
 }
-
 </style>

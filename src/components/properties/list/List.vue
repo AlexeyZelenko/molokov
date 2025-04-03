@@ -10,7 +10,7 @@ import PropertyGridView from './PropertyGridView.vue';
 import PropertyMapView from './PropertyMapView.vue';
 import ConfirmationModal from './ConfirmationModal.vue';
 import LoadingSkeleton from './LoadingSkeleton.vue';
-import PropertyListCurrency from '@/components/PropertyListCurrency.vue';
+import PropertyListCurrency from '@/components/price/PropertyListCurrency.vue';
 
 const props = defineProps({
     category: String,

@@ -27,7 +27,7 @@ import DgisMap from '@/components/maps/DgisMap.vue';
 import SocialShare from '@/components/socialShare/SocialShare.vue';
 import PriceConverter from '@/components/price/PriceConverter.vue';
 import PropertyUserInfo from '@/components/properties/list/PropertyUserInfo.vue';
-import PropertyListCurrency from "@/components/PropertyListCurrency.vue";
+import PropertyListCurrency from '@/components/price/PropertyListCurrency.vue';
 
 const route = useRoute();
 

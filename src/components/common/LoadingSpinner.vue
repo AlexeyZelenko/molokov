@@ -1,30 +1,3 @@
-<template>
-    <div
-        :class="[
-            'loading-spinner-container',
-            { 'fullscreen': fullscreen }
-        ]"
-    >
-        <div class="spinner-wrapper">
-            <div
-                class="spinner"
-                :style="{
-                    width: size + 'px',
-                    height: size + 'px',
-                    borderWidth: thickness + 'px'
-                }"
-            />
-            <span
-                v-if="message"
-                class="spinner-message"
-                :style="{ color: textColor }"
-            >
-                {{ message }}
-            </span>
-        </div>
-    </div>
-</template>
-
 <script setup>
 defineProps({
     size: {
@@ -53,6 +26,24 @@ defineProps({
     }
 });
 </script>
+
+<template>
+    <div :class="['loading-spinner-container', { fullscreen: fullscreen }]">
+        <div class="spinner-wrapper">
+            <div
+                class="spinner"
+                :style="{
+                    width: size + 'px',
+                    height: size + 'px',
+                    borderWidth: thickness + 'px'
+                }"
+            />
+            <span v-if="message" class="spinner-message" :style="{ color: textColor }">
+                {{ message }}
+            </span>
+        </div>
+    </div>
+</template>
 
 <style scoped>
 .loading-spinner-container {
@@ -92,7 +83,11 @@ defineProps({
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
 </style>

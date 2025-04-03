@@ -1,10 +1,23 @@
+<script setup>
+import { computed } from 'vue';
+import { useBreadcrumbStore } from '@/store/breadcrumb';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
+const breadcrumbStore = useBreadcrumbStore();
+
+// Получаем элементы breadcrumb из store
+const breadcrumbItems = computed(() => breadcrumbStore.items);
+
+const goBack = () => {
+    router.go(-1); // Переход на предыдущую страницу
+};
+</script>
+
 <template>
     <nav aria-label="breadcrumb" class="flex mb-6 pr-4">
-        <button
-            type="button"
-            class="breadcrumb--back-button"
-            @click="goBack"
-        >
+        <button type="button" class="breadcrumb--back-button" @click="goBack">
             <i class="pi pi-chevron-left"></i>
             <span class="mx-2"><strong>Назад</strong></span>
         </button>
@@ -27,23 +40,6 @@
         </ol>
     </nav>
 </template>
-
-<script setup>
-import { computed } from 'vue';
-import { useBreadcrumbStore } from '@/store/breadcrumb';
-import {useRouter} from "vue-router";
-
-const router = useRouter();
-
-const breadcrumbStore = useBreadcrumbStore();
-
-// Получаем элементы breadcrumb из store
-const breadcrumbItems = computed(() => breadcrumbStore.items);
-
-const goBack = () => {
-    router.go(-1); // Переход на предыдущую страницу
-};
-</script>
 
 <style scoped lang="scss">
 .breadcrumb {

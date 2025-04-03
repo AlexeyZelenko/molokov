@@ -1,55 +1,14 @@
-<template>
-    <div class="map-container">
-        <div ref="mapContainer" style="width: 100%; height: 600px"></div>
-<!--        <div class="controls">-->
-<!--            <button @click="toggleAddMarkerMode" :class="{ active: isAddingMarkers }">-->
-<!--                {{ isAddingMarkers ? 'Stop Adding Markers' : 'Start Adding Markers' }}-->
-<!--            </button>-->
-<!--            <button @click="clearMarkers" :disabled="markers.length === 0">-->
-<!--                Clear All Markers-->
-<!--            </button>-->
-<!--            <button @click="exportMarkers" :disabled="markers.length === 0">-->
-<!--                Export Markers-->
-<!--            </button>-->
-<!--            <input-->
-<!--                type="file"-->
-<!--                ref="fileInput"-->
-<!--                style="display: none"-->
-<!--                accept=".json"-->
-<!--                @change="importMarkers"-->
-<!--            >-->
-<!--            <button @click="$refs.fileInput.click()">-->
-<!--                Import Markers-->
-<!--            </button>-->
-<!--        </div>-->
-    </div>
-
-    <!-- Modal for editing marker text -->
-    <div v-if="editingMarker" class="modal">
-        <div class="modal-content">
-            <CartDetailsMap
-                :marker="editingMarker"
-                @close-modal="closeModal"
-                :editingMarker="editingMarker"
-            />
-        </div>
-    </div>
-</template>
-
 <script setup>
-import {defineProps, onMounted, ref, watch} from "vue";
+import { defineProps, onMounted, ref, watch } from 'vue';
 import * as leaflet from 'leaflet/dist/leaflet-src.esm';
 import 'leaflet/dist/leaflet.css';
-import {useRouter} from 'vue-router';
-import CartDetailsMap from "@/components/properties/list/map/CartDetailsMap.vue";
+import CartDetailsMap from '@/components/properties/list/map/CartDetailsMap.vue';
 
-const router = useRouter();
 const mapContainer = ref(null);
 const map = ref(null);
 const markers = ref([]);
 const isAddingMarkers = ref(false);
 const editingMarker = ref(null);
-const fileInput = ref(null);
 
 const props = defineProps({
     items: Array
@@ -57,9 +16,6 @@ const props = defineProps({
 
 const closeModal = () => {
     editingMarker.value = null;
-};
-const toggleAddMarkerMode = () => {
-    isAddingMarkers.value = !isAddingMarkers.value;
 };
 
 const createMarkerPopupContent = (marker) => {
@@ -96,10 +52,7 @@ const addMarker = (e) => {
 
     newMarker.markerData = markerData;
 
-    newMarker
-        .addTo(map.value)
-        .bindPopup(createMarkerPopupContent(markerData))
-        .openPopup();
+    newMarker.addTo(map.value).bindPopup(createMarkerPopupContent(markerData)).openPopup();
 
     // Обработчик перетаскивания
     newMarker.on('dragend', (event) => {
@@ -113,83 +66,10 @@ const addMarker = (e) => {
     // Удаление по правому клику
     newMarker.on('contextmenu', () => {
         map.value.removeLayer(newMarker);
-        markers.value = markers.value.filter(m => m !== newMarker);
+        markers.value = markers.value.filter((m) => m !== newMarker);
     });
 
     markers.value.push(newMarker);
-};
-
-const saveMarkerText = () => {
-    if (!editingMarker.value) return;
-
-    const marker = markers.value.find(m => m.markerData.id === editingMarker.value.id);
-    if (marker) {
-        marker.markerData.text = editingMarker.value.text;
-        marker.setPopupContent(createMarkerPopupContent(marker.markerData));
-    }
-
-    editingMarker.value = null;
-};
-
-const exportMarkers = () => {
-    const markersData = markers.value.map(marker => marker.markerData);
-    const dataStr = JSON.stringify(markersData, null, 2);
-    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-
-    const linkElement = document.createElement('a');
-    linkElement.setAttribute('href', dataUri);
-    linkElement.setAttribute('download', 'map-markers.json');
-    linkElement.click();
-};
-
-const importMarkers = (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        try {
-            const markersData = JSON.parse(e.target.result);
-
-            // Clear existing markers
-            clearMarkers();
-
-            // Add imported markers
-            markersData.forEach(data => {
-                const marker = leaflet.marker([data.lat, data.lng], {
-                    draggable: true
-                });
-
-                marker.markerData = data;
-
-                marker
-                    .addTo(map.value)
-                    .bindPopup(createMarkerPopupContent(data));
-
-                marker.on('dragend', (event) => {
-                    const m = event.target;
-                    const position = m.getLatLng();
-                    m.markerData.lat = position.lat;
-                    m.markerData.lng = position.lng;
-                    m.setPopupContent(createMarkerPopupContent(m.markerData));
-                });
-
-                marker.on('contextmenu', () => {
-                    map.value.removeLayer(marker);
-                    markers.value = markers.value.filter(m => m !== marker);
-                });
-
-                markers.value.push(marker);
-            });
-        } catch (error) {
-            console.error('Error importing markers:', error);
-            alert('Error importing markers. Please check the file format.');
-        }
-    };
-    reader.readAsText(file);
-
-    // Reset file input
-    event.target.value = '';
 };
 
 onMounted(() => {
@@ -197,10 +77,12 @@ onMounted(() => {
     map.value = leaflet.map(mapContainer.value).setView([49, 32.0598], 12);
 
     // Добавить слой OpenStreetMap
-    leaflet.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 17,
-        attribution: '© OpenStreetMap contributors'
-    }).addTo(map.value);
+    leaflet
+        .tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 17,
+            attribution: '© OpenStreetMap contributors'
+        })
+        .addTo(map.value);
 
     // Обработчик клика для добавления новых маркеров пользователем
     map.value.on('click', addMarker);
@@ -224,7 +106,7 @@ watch(
 
 function clearMarkers() {
     if (map.value) {
-        map.value.eachLayer(layer => {
+        map.value.eachLayer((layer) => {
             if (layer instanceof leaflet.Marker) {
                 map.value.removeLayer(layer);
             }
@@ -234,7 +116,7 @@ function clearMarkers() {
 }
 
 function addAllMarkers() {
-    props.items.forEach(item => {
+    props.items.forEach((item) => {
         const address = item.address;
         const position = address.markerPosition;
 
@@ -256,10 +138,7 @@ function addAllMarkers() {
         const newMarker = leaflet.marker([position[0], position[1]], { draggable: true });
         newMarker.markerData = markerData;
 
-        newMarker
-            .addTo(map.value)
-            .bindPopup(createMarkerPopupContent(markerData))
-            .openPopup();
+        newMarker.addTo(map.value).bindPopup(createMarkerPopupContent(markerData)).openPopup();
 
         newMarker.on('dragend', (event) => {
             const marker = event.target;
@@ -271,15 +150,26 @@ function addAllMarkers() {
 
         newMarker.on('contextmenu', () => {
             map.value.removeLayer(newMarker);
-            markers.value = markers.value.filter(m => m !== newMarker);
+            markers.value = markers.value.filter((m) => m !== newMarker);
         });
 
         markers.value.push(newMarker);
     });
 }
-
-
 </script>
+
+<template>
+    <div class="map-container">
+        <div ref="mapContainer" style="width: 100%; height: 600px"></div>
+    </div>
+
+    <!-- Modal for editing marker text -->
+    <div v-if="editingMarker" class="modal">
+        <div class="modal-content">
+            <CartDetailsMap :marker="editingMarker" @close-modal="closeModal" :editingMarker="editingMarker" />
+        </div>
+    </div>
+</template>
 
 <style scoped>
 .map-container {
@@ -308,7 +198,7 @@ button:disabled {
 }
 
 button.active {
-    background: #4CAF50;
+    background: #4caf50;
     color: white;
     border-color: #45a049;
 }

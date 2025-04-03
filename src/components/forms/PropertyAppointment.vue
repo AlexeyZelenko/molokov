@@ -1,6 +1,5 @@
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue';
-import SelectButton from 'primevue/selectbutton';
 import Select from 'primevue/select';
 
 const props = defineProps({

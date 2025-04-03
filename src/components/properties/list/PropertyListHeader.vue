@@ -1,5 +1,5 @@
 <script setup>
-const props = defineProps({
+defineProps({
     layout: String
 });
 
@@ -9,12 +9,7 @@ const options = ['list', 'grid', 'map'];
 
 <template>
     <div class="flex justify-end">
-        <SelectButton
-            :model-value="layout"
-            :options="options"
-            :allowEmpty="false"
-            @update:modelValue="emit('update:layout', $event)"
-        >
+        <SelectButton :model-value="layout" :options="options" :allowEmpty="false" @update:modelValue="emit('update:layout', $event)">
             <template #option="{ option }">
                 <i
                     :class="{

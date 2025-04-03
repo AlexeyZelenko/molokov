@@ -1,36 +1,9 @@
-<template>
-    <div class="custom-paginator">
-        <button class="p-paginator-page" @click="goToPage(1)" :disabled="currentPage === 1">
-            <i class="pi pi-angle-double-left"></i>
-        </button>
-        <button class="p-paginator-page" @click="prevPage" :disabled="currentPage === 1">
-            <i class="pi pi-angle-left"></i>
-        </button>
-
-        <button
-            v-for="page in totalPages"
-            :key="page"
-            @click="goToPage(page)"
-            :class="['p-paginator-page', { 'p-highlight': page === currentPage }]"
-        >
-            {{ page }}
-        </button>
-
-        <button class="p-paginator-page" @click="nextPage" :disabled="currentPage === totalPages">
-            <i class="pi pi-angle-right"></i>
-        </button>
-        <button class="p-paginator-page" @click="goToPage(totalPages)" :disabled="currentPage === totalPages">
-            <i class="pi pi-angle-double-right"></i>
-        </button>
-    </div>
-</template>
-
 <script setup>
 import { defineProps, defineEmits } from 'vue';
 
 const props = defineProps({
     currentPage: Number,
-    totalPages: Number,
+    totalPages: Number
 });
 
 const emit = defineEmits(['update:currentPage']);
@@ -44,6 +17,28 @@ const goToPage = (page) => {
 const prevPage = () => goToPage(props.currentPage - 1);
 const nextPage = () => goToPage(props.currentPage + 1);
 </script>
+
+<template>
+    <div class="custom-paginator">
+        <button class="p-paginator-page" @click="goToPage(1)" :disabled="currentPage === 1">
+            <i class="pi pi-angle-double-left"></i>
+        </button>
+        <button class="p-paginator-page" @click="prevPage" :disabled="currentPage === 1">
+            <i class="pi pi-angle-left"></i>
+        </button>
+
+        <button v-for="page in totalPages" :key="page" @click="goToPage(page)" :class="['p-paginator-page', { 'p-highlight': page === currentPage }]">
+            {{ page }}
+        </button>
+
+        <button class="p-paginator-page" @click="nextPage" :disabled="currentPage === totalPages">
+            <i class="pi pi-angle-right"></i>
+        </button>
+        <button class="p-paginator-page" @click="goToPage(totalPages)" :disabled="currentPage === totalPages">
+            <i class="pi pi-angle-double-right"></i>
+        </button>
+    </div>
+</template>
 
 <style scoped>
 .custom-paginator {

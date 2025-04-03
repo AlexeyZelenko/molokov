@@ -1,10 +1,3 @@
-<template>
-    <div class="flex items-center">
-        <div class="font-semibold text-xl mr-2">Опублікувати</div>
-        <ToggleSwitch v-model="publishStatus" />
-    </div>
-</template>
-
 <script setup>
 import { computed } from 'vue';
 
@@ -22,3 +15,10 @@ const publishStatus = computed({
     set: (value) => emit('update:modelValue', value)
 });
 </script>
+
+<template>
+    <div class="flex items-center">
+        <div class="font-semibold text-xl mr-2">Опублікувати</div>
+        <ToggleSwitch v-model="publishStatus" />
+    </div>
+</template>

@@ -1,3 +1,4 @@
+<script setup lang="ts"></script>
 <template>
     <div class="card">
         <div class="rounded border border-surface-200 dark:border-surface-700 p-6 bg-surface-0 dark:bg-surface-900">
@@ -49,5 +50,3 @@
         </div>
     </div>
 </template>
-<script setup lang="ts">
-</script>

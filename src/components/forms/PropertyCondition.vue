@@ -1,27 +1,3 @@
-<template>
-    <div class="card flex flex-col gap-4">
-        <label v-for="(field, key) in fields" :key="key" class="font-semibold text-xl">
-            <p class="mb-2">
-                <span>{{ field.label }}</span>
-                <span class="ml-1 text-red-500">*</span>                 
-            </p>
-            <component
-                :is="field.component"
-                v-model="modelValue[field.code]"
-                :options="dropdowns[key]"
-                optionLabel="name"
-                :placeholder="field.placeholder"
-                :class="{'p-invalid': errors[field.code]}"
-                class="w-full"
-                size="small"
-                @change="validateField(field.code)"
-                @blur="validateField(field.code)"
-            />
-            <small class="text-red-500" v-if="errors[field.code]">{{ errors[field.code] }}</small>
-        </label>
-    </div>
-</template>
-
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue';
 import SelectButton from 'primevue/selectbutton';
@@ -36,20 +12,20 @@ const errors = ref({});
 
 const fields = computed(() => ({
     conditions: {
-        label: "Стан нерухомості",
+        label: 'Стан нерухомості',
         component: SelectButton,
         code: 'condition'
     },
     buildingTypes: {
-        label: "Матеріал будівлі",
+        label: 'Матеріал будівлі',
         component: Select,
-        placeholder: "Оберіть тип будівлі",
+        placeholder: 'Оберіть тип будівлі',
         code: 'buildingType'
     },
     objectClass: {
         label: "Клас об'єкта",
         component: Select,
-        placeholder: "Оберіть клас",
+        placeholder: 'Оберіть клас',
         code: 'objectClass'
     },
     reconditioning: {
@@ -61,14 +37,18 @@ const fields = computed(() => ({
 }));
 
 // Watch for modelValue changes to validate in real-time
-watch(() => props.modelValue, () => {
-    validateAllFields();
-}, {deep: true});
+watch(
+    () => props.modelValue,
+    () => {
+        validateAllFields();
+    },
+    { deep: true }
+);
 
 // Validate a specific field
 const validateField = (code) => {
     if (!props.modelValue[code]) {
-        const field = Object.values(fields.value).find(f => f.code === code);
+        const field = Object.values(fields.value).find((f) => f.code === code);
         errors.value[code] = `${field.label} обов'язковий`;
     } else {
         delete errors.value[code];
@@ -101,8 +81,32 @@ onMounted(() => {
     validateAllFields();
 });
 
-defineExpose({validate: validateAllFields});
+defineExpose({ validate: validateAllFields });
 </script>
+
+<template>
+    <div class="card flex flex-col gap-4">
+        <label v-for="(field, key) in fields" :key="key" class="font-semibold text-xl">
+            <p class="mb-2">
+                <span>{{ field.label }}</span>
+                <span class="ml-1 text-red-500">*</span>
+            </p>
+            <component
+                :is="field.component"
+                v-model="modelValue[field.code]"
+                :options="dropdowns[key]"
+                optionLabel="name"
+                :placeholder="field.placeholder"
+                :class="{ 'p-invalid': errors[field.code] }"
+                class="w-full"
+                size="small"
+                @change="validateField(field.code)"
+                @blur="validateField(field.code)"
+            />
+            <small class="text-red-500" v-if="errors[field.code]">{{ errors[field.code] }}</small>
+        </label>
+    </div>
+</template>
 
 <style scoped>
 .p-invalid {

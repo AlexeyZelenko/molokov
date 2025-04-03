@@ -3,7 +3,6 @@
         <div class="grid grid-cols-12 gap-4 justify-center">
             <div class="col-span-12 text-center mt-20 mb-6">
                 <div class="text-surface-900 dark:text-surface-0 font-normal mb-2 text-4xl">Чудові особливості</div>
-<!--                <span class="text-muted-color text-2xl">Placerat in egestas erat...</span>-->
             </div>
 
             <div class="col-span-12 md:col-span-12 lg:col-span-4 p-0 lg:pr-8 lg:pb-8 mt-6 lg:mt-0">
@@ -124,15 +123,9 @@
                     <p class="text-gray-900 sm:line-height-2 md:line-height-4 text-2xl mt-6" style="max-width: 800px">
                         “Ми допомагаємо клієнтам знайти ідеальне житло та інвестувати у нерухомість з упевненістю. Наш досвід та персональний підхід гарантують вам найкращі умови на ринку.”
                     </p>
-                    <Avatar
-                        image="/demo/images/landing/molokov-logo.webp"
-                        class="mt-6"
-                        size="xlarge"
-                        shape="circle"
-                    />
+                    <Avatar image="/demo/images/landing/molokov-logo.webp" class="mt-6" size="xlarge" shape="circle" />
                 </div>
             </div>
-
         </div>
     </div>
 </template>

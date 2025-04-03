@@ -1,35 +1,40 @@
-<template>
-    <div class="card flex flex-col gap-4">
-        <div class="font-semibold text-xl">Площа(м²)</div>
-        <div class="font-semibold text-sm">Загальна площа</div>
-        <div>{{ area.totalArea }} м²</div>
-
-        <div class="font-semibold text-sm">Жила площа квартири</div>
-        <div>{{ area.livingArea }} м² / {{planning?.name}}</div>
-
-        <div class="font-semibold text-sm">Площа кухні</div>
-        <div>{{ area.kitchenArea }} м²</div>
-
-        <div class="font-semibold text-sm">Санвузел - {{ bathroom?.name }}</div>
-    </div>
-</template>
-
 <script setup>
+import { defineProps } from 'vue';
+
 defineProps({
-    area: {
-        type: Object,
-        required: true,
-        validator: (value) => {
-            return value.totalArea && value.livingArea && value.kitchenArea;
-        }
-    },
-    planning: {
-        type: Object,
-        default: null
-    },
-    bathroom: {
-        type: Object,
-        default: null
-    }
+    apartmentArea: Object,
+    planning: Object,
+    bathroom: Object
 });
 </script>
+
+<template>
+    <div class="card flex flex-col gap-2 shadow-lg">
+        <div class="font-bold text-xl">Площа(м²) / планування</div>
+
+        <div class="flex items-center gap-2">
+            <div class="font-bold text-md">Загальна площа:</div>
+            <div>{{ apartmentArea.totalArea }} м²</div>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <div class="font-bold text-md">Жила площа:</div>
+            <div>{{ apartmentArea.livingArea }} м²</div>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <div class="font-bold text-md">Площа кухні:</div>
+            <div>{{ apartmentArea.kitchenArea }} м²</div>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <div class="font-bold text-md">Планування:</div>
+            <div>{{ planning?.name }}</div>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <div class="font-bold text-md">Санвузел:</div>
+            <div>{{ bathroom?.name }}</div>
+        </div>
+    </div>
+</template>

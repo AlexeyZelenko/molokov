@@ -1,8 +1,8 @@
 <script setup>
-import { computed, onMounted } from "vue";
-import AppConfigurator from "@/layout/AppConfigurator.vue";
-import {useLayout} from "@/layout/composables/layout";
-import {useRouter} from "vue-router";
+import { computed, onMounted } from 'vue';
+import AppConfigurator from '@/layout/AppConfigurator.vue';
+import { useLayout } from '@/layout/composables/layout';
+import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/store/authFirebase';
 
 const authStore = useAuthStore();
@@ -39,18 +39,13 @@ function navigateTo(route) {
 }
 
 onMounted(() => {
-    authStore.initializeAuth()
+    authStore.initializeAuth();
 });
 </script>
 
 <template>
     <a class="flex items-center" href="#">
-        <img
-            src="@/assets/layout/images/logo.svg"
-            alt="logo"
-            class="w-18 h-18 mr-20"
-        />
-<!--        <span class="text-surface-900 dark:text-surface-0 font-medium text-2xl leading-normal ml-5 mr-20">Нерухомість</span>-->
+        <img src="@/assets/layout/images/logo.svg" alt="logo" class="w-18 h-18 mr-20" />
     </a>
     <Button
         class="lg:!hidden"
@@ -88,22 +83,12 @@ onMounted(() => {
             <div class="flex items-center mr-4">
                 <div v-if="user" class="flex items-center gap-6 mr-4">
                     <router-link to="/users/user/profile" class="flex flex-col items-center gap-1">
-                        <img
-                            v-if="user.avatar"
-                            :src="user.avatar"
-                            alt="Аватар"
-                            class="w-10 h-10 rounded-full object-cover border-2 border-blue-100"
-                        />
+                        <img v-if="user.avatar" :src="user.avatar" alt="Аватар" class="w-10 h-10 rounded-full object-cover border-2 border-blue-100" />
                         <div class="text-surface-900 dark:text-surface-0 font-medium text-sm">
                             {{ user.displayName }}
                         </div>
                     </router-link>
-                    <Button
-                        label="Вихід"
-                        as="button"
-                        @click="handleLogout"
-                        rounded
-                    ></Button>
+                    <Button label="Вихід" as="button" @click="handleLogout" rounded></Button>
                 </div>
                 <div v-else class="flex items-center gap-4">
                     <Button label="Вхід" text as="router-link" to="/auth/login" rounded></Button>
@@ -117,13 +102,13 @@ onMounted(() => {
 
             <Button
                 v-styleclass="{
-                selector: '@next',
-                 enterFromClass: 'hidden',
-                  enterActiveClass: 'animate-scalein',
-                   leaveToClass: 'hidden',
+                    selector: '@next',
+                    enterFromClass: 'hidden',
+                    enterActiveClass: 'animate-scalein',
+                    leaveToClass: 'hidden',
                     leaveActiveClass: 'animate-fadeout',
-                     hideOnOutsideClick: true
-            }"
+                    hideOnOutsideClick: true
+                }"
                 type="button"
                 text
                 class="layout-topbar-action layout-topbar-action-highlight ml-2"
