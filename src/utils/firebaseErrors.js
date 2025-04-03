@@ -17,15 +17,13 @@ const firebaseErrors = {
     'auth/invalid-verification-id': 'Невірний ідентифікатор підтвердження',
     'auth/missing-verification-code': 'Відсутній код підтвердження',
     'auth/missing-verification-id': 'Відсутній ідентифікатор підтвердження',
-    'auth/quota-exceeded': 'Перевищено квоту запитів. Спробуйте пізніше',
+    'auth/quota-exceeded': 'Перевищено квоту запитів. Спробуйте пізніше'
     // 'default': 'Сталася помилка. Спробуйте ще раз'
 };
 
 export const getFirebaseErrorMessage = (errorCode) => {
     // Extract error code from the full error message if needed
-    const code = errorCode.includes(':')
-        ? errorCode.split('Firebase: Error (')[1].split(').')[0]
-        : errorCode;
+    const code = errorCode.includes(':') ? errorCode.split('Firebase: Error (')[1].split(').')[0] : errorCode;
 
     return firebaseErrors[code] || firebaseErrors.default;
 };

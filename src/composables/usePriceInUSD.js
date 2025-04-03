@@ -1,7 +1,7 @@
 // composables/usePriceInUSD.js
 import { ref, computed } from 'vue';
 
-export function usePriceInUSD(currency) {
+export function usePriceInUSD() {
     const exchangeRates = ref(null);
     const loading = ref(false);
     const error = ref(null);

@@ -6,14 +6,14 @@ export const useApartmentsStore = defineStore('apartments', {
     state: () => ({
         dropdowns: {
             areas: [
-                { name: '700-річчя', code: '700', position: { lat: 49.41963965672834, lng: 32.103188085876596 }, radius: 700, color: '#FF0000'},
-                { name: 'Вантажний порт', code: 'VAN', position: { lat: 49.4355, lng: 32.0980 }, radius: 700, color: '#00FF00'},
-                { name: 'Водоканал', code: 'VOD', position: { lat: 49.42808637639345, lng: 32.05982208251953 }, radius: 400, color: '#0000FF'},
-                { name: 'Газороздатка', code: 'GAZ', position: { lat: 49.41595003649699, lng: 32.04537034034729 }, radius: 500, color: '#3ff4a9'},
-                { name: 'Д район', code: 'D', position: { lat: 49.40443881421899, lng: 32.11702998175305 }, radius: 1000, color: '#c147cb'},
-                { name: 'Дахнівка', code: 'DAH', position: { lat: 49.484910631748825, lng: 31.987037658691406 }, radius: 1200, color: '#cb9b47'},
+                { name: '700-річчя', code: '700', position: { lat: 49.41963965672834, lng: 32.103188085876596 }, radius: 700, color: '#FF0000' },
+                { name: 'Вантажний порт', code: 'VAN', position: { lat: 49.4355, lng: 32.098 }, radius: 700, color: '#00FF00' },
+                { name: 'Водоканал', code: 'VOD', position: { lat: 49.42808637639345, lng: 32.05982208251953 }, radius: 400, color: '#0000FF' },
+                { name: 'Газороздатка', code: 'GAZ', position: { lat: 49.41595003649699, lng: 32.04537034034729 }, radius: 500, color: '#3ff4a9' },
+                { name: 'Д район', code: 'D', position: { lat: 49.40443881421899, lng: 32.11702998175305 }, radius: 1000, color: '#c147cb' },
+                { name: 'Дахнівка', code: 'DAH', position: { lat: 49.484910631748825, lng: 31.987037658691406 }, radius: 1200, color: '#cb9b47' },
                 { name: 'Залізничний вокзал', code: 'ZAL', position: { lat: 49.42605373759808, lng: 32.05051726986188 }, radius: 400, color: '#46498b' },
-                { name: 'Зелена', code: 'ZEL', position: { lat: 49.41672388638957, lng: 32.06681461059078 }, radius: 500, color: '#498b46'  },
+                { name: 'Зелена', code: 'ZEL', position: { lat: 49.41672388638957, lng: 32.06681461059078 }, radius: 500, color: '#498b46' },
                 { name: 'Казбет', code: 'KAZ', position: { lat: 49.449546180775876, lng: 32.04763412475586 }, radius: 1000, color: '#939399' },
                 { name: 'к/р Мир', code: 'MIR', position: { lat: 49.42508016099293, lng: 32.077503261744546 }, radius: 700, color: '#a3edc1' },
                 { name: 'Корольова', code: 'KOR', position: { lat: 49.43854424498209, lng: 32.027018380008016 }, radius: 700, color: '#b96d50' },
@@ -23,7 +23,7 @@ export const useApartmentsStore = defineStore('apartments', {
                 { name: 'Митниця', code: 'MIT', position: { lat: 49.43805002816855, lng: 32.08823204040527 }, radius: 700, color: '#cfa3ed' },
                 { name: 'Молокозавод', code: 'MOL', position: { lat: 49.41672388638957, lng: 32.08666772656333 }, radius: 500, color: '#a3edce' },
                 { name: 'Яблуневий', code: 'APPLE', position: { lat: 49.41011721110426, lng: 32.08666772656333 }, radius: 500, color: '#a3edce' },
-                { name: 'М\'ясокомбінат', code: 'MYA', position: { lat: 49.42886849182714, lng: 32.04440015839379 }, radius: 300, color: '#edb6a3' },
+                { name: "М'ясокомбінат", code: 'MYA', position: { lat: 49.42886849182714, lng: 32.04440015839379 }, radius: 300, color: '#edb6a3' },
                 { name: 'Оборонна', code: 'OBO', position: { lat: 49.43387005778021, lng: 32.04428647280381 }, radius: 700, color: '#eda3d2' },
                 { name: 'Сади', code: 'GARDEN', position: { lat: 49.40443881421899, lng: 32.077503261744546 }, radius: 900, color: '#939399' },
                 { name: 'ПЗР', code: 'PZR', position: { lat: 49.42416365262321, lng: 32.02160329543575 }, radius: 1200, color: '#eda3b7' },
@@ -36,41 +36,6 @@ export const useApartmentsStore = defineStore('apartments', {
                 { name: 'Руставі', code: 'RUST', position: { lat: 49.43854424498209, lng: 32.00961112976074 }, radius: 900, color: '#c7eda3' },
                 { name: 'Школа майстрів', code: 'SHKM', position: { lat: 49.4285, lng: 32.0675 }, radius: 300, color: '#50cf7d' },
                 { name: 'Пилипенка', code: 'KPP', position: { lat: 49.42395487625772, lng: 32.05377564145998 }, radius: 300, color: '#7cb3a1' }
-            ],
-            cities: [
-                { name: 'Черкаси', code: '1' },
-                { name: 'Байбузи', code: '2' },
-                { name: 'Березняки', code: '3' },
-                { name: 'Білозір\'я', code: '4' },
-                { name: 'Будище', code: '5' },
-                { name: 'Вергуни', code: '6' },
-                { name: 'Геронимівка', code: '7' },
-                { name: 'Гута Межирицька', code: '8' },
-                { name: 'Дубіївка', code: '9' },
-                { name: 'Думанці', code: '10' },
-                { name: 'Ірдинь', code: '11' },
-                { name: 'Кумейки', code: '12' },
-                { name: 'Леськи', code: '13' },
-                { name: 'Лозівок', code: '14' },
-                { name: 'Мошни', code: '15' },
-                { name: 'Мошногір\'я', code: '16' },
-                { name: 'Первомайськ', code: '17' },
-                { name: 'Руська Поляна', code: '18' },
-                { name: 'Сагунів', code: '19' },
-                { name: 'Свидівок', code: '20' },
-                { name: 'Софіївка', code: '21' },
-                { name: 'Сокирне', code: '22' },
-                { name: 'Степанки', code: '23' },
-                { name: 'Тубільці', code: '24' },
-                { name: 'Хацьки', code: '25' },
-                { name: 'Хрещатик', code: '26' },
-                { name: 'Худяки', code: '27' },
-                { name: 'Хутори', code: '28' },
-                { name: 'Червона Слобода', code: '29' },
-                { name: 'Чорнявка', code: '30' },
-                { name: 'Шелепухи', code: '31' },
-                { name: 'Яснозір\'я', code: '32' },
-                { name: 'Нечаївка', code: '33' },
             ],
             category: [
                 { name: 'Квартира', code: 'apartments' },
@@ -86,7 +51,7 @@ export const useApartmentsStore = defineStore('apartments', {
                 { name: 'Продаж', code: 'sell' },
                 { name: 'Довгострокова оренда', code: 'rent' },
                 { name: 'Короткострокова оренда', code: 'daily' },
-                { name: 'Обмін', code: 'exchange' },
+                { name: 'Обмін', code: 'exchange' }
             ],
             purposeOfUses: [
                 { name: 'Продаж', code: 'sell' },
@@ -115,7 +80,7 @@ export const useApartmentsStore = defineStore('apartments', {
                 { name: 'Волинська', code: 'VOL' },
                 { name: 'Дніпропетровська', code: 'DNE' },
                 { name: 'Донецька', code: 'DON' },
-                { name: 'АРК', code: 'CRR' },
+                { name: 'АРК', code: 'ARK' },
                 { name: 'Житомирська', code: 'ZHM' },
                 { name: 'Закарпатська', code: 'ZAK' },
                 { name: 'Запорізька', code: 'ZAP' },
@@ -154,7 +119,7 @@ export const useApartmentsStore = defineStore('apartments', {
                     value: 'foamBlock'
                 },
                 {
-                    name: 'Дерев\'яний',
+                    name: "Дерев'яний",
                     value: 'wooden'
                 },
                 {
@@ -258,7 +223,7 @@ export const useApartmentsStore = defineStore('apartments', {
                 }
             ],
             utilities: [
-                { name: 'Електрика', code: 'ELEC' , key: 'electricity'},
+                { name: 'Електрика', code: 'ELEC', key: 'electricity' },
                 { name: 'Вода', code: 'WTR', key: 'water' },
                 { name: 'Каналізація', code: 'SWR', key: 'sewerage' },
                 { name: 'Газ', code: 'GAS', key: 'gas' },
@@ -271,7 +236,7 @@ export const useApartmentsStore = defineStore('apartments', {
                 { name: 'Вентиляція', code: 'VENT', key: 'ventilation' },
                 { name: 'Відеоспостереження', code: 'VDO', key: 'video' },
                 { name: 'Домофон', code: 'PHN', key: 'intercom' },
-                { name: 'Система "розумний будинок"', code: 'SMART', key: 'smartHouse' },
+                { name: 'Система "розумний будинок"', code: 'SMART', key: 'smartHouse' }
             ],
             heatingTypes: [
                 {
@@ -359,7 +324,7 @@ export const useApartmentsStore = defineStore('apartments', {
                     value: 'foamBlock'
                 },
                 {
-                    name: 'Дерев\'яний',
+                    name: "Дерев'яний",
                     value: 'wooden'
                 },
                 {
@@ -374,7 +339,7 @@ export const useApartmentsStore = defineStore('apartments', {
                     name: 'Інше',
                     value: 'other'
                 }
-            ],
+            ]
         },
         saving: false,
         displayCurrency: [{ name: '$', value: 'USD' }]
@@ -390,12 +355,12 @@ export const useApartmentsStore = defineStore('apartments', {
 
             if (configDoc.exists()) {
                 const data = configDoc.data();
-                return data.lastPropertyId; // Возвращает значение поля
+                return data.lastPropertyId;
             } else {
                 console.error('Документ не найден!');
                 return null;
             }
-        },
+        }
     },
     actions: {
         setCurrencies(arr) {

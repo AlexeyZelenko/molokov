@@ -72,7 +72,7 @@ const getRoleSeverity = (role) => {
         case 'manager':
             return 'info';
         case 'customer':
-            return 'warn';
+            return 'secondary';
         case 'blocked':
             return 'danger';
         default:

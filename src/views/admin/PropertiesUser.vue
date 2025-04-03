@@ -11,6 +11,7 @@ import { deleteDoc, doc } from 'firebase/firestore';
 import { useToast } from 'primevue/usetoast';
 import { defineEmits } from 'vue';
 import { Timestamp } from 'firebase/firestore';
+import { formatDateFromTimestamp } from '@/utils/dateUtils';
 
 const confirm = useConfirm();
 const toast = useToast();
@@ -35,7 +36,6 @@ const searchQuery = ref('');
 const itemsPerPage = 10;
 const first = ref(0);
 
-// Фильтрация объявлений
 const filteredProperties = computed(() => {
     return props.userProperties.filter((prop) => {
         const search = searchQuery.value.toLowerCase();
@@ -43,7 +43,6 @@ const filteredProperties = computed(() => {
     });
 });
 
-// Function for navigation (example)
 const editProperty = (property) => {
     const category = property.category.code;
     const subcategory = property.subcategory.code;
@@ -126,7 +125,6 @@ const getStatus = (isPublic) => {
 };
 
 function getDateSeverity(createdAt) {
-    // Проверка на отсутствие даты
     if (!createdAt) {
         return null;
     }
@@ -159,25 +157,6 @@ function getDateSeverity(createdAt) {
     const range = TIME_RANGES.find((r) => diff < r.threshold);
 
     return range ? range.severity : null;
-}
-
-function formatDateFromTimestamp(createdAt, locale = undefined, options = undefined) {
-    if (!createdAt) {
-        return '';
-    }
-
-    let date;
-    try {
-        date = createdAt instanceof Timestamp ? createdAt.toDate() : new Date(createdAt);
-        if (isNaN(date.getTime())) {
-            return 'Invalid date';
-        }
-    } catch (error) {
-        console.error('Error formatting date:', error);
-        return 'Invalid date';
-    }
-
-    return date.toLocaleDateString(locale, options);
 }
 </script>
 
@@ -253,15 +232,3 @@ function formatDateFromTimestamp(createdAt, locale = undefined, options = undefi
         </div>
     </div>
 </template>
-
-<style scoped>
-.user-properties-table {
-    /* Styles for the table */
-}
-
-.table-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-</style>

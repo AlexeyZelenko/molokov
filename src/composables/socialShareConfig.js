@@ -1,7 +1,6 @@
 export const SHARE_CONFIG = {
     facebook: {
-        buildUrl: (data) =>
-            `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(data.url)}`,
+        buildUrl: (data) => `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(data.url)}`,
         icon: 'pi pi-facebook',
         label: 'Facebook'
     },
@@ -14,14 +13,12 @@ export const SHARE_CONFIG = {
         label: 'Telegram'
     },
     viber: {
-        buildUrl: (data) =>
-            `viber://forward?text=${encodeURIComponent(`${data.url}${data.description}`)}`,
+        buildUrl: (data) => `viber://forward?text=${encodeURIComponent(`${data.url}${data.description}`)}`,
         icon: 'pi pi-phone',
         label: 'Viber'
     },
     whatsapp: {
-        buildUrl: (data) =>
-            `https://api.whatsapp.com/send?text=${encodeURIComponent(`${data.description}\n\n${data.url}`)}`,
+        buildUrl: (data) => `https://api.whatsapp.com/send?text=${encodeURIComponent(`${data.description}\n\n${data.url}`)}`,
         icon: 'pi pi-whatsapp',
         label: 'WhatsApp'
     }

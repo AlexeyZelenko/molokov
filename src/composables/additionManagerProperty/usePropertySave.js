@@ -1,17 +1,7 @@
 import { computed, ref } from 'vue';
 import { useToast } from 'primevue/usetoast';
 
-export function usePropertySave({
-                                    property,
-                                    isEditMode,
-                                    validateAllForms,
-                                    propertyManager,
-                                    updateProperty,
-                                    id,
-                                    category,
-                                    subcategory,
-                                    router
-                                }) {
+export function usePropertySave({ property, isEditMode, validateAllForms, propertyManager, updateProperty, id, category, subcategory, router }) {
     const toast = useToast();
 
     const saving = ref(false);
@@ -19,9 +9,7 @@ export function usePropertySave({
     const savedProperty = ref(false);
 
     const formattedDescription = computed(() => {
-        return property.value.description
-            .replace(/\n/g, '<br>')
-            .replace(/ {2,}/g, match => '&nbsp;'.repeat(match.length));
+        return property.value.description.replace(/\n/g, '<br>').replace(/ {2,}/g, (match) => '&nbsp;'.repeat(match.length));
     });
 
     // eslint-disable-next-line vue/return-in-computed-property
@@ -29,9 +17,8 @@ export function usePropertySave({
         return {
             ...property.value.address.city,
             name: property.value.address.city.Description,
-            code: property.value.address.city.Ref,
-        }
-
+            code: property.value.address.city.Ref
+        };
     });
 
     const saveProperty = async () => {
@@ -73,7 +60,6 @@ export function usePropertySave({
                 group: 'property-action',
                 life: 10000
             });
-
         } catch (error) {
             savedProperty.value = false;
             console.error("Помилка при збереженні об'єкту:", error);

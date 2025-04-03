@@ -1,5 +1,7 @@
 // src/utils/dateUtils.js
 
+import { Timestamp } from 'firebase/firestore';
+
 export const formatFirebaseTimestamp = (timestamp) => {
     // Преобразуем в Date объект
     const date = new Date(timestamp.seconds * 1000); // Умножаем на 1000, потому что Firebase возвращает секунды, а JavaScript ожидает миллисекунды
@@ -19,6 +21,25 @@ export const formatFirebaseTimestampToTime = (timestamp) => {
         month: '2-digit',
         year: 'numeric',
         hour: '2-digit',
-        minute: '2-digit',
+        minute: '2-digit'
     });
+};
+
+export const formatDateFromTimestamp = (createdAt, locale = undefined, options = undefined) => {
+    if (!createdAt) {
+        return '';
+    }
+
+    let date;
+    try {
+        date = createdAt instanceof Timestamp ? createdAt.toDate() : new Date(createdAt);
+        if (isNaN(date.getTime())) {
+            return 'Invalid date';
+        }
+    } catch (error) {
+        console.error('Error formatting date:', error);
+        return 'Invalid date';
+    }
+
+    return date.toLocaleDateString(locale, options);
 }
