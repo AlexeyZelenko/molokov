@@ -1,3 +1,12 @@
+<script setup>
+defineProps({
+    property: {
+        type: Object,
+        default: () => ({})
+    }
+});
+</script>
+
 <template>
     <div class="card flex flex-col gap-2 shadow-lg">
         <div class="font-bold text-xl">Поверховість</div>
@@ -18,12 +27,3 @@
         </div>
     </div>
 </template>
-
-<script setup>
-defineProps({
-    property: {
-        type: Object,
-        default: () => ({})
-    }
-});
-</script>

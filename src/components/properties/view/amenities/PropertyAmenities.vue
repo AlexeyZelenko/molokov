@@ -1,14 +1,32 @@
+<script setup>
+import { ref, computed, defineProps } from 'vue';
+
+const props = defineProps({
+    property: {
+        type: Object,
+        default: () => ({})
+    }
+});
+
+// Исходный массив вкладок
+const tabs = ref([
+    { title: 'Комунікації', content: props.property.communications, value: '0' },
+    { title: 'Інфраструктура', content: props.property.infrastructure, value: '1' },
+    { title: 'Ландшафт', content: props.property.landscape, value: '2' }
+]);
+
+// Фильтруем вкладки, убирая пустые значения
+const filteredTabs = computed(() => {
+    return tabs.value.filter((tab) => tab.content && tab.content.trim() !== '');
+});
+</script>
+
 <template>
     <div class="flex flex-col gap-2">
         <div class="hidden md:block">
             <Tabs v-if="filteredTabs?.length" value="0">
                 <TabList class="flex flex-col">
-                    <Tab
-                        v-for="tab in filteredTabs"
-                        :key="tab.title"
-                        :value="tab.value"
-                        class="font-bold text-xl"
-                    >
+                    <Tab v-for="tab in filteredTabs" :key="tab.title" :value="tab.value" class="font-bold text-xl">
                         <span>{{ tab.title }}</span>
                     </Tab>
                 </TabList>
@@ -32,26 +50,3 @@
         </Accordion>
     </div>
 </template>
-
-<script setup>
-import { ref, computed, defineProps } from 'vue'
-
-const props = defineProps({
-    property: {
-        type: Object,
-        default: () => ({})
-    }
-});
-
-// Исходный массив вкладок
-const tabs = ref([
-    { title: 'Комунікації', content: props.property.communications, value: '0' },
-    { title: 'Інфраструктура', content: props.property.infrastructure, value: '1' },
-    { title: 'Ландшафт', content: props.property.landscape, value: '2' }
-]);
-
-// Фильтруем вкладки, убирая пустые значения
-const filteredTabs = computed(() => {
-    return tabs.value.filter(tab => tab.content && tab.content.trim() !== '');
-});
-</script>

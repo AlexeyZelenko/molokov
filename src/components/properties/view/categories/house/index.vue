@@ -24,4 +24,6 @@ const subcategoryComponentMap = {
     <AreaDetails :apartmentArea="property.apartmentArea" :planning="property.planning" :bathroom="property.bathroom" :landArea="property.landArea" />
 
     <PropertyDetails :condition="property.condition" :buildingType="property.buildingType" :objectClass="property.objectClass" :reconditioning="property.reconditioning" />
+
+    <component :property="property" :is="subcategoryComponentMap[property.subcategory.code]" />
 </template>

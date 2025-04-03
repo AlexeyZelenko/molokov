@@ -3,7 +3,7 @@ import {defineProps} from "vue";
 import UtilitiesList from "./UtilitiesList.vue";
 import FurnitureAndAnimals from "./FurnitureAndAnimals.vue";
 
-const props = defineProps({
+defineProps({
     property: Object
 })
 </script>

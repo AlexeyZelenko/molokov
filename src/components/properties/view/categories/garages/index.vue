@@ -1,29 +1,16 @@
-<template>
-    <AreaDetails
-        :apartmentArea="property.apartmentArea"
-    />
-
-    <PropertyDetails
-        :condition="property.condition"
-        :buildingTypesGarages="property.buildingTypesGarages"
-    />
-</template>
-
 <script setup>
 import { defineProps } from 'vue';
-import PriceConverter from "@/components/price/PriceConverter.vue";
-import AreaDetails from "./AreaDetails.vue";
-import PropertyDetails from "./PropertyDetails.vue";
+import AreaDetails from './AreaDetails.vue';
+import PropertyDetails from './PropertyDetails.vue';
 
 import SellApartment from './sell/index.vue';
 import RentApartment from './rent/index.vue';
 import ExchangeApartment from './exchange/index.vue';
 import DailyRentApartment from './daily/index.vue';
 
-
-const props = defineProps({
+defineProps({
     property: Object
-})
+});
 
 const subcategoryComponentMap = {
     sell: SellApartment,
@@ -32,3 +19,11 @@ const subcategoryComponentMap = {
     daily: DailyRentApartment
 };
 </script>
+
+<template>
+    <AreaDetails :apartmentArea="property.apartmentArea" />
+
+    <PropertyDetails :condition="property.condition" :buildingTypesGarages="property.buildingTypesGarages" />
+
+    <component :property="property" :is="subcategoryComponentMap[property.subcategory.code]" />
+</template>

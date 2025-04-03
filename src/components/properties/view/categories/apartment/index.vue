@@ -1,6 +1,5 @@
 <script setup>
 import { defineProps } from 'vue';
-import PriceConverter from '@/components/price/PriceConverter.vue';
 import AreaDetails from './AreaDetails.vue';
 import PropertyDetails from './PropertyDetails.vue';
 
@@ -10,7 +9,7 @@ import ExchangeApartment from './exchange/index.vue';
 import DailyRentApartment from './daily/index.vue';
 import PropertyFloors from '@/components/properties/view/floors/PropertyFloors.vue';
 
-const props = defineProps({
+defineProps({
     property: Object
 });
 
@@ -28,4 +27,6 @@ const subcategoryComponentMap = {
     <AreaDetails :apartmentArea="property.apartmentArea" :planning="property.planning" :bathroom="property.bathroom" />
 
     <PropertyDetails :condition="property.condition" :buildingType="property.buildingType" :objectClass="property.objectClass" :reconditioning="property.reconditioning" />
+
+    <component :property="property" :is="subcategoryComponentMap[property.subcategory.code]" />
 </template>

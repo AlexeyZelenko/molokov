@@ -6,14 +6,14 @@ import { doc, getDoc } from 'firebase/firestore';
 import Toast from 'primevue/toast';
 import { useUserStore } from '@/store/userStore';
 
-import Skeleton from './skeleton/Details.vue';
-
 import AddToListModal from '@/components/AddToListModal.vue';
 
+import Skeleton from './skeleton/Details.vue';
 import PropertyGallery from './gallery/PropertyGallery.vue';
 import PropertyLocation from './location/PropertyLocation.vue';
 import PropertyDescription from './descriptions/PropertyDescription.vue';
 
+// Importing property categories
 import PropertyApartment from './categories/apartment/index.vue';
 import PropertyHouse from './categories/house/index.vue';
 import PropertyCommercial from './categories/commercial/index.vue';

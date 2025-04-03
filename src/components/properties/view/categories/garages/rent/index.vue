@@ -1,11 +1,11 @@
 <script setup>
-import {defineProps} from "vue";
-import UtilitiesList from "./UtilitiesList.vue";
-import FurnitureAndAnimals from "./FurnitureAndAnimals.vue";
+import { defineProps } from 'vue';
+import UtilitiesList from './UtilitiesList.vue';
+import FurnitureAndAnimals from './Furniture.vue';
 
-const props = defineProps({
+defineProps({
     property: Object
-})
+});
 </script>
 
 <template>
@@ -14,6 +14,4 @@ const props = defineProps({
     <FurnitureAndAnimals :furniture="property.furniture" :animal="property.animal" />
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

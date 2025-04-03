@@ -24,7 +24,8 @@ const subcategoryComponentMap = {
 
     <div class="card flex flex-col gap-2 shadow-lg">
         <div class="font-bold text-xl">Призначення ділянки</div>
-<!--        <div>{{ property.appointment.name }}</div>-->
         <div>{{ property.appointment?.buildingType?.name }}</div>
     </div>
+
+    <component :property="property" :is="subcategoryComponentMap[property.subcategory.code]" />
 </template>

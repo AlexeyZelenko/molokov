@@ -1,15 +1,13 @@
 <script setup>
-import { defineProps } from "vue";
+import { defineProps } from 'vue';
 import PriceConverter from '@/components/price/PriceConverter.vue';
 
-const props = defineProps({
+defineProps({
     price: Number,
-    subcategory: Object,
+    subcategory: Object
 });
 </script>
 
 <template>
-    <PriceConverter
-        :price="price"
-    />
+    <PriceConverter :price="price" />
 </template>

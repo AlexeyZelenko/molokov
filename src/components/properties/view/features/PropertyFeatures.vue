@@ -1,13 +1,3 @@
-<template>
-    <div class="card flex flex-col gap-4">
-        <div class="font-semibold text-xl">Меблі</div>
-        <div>{{ furniture?.name }}</div>
-
-        <div class="font-semibold text-xl">Паркування</div>
-        <div>{{ parking?.name }}</div>
-    </div>
-</template>
-
 <script setup>
 defineProps({
     furniture: {
@@ -20,3 +10,13 @@ defineProps({
     }
 });
 </script>
+
+<template>
+    <div class="card flex flex-col gap-4">
+        <div class="font-semibold text-xl">Меблі</div>
+        <div>{{ furniture?.name }}</div>
+
+        <div class="font-semibold text-xl">Паркування</div>
+        <div>{{ parking?.name }}</div>
+    </div>
+</template>

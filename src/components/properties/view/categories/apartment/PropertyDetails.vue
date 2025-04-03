@@ -1,11 +1,11 @@
 <script setup>
-import { defineProps } from "vue";
+import { defineProps } from 'vue';
 
-const props = defineProps({
+defineProps({
     condition: Object,
     buildingType: Object,
     objectClass: Object,
-    reconditioning: Object,
+    reconditioning: Object
 });
 </script>
 

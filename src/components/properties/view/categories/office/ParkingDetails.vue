@@ -1,13 +1,13 @@
 <script setup>
-import { defineProps } from "vue";
+import { defineProps } from 'vue';
 
-const props = defineProps({
-    parking: Object,
+defineProps({
+    parking: Object
 });
 </script>
 
 <template>
-    <div class="card flex flex-col gap-4">
+    <div v-if="parking?.name" class="card flex flex-col gap-4">
         <div class="font-semibold text-xl">Паркування</div>
         <div>{{ parking?.name }}</div>
     </div>
