@@ -12,3 +12,6 @@ dist
 .eslintcache
 api-generator/typedoc.json
 **/.DS_Store
+
+# Firebase cache and generated files
+.firebase/

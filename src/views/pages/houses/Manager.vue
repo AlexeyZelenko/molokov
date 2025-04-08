@@ -24,7 +24,7 @@ import { usePropertyValidation } from '@/composables/additionManagerProperty/use
 import PropertyAddress from '@/components/forms/PropertyAddress.vue';
 import PropertyBasicInfo from '@/components/forms/PropertyBasicInfo.vue';
 import PropertyAreaDetails from '@/components/forms/PropertyAreaDetails.vue';
-import PropertyFloors from '@/components/forms/PropertyFloors.vue';
+import PropertyFloors from '@/components/forms/houses/HousesPropertyFloors.vue';
 import PropertyRooms from '@/components/forms/PropertyRooms.vue';
 import PropertyCondition from '@/components/forms/PropertyCondition.vue';
 import FormDetails from '@/components/forms/FormDetails.vue';

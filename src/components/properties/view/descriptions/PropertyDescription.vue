@@ -54,7 +54,7 @@ const description = computed(() => {
                             <span>{{ formatFirebaseTimestamp(facilityReadiness) }}</span>
                         </div>
 
-                        <div class="my-2 max-w-full break-words" v-html="description"></div>
+                        <div class="my-2 max-w-full break-words prose" v-html="description"></div>
 
                         <ParkingDetails v-if="property.parking" :parking="property.parking" />
 
