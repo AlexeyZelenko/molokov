@@ -1,4 +1,6 @@
 <script setup>
+import { computed } from 'vue';
+import DOMPurify from 'dompurify';
 import { formatFirebaseTimestamp } from '@/utils/dateUtils';
 import PropertyAmenities from '@/components/properties/view/amenities/PropertyAmenities.vue';
 import ParkingDetails from '@/components/properties/view/categories/apartment/ParkingDetails.vue';
@@ -14,7 +16,7 @@ const subcategoryComponentMap = {
     daily: DailyRentApartment
 };
 
-defineProps({
+const props = defineProps({
     description: {
         type: String,
         default: ''
@@ -27,6 +29,14 @@ defineProps({
         type: Object,
         default: () => ({})
     }
+});
+
+const description = computed(() => {
+    const cleanedHtml = props.description.replace(/&nbsp;/g, ' ');
+    return DOMPurify.sanitize(cleanedHtml, {
+        ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a', 'p', 'br', 'ul', 'ol', 'li'],
+        ALLOWED_ATTR: ['href']
+    });
 });
 </script>
 
@@ -44,7 +54,7 @@ defineProps({
                             <span>{{ formatFirebaseTimestamp(facilityReadiness) }}</span>
                         </div>
 
-                        <p class="my-2" v-html="description"></p>
+                        <div class="my-2 max-w-full break-words" v-html="description"></div>
 
                         <ParkingDetails v-if="property.parking" :parking="property.parking" />
 
