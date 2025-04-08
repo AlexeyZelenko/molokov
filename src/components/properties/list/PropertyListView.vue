@@ -1,35 +1,40 @@
 <script setup>
-import { defineProps, onMounted } from 'vue';
+import { defineProps, onMounted, computed } from 'vue'; // Додано computed
 import PropertyActions from './PropertyActions.vue';
 import PropertyUserInfo from './PropertyUserInfo.vue';
 import { formatFirebaseTimestampToTime } from '@/utils/dateUtils';
 import PropertyPrice from '@/components/price/PriceConverter.vue';
 import { useUserStore } from '@/store/userStore';
 import { useRoute } from 'vue-router';
+import PropertyImage from './PropertyImage.vue'; // <--- 1. Імпортуємо новий компонент
 
-const route = useRoute();
-
-const userStore = useUserStore();
-const user = userStore.user;
-const getSeverity = (status) => {
-    switch (status) {
-        case true:
-            return 'success';
-        case false:
-            return 'warn';
-        case 'OUTOFSTOCK':
-            return 'danger';
-        default:
-            return null;
-    }
-};
-
-defineProps({
+const props = defineProps({ // Перейменовано props на propsList або залиште items
     items: Array
 });
 
+const route = useRoute();
+const userStore = useUserStore();
+const user = userStore.user;
+
+// 2. Видалено getSeverity (перенесено в PropertyImage)
+// const getSeverity = (status) => { ... };
+
+// 3. Логіка визначення, чи показувати тег, залишається тут (використовує user і route)
+//    Можна зробити функцією або computed property, якщо items - це ref/reactive
+const shouldShowStatusTag = (item) => {
+    // Перевіряємо, чи user існує перед доступом до id
+    return user?.id && item?.creator?.id && route?.query?.user && user.id === item.creator.id && route.query.user === user.id.toString();
+    // Додано .toString() для порівняння, якщо route.query.user - рядок
+};
+
+
 onMounted(() => {
-    userStore.fetchUser();
+    // Оптимізація: Завантажуємо користувача, тільки якщо він ще не завантажений
+    // і якщо він потрібен для shouldShowStatusTag або інших компонентів
+    if (!user && (props.items.some(item => item?.creator?.id))) {
+        userStore.fetchUser();
+    }
+    // Або якщо user завжди потрібен, просто: userStore.fetchUser();
 });
 </script>
 
@@ -37,11 +42,13 @@ onMounted(() => {
     <div v-if="items.length > 0" class="flex flex-col">
         <div v-for="(item, index) in items" :key="index">
             <div class="property-card flex flex-col sm:flex-row sm:items-center mt-4 p-4 gap-6 shadow-md">
-                <div class="md:w-40 relative h-40">
-                    <img v-if="item.images?.length" class="block mx-auto rounded w-full h-full object-cover" :src="item.images[0]" :alt="item.title" />
-                    <img v-else class="block mx-auto rounded w-full h-full object-cover" src="/images/placeholder-image.webp" alt="Placeholder" />
-                    <Tag v-if="user?.id === item?.creator?.id && route?.query?.user === user?.id" :value="item?.isPublic ? 'Опубліковано' : 'Не опубліковано'" :severity="getSeverity(item.isPublic)" class="absolute" style="left: 5px; top: 5px" />
-                </div>
+
+                <PropertyImage
+                    :images="item.images"
+                    :alt-text="item.title"
+                    :is-public="item.isPublic"
+                    :show-status-tag="shouldShowStatusTag(item)"
+                />
                 <div class="flex flex-col md:flex-row justify-between md:items-center flex-1 gap-6">
                     <div class="flex flex-col">
                         <div class="text-lg font-medium mb-4">{{ item.title }}</div>
@@ -76,7 +83,6 @@ onMounted(() => {
                         <div class="font-bold">
                             <PropertyPrice style="color: #2196f3; font-size: 18px; font-weight: 600" :price="item.price" :isDisplayUAH="true" />
                         </div>
-
                         <PropertyActions :item="item" />
                         <PropertyUserInfo :creator="item.creator" />
                     </div>
