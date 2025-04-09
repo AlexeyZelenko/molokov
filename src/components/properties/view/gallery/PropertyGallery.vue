@@ -27,7 +27,7 @@ const responsiveOptions = ref(galleriaResponsiveOptions);
                     preview
                     :imageStyle="{
                         maxWidth: '100%',
-                        maxHeight: '400px',
+                        height: '400px',
                         objectFit: 'contain'
                     }"
                     :previewIcon="'pi pi-search'"

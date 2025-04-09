@@ -282,6 +282,7 @@ export const useApartmentsStore = defineStore('apartments', {
                 { name: 'Кімнати ізольовані', code: 'ROOMS' },
                 { name: 'Кімнати суміжні', code: 'ADJACENT' },
                 { name: 'Студія', code: 'STUDIO' },
+                { name: 'Кімнати комбіновані', code: 'COMB' },
                 { name: 'Інше', code: 'OTHER' }
             ],
             bathroom: [

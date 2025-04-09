@@ -4,6 +4,7 @@ import dashboardRoutes from './dashboard';
 import categoriesRoutes from './categories';
 import profileRoutes from './profile';
 import adminRoutes from './admin';
+
 export default [
     {
         path: '/',
