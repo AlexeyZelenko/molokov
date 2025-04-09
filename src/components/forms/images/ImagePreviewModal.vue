@@ -19,12 +19,6 @@
                         @click="uploadAllFiles"
                         class="p-button-success"
                     />
-                    <Button
-                        icon="pi pi-times"
-                        @click="closeDialog"
-                        class="p-button-text p-button-rounded"
-                        aria-label="Закрити"
-                    />
                 </div>
             </div>
         </template>
@@ -52,13 +46,16 @@
                             <Button
                                 icon="pi pi-search-plus"
                                 @click="enlargeImage(file.preview)"
-                                class="p-button-rounded p-button-text p-button-sm"
+                                rounded
+                                variant="text"
                                 aria-label="Збільшити"
                             />
                             <Button
                                 icon="pi pi-trash"
                                 @click="removeFile(index)"
-                                class="p-button-rounded p-button-text p-button-danger p-button-sm"
+                                rounded
+                                variant="text"
+                                severity="danger"
                                 aria-label="Видалити"
                             />
                         </div>

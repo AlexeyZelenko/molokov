@@ -7,8 +7,8 @@ export default class FileUploader {
         try {
             if (!file) throw new Error('No file provided');
 
-            if (file.size > 10 * 1024 * 1024) {
-                throw new Error('File size exceeds limit of 10MB');
+            if (file.size > 7 * 1024 * 1024) {
+                throw new Error('File size exceeds limit of 7MB');
             }
 
             const compressedFile = await compressWithCompressor(file);

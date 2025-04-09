@@ -34,7 +34,7 @@
                     Можна вибрати декілька файлів одночасно
                 </p>
                 <p class="text-sm text-gray-500">
-                    Підтримувані формати: JPG, PNG, WEBP (макс. 5MB на файл)
+                    Підтримувані формати: JPG, PNG, WEBP, HEIC, HEIF (макс. 7MB на файл)
                 </p>
             </div>
         </div>
@@ -61,7 +61,7 @@ const props = defineProps({
     },
     maxFileSize: {
         type: Number,
-        default: 5 * 1024 * 1024 // 5MB в байтах
+        default: 7 * 1024 * 1024 // 7MB в байтах
     },
     maxFiles: {
         type: Number,

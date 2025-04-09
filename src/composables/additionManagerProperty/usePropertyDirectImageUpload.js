@@ -1,7 +1,8 @@
-// usePropertyDirectImageUpload.js - композабл для прямой загрузки в Firebase
 import { ref } from 'vue';
 import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage';
 import { v4 as uuidv4 } from 'uuid';
+import compressWithCompressor from '@/service/Compressor';
+import convertHEICtoJPEG from '@/service/convertHEICtoJPEG';
 
 export function usePropertyDirectImageUpload() {
     const uploadState = ref({
@@ -19,10 +20,39 @@ export function usePropertyDirectImageUpload() {
         return path;
     };
 
+    const validateFiles = (files) => {
+        const MAX_FILE_SIZE = 7 * 1024 * 1024;
+        const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
+
+        return Array.from(files).every(file => {
+            if (!ALLOWED_TYPES.includes(file.type)) {
+                toast.add({
+                    severity: 'error',
+                    summary: 'Помилка',
+                    detail: 'Дозволені формати: JPG, PNG, WEBP, HEIC, HEIF',
+                    life: 3000
+                });
+                return false;
+            }
+
+            if (file.size > MAX_FILE_SIZE) {
+                toast.add({
+                    severity: 'error',
+                    summary: 'Помилка',
+                    detail: 'Максимальний розмір файлу: 5MB',
+                    life: 3000
+                });
+                return true;
+            }
+
+            return true;
+        });
+    };
+
     // Загрузка изображений непосредственно в Firebase Storage
     const uploadImagesToFirebase = async (files, userId, property, existingImages = []) => {
         if (!files || files.length === 0) return existingImages;
-
+        if (!validateFiles(files)) return existingImages;
         const storage = getStorage();
         const storagePath = createStoragePath(userId, property);
 
@@ -37,12 +67,18 @@ export function usePropertyDirectImageUpload() {
 
         try {
             const uploadPromises = Array.from(files).map(async (file) => {
-                const fileExtension = file.name.split('.').pop();
+                // Преобразуем HEIC в JPEG, если необходимо
+                const convertedFile = await convertHEICtoJPEG(file);
+
+                // Сжимаем изображение
+                const compressedFile = await compressWithCompressor(convertedFile);
+
+                const fileExtension = compressedFile.name.split('.').pop();
                 const fileName = `${uuidv4()}.${fileExtension}`;
                 const fileRef = storageRef(storage, `${storagePath}/${fileName}`);
 
                 // Создаем и контролируем задачу загрузки
-                const uploadTask = uploadBytesResumable(fileRef, file);
+                const uploadTask = uploadBytesResumable(fileRef, compressedFile);
 
                 return new Promise((resolve, reject) => {
                     uploadTask.on(

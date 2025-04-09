@@ -147,7 +147,6 @@ onMounted(async () => {
     loading.value = true;
     try {
         await userStore.fetchUser();
-        console.log('c% userStore.user', userStore.user);
         await userStore.fetchUserAndClients();
         await userStore.fetchPropertyLists();
         dropdowns = apartmentsStore.dropdowns;

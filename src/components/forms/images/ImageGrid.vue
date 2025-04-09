@@ -42,20 +42,22 @@
                             <Button
                                 icon="pi pi-search"
                                 @click.stop="enlargeImage(typeof image === 'string' ? image : image.url)"
-                                class="p-button-rounded p-button-sm"
+                                rounded
                                 aria-label="Переглянути"
                             />
                             <Button
                                 icon="pi pi-star"
                                 @click.stop="setAsMain(index)"
-                                :class="['p-button-rounded p-button-sm', index === 0 ? 'p-button-warning' : 'p-button-secondary']"
+                                rounded
+                                :class="[ index === 0 ? 'p-button-warning' : 'p-button-secondary']"
                                 aria-label="Зробити головним"
                                 v-if="index !== 0"
                             />
                             <Button
                                 icon="pi pi-trash"
                                 @click.stop="removeImage(index)"
-                                class="p-button-rounded p-button-danger p-button-sm"
+                                rounded
+                                severity="danger"
                                 aria-label="Видалити"
                             />
                         </div>
