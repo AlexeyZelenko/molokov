@@ -42,7 +42,10 @@ onMounted(() => {
             <div class="p-6 border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-900 rounded flex flex-col h-full">
                 <div class="flex justify-center rounded">
                     <div class="relative w-full max-w-[300px] h-[150px]">
-                        <img class="rounded w-full h-full object-cover" :src="item.images[0]" :alt="item.title" />
+                        <img
+                            class="rounded w-full h-full object-cover"
+                            :src="item.images[0].url || item.images[0]" :alt="item.title"
+                        />
                         <Tag v-if="user?.id === item?.creator?.id && route?.query?.user === user?.id" :value="item.isPublic ? 'Опубліковано' : 'Не опубліковано'" :severity="getSeverity(item.isPublic)" class="absolute" style="left: 5px; top: 5px" />
                     </div>
                 </div>

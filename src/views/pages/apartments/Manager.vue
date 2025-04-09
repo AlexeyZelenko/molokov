@@ -15,10 +15,10 @@ import FullscreenLoader from '@/components/FullscreenLoader.vue';
 // Composables
 import { usePropertyMeta } from '@/composables/additionManagerProperty/usePropertyMeta';
 import { usePropertyFirestore } from '@/composables/additionManagerProperty/usePropertyFirestore';
-import { usePropertyImages } from '@/composables/additionManagerProperty/usePropertyImages';
 import { usePropertySave } from '@/composables/additionManagerProperty/usePropertySave';
 import { usePropertyFormState } from '@/composables/additionManagerProperty/usePropertyFormState';
 import { usePropertyValidation } from '@/composables/additionManagerProperty/usePropertyValidation';
+import { usePropertyDirectImageUpload } from '@/composables/additionManagerProperty/usePropertyDirectImageUpload';
 
 //forms
 import PropertyAddress from '@/components/forms/PropertyAddress.vue';
@@ -76,12 +76,13 @@ const images = computed({
         }
     }
 });
-const { imageState, uploadImages, deleteImage } = usePropertyImages(propertyManager);
-const onFileSelect = async (files) => {
-    property.value.images = await uploadImages(files, property.value.images);
+const { uploadState } = usePropertyDirectImageUpload();
+const onFileSelect = (updatedImages) => {
+    images.value = updatedImages;
 };
-const removeImage = async (imageUrl) => {
-    property.value.images = await deleteImage(imageUrl, property.value.images);
+
+const removeImage = (updatedImages) => {
+    images.value = updatedImages;
 };
 
 const { loadProperty, updateProperty } = usePropertyFirestore(toast);
@@ -118,13 +119,14 @@ const resetForm = () => {
 };
 
 onBeforeRouteLeave(async () => {
+    // Только предупредить пользователя, если есть загруженные изображения, но форма не сохранена
     if (!isEditMode.value && property.value.images?.length && !savedProperty.value) {
-        try {
-            await Promise.all(property.value.images.map((imageUrl) => removeImage(imageUrl)));
-            property.value.images = [];
-        } catch (error) {
-            console.error('Error removing images:', error);
+        const confirm = window.confirm('У вас є завантажені зображення, але оголошення не збережено. Дійсно хочете залишити сторінку?');
+        if (!confirm) {
+            return false;
         }
+        // Мы больше не удаляем изображения, так как они уже загружены в Firebase
+        // и будут привязаны к объявлению при сохранении
     }
     return true;
 });
@@ -203,7 +205,13 @@ onMounted(async () => {
 
             <Fluid v-if="property" class="flex flex-col mt-8">
                 <PropertyDescription v-model="property.description" />
-                <PropertyImageUpload :images="images" @upload="onFileSelect" @remove="removeImage" @reorder="handleReorder" />
+                <PropertyImageUpload
+                    :images="images"
+                    :property="property"
+                    @upload="onFileSelect"
+                    @remove="removeImage"
+                    @reorder="handleReorder"
+                />
             </Fluid>
 
             <Fluid v-if="property" class="flex mt-8">
@@ -224,8 +232,8 @@ onMounted(async () => {
 
                 <Toast />
 
-                <div v-if="imageState.isUploading">
-                    <UploadProgressToast :visible="imageState.isUploading" />
+                <div v-if="uploadState.isUploading">
+                    <UploadProgressToast :visible="uploadState.isUploading" :progress="uploadState.progress" :file="uploadState.currentFile" :completed="uploadState.completedFiles" :total="uploadState.totalFiles" />
                 </div>
             </Fluid>
         </Form>

@@ -15,10 +15,10 @@ import FullscreenLoader from '@/components/FullscreenLoader.vue';
 // Composables
 import { usePropertyMeta } from '@/composables/additionManagerProperty/usePropertyMeta';
 import { usePropertyFirestore } from '@/composables/additionManagerProperty/usePropertyFirestore';
-import { usePropertyImages } from '@/composables/additionManagerProperty/usePropertyImages';
 import { usePropertySave } from '@/composables/additionManagerProperty/usePropertySave';
 import { usePropertyFormState } from '@/composables/additionManagerProperty/usePropertyFormState';
 import { usePropertyValidation } from '@/composables/additionManagerProperty/usePropertyValidation';
+import { usePropertyDirectImageUpload } from '@/composables/additionManagerProperty/usePropertyDirectImageUpload';
 
 //forms
 import PropertyAddress from '@/components/forms/PropertyAddress.vue';
@@ -76,12 +76,13 @@ const images = computed({
         }
     }
 });
-const { imageState, uploadImages, deleteImage } = usePropertyImages(propertyManager);
-const onFileSelect = async (files) => {
-    property.value.images = await uploadImages(files, property.value.images);
+const { uploadState } = usePropertyDirectImageUpload();
+const onFileSelect = (updatedImages) => {
+    images.value = updatedImages;
 };
-const removeImage = async (imageUrl) => {
-    property.value.images = await deleteImage(imageUrl, property.value.images);
+
+const removeImage = (updatedImages) => {
+    images.value = updatedImages;
 };
 
 const { loadProperty, updateProperty } = usePropertyFirestore(toast);
@@ -172,7 +173,13 @@ onMounted(async () => {
             <Fluid class="flex flex-col mt-8">
                 <PropertyDescription v-if="property" v-model="property.description" />
 
-                <PropertyImageUpload v-if="property" :images="images" @upload="onFileSelect" @remove="removeImage" @reorder="handleReorder" />
+                <PropertyImageUpload
+                    :images="images"
+                    :property="property"
+                    @upload="onFileSelect"
+                    @remove="removeImage"
+                    @reorder="handleReorder"
+                />
             </Fluid>
 
             <Fluid class="flex mt-8">
@@ -188,8 +195,8 @@ onMounted(async () => {
 
                 <Toast />
 
-                <div v-if="imageState.isUploading">
-                    <UploadProgressToast :visible="imageState.isUploading" />
+                <div v-if="uploadState.isUploading">
+                    <UploadProgressToast :visible="uploadState.isUploading" :progress="uploadState.progress" :file="uploadState.currentFile" :completed="uploadState.completedFiles" :total="uploadState.totalFiles" />
                 </div>
             </Fluid>
         </Form>

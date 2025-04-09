@@ -37,6 +37,7 @@ export function usePropertySave({ property, isEditMode, validateAllForms, proper
 
             const propertyData = {
                 ...property.value,
+                images: property.value.images,
                 address: {
                     ...property.value.address,
                     city: formattedCity.value

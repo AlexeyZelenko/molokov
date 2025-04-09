@@ -1,94 +1,59 @@
 <template>
-    <div class="card flex justify-center">
-        <Toast style="position: fixed; top: 70px" position="top-center" group="headless" @close="visibleRef = false">
-            <template #container="{ message }">
-                <section class="flex flex-col p-4 gap-4 w-full bg-primary/70 rounded-xl">
-                    <div class="flex items-center gap-5">
-                        <i class="pi pi-cloud-upload text-white dark:text-black text-2xl"></i>
-                        <span class="font-bold text-base text-white dark:text-black">{{ message.summary }}</span>
-                    </div>
-                    <div class="flex flex-col gap-2">
-                        <ProgressBar
-                            :value="progress"
-                            :showValue="false"
-                            :style="{ height: '4px' }" pt:value:class="!bg-primary-50 dark:!bg-primary-900" class="!bg-primary/80"
-                        ></ProgressBar>
-                        <label class="text-sm font-bold text-white dark:text-black">{{ progress }}% завантаження</label>
-                    </div>
-                </section>
-            </template>
-        </Toast>
+    <div v-if="visible" class="fixed bottom-4 right-4 bg-white rounded-lg shadow-lg p-4 border-l-4 border-primary z-50 w-80">
+        <div class="flex justify-between items-center mb-2">
+            <div class="font-semibold">Завантаження фото</div>
+            <i v-if="closable" class="pi pi-times cursor-pointer text-gray-500 hover:text-gray-700" @click="$emit('close')"></i>
+        </div>
+
+        <div class="text-sm mb-2">
+            {{ file }}
+        </div>
+
+        <ProgressBar :value="progress" class="mb-2" />
+
+        <div class="flex justify-between text-sm text-gray-600">
+            <span>{{ progress.toFixed(0) }}%</span>
+            <span>{{ completed }} з {{ total }}</span>
+        </div>
     </div>
 </template>
 
 <script setup>
-import { defineProps, defineEmits, onMounted, ref, onUnmounted, computed } from 'vue';
-import { useToast } from 'primevue/usetoast';
-
-const toast = useToast();
+import { defineProps, defineEmits } from 'vue';
+import ProgressBar from 'primevue/progressbar';
 
 defineProps({
     visible: {
         type: Boolean,
         default: false
-    }
-});
-
-const visibleRef = ref(false);
-
-const visible = computed({
-    get: () => visibleRef.value,
-    set: (value) => {
-        if (!value) {
-            clearInterval(interval.value);
-            toast.removeGroup('headless');
-        }
-        visibleRef.value = value;
-    }
-});
-
-const interval = ref(null);
-const progress = ref(0);
-
-onMounted(() => {
-    if (!visibleRef.value) {
-        toast.add({
-            severity: 'custom',
-            summary: 'Обробка файлів...',
-            group: 'headless',
-            styleClass: 'backdrop-blur-lg rounded-2xl'
-        });
-        visibleRef.value = true;
-        progress.value = 5;
-
-        if (interval.value) {
-            clearInterval(interval.value);
-        }
-
-        interval.value = setInterval(() => {
-            let increment = Math.max(5, (100 - progress.value) / 5); // Чем ближе к 100, тем меньше шаг
-            progress.value = Math.min(progress.value + increment, 100);
-
-            if (progress.value >= 100) {
-                clearInterval(interval.value);
-                toast.removeGroup('headless');
-            }
-        }, 150); // Интервал уменьшен для более плавного отображения
+    },
+    progress: {
+        type: Number,
+        default: 0
+    },
+    file: {
+        type: String,
+        default: 'файл'
+    },
+    completed: {
+        type: Number,
+        default: 0
+    },
+    total: {
+        type: Number,
+        default: 0
+    },
+    closable: {
+        type: Boolean,
+        default: false
     }
 });
 
 defineEmits(['close']);
-
-onUnmounted(() => {
-    if (interval.value) {
-        clearInterval(interval.value);
-    }
-});
 </script>
 
 <style scoped>
-.p-toast {
-    position: absolute;
-    top: 150px;
+div {
+    transition: all 0.3s ease;
 }
 </style>

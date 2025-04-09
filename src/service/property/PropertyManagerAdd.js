@@ -173,6 +173,11 @@ export class PropertyManager {
         });
     }
 
+    uploadImagesNew(images) {
+        this.property.images.push(...images);
+        console.log('Зображення завантажено:', this.property.images);
+    }
+
     getFormattedDescription() {
         return this.property.description.replace(/\n/g, '<br>').replace(/ {2,}/g, (match) => '&nbsp;'.repeat(match.length));
     }
@@ -198,9 +203,9 @@ export class PropertyManager {
                 utilitiesObject = {};
             }
 
-            console.log('this.contact', this.contact);
             const user = useAuthStore();
-            console.log('useAuthStore', user);
+
+            console.log('property images', this.property.images);
 
             const lastPropertyId = await this.store.getLastPropertyId;
             const propertyData = {
@@ -209,6 +214,7 @@ export class PropertyManager {
                     ...this.property.address,
                     city: this.formattedCity(this.property)
                 },
+                images: this.property.images,
                 utilities: utilitiesObject,
                 createdAt: serverTimestamp(),
                 updatedAt: serverTimestamp(),

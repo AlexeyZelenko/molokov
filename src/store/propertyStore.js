@@ -105,6 +105,7 @@ export const usePropertyStore = defineStore('property', () => {
     };
 
     const removeImage = async (index) => {
+        console.log('Removing image at index:', index);
         try {
             const imageUrl = property.value.images[index];
             const imagePath = imageUrl.split('properties%2F')[1].split('?')[0];

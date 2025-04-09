@@ -22,7 +22,7 @@ const responsiveOptions = ref(galleriaResponsiveOptions);
         >
             <template #item="slotProps">
                 <Image
-                    :src="slotProps.item"
+                    :src="slotProps.item.url || slotProps.item"
                     :alt="slotProps.item.title"
                     preview
                     :imageStyle="{
@@ -36,7 +36,10 @@ const responsiveOptions = ref(galleriaResponsiveOptions);
                 />
             </template>
             <template #thumbnail="slotProps">
-                <img :src="slotProps.item" :alt="slotProps.item.title" width="100" style="height: 65px; object-fit: cover; padding: 0 5px" />
+                <img
+                    :src="slotProps.item.url || slotProps.item"
+                    :alt="slotProps.item.title"
+                    width="100" style="height: 65px; object-fit: cover; padding: 0 5px" />
             </template>
         </Galleria>
     </div>

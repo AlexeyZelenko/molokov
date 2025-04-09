@@ -78,9 +78,9 @@ const deleteProperty = (event) => {
             try {
                 if (props.item.images?.length > 0) {
                     await Promise.allSettled(
-                        props.item.images.map(async (imageUrl) => {
+                        props.item.images.map(async (image) => {
                             try {
-                                const imagePath = decodeURIComponent(new URL(imageUrl).pathname).split('/o/')[1].split('?')[0];
+                                const imagePath = image.url;
                                 const imageRef = storageRef(storage, imagePath);
                                 await deleteObject(imageRef);
                             } catch (error) {
