@@ -1,9 +1,7 @@
-import AppCategoryLayout from '@/layout/AppCategoryLayout.vue';
-
 export default [
     {
         path: '/',
-        component: AppCategoryLayout,
+        component: () => import('@/layout/AppCategoryLayout.vue'),
         children: [
             {
                 path: '/properties',

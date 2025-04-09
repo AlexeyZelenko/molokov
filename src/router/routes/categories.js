@@ -1,20 +1,12 @@
-import AppCategoryLayout from '@/layout/AppCategoryLayout.vue';
-import AppLayout from '@/layout/AppLayout.vue';
-import EditItemView from '@/views/pages/categories/EditItemView.vue';
-import ItemDetailsView from '@/views/pages/categories/ItemDetailsView.vue';
-import AddItemProperty from '@/views/pages/categories/AddItemProperty.vue';
-import ListProperties from '@/views/pages/categories/ListProperties.vue';
-
 export default [
     {
         path: '/',
-        component: AppLayout,
+        component: () => import('@/layout/AppLayout.vue'),
         children: [
             {
                 path: '/pages/:category/edit/:subcategory/:id',
                 name: 'editItem',
-                component: EditItemView,
-                // props: true,
+                component: ( ) => import('@/views/pages/categories/EditItemView.vue'),
                 meta: {
                     requiresAuth: true,
                     breadcrumb: [{ name: 'Головна', route: '/', icon: 'pi pi-home' }, { name: "Редагування об'єкта нерухомості" }]
@@ -23,7 +15,7 @@ export default [
             {
                 path: '/pages/:category/view/:subcategory/:id',
                 name: `itemDetails`,
-                component: ItemDetailsView,
+                component: () => import('@/views/pages/categories/ItemDetailsView.vue'),
                 meta: {
                     breadcrumb: [
                         {
@@ -40,7 +32,7 @@ export default [
             {
                 path: '/pages/:category/add',
                 name: 'addPropertyItem',
-                component: AddItemProperty,
+                component: () => import('@/views/pages/categories/AddItemProperty.vue'),
                 meta: {
                     requiresAuth: true,
                     breadcrumb: [{ name: 'Головна', route: '/', icon: 'pi pi-home' }, { name: "Додати об'єкт нерухомості" }]
@@ -50,12 +42,12 @@ export default [
     },
     {
         path: '/',
-        component: AppCategoryLayout,
+        component: () => import('@/layout/AppCategoryLayout.vue'),
         children: [
             {
                 path: '/categories/:category/:subcategory',
                 name: 'listProperties',
-                component: ListProperties,
+                component: () => import('@/views/pages/categories/ListProperties.vue'),
                 params: true,
                 query: true,
                 meta: {

@@ -27,7 +27,13 @@ const closeModal = () => {
             <Galleria v-if="props.marker?.item?.images?.length" :value="props.marker.item.images" :numVisible="5" :circular="true" containerStyle="max-width: 640px; height: 400px;" :showItemNavigators="true" :showThumbnails="false">
                 <template #item="slotProps">
                     <transition name="fade">
-                        <img :key="slotProps.item" :src="slotProps.item" :alt="slotProps.item.alt || 'Image'" class="fixed-image" loading="lazy" />
+                        <img
+                            :key="slotProps.item"
+                            :src="slotProps.item"
+                            :alt="slotProps.item.alt || 'Image'"
+                            class="fixed-image"
+                            loading="lazy"
+                        />
                     </transition>
                 </template>
             </Galleria>

@@ -6,33 +6,29 @@ import PropertyPrice from '@/components/price/PriceConverter.vue';
 import { useUserStore } from '@/store/userStore';
 import { useRoute } from 'vue-router';
 import { onMounted } from 'vue';
+import PropertyImage from './PropertyImage.vue';
 
-const route = useRoute();
-
-const userStore = useUserStore();
-const user = userStore.user;
-const getSeverity = (status) => {
-    switch (status) {
-        case true:
-            return 'success';
-
-        case false:
-            return 'warn';
-
-        case 'OUTOFSTOCK':
-            return 'danger';
-
-        default:
-            return null;
+const props = defineProps({
+    items: {
+        type: Array,
+        default: () => []
     }
-};
-
-defineProps({
-    items: Array
 });
 
+const route = useRoute();
+const userStore = useUserStore();
+const user = userStore.user;
+
+const shouldShowStatusTag = (item) => {
+    // Додаємо перевірки на існування user, item.creator та route.query.user
+    return user?.id && item?.creator?.id && route?.query?.user && user.id === item.creator.id && route.query.user === user.id.toString();
+};
+
 onMounted(() => {
-    userStore.fetchUser();
+    // Завантажуємо користувача, якщо він ще не завантажений і потрібен
+    if (!user && (props.items.some(item => item?.creator?.id))) {
+        userStore.fetchUser();
+    }
 });
 </script>
 
@@ -40,14 +36,14 @@ onMounted(() => {
     <div v-if="items.length > 0" class="grid grid-cols-12 gap-4">
         <div v-for="(item, index) in items" :key="index" class="col-span-12 sm:col-span-6 lg:col-span-4">
             <div class="p-6 border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-900 rounded flex flex-col h-full">
-                <div class="flex justify-center rounded">
-                    <div class="relative w-full max-w-[300px] h-[150px]">
-                        <img
-                            class="rounded w-full h-full object-cover"
-                            :src="item.images[0].url || item.images[0]" :alt="item.title"
-                        />
-                        <Tag v-if="user?.id === item?.creator?.id && route?.query?.user === user?.id" :value="item.isPublic ? 'Опубліковано' : 'Не опубліковано'" :severity="getSeverity(item.isPublic)" class="absolute" style="left: 5px; top: 5px" />
-                    </div>
+                <div class="relative w-full rounded overflow-hidden aspect-video">
+                    <PropertyImage
+                        :images="item.images"
+                        :alt-text="item.title"
+                        :is-public="item.isPublic"
+                        :show-status-tag="shouldShowStatusTag(item)"
+                        class="w-full h-full"
+                    />
                 </div>
                 <div class="h-full flex flex-col justify-between pt-6">
                     <div class="flex flex-col gap-2 min-h-[200px]">
