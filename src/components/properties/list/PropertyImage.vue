@@ -91,11 +91,11 @@ const tagText = computed(() => {
         <img
             v-show="!isLoading"
             class="block mx-auto rounded w-full h-full object-cover transition-opacity duration-300 ease-in-out"
-            :src="displayImageUrl"
+            :src="displayImageUrl.url || displayImageUrl"
             :alt="imageAlt"
             @load="onImageLoad"
             @error="onImageError"
-            :key="displayImageUrl"
+            :key="displayImageUrl.url || displayImageUrl"
         />
 
         <Tag
