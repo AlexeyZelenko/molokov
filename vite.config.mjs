@@ -55,10 +55,6 @@ export default defineConfig({
                     if (id.includes('node_modules/quill')) {
                         return 'vendor_quill';
                     }
-                    // Выносит PrimeVue компоненты/утилиты и PrimeFlex
-                    if (id.includes('node_modules/primevue') || id.includes('node_modules/primeflex')) {
-                        return 'vendor_primevue';
-                    }
                     if (id.includes('node_modules/chart.js')) {
                         return 'vendor_chartjs';
                     }

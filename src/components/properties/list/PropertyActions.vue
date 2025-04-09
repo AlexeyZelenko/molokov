@@ -79,12 +79,13 @@ const deleteProperty = (event) => {
                 if (props.item.images?.length > 0) {
                     await Promise.allSettled(
                         props.item.images.map(async (image) => {
+                            console.log('видалення image1', image);
                             try {
-                                const imagePath = image.url;
+                                const imagePath = image.url || image;
                                 const imageRef = storageRef(storage, imagePath);
                                 await deleteObject(imageRef);
                             } catch (error) {
-                                console.error('Помилка видалення фото:', error);
+                                console.error('Помилка видалення фото1:', error);
                             }
                         })
                     );

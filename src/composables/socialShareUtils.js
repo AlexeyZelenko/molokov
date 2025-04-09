@@ -37,9 +37,14 @@ export const getImageUrl = (property, imageUrl) => {
 };
 
 export const getFullImageUrl = (imageUrl) => {
-    if (imageUrl && !imageUrl.startsWith('http')) {
-        const baseUrl = window.location.origin;
-        return new URL(imageUrl, baseUrl).href;
+    if (typeof imageUrl === 'string' && imageUrl && !imageUrl.startsWith('http')) {
+        try {
+            const baseUrl = window.location.origin;
+            return new URL(imageUrl, baseUrl).href;
+        } catch (error) {
+            console.error('Error constructing full URL:', error);
+            return imageUrl || ''; // Return the original or empty string on error
+        }
     }
-    return imageUrl;
+    return imageUrl || '';
 };

@@ -76,7 +76,7 @@ const images = computed({
         }
     }
 });
-const { uploadState } = usePropertyDirectImageUpload();
+const { uploadState, deleteImageFromFirebase  } = usePropertyDirectImageUpload();
 const onFileSelect = (updatedImages) => {
     images.value = updatedImages;
 };
@@ -119,14 +119,21 @@ const resetForm = () => {
 };
 
 onBeforeRouteLeave(async () => {
-    // Только предупредить пользователя, если есть загруженные изображения, но форма не сохранена
     if (!isEditMode.value && property.value.images?.length && !savedProperty.value) {
-        const confirm = window.confirm('У вас є завантажені зображення, але оголошення не збережено. Дійсно хочете залишити сторінку?');
+        const confirm = window.confirm('Увага! Ви маєте завантажені зображення, але оголошення не збережено. Ви дійсно хочете покинути сторінку? Всі завантажені зображення будуть видалені.');
         if (!confirm) {
             return false;
         }
-        // Мы больше не удаляем изображения, так как они уже загружены в Firebase
-        // и будут привязаны к объявлению при сохранении
+
+        try {
+            for (const image of property.value.images) {
+                await deleteImageFromFirebase(image);
+            }
+            property.value.images = [];
+            console.log('Всі зображення видалені успішно');
+        } catch (error) {
+            console.error('Помилка при видаленні зображень:', error);
+        }
     }
     return true;
 });

@@ -205,8 +205,6 @@ export class PropertyManager {
 
             const user = useAuthStore();
 
-            console.log('property images', this.property.images);
-
             const lastPropertyId = await this.store.getLastPropertyId;
             const propertyData = {
                 ...this.property,

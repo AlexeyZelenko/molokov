@@ -67,13 +67,14 @@ const deleteProperty = (property) => {
             try {
                 if (property.images?.length > 0) {
                     await Promise.allSettled(
-                        property.images.map(async (imageUrl) => {
+                        property.images.map(async (image) => {
+                            console.log('видалення image2', image);
                             try {
-                                const imagePath = decodeURIComponent(new URL(imageUrl).pathname).split('/o/')[1].split('?')[0];
+                                const imagePath = image.url || image;
                                 const imageRef = storageRef(storage, imagePath);
                                 await deleteObject(imageRef);
                             } catch (error) {
-                                console.error('Помилка видалення фото:', error);
+                                console.error('Помилка видалення фото2:', error);
                             }
                         })
                     );
