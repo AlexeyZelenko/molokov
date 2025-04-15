@@ -68,22 +68,22 @@ onMounted(() => {
         <div class="items-center justify-between hidden lg:flex lg:static w-full left-0 top-full px-12 lg:px-0 z-20 rounded-border">
             <ul class="list-none p-0 m-0 flex lg:items-center select-none flex-col lg:flex-row cursor-pointer gap-8">
                 <li>
-                    <a @click="smoothScroll('features')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium text-xl">
+                    <a @click="smoothScroll('features')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium text-lg lg:text-xl hover:text-primary-500 dark:hover:text-primary-400 transition-colors duration-200">
                         <span>Вибрати нерухомість</span>
                     </a>
                 </li>
                 <li>
-                    <a @click="smoothScroll('highlights')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium text-xl">
+                    <a @click="smoothScroll('highlights')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium text-lg lg:text-xl hover:text-primary-500 dark:hover:text-primary-400 transition-colors duration-200">
                         <span>Про додаток</span>
                     </a>
                 </li>
                 <li>
-                    <a @click="navigateTo('/cherkasy-areas')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium text-xl">
+                    <a @click="navigateTo('/cherkasy-areas')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium text-lg lg:text-xl hover:text-primary-500 dark:hover:text-primary-400 transition-colors duration-200">
                         <span>Райони</span>
                     </a>
                 </li>
-                <li class="bg-primary-500 dark:bg-primary-400 rounded-full px-4 py-2">
-                    <a @click="navigateTo('/add-properties')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium text-xl">
+                <li class="bg-primary-500 dark:bg-primary-400 rounded-full px-4 py-2 hover:bg-primary-600 dark:hover:bg-primary-300 transition-colors duration-200">
+                    <a @click="navigateTo('/add-properties')" class="px-0 py-4 text-surface-0 font-medium text-lg lg:text-xl">
                         <span>Додати нерухомість</span>
                     </a>
                 </li>
@@ -144,22 +144,22 @@ onMounted(() => {
             
             <ul class="list-none p-0 m-0 flex flex-col select-none cursor-pointer gap-6">
                 <li>
-                    <a @click="smoothScroll('features')" class="flex items-center px-0 py-2 text-surface-900 dark:text-surface-0 font-medium text-lg">
+                    <a @click="smoothScroll('features')" class="flex items-center px-0 py-3 text-surface-900 dark:text-surface-0 font-medium text-base lg:text-lg hover:text-primary-500 dark:hover:text-primary-400 transition-colors duration-200">
                         <span>Вибрати нерухомість</span>
                     </a>
                 </li>
                 <li>
-                    <a @click="smoothScroll('highlights')" class="flex items-center px-0 py-2 text-surface-900 dark:text-surface-0 font-medium text-lg">
+                    <a @click="smoothScroll('highlights')" class="flex items-center px-0 py-3 text-surface-900 dark:text-surface-0 font-medium text-base lg:text-lg hover:text-primary-500 dark:hover:text-primary-400 transition-colors duration-200">
                         <span>Про додаток</span>
                     </a>
                 </li>
                 <li>
-                    <a @click="navigateTo('/cherkasy-areas')" class="flex items-center px-0 py-2 text-surface-900 dark:text-surface-0 font-medium text-lg">
+                    <a @click="navigateTo('/cherkasy-areas')" class="flex items-center px-0 py-3 text-surface-900 dark:text-surface-0 font-medium text-base lg:text-lg hover:text-primary-500 dark:hover:text-primary-400 transition-colors duration-200">
                         <span>Райони</span>
                     </a>
                 </li>
-                <li class="bg-primary-500 dark:bg-primary-400 rounded-full px-4 py-2">
-                    <a @click="navigateTo('/add-properties')" class="flex items-center px-0 py-1 text-surface-900 dark:text-surface-0 font-medium text-lg">
+                <li class="bg-primary-500 dark:bg-primary-400 rounded-full px-4 py-2 hover:bg-primary-600 dark:hover:bg-primary-300 transition-colors duration-200">
+                    <a @click="navigateTo('/add-properties')" class="flex items-center px-0 py-1 text-surface-0 font-medium text-base lg:text-lg">
                         <span>Додати нерухомість</span>
                     </a>
                 </li>

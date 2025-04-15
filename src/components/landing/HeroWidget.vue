@@ -12,9 +12,9 @@
             <p class="font-normal text-2xl leading-normal md:mt-4 text-gray-50">Ефективний пошук, управління та угоди в одному місці...</p>
         </div>
     </div>
-<!--    <div class="hero-search-container flex justify-center mt-8">-->
-<!--        <HomeSearch />-->
-<!--    </div>-->
+    <!--    <div class="hero-search-container flex justify-center mt-8">-->
+    <!--        <HomeSearch />-->
+    <!--    </div>-->
 </template>
 
 <style scoped lang="scss">
