@@ -1,63 +1,67 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import Button from 'primevue/button';
 import Dropdown from 'primevue/dropdown';
-import MultiSelect from 'primevue/multiselect';
+import { useAreasStore } from '@/store/areasStore';
+import { usePropertiesStore } from '@/store/propertiesCategories';
+import { useAddressFilters } from '@/composables/useAddressFilters';
+import { useApartmentsStore } from '@/store/apartments';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
+const filters = ref({
+  'address.region.code': null,
+  'address.city.code': null,
+});
+
+const { region, city, area } = useAddressFilters(filters);
+
+const areasStore = useAreasStore();
+const apartmentsStore = useApartmentsStore();
+const regions = apartmentsStore?.dropdowns.regions;
 
 // Status options
 const statusOptions = [
-    { label: 'All Status', value: '' },
-    { label: 'For Rent', value: 'for-rent' },
-    { label: 'For Sale', value: 'for-sale' }
+    { type: 'sell', label: 'Продаж', icon: 'pi pi-home' },
+    { type: 'rent', label: 'Оренда', icon: 'pi pi-key' },
+    { type: 'exchange', label: 'Обмін', icon: 'pi pi-sync' },
+    { type: 'daily', label: 'Подобово', icon: 'pi pi-clock' }
 ];
 const activeStatus = ref('');
 
 // Property types
-const propertyTypes = [
-    { label: 'Commercial', value: 'commercial' },
-    { label: 'Office', value: 'office', parent: 'commercial' },
-    { label: 'Shop', value: 'shop', parent: 'commercial' },
-    { label: 'Residential', value: 'residential' },
-    { label: 'Apartment', value: 'apartment', parent: 'residential' },
-    { label: 'Condo', value: 'condo', parent: 'residential' },
-    { label: 'Multi Family Home', value: 'multi-family-home', parent: 'residential' },
-    { label: 'Single Family Home', value: 'single-family-home', parent: 'residential' },
-    { label: 'Studio', value: 'studio', parent: 'residential' },
-    { label: 'Villa', value: 'villa', parent: 'residential' }
-];
-const selectedTypes = ref([]);
+const propertyTypes = areasStore.realEstateItems;
+const selectedTypes = ref(null);
 
-// Locations
-const locations = [
-    { label: 'All Cities', value: '' },
-    { label: 'Chicago', value: 'chicago', region: 'Illinois' },
-    { label: 'Los Angeles', value: 'los-angeles', region: 'California' },
-    { label: 'Miami', value: 'miami', region: 'Florida' },
-    { label: 'New York', value: 'new-york', region: 'New York' }
-];
-const selectedLocation = ref('');
+// Розташування (location)
+const selectedRegion = computed({
+  get: () => areasStore.getFilters['address.region.code'] || '',
+  set: val => areasStore.setFilter('address.region.code', val)
+});
 
 // Bedrooms
 const bedroomOptions = [
-    { label: 'Bedrooms', value: '' },
-    { label: '1', value: '1' },
-    { label: '2', value: '2' },
-    { label: '3', value: '3' },
-    { label: '4', value: '4' },
-    { label: '5', value: '5' },
-    { label: '6', value: '6' },
-    { label: '7', value: '7' },
-    { label: '8', value: '8' },
-    { label: '9', value: '9' },
-    { label: '10', value: '10' },
-    { label: 'Any', value: 'any' }
+    { label: 'Всі', value: '' },
+    { label: '1', value: 1 },
+    { label: '2', value: 2 },
+    { label: '3', value: 3 },
+    { label: '4', value: 4 },
+    { label: '5', value: 5 },
+    { label: '6', value: 6 },
+    { label: '7', value: 7 },
+    { label: '8', value: 8 },
+    { label: '9', value: 9 },
+    { label: '10', value: 10 }    
 ];
-const selectedBedrooms = ref('');
+const selectedRooms = computed({
+  get: () => areasStore.getFilters['rooms.all'] || '',
+  set: val => areasStore.setFilter('rooms.all', Number(val))
+});
 
 // Budget options
-const budgetOptions = [
-    { label: 'Max. Price', value: '' },
-    { label: 'Any', value: 'any' },
+const budgetOptions = [    
+    { label: 'Невибрано', value: '' },
     { label: '$5,000', value: '5000' },
     { label: '$10,000', value: '10000' },
     { label: '$50,000', value: '50000' },
@@ -77,74 +81,163 @@ const budgetOptions = [
     { label: '$5,000,000', value: '5000000' },
     { label: '$10,000,000', value: '10000000' }
 ];
-const selectedBudget = ref('');
+const selectedBudget = computed({
+  get: () => areasStore.getFilters['maxPrice'] || '',
+  set: val => areasStore.setFilter('maxPrice', val)
+});
+
+// Error handling
+const showError = ref(false);
+const errorMessage = ref('');
 
 // Methods
 const setActiveStatus = (status) => {
     activeStatus.value = status;
+    showError.value = false;
 };
 
-const handleSubmit = () => {
-    const searchParams = {
-        status: activeStatus.value,
-        types: selectedTypes.value,
-        location: selectedLocation.value,
-        bedrooms: selectedBedrooms.value,
-        maxPrice: selectedBudget.value
-    };
+const search = () => {
+    if (!selectedTypes.value) {
+        showError.value = true;
+        errorMessage.value = 'Виберіть тип нерухомості';
+        return;
+    }
+    if (!activeStatus.value) {
+        showError.value = true;
+        errorMessage.value = 'Виберіть статус';
+        return;
+    }
+    
+    router.push(`/categories/${selectedTypes.value}/${activeStatus.value}`);
+};
 
-    console.log('Search submitted:', searchParams);
-    // Here you would typically emit an event or call an API
-    // this.$emit('search', searchParams);
+// Reset filters
+const resetFilters = () => {
+    selectedTypes.value = null;
+    activeStatus.value = '';
+    selectedRegion.value = '';
+    selectedRooms.value = '';
+    selectedBudget.value = '';
+    showError.value = false;
+    errorMessage.value = '';
 };
 </script>
 
 <template>
-    <section class="py-12 px-4 md:px-6 lg:px-8">
-        <div class="container mx-auto">
+    <section class="relative mt-50 z-1">        
+        <div class="container mx-auto px-4 sm:px-0">
             <div class="w-full">
-                <form class="houzez-search-form" @submit.prevent="handleSubmit">
-                    <!-- Status Tabs -->
-                    <div class="flex flex-wrap gap-2 mb-6 bg-transparent">
-                        <Button
+                <div class="flex flex-wrap justify-center sm:justify-center gap-2 mb-2 bg-transparent">
+                        <button
                             v-for="status in statusOptions"
-                            :key="status.value"
+                            :key="status.type"
                             :label="status.label"
-                            :class="['p-2', 'rounded-md', 'transition-colors', activeStatus === status.value ? 'bg-primary-500 text-white' : 'bg-gray-100 hover:bg-gray-200']"
-                            @click="setActiveStatus(status.value)"
+                            :icon="status.icon"
+                            :class="[
+                                'flex-1',
+                                'sm:flex-initial',
+                                'p-3',
+                                'rounded-lg',
+                                'transition-all',
+                                'duration-300',
+                                'font-medium',
+                                'flex',
+                                'items-center',
+                                'justify-center',
+                                'min-w-[120px]',
+                                'text-sm',
+                                'sm:text-base',
+                                'opacity-75',
+                                activeStatus === status.type 
+                                    ? 'bg-primary-500 text-white shadow-md transform scale-105 opacity-90' 
+                                    : 'bg-surface-100 hover:bg-surface-200 text-surface-700 dark:bg-surface-800 dark:hover:bg-surface-700 dark:text-surface-300'
+                            ]"
+                            @click="setActiveStatus(status.type)"
                             type="button"
-                        />
+                        >
+                            <i :class="[status.icon, 'mr-2']"></i>
+                            <span>{{ status.label }}</span>
+                        </button>
                     </div>
+                <form v-if="activeStatus" class="houzez-search-form" @submit.prevent="handleSubmit">
+                    <!-- Status Tabs -->
+                    
 
-                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                         <!-- Property Type -->
                         <div class="flex flex-col">
-                            <label class="mb-2 font-medium">Looking for</label>
-                            <MultiSelect v-model="selectedTypes" :options="propertyTypes" optionLabel="label" optionValue="value" placeholder="Property Type" display="chip" class="w-full" :filter="true" />
+                            <label class="mb-2 font-medium text-surface-700 dark:text-surface-300 text-sm sm:text-base">Тип нерухомості</label>
+                            <Select 
+                                v-model="selectedTypes" 
+                                :options="propertyTypes" 
+                                optionLabel="title" 
+                                optionValue="key" 
+                                placeholder="Тип нерухомості" 
+                                display="chip" 
+                                class="w-full" 
+                                :filter="true"
+                                @change="showError = false"
+                            />
                         </div>
 
-                        <!-- Location -->
+                        <!-- Розташування -->
                         <div class="flex flex-col">
-                            <label class="mb-2 font-medium">Location</label>
-                            <Dropdown v-model="selectedLocation" :options="locations" optionLabel="label" optionValue="value" placeholder="All Cities" class="w-full" :filter="true" />
+                            <label class="mb-2 font-medium text-surface-700 dark:text-surface-300 text-sm sm:text-base">Розташування</label>
+                            <Select
+                                v-model="selectedRegion"
+                                :options="regions.map((i) => ({ name: i.name, value: i.code }))"
+                                optionLabel="name"
+                                optionValue="value"
+                                placeholder="Вибрати область"
+                                class="w-full"
+                                :filter="true"
+                            />
                         </div>
 
-                        <!-- Bedrooms -->
+                        <!-- Кількість кімнат -->
                         <div class="flex flex-col">
-                            <label class="mb-2 font-medium">Property Size</label>
-                            <Dropdown v-model="selectedBedrooms" :options="bedroomOptions" optionLabel="label" optionValue="value" placeholder="Bedrooms" class="w-full" />
+                            <label class="mb-2 font-medium text-surface-700 dark:text-surface-300 text-sm sm:text-base">Кількість кімнат</label>
+                            <Dropdown 
+                                v-model="selectedRooms" 
+                                :options="bedroomOptions" 
+                                optionLabel="label" 
+                                optionValue="value" 
+                                placeholder="Кількість кімнат" 
+                                class="w-full" 
+                            />
                         </div>
 
                         <!-- Budget -->
                         <div class="flex flex-col">
-                            <label class="mb-2 font-medium">Your budget</label>
-                            <Dropdown v-model="selectedBudget" :options="budgetOptions" optionLabel="label" optionValue="value" placeholder="Max. Price" class="w-full" :filter="true" />
+                            <label class="mb-2 font-medium text-surface-700 dark:text-surface-300 text-sm sm:text-base">Ваш бюджет</label>
+                            <Dropdown 
+                                v-model="selectedBudget" 
+                                :options="budgetOptions" 
+                                optionLabel="label" 
+                                optionValue="value" 
+                                placeholder="Макс. ціна" 
+                                class="w-full" 
+                            />
                         </div>
 
-                        <!-- Search Button -->
-                        <div class="flex items-end">
-                            <Button label="Search" icon="pi pi-search" class="w-full p-3 bg-primary-500 hover:bg-primary-600 text-white" type="submit" />
+                        <!-- Search Button -->                         
+                        <div class="flex items-end gap-2">
+                            <Button
+                                label="Пошук"
+                                icon="pi pi-search"
+                                class="w-full p-3 bg-primary-500 hover:bg-primary-600 text-white text-sm sm:text-base"
+                                @click="search"
+                            />
+                            <Button
+                                icon="pi pi-refresh"
+                                class="p-3 bg-surface-100 hover:bg-surface-200 text-surface-700 dark:bg-surface-800 dark:hover:bg-surface-700 dark:text-surface-300"
+                                @click="resetFilters"
+                                v-tooltip="'Скинути фільтри'"
+                            />
                         </div>
+                    </div>
+                    <div v-if="showError" class="mt-4">
+                        <p class="text-red-500 text-sm sm:text-base text-center sm:text-left">{{ errorMessage }}</p>
                     </div>
                 </form>
             </div>
@@ -154,7 +247,7 @@ const handleSubmit = () => {
 
 <style scoped>
 .houzez-search-form {
-    @apply bg-white p-6 rounded-lg shadow-md;
+    @apply bg-surface-0 dark:bg-surface-900 p-4 sm:p-6 rounded-lg shadow-lg border border-surface-200 dark:border-surface-700;
 }
 
 .p-multiselect,
@@ -164,5 +257,32 @@ const handleSubmit = () => {
 
 .p-button {
     @apply transition-colors duration-200;
+}
+
+:deep(.p-multiselect),
+:deep(.p-dropdown) {
+    @apply w-full text-sm sm:text-base;
+}
+
+:deep(.p-dropdown-panel) {
+    @apply text-sm sm:text-base;
+}
+
+:deep(.p-button) {
+    @apply transition-colors duration-200;
+}
+
+:deep(.p-dropdown-item) {
+    @apply py-3 px-4;
+}
+
+@media (max-width: 640px) {
+    :deep(.p-dropdown-panel) {
+        @apply w-[calc(100vw-2rem)] max-w-full;
+    }
+    
+    :deep(.p-multiselect-panel) {
+        @apply w-[calc(100vw-2rem)] max-w-full;
+    }
 }
 </style>

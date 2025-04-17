@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { useApartmentsStore } from "@/store/apartments";
+import { useApartmentsStore } from '@/store/apartments';
 
 export const useAreasStore = defineStore('areas', {
     state: () => ({
@@ -11,11 +11,11 @@ export const useAreasStore = defineStore('areas', {
                 key: 'apartments',
                 image: '/images/apartments.webp',
                 actions: [
-                    {type: 'sell', label: 'Продаж', icon: 'pi pi-home'},
-                    {type: 'rent', label: 'Оренда', icon: 'pi pi-key'},
-                    {type: 'exchange', label: 'Обмін', icon: 'pi pi-sync'},
-                    {type: 'daily', label: 'Подобово', icon: 'pi pi-clock'}
-                ],
+                    { type: 'sell', label: 'Продаж', icon: 'pi pi-home' },
+                    { type: 'rent', label: 'Оренда', icon: 'pi pi-key' },
+                    { type: 'exchange', label: 'Обмін', icon: 'pi pi-sync' },
+                    { type: 'daily', label: 'Подобово', icon: 'pi pi-clock' }
+                ]
             },
             {
                 id: 2,
@@ -23,11 +23,11 @@ export const useAreasStore = defineStore('areas', {
                 key: 'rooms',
                 image: '/images/rooms.webp',
                 actions: [
-                    {type: 'sell', label: 'Продаж', icon: 'pi pi-home'},
-                    {type: 'rent', label: 'Оренда', icon: 'pi pi-key'},
-                    {type: 'exchange', label: 'Обмін', icon: 'pi pi-sync'},
-                    {type: 'daily', label: 'Подобово', icon: 'pi pi-clock'}
-                ],
+                    { type: 'sell', label: 'Продаж', icon: 'pi pi-home' },
+                    { type: 'rent', label: 'Оренда', icon: 'pi pi-key' },
+                    { type: 'exchange', label: 'Обмін', icon: 'pi pi-sync' },
+                    { type: 'daily', label: 'Подобово', icon: 'pi pi-clock' }
+                ]
             },
             {
                 id: 3,
@@ -35,11 +35,11 @@ export const useAreasStore = defineStore('areas', {
                 key: 'garages',
                 image: '/images/garages.webp',
                 actions: [
-                    {type: 'sell', label: 'Продаж', icon: 'pi pi-home'},
-                    {type: 'rent', label: 'Оренда', icon: 'pi pi-key'},
-                    {type: 'exchange', label: 'Обмін', icon: 'pi pi-sync'},
-                    {type: 'daily', label: 'Подобово', icon: 'pi pi-clock'}
-                ],
+                    { type: 'sell', label: 'Продаж', icon: 'pi pi-home' },
+                    { type: 'rent', label: 'Оренда', icon: 'pi pi-key' },
+                    { type: 'exchange', label: 'Обмін', icon: 'pi pi-sync' },
+                    { type: 'daily', label: 'Подобово', icon: 'pi pi-clock' }
+                ]
             },
             {
                 id: 4,
@@ -47,11 +47,11 @@ export const useAreasStore = defineStore('areas', {
                 key: 'houses',
                 image: '/images/houses.webp',
                 actions: [
-                    {type: 'sell', label: 'Продаж', icon: 'pi pi-home'},
-                    {type: 'rent', label: 'Оренда', icon: 'pi pi-key'},
-                    {type: 'exchange', label: 'Обмін', icon: 'pi pi-sync'},
-                    {type: 'daily', label: 'Подобово', icon: 'pi pi-clock'}
-                ],
+                    { type: 'sell', label: 'Продаж', icon: 'pi pi-home' },
+                    { type: 'rent', label: 'Оренда', icon: 'pi pi-key' },
+                    { type: 'exchange', label: 'Обмін', icon: 'pi pi-sync' },
+                    { type: 'daily', label: 'Подобово', icon: 'pi pi-clock' }
+                ]
             },
             {
                 id: 5,
@@ -59,11 +59,11 @@ export const useAreasStore = defineStore('areas', {
                 key: 'offices',
                 image: '/images/commercial.webp',
                 actions: [
-                    {type: 'sell', label: 'Продаж', icon: 'pi pi-home'},
-                    {type: 'rent', label: 'Оренда', icon: 'pi pi-key'},
-                    {type: 'exchange', label: 'Обмін', icon: 'pi pi-sync'},
-                    {type: 'daily', label: 'Подобово', icon: 'pi pi-clock'}
-                ],
+                    { type: 'sell', label: 'Продаж', icon: 'pi pi-home' },
+                    { type: 'rent', label: 'Оренда', icon: 'pi pi-key' },
+                    { type: 'exchange', label: 'Обмін', icon: 'pi pi-sync' },
+                    { type: 'daily', label: 'Подобово', icon: 'pi pi-clock' }
+                ]
             },
             {
                 id: 6,
@@ -71,11 +71,11 @@ export const useAreasStore = defineStore('areas', {
                 key: 'commercial',
                 image: '/images/buildings.webp',
                 actions: [
-                    {type: 'sell', label: 'Продаж', icon: 'pi pi-home'},
-                    {type: 'rent', label: 'Оренда', icon: 'pi pi-key'},
-                    {type: 'exchange', label: 'Обмін', icon: 'pi pi-sync'},
-                    {type: 'daily', label: 'Подобово', icon: 'pi pi-clock'}
-                ],
+                    { type: 'sell', label: 'Продаж', icon: 'pi pi-home' },
+                    { type: 'rent', label: 'Оренда', icon: 'pi pi-key' },
+                    { type: 'exchange', label: 'Обмін', icon: 'pi pi-sync' },
+                    { type: 'daily', label: 'Подобово', icon: 'pi pi-clock' }
+                ]
             },
             {
                 id: 7,
@@ -83,11 +83,11 @@ export const useAreasStore = defineStore('areas', {
                 key: 'land',
                 image: '/images/land.webp',
                 actions: [
-                    {type: 'sell', label: 'Продаж', icon: 'pi pi-home'},
-                    {type: 'rent', label: 'Оренда', icon: 'pi pi-key'},
-                    {type: 'exchange', label: 'Обмін', icon: 'pi pi-sync'},
-                    {type: 'daily', label: 'Подобово', icon: 'pi pi-clock'}
-                ],
+                    { type: 'sell', label: 'Продаж', icon: 'pi pi-home' },
+                    { type: 'rent', label: 'Оренда', icon: 'pi pi-key' },
+                    { type: 'exchange', label: 'Обмін', icon: 'pi pi-sync' },
+                    { type: 'daily', label: 'Подобово', icon: 'pi pi-clock' }
+                ]
             },
             {
                 id: 8,
@@ -95,23 +95,49 @@ export const useAreasStore = defineStore('areas', {
                 key: 'other',
                 image: '/images/other.webp',
                 actions: [
-                    {type: 'sell', label: 'Продаж', icon: 'pi pi-home'},
-                    {type: 'rent', label: 'Оренда', icon: 'pi pi-key'},
-                    {type: 'exchange', label: 'Обмін', icon: 'pi pi-sync'},
-                    {type: 'daily', label: 'Подобово', icon: 'pi pi-clock'}
-                ],
+                    { type: 'sell', label: 'Продаж', icon: 'pi pi-home' },
+                    { type: 'rent', label: 'Оренда', icon: 'pi pi-key' },
+                    { type: 'exchange', label: 'Обмін', icon: 'pi pi-sync' },
+                    { type: 'daily', label: 'Подобово', icon: 'pi pi-clock' }
+                ]
             }
-        ]
+        ],
+        filters: {
+            'condition.value': null,
+            'rooms.all': 3,
+            'floors.totalFloors': null,
+            minPrice: null,
+            maxPrice: null,
+            maxFloor: null,
+            minFloor: null,
+            minArea: null,
+            maxArea: null,
+            maxAreaLiving: null,
+            minAreaLiving: null,
+            minAreaKitchen: null,
+            maxAreaKitchen: null,
+            'address.area.code': null,
+            'address.city.code': null,
+            'address.region.code': null,
+            'buildingType.value': null,
+            'objectClass.value': null
+        }
     }),
     getters: {
         areas() {
             const apartmentsStore = useApartmentsStore();
             return apartmentsStore.dropdowns.areas || [];
+        },
+        getFilters() {
+            return this.filters;
         }
     },
     actions: {
         setSelectedArea(area) {
             this.selectedArea = area;
         },
-    },
+        setFilter(key, value) {
+            this.filters[key] = value;
+        }
+    }
 });

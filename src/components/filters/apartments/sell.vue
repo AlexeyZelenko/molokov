@@ -1,9 +1,11 @@
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted, nextTick } from 'vue';
 import { usePropertiesStore } from '@/store/propertiesCategories';
 import Select from 'primevue/select';
+import { useAreasStore } from '@/store/areasStore';
 
 const storeCategories = usePropertiesStore();
+const storeAreasStore = useAreasStore();
 
 // Фильтры
 const filters = ref({
@@ -94,6 +96,7 @@ const countFilterParams = computed(() => {
 
 // Функция для установки фильтров
 const setFilters = () => {
+    console.log('setFilters', filters.value);    
     const cleanedFilters = cleanFilters(filters.value);
     storeCategories.setFilters(cleanedFilters);
 };
@@ -315,6 +318,12 @@ const getSelectedFilters = computed(() => {
             };
         });
 });
+
+onMounted(async () => {
+    filters.value = { ...storeAreasStore.getFilters };
+    await nextTick();
+    setFilters();
+});
 </script>
 
 <template>
@@ -326,13 +335,7 @@ const getSelectedFilters = computed(() => {
             <Tab value="1">
                 <div class="flex justify-between font-semibold text-xl">Сортувати</div>
             </Tab>
-            <Button
-                icon="pi pi-times"
-                severity="help"
-                rounded variant="outlined"
-                aria-label="Cancel"
-                @click="handleClose"
-            />
+            <Button icon="pi pi-times" severity="help" rounded variant="outlined" aria-label="Cancel" @click="handleClose" />
         </TabList>
         <TabPanels>
             <TabPanel value="0">
@@ -363,14 +366,7 @@ const getSelectedFilters = computed(() => {
                             <AccordionContent>
                                 <div class="flex flex-col">
                                     <label>Область</label>
-                                    <Select
-                                        v-model="filters['address.region.code']"
-                                        :options="address.region.value.map((i) => ({ name: i.name, value: i.code }))"
-                                        optionLabel="name"
-                                        optionValue="value"
-                                        placeholder="Вибрати"
-                                        @change="applyFilters"
-                                    />
+                                    <Select v-model="filters['address.region.code']" :options="address.region.value.map((i) => ({ name: i.name, value: i.code }))" optionLabel="name" optionValue="value" placeholder="Вибрати" @change="applyFilters" />
                                 </div>
 
                                 <div class="flex flex-col mt-2">
