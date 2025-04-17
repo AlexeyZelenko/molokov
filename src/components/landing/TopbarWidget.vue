@@ -81,7 +81,7 @@ onMounted(() => {
                     <a @click="navigateTo('/cherkasy-areas')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium text-lg lg:text-xl hover:text-primary-500 dark:hover:text-primary-400 transition-colors duration-200">
                         <span>Райони</span>
                     </a>
-                </li>
+                </li>                
                 <li class="bg-primary-500 dark:bg-primary-400 rounded-full px-4 py-2 hover:bg-primary-600 dark:hover:bg-primary-300 transition-colors duration-200">
                     <a @click="navigateTo('/add-properties')" class="px-0 py-4 text-surface-0 font-medium text-lg lg:text-xl">
                         <span>Додати нерухомість</span>
@@ -156,6 +156,12 @@ onMounted(() => {
                 <li>
                     <a @click="navigateTo('/cherkasy-areas')" class="flex items-center px-0 py-3 text-surface-900 dark:text-surface-0 font-medium text-base lg:text-lg hover:text-primary-500 dark:hover:text-primary-400 transition-colors duration-200">
                         <span>Райони</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="https://t.me/sakai_support" target="_blank" class="flex items-center px-0 py-3 text-surface-900 dark:text-surface-0 font-medium text-base lg:text-lg hover:text-primary-500 dark:hover:text-primary-400 transition-colors duration-200 gap-2">
+                        <i class="pi pi-telegram text-primary-500 dark:text-primary-400"></i>
+                        <span>Зв'язатися з нами</span>
                     </a>
                 </li>
                 <li class="bg-primary-500 dark:bg-primary-400 rounded-full px-4 py-2 hover:bg-primary-600 dark:hover:bg-primary-300 transition-colors duration-200">

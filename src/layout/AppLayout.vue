@@ -1,7 +1,6 @@
 <script setup>
 import { useLayout } from '@/layout/composables/layout';
 import { computed, ref, watch } from 'vue';
-import AppFooter from './AppFooter.vue';
 import AppSidebar from './AppSidebar.vue';
 import AppTopbar from './AppTopbar.vue';
 import Breadcrumb from '@/components/Breadcrumb.vue';
@@ -64,8 +63,7 @@ function isOutsideClicked(event) {
             <div class="layout-main">
                 <Breadcrumb />
                 <router-view></router-view>
-            </div>
-            <app-footer></app-footer>
+            </div>            
         </div>
         <div class="layout-mask animate-fadein"></div>
     </div>

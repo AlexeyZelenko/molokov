@@ -153,10 +153,8 @@ function handleSidebarClick(event) {
                 </div>
                 <Breadcrumb />
                 <router-view></router-view>
-            </div>
-            <app-footer></app-footer>
-        </div>
-        <div class="layout-mask animate-fadein"></div>
+            </div>            
+        </div>        
     </div>
 </template>
 
