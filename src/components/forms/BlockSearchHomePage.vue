@@ -1,6 +1,8 @@
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue';
 import Button from 'primevue/button';
+import Dropdown from 'primevue/dropdown';
+import Select from 'primevue/select';
 import { useAreasStore } from '@/store/areasStore';
 import { usePropertiesStore } from '@/store/propertiesCategories';
 import { useApartmentsStore } from '@/store/apartments';
@@ -8,9 +10,9 @@ import { useRouter } from 'vue-router';
 import { usePriceInUSD } from '@/composables/usePriceInUSD';
 
 const { fetchExchangeRate, convertToUSD } = usePriceInUSD();
-
 const router = useRouter();
 
+// Stores
 const areasStore = useAreasStore();
 const propertiesStore = usePropertiesStore();
 const apartmentsStore = useApartmentsStore();
@@ -29,7 +31,7 @@ const activeStatus = ref('');
 const propertyTypes = areasStore.realEstateItems;
 const selectedTypes = ref(null);
 
-// Розташування (location)
+// Location
 const selectedRegion = computed({
     get: () => propertiesStore.getFilters['address.region.code'] || '',
     set: (val) => propertiesStore.setFilter('address.region.code', val)
@@ -58,10 +60,7 @@ const selectedRooms = computed({
         const rooms = propertiesStore.getFilters['rooms.all'];
         return Array.isArray(rooms) ? rooms : [];
     },
-    set: (val) => {
-        console.log('val', val);
-        propertiesStore.setFilter('rooms.all', val);
-    }
+    set: (val) => propertiesStore.setFilter('rooms.all', val)
 });
 
 // Budget options
@@ -113,42 +112,69 @@ const budgetOptionsRent = [
     { label: '90,000 грн', value: 90000 },
     { label: '100,000 грн', value: 100000 }
 ];
+
 const isRentCategory = computed(() => {
     return activeStatus.value === 'rent' || activeStatus.value === 'daily';
 });
 
-// Use a local ref to store the selected budget value from the dropdown
-const budgetInput = ref(propertiesStore.getFilters['maxPrice'] || '');
+// Budget inputs
+const budgetInputMin = ref(propertiesStore.getFilters['minPrice'] || '');
+const budgetInputMax = ref(propertiesStore.getFilters['maxPrice'] || '');
 
-// Computed property to get/set the budget in the store
-const selectedBudget = computed({
-    get() {
-        return budgetInput.value;
-    },
-    set(newValue) {
-        budgetInput.value = newValue;
-        propertiesStore.setFilter('maxPrice', priceUSDDisplay);
-    }
-});
+// Budget display values
+const usdMinDisplay = ref('...');
+const usdMaxDisplay = ref('...');
 
-const usdDisplayValue = ref('...'); // Initial loading state
+// Handle budget changes
+const handleBudgetChange = async () => {
+    if (isRentCategory.value) {
+        // For rent - convert from UAH to USD
+        if (budgetInputMin.value) {
+            try {
+                const convertedMin = await convertToUSD(budgetInputMin.value, 'UAH');
+                usdMinDisplay.value = convertedMin ? `$${convertedMin.toFixed(2)}` : 'N/A';
+                propertiesStore.setFilter('minPrice', convertedMin);
+            } catch (error) {
+                console.error('Error converting min budget:', error);
+                usdMinDisplay.value = 'Error';
+            }
+        } else {
+            usdMinDisplay.value = '';
+            propertiesStore.setFilter('minPrice', null);
+        }
 
-watch([isRentCategory, budgetInput], async ([isRent, budget]) => {
-    if (isRent && budget) {
-        usdDisplayValue.value = 'Converting...'; // Show converting state
-        try {
-            const convertedValue = await convertToUSD(budget, 'UAH');
-            usdDisplayValue.value = convertedValue ? convertedValue.toFixed(2) : 'N/A';
-        } catch (error) {
-            console.error('Error converting to USD:', error);
-            usdDisplayValue.value = 'Error';
+        if (budgetInputMax.value) {
+            try {
+                const convertedMax = await convertToUSD(budgetInputMax.value, 'UAH');
+                usdMaxDisplay.value = convertedMax ? `$${convertedMax.toFixed(2)}` : 'N/A';
+                propertiesStore.setFilter('maxPrice', convertedMax);
+            } catch (error) {
+                console.error('Error converting max budget:', error);
+                usdMaxDisplay.value = 'Error';
+            }
+        } else {
+            usdMaxDisplay.value = '';
+            propertiesStore.setFilter('maxPrice', null);
         }
     } else {
-        usdDisplayValue.value = budget;
+        // For sale - use USD directly
+        usdMinDisplay.value = budgetInputMin.value ? `$${budgetInputMin.value}` : '';
+        usdMaxDisplay.value = budgetInputMax.value ? `$${budgetInputMax.value}` : '';
+        propertiesStore.setFilter('minPrice', budgetInputMin.value || null);
+        propertiesStore.setFilter('maxPrice', budgetInputMax.value || null);
+    }
+};
+
+// Watch for budget changes
+watch([budgetInputMin, budgetInputMax], handleBudgetChange, { immediate: true });
+
+// Validate budget range
+watch([budgetInputMin, budgetInputMax], ([min, max]) => {
+    if (min && max && min > max) {
+        console.warn('Мінімальний бюджет не може перевищувати максимальний');
+        budgetInputMax.value = min;
     }
 });
-
-const priceUSDDisplay = computed(() => usdDisplayValue.value);
 
 // Error handling
 const showError = ref(false);
@@ -158,6 +184,9 @@ const errorMessage = ref('');
 const setActiveStatus = (status) => {
     activeStatus.value = status;
     showError.value = false;
+    // Reset budgets when status changes
+    budgetInputMin.value = '';
+    budgetInputMax.value = '';
 };
 
 const search = () => {
@@ -181,7 +210,8 @@ const resetFilters = () => {
     activeStatus.value = '';
     selectedRegion.value = '';
     selectedRooms.value = [];
-    selectedBudget.value = '';
+    budgetInputMin.value = '';
+    budgetInputMax.value = '';
     showError.value = false;
     errorMessage.value = '';
 };
@@ -199,23 +229,9 @@ onMounted(() => {
                     <button
                         v-for="status in statusOptions"
                         :key="status.type"
-                        :label="status.label"
-                        :icon="status.icon"
                         :class="[
-                            'flex-1',
-                            'sm:flex-initial',
-                            'p-3',
-                            'rounded-lg',
-                            'transition-all',
-                            'duration-300',
-                            'font-medium',
-                            'flex',
-                            'items-center',
-                            'justify-center',
-                            'min-w-[120px]',
-                            'text-sm',
-                            'sm:text-base',
-                            'opacity-75',
+                            'flex-1 sm:flex-initial p-3 rounded-lg transition-all duration-300 font-medium',
+                            'flex items-center justify-center min-w-[120px] text-sm sm:text-base opacity-75',
                             activeStatus === status.type
                                 ? 'bg-primary-500 text-white shadow-md transform scale-105 opacity-90'
                                 : 'bg-surface-100 hover:bg-surface-200 text-surface-700 dark:bg-surface-800 dark:hover:bg-surface-700 dark:text-surface-300'
@@ -227,45 +243,59 @@ onMounted(() => {
                         <span>{{ status.label }}</span>
                     </button>
                 </div>
+
                 <form v-if="activeStatus" class="houzez-search-form">
-                    <!-- Status Tabs -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:flex justify-between items-start gap-2">
                         <!-- Property Type -->
-                        <div class="flex flex-col">
-                            <label class="mb-2 font-medium text-surface-700 dark:text-surface-300 text-sm sm:text-base">Тип нерухомості</label>
+                        <div class="w-full flex flex-col">
+                            <label class="mb-2 font-medium text-surface-700 dark:text-surface-300 text-sm sm:text-base"> Тип нерухомості </label>
                             <Select v-model="selectedTypes" :options="propertyTypes" optionLabel="title" optionValue="key" placeholder="Тип нерухомості" display="chip" class="w-full" :filter="true" @change="showError = false" />
                         </div>
 
-                        <!-- Розташування -->
-                        <div class="flex flex-col">
-                            <label class="mb-2 font-medium text-surface-700 dark:text-surface-300 text-sm sm:text-base">Розташування</label>
+                        <!-- Location -->
+                        <div class="w-full flex flex-col">
+                            <label class="mb-2 font-medium text-surface-700 dark:text-surface-300 text-sm sm:text-base"> Розташування </label>
                             <Select v-model="selectedRegion" :options="regions.map((i) => ({ name: i.name, value: i.code }))" optionLabel="name" optionValue="value" placeholder="Вибрати область" class="w-full" :filter="true" />
                         </div>
 
-                        <!-- Кількість кімнат -->
-                        <div class="flex flex-col">
-                            <label class="mb-2 font-medium text-surface-700 dark:text-surface-300 text-sm sm:text-base">Кількість кімнат</label>
-                            <Dropdown v-model="selectedRooms" :options="bedroomOptions" optionLabel="label" optionValue="value" placeholder="Кількість кімнат" class="w-full" />
+                        <!-- Bedrooms -->
+                        <div class="w-full flex flex-col">
+                            <label class="mb-2 font-medium text-surface-700 dark:text-surface-300 text-sm sm:text-base"> Кількість кімнат </label>
+                            <Dropdown v-model="selectedRooms" :options="bedroomOptions" optionLabel="label" optionValue="value" placeholder="Кількість кімнат" class="w-full w-max-96" />
                         </div>
 
                         <!-- Budget -->
-                        <div v-if="!isRentCategory" class="flex flex-col">
-                            <label class="mb-2 font-medium text-surface-700 dark:text-surface-300 text-sm sm:text-base">Ваш бюджет</label>
-                            <Dropdown v-model="selectedBudget" :options="budgetOptions" optionLabel="label" optionValue="value" placeholder="Макс. ціна-USD" class="w-full" />
-                        </div>
-                        <div v-else class="flex flex-col">
-                            <label class="mb-2 font-medium text-surface-700 dark:text-surface-300 text-sm sm:text-base">Ваш бюджет</label>
-                            <Dropdown v-model="selectedBudget" :options="budgetOptionsRent" optionLabel="label" optionValue="value" placeholder="Макс. ціна грн" class="w-full" />
+                        <div class="w-full flex flex-col">
+                            <label class="mb-2 font-medium text-surface-700 dark:text-surface-300 text-sm sm:text-base"> Ваш бюджет {{ isRentCategory ? '(грн)' : '(USD)' }} </label>
+                            <div class="flex flex-col sm:flex-row gap-2">
+                                <Dropdown v-model="budgetInputMin" :options="isRentCategory ? budgetOptionsRent : budgetOptions" optionLabel="label" optionValue="value" placeholder="Мін. бюджет" class="w-full" />
+                                <Dropdown v-model="budgetInputMax" :options="isRentCategory ? budgetOptionsRent : budgetOptions" optionLabel="label" optionValue="value" placeholder="Макс. бюджет" class="w-full" />
+                            </div>
+                            <div v-if="budgetInputMin || budgetInputMax" class="text-xs text-gray-500 mt-1">
+                                Діапазон:
+                                <span v-if="budgetInputMin">
+                                    {{ budgetInputMin }} {{ isRentCategory ? 'грн' : 'USD' }}
+                                </span>
+                                <span v-else>Будь-який</span>
+                                &mdash;
+                                <span v-if="budgetInputMax">
+                                    {{ budgetInputMax }} {{ isRentCategory ? 'грн' : 'USD' }}
+                                </span>
+                                <span v-else>Будь-який</span>
+                            </div>
                         </div>
 
                         <!-- Search Button -->
-                        <div class="flex items-end gap-2">
-                            <Button label="Пошук" icon="pi pi-search" class="w-full p-3 bg-primary-500 hover:bg-primary-600 text-white text-sm sm:text-base" @click="search" />
+                        <div class="flex items-end gap-2 h-full" style="height: 65px">
+                            <Button icon="pi pi-search" class="w-full p-3 bg-primary-500 hover:bg-primary-600 text-white text-sm sm:text-base" @click="search" />
                             <Button icon="pi pi-refresh" class="p-3 bg-surface-100 hover:bg-surface-200 text-surface-700 dark:bg-surface-800 dark:hover:bg-surface-700 dark:text-surface-300" @click="resetFilters" v-tooltip="'Скинути фільтри'" />
                         </div>
                     </div>
+
                     <div v-if="showError" class="mt-4">
-                        <p class="text-red-500 text-sm sm:text-base text-center sm:text-left">{{ errorMessage }}</p>
+                        <p class="text-red-500 text-sm sm:text-base text-center sm:text-left">
+                            {{ errorMessage }}
+                        </p>
                     </div>
                 </form>
             </div>
@@ -278,26 +308,15 @@ onMounted(() => {
     @apply bg-surface-0 dark:bg-surface-900 p-4 sm:p-6 rounded-lg shadow-lg border border-surface-200 dark:border-surface-700;
 }
 
-.p-multiselect,
-.p-dropdown {
-    @apply w-full;
-}
-
-.p-button {
-    @apply transition-colors duration-200;
-}
-
 :deep(.p-multiselect),
-:deep(.p-dropdown) {
+:deep(.p-dropdown),
+:deep(.p-selectbutton) {
     @apply w-full text-sm sm:text-base;
 }
 
-:deep(.p-dropdown-panel) {
+:deep(.p-dropdown-panel),
+:deep(.p-multiselect-panel) {
     @apply text-sm sm:text-base;
-}
-
-:deep(.p-button) {
-    @apply transition-colors duration-200;
 }
 
 :deep(.p-dropdown-item) {
@@ -305,10 +324,7 @@ onMounted(() => {
 }
 
 @media (max-width: 640px) {
-    :deep(.p-dropdown-panel) {
-        @apply w-[calc(100vw-2rem)] max-w-full;
-    }
-
+    :deep(.p-dropdown-panel),
     :deep(.p-multiselect-panel) {
         @apply w-[calc(100vw-2rem)] max-w-full;
     }

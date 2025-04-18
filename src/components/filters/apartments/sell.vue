@@ -5,6 +5,14 @@ import Select from 'primevue/select';
 
 const storeCategories = usePropertiesStore();
 
+const formatCurrency = (value) => {
+    return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 0
+    }).format(value);
+};
+
 // Фильтры
 const filters = ref({
     'condition.value': null,
@@ -500,9 +508,61 @@ onMounted(async () => {
                     <div class="flex flex-col">
                         <label>Ціна</label>
                         <div class="flex flex-col gap-1">
-                            <InputNumber v-model="filters.minPrice" placeholder="Мінімальна" :min="0" :max="filters.maxPrice" />
-                            <InputNumber v-model="filters.maxPrice" placeholder="Максимальна" :min="filters.minPrice" />
+                            <InputNumber
+                                v-model="filters.minPrice"
+                                @change="applyFilters"
+                                placeholder="Мінімальна"
+                                :min="0"
+                                :max="filters.maxPrice"
+                                class="w-full"
+                                inputClass="w-full"
+                                mode="currency"
+                                currency="USD"
+                                locale="en-US"
+                                :minFractionDigits="0"
+                                :maxFractionDigits="0"
+                                showButtons
+                                inputId="horizontal-buttons"
+                                buttonLayout="horizontal"
+                                :step="500"
+                            >
+                                <template #incrementbuttonicon>
+                                    <span class="pi pi-plus" />
+                                </template>
+                                <template #decrementbuttonicon>
+                                    <span class="pi pi-minus" />
+                                </template>
+                            </InputNumber>
+                            <InputNumber
+                                v-model="filters.maxPrice"
+                                @change="applyFilters"
+                                placeholder="Максимальна"
+                                :min="filters.minPrice"
+                                class="w-full"
+                                inputClass="w-full"
+                                mode="currency"
+                                currency="USD"
+                                locale="en-US"
+                                :minFractionDigits="0"
+                                :maxFractionDigits="0"
+                                showButtons
+                                inputId="horizontal-buttons"
+                                buttonLayout="horizontal"
+                                :step="500"
+                            >
+                                <template #incrementbuttonicon>
+                                    <span class="pi pi-plus" />
+                                </template>
+                                <template #decrementbuttonicon>
+                                    <span class="pi pi-minus" />
+                                </template>
+                            </InputNumber>
                         </div>
+                    </div>
+                    <div v-if="filters.minPrice !== null || filters.maxPrice !== null" class="flex justify-between text-xs text-gray-500 dark:text-gray-400">
+                        <span v-if="filters.minPrice !== null"> Від: {{ formatCurrency(filters.minPrice) }} </span>
+                        <span v-else></span>
+                        <span v-if="filters.maxPrice !== null"> До: {{ formatCurrency(filters.maxPrice) }} </span>
                     </div>
                 </div>
                 <Button label="Застосувати фільтри" icon="pi pi-check" @click="setFilters" class="mt-4" />

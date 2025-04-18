@@ -20,7 +20,7 @@ import AppFooter from '@/layout/AppFooter.vue';
             <section style="max-width: 1500px; margin: 0 auto" class="flex flex-col items-center justify-center">
                 <FeaturesWidget />
                 <HighlightsWidget />
-                <HighlightsWidget2 />                
+                <HighlightsWidget2 />
             </section>
             <app-footer></app-footer>
         </div>
