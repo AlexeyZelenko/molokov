@@ -2,10 +2,8 @@
 import { ref, computed, watch, onMounted, nextTick } from 'vue';
 import { usePropertiesStore } from '@/store/propertiesCategories';
 import Select from 'primevue/select';
-import { useAreasStore } from '@/store/areasStore';
 
 const storeCategories = usePropertiesStore();
-const storeAreasStore = useAreasStore();
 
 // Фильтры
 const filters = ref({
@@ -96,7 +94,6 @@ const countFilterParams = computed(() => {
 
 // Функция для установки фильтров
 const setFilters = () => {
-    console.log('setFilters', filters.value);    
     const cleanedFilters = cleanFilters(filters.value);
     storeCategories.setFilters(cleanedFilters);
 };
@@ -175,8 +172,11 @@ const buildingFloors = computed(() => {
 const roomsAll = computed(() => {
     const processRoomsField = (field) => {
         const values = storeCategories.properties.map((property) => property.rooms[field]).filter((value) => value !== null && value !== undefined);
-        const uniqueValues = [...new Set(values)];
-        return uniqueValues.sort((a, b) => a - b);
+        // Create a Set of unique values from both 'values' and the filter
+        const uniqueValueSet = new Set([...values, ...(filters.value['rooms.all'] || [])]);
+        // Convert the Set back to an Array and then sort it
+        const uniqueValuesArray = Array.from(uniqueValueSet).sort((a, b) => a - b);
+        return uniqueValuesArray;
     };
 
     const all = {
@@ -320,7 +320,7 @@ const getSelectedFilters = computed(() => {
 });
 
 onMounted(async () => {
-    filters.value = { ...storeAreasStore.getFilters };
+    filters.value = { ...storeCategories.getFilters };
     await nextTick();
     setFilters();
 });

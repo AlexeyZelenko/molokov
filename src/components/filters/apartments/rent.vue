@@ -1,8 +1,73 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, nextTick, watch } from 'vue';
 import { usePropertiesStore } from '@/store/propertiesCategories';
 import Select from 'primevue/select';
 import ToggleSwitch from 'primevue/toggleswitch';
+import { usePriceInUSD } from '@/composables/usePriceInUSD';
+
+const { fetchExchangeRate, convertToUSD, convertFromUSD, exchangeRates } = usePriceInUSD();
+// Price conversion
+const minPriceUAH = ref(null);
+const maxPriceUAH = ref(null);
+const formatCurrency = (value) => {
+    return new Intl.NumberFormat('uk-UA', {
+        style: 'currency',
+        currency: 'UAH',
+        minimumFractionDigits: 0
+    }).format(value);
+};
+// Price conversion watchers
+watch(minPriceUAH, async (newVal) => {
+    if (newVal !== null && exchangeRates.value?.UAH) {
+        try {
+            filters.value.minPrice = Number((await convertToUSD(newVal, 'UAH')).toFixed(2));
+        } catch (error) {
+            console.error('Conversion error:', error);
+        }
+    }
+});
+
+watch(maxPriceUAH, async (newVal) => {
+    if (newVal !== null && exchangeRates.value?.UAH) {
+        try {
+            filters.value.maxPrice = Number((await convertToUSD(newVal, 'UAH')).toFixed(2));
+        } catch (error) {
+            console.error('Conversion error:', error);
+        }
+    }
+});
+
+watch(
+    () => filters.value.minPrice,
+    async (newVal) => {
+        if (newVal !== null && exchangeRates.value?.UAH) {
+            try {
+                minPriceUAH.value = Math.round(await convertFromUSD(newVal, 'UAH'));
+            } catch (error) {
+                console.error('Conversion error:', error);
+                minPriceUAH.value = null;
+            }
+        } else {
+            minPriceUAH.value = null;
+        }
+    }
+);
+
+watch(
+    () => filters.value.maxPrice,
+    async (newVal) => {
+        if (newVal !== null && exchangeRates.value?.UAH) {
+            try {
+                maxPriceUAH.value = Math.round(await convertFromUSD(newVal, 'UAH'));
+            } catch (error) {
+                console.error('Conversion error:', error);
+                maxPriceUAH.value = null;
+            }
+        } else {
+            maxPriceUAH.value = null;
+        }
+    }
+);
 
 const storeCategories = usePropertiesStore();
 
@@ -109,6 +174,8 @@ const clearFilters = () => {
         'balconyTerrace.code': null,
         'furniture.code': null
     };
+    minPriceUAH.value = null;
+    maxPriceUAH.value = null;
     storeCategories.setFilters({});
 };
 
@@ -133,15 +200,11 @@ const heatingTypes = getUniqueValues('heatingType');
 const reconditioning = getUniqueValues('reconditioning');
 
 const roomsAll = computed(() => {
-    // Функция для обработки и исключения дубликатов
     const processRoomsField = (field) => {
-        const values = storeCategories.properties.map((property) => property.rooms[field]).filter((value) => value !== null && value !== undefined); // Исключаем пустые значения
-
-        // Убираем дубликаты
-        const uniqueValues = [...new Set(values)];
-
-        // Сортировка значений
-        return uniqueValues.sort((a, b) => a - b); // Для числовых значений сортировка по возрастанию
+        const values = storeCategories.properties.map((property) => property.rooms[field]).filter((value) => value !== null && value !== undefined);
+        const uniqueValueSet = new Set([...values, ...(filters.value['rooms.all'] || [])]);
+        const uniqueValuesArray = Array.from(uniqueValueSet).sort((a, b) => a - b);
+        return uniqueValuesArray;
     };
 
     const all = {
@@ -343,7 +406,6 @@ const getSelectedFilters = computed(() => {
                     displayValue = furnitureItem.name;
                 }
             } else {
-                // Handle other filter types
                 switch (key) {
                     case 'minPrice':
                         displayName = 'Мін. ціна';
@@ -406,6 +468,20 @@ const getSelectedFilters = computed(() => {
 
     return selectedFilters;
 });
+
+onMounted(async () => {
+    filters.value = { ...storeCategories.getFilters };
+    await nextTick();
+    setFilters();
+    await fetchExchangeRate();
+    if (filters.value.minPrice && filters.value.minPrice !== null) {
+        minPriceUAH.value = Math.round(await convertFromUSD(filters.value.minPrice, 'UAH'));
+    }
+    console.log('filters.value.minPrice', filters.value.minPrice);
+    if (filters.value.maxPrice && filters.value.maxPrice !== null) {
+        maxPriceUAH.value = Math.round(await convertFromUSD(filters.value.maxPrice, 'UAH'));
+    }
+});
 </script>
 
 <template>
@@ -433,7 +509,9 @@ const getSelectedFilters = computed(() => {
                     </AccordionHeader>
                     <AccordionContent>
                         <div v-for="filter in getSelectedFilters" :key="filter.key" class="flex justify-between items-center bg-gray-100 dark:bg-gray-800 p-1 rounded-lg mt-2">
-                            <p class="font-light text-sm">{{ filter.displayName }}: {{ filter.value }}</p>
+                            <p v-if="filter.displayName === 'Макс. ціна'" class="font-light text-sm">{{ filter.displayName }}: {{ Math.round(convertFromUSD(filter.value, 'UAH')) }} грн</p>
+                            <p v-else-if="filter.displayName === 'Мін. ціна'" class="font-light text-sm">{{ filter.displayName }}: {{ Math.round(convertFromUSD(filter.value, 'UAH')) }} грн</p>
+                            <p v-else class="font-light text-sm">{{ filter.displayName }}: {{ filter.value }}</p>
                         </div>
                     </AccordionContent>
                 </AccordionPanel>
@@ -568,11 +646,66 @@ const getSelectedFilters = computed(() => {
                 </AccordionPanel>
             </Accordion>
 
-            <div class="flex flex-col">
-                <label>Ціна</label>
-                <div class="flex flex-col gap-1">
-                    <InputNumber v-model="filters.minPrice" placeholder="Мінімальна" :min="0" :max="filters.maxPrice" />
-                    <InputNumber v-model="filters.maxPrice" placeholder="Максимальна" :min="filters.minPrice" />
+            <div class="flex flex-col gap-3">
+                <div class="space-y-1">
+                    <label class="block text-md font-medium text-gray-700 dark:text-gray-300"> Діапазон цін (грн) </label>
+                    <div class="flex flex-col gap-2">
+                        <InputNumber
+                            v-model="minPriceUAH"
+                            @change="applyFilters"
+                            placeholder="Від"
+                            :min="0"
+                            :max="maxPriceUAH || undefined"
+                            class="w-full"
+                            inputClass="w-full"
+                            mode="currency"
+                            currency="UAH"
+                            locale="uk-UA"
+                            :minFractionDigits="0"
+                            :maxFractionDigits="0"
+                            showButtons
+                            inputId="horizontal-buttons"
+                            buttonLayout="horizontal"
+                            :step="500"
+                        >
+                            <template #incrementbuttonicon>
+                                <span class="pi pi-plus" />
+                            </template>
+                            <template #decrementbuttonicon>
+                                <span class="pi pi-minus" />
+                            </template>
+                        </InputNumber>
+                        <InputNumber
+                            v-model="maxPriceUAH"
+                            @change="applyFilters"
+                            placeholder="До"
+                            :min="minPriceUAH || 0"
+                            class="w-full"
+                            inputClass="w-full"
+                            mode="currency"
+                            currency="UAH"
+                            locale="uk-UA"
+                            :minFractionDigits="0"
+                            :maxFractionDigits="0"
+                            showButtons
+                            inputId="horizontal-buttons"
+                            buttonLayout="horizontal"
+                            :step="500"
+                        >
+                            <template #incrementbuttonicon>
+                                <span class="pi pi-plus" />
+                            </template>
+                            <template #decrementbuttonicon>
+                                <span class="pi pi-minus" />
+                            </template>
+                        </InputNumber>
+                    </div>
+                </div>
+
+                <div v-if="minPriceUAH !== null || maxPriceUAH !== null" class="flex justify-between text-xs text-gray-500 dark:text-gray-400">
+                    <span v-if="minPriceUAH !== null"> Від: {{ formatCurrency(minPriceUAH) }} </span>
+                    <span v-else></span>
+                    <span v-if="maxPriceUAH !== null"> До: {{ formatCurrency(maxPriceUAH) }} </span>
                 </div>
             </div>
         </div>

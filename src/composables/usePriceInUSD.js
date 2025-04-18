@@ -6,7 +6,7 @@ export function usePriceInUSD() {
     const loading = ref(false);
     const error = ref(null);
 
-    const convertToUSD = async (amount, fromCurrency) => {
+    const convertToUSD = (amount, fromCurrency) => {
         if (fromCurrency === 'USD') return amount;
         if (!exchangeRates.value?.[fromCurrency]) {
             throw new Error(`Exchange rate for ${fromCurrency} not available`);
@@ -14,7 +14,7 @@ export function usePriceInUSD() {
         return amount / exchangeRates.value[fromCurrency];
     };
 
-    const convertFromUSD = async (amount, toCurrency) => {
+    const convertFromUSD = (amount, toCurrency) => {
         if (toCurrency === 'USD') return amount;
         if (!exchangeRates.value?.[toCurrency]) {
             throw new Error(`Exchange rate for ${toCurrency} not available`);

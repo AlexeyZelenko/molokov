@@ -123,30 +123,16 @@ export const usePropertyStore = defineStore('property', () => {
         try {
             const allProperties = [];
 
-            const mainCollections = [
-                'apartments',
-                'houses',
-                'land',
-                'rooms',
-                'offices',
-                'commercial',
-                'garages',
-                'other'
-            ];
+            const mainCollections = ['apartments', 'houses', 'land', 'rooms', 'offices', 'commercial', 'garages', 'other'];
 
-            const subCollections = [
-                'sell',
-                'rent',
-                'exchange',
-                'daily'
-            ];
+            const subCollections = ['sell', 'rent', 'exchange', 'daily'];
 
             // 2. Функция для получения объявлений из конкретной подколлекции
             const getPropertiesFromSubCollection = async (mainCollection, subCollection) => {
                 const currentSubCollection = collection(db, `properties/${mainCollection}/${subCollection}`);
                 const q = query(currentSubCollection, where('creator.id', '==', userId));
                 const querySnapshot = await getDocs(q);
-                return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
             };
 
             // 3. Получаем данные из ВСЕХ подколлекций
@@ -158,10 +144,9 @@ export const usePropertyStore = defineStore('property', () => {
             }
 
             const results = await Promise.all(fetchPromises);
-            results.forEach(properties => allProperties.push(...properties));
+            results.forEach((properties) => allProperties.push(...properties));
 
             return allProperties;
-
         } catch (error) {
             console.error('Ошибка при получении объявлений пользователя:', error);
             throw error;

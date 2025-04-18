@@ -76,7 +76,7 @@ const images = computed({
         }
     }
 });
-const { uploadState, deleteImageFromFirebase  } = usePropertyDirectImageUpload();
+const { uploadState, deleteImageFromFirebase } = usePropertyDirectImageUpload();
 const onFileSelect = (updatedImages) => {
     images.value = updatedImages;
 };
@@ -212,13 +212,7 @@ onMounted(async () => {
 
             <Fluid v-if="property" class="flex flex-col mt-8">
                 <PropertyDescription v-model="property.description" />
-                <PropertyImageUpload
-                    :images="images"
-                    :property="property"
-                    @upload="onFileSelect"
-                    @remove="removeImage"
-                    @reorder="handleReorder"
-                />
+                <PropertyImageUpload :images="images" :property="property" @upload="onFileSelect" @remove="removeImage" @reorder="handleReorder" />
             </Fluid>
 
             <Fluid v-if="property" class="flex mt-8">

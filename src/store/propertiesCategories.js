@@ -90,6 +90,7 @@ export const usePropertiesStore = defineStore('properties', {
         getPropertiesByCategoryAndSubcategory: (state) => (category, subcategory) => {
             return state.properties.filter((property) => property.category.code === category && property.subcategory.code === subcategory);
         },
+
         getPropertiesByCategory: (state) => (category) => {
             return state.properties.filter((property) => property.category.name === category);
         },
@@ -164,6 +165,10 @@ export const usePropertiesStore = defineStore('properties', {
             }
 
             return filteredProperties;
+        },
+
+        getFilters() {
+            return this.filters;
         }
     },
 
@@ -302,7 +307,6 @@ export const usePropertiesStore = defineStore('properties', {
             }
         },
 
-        // Вспомогательный метод для обработки данных документа
         processDocumentData(data) {
             const timestamps = ['createdAt', 'updatedAt'];
             timestamps.forEach((field) => {
@@ -313,7 +317,6 @@ export const usePropertiesStore = defineStore('properties', {
             return data;
         },
 
-        // Вспомогательный метод для обработки ошибок
         handleError(error, filters, specificIds = []) {
             this.error = null;
             this.properties = [];
@@ -385,6 +388,10 @@ export const usePropertiesStore = defineStore('properties', {
 
         setSelectedSort(sortType) {
             this.selectedSort = sortType;
+        },
+
+        setFilter(key, value) {
+            this.filters[key] = value;
         }
     }
 });
