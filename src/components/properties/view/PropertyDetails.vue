@@ -122,14 +122,13 @@ if (savedViewMode) {
         <Skeleton />
     </div>
     <div v-else>
-        <Fluid>
-            <div
-                class="flex flex-col md:flex-row items-start justify-start mb-4"
-                :class="{
+        <Fluid :class="{
                     'flex-col': true,
-                    'md:flex-row': viewMode === 'double',
-                    'md:w-1/2 m-auto': viewMode === 'single'
-                }"
+                    'md:flex-row md:w-3/4 m-auto': viewMode === 'double',
+                    'md:w-2/3 xl:w-1/2 m-auto': viewMode === 'single'
+                }" >
+            <div
+                class="flex flex-col md:flex-row items-start justify-start mb-4"                
             >
                 <section>
                     <h1 class="font-semibold text-2xl">{{ property.title }}</h1>
@@ -141,29 +140,17 @@ if (savedViewMode) {
                 </div>
             </div>
             <!-- Dynamic layout container -->
-            <div
-                class="flex item-start justify-between mb-1"
-                :class="{
-                    'md:flex-row': viewMode === 'double',
-                    'md:w-1/2 m-auto': viewMode === 'single'
-                }"
-            >
-                <section class="flex items-center">
-                    <button @click="setViewMode('single')" class="p-2 rounded-l transition" :class="viewMode === 'single' ? 'bg-primary-700 text-white' : 'bg-gray-200 hover:bg-gray-300'">
+            <div class="flex item-start justify-between mb-1">
+                <section class="flex items-center pb-2">
+                    <button @click="setViewMode('single')" class="p-3 rounded-l transition" :class="viewMode === 'single' ? 'bg-gray-500 text-white' : 'bg-gray-200 hover:bg-gray-300'">
                         <i class="pi pi-list text-sm"></i>
                     </button>
-                    <button @click="setViewMode('double')" class="p-2 rounded-r transition" :class="viewMode === 'double' ? 'bg-primary-700 text-white' : 'bg-gray-200 hover:bg-gray-300'">
+                    <button @click="setViewMode('double')" class="p-3 rounded-r transition" :class="viewMode === 'double' ? 'bg-gray-500 text-white' : 'bg-gray-200 hover:bg-gray-300'">
                         <i class="pi pi-table text-sm"></i>
                     </button>
                 </section>
             </div>
-            <div
-                class="flex flex-wrap"
-                :class="{
-                    'flex-row w-full': viewMode === 'double',
-                    'md:w-1/2 m-auto': viewMode === 'single'
-                }"
-            >
+            <div class="flex flex-wrap">
                 <!-- Images and location section -->
                 <div :class="['flex flex-col', viewMode === 'single' ? 'w-full' : 'md:w-1/2 md:pr-3']">
                     <div v-if="property.images?.length">

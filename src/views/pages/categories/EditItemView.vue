@@ -54,17 +54,9 @@ watch(() => route.params, (newParams) => {
 </script>
 
 <template>
-    <div class="category-container">
+    <div class="w-full md:w-2/3 lg:w-2/3 xl:w-1/2 flex flex-col mx-auto">
         <component
             :is="CurrentComponent"
         />
     </div>
 </template>
-
-<style scoped>
-.category-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-}
-</style>

@@ -19,7 +19,7 @@ const goBack = () => {
     <nav aria-label="breadcrumb" class="flex mb-6 pr-4">
         <button type="button" class="breadcrumb--back-button" @click="goBack">
             <i class="pi pi-chevron-left"></i>
-            <span class="mx-2"><strong>Назад</strong></span>
+            <span class="mx-2 uppercase tracking-wide"><strong>Назад</strong></span>
         </button>
         <ol class="breadcrumb">
             <li v-for="(item, index) in breadcrumbItems" :key="index" class="breadcrumb-item">

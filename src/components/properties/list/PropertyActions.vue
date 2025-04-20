@@ -135,7 +135,7 @@ const deleteProperty = (event) => {
         </template>
     </ConfirmPopup>
     <div class="flex gap-2">
-        <Button label="Переглянути деталі" class="p-button-warning" @click="showProperty" />
+        <Button label="ПЕРЕГЛЯНУТИ ДЕТАЛІ" class="p-button-warning" @click="showProperty" />
 
         <template v-if="isCreator || isAdmin">
             <Button

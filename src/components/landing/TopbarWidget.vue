@@ -91,20 +91,20 @@ onMounted(() => {
             <div class="flex border-t lg:border-t-0 border-surface py-4 lg:py-0 mt-4 lg:mt-0 gap-2">
                 <div class="flex items-center mr-4">
                     <div v-if="user" class="flex items-center gap-6 mr-4">
-                        <router-link to="/users/user/profile" class="flex flex-col items-center gap-1">
+                        <router-link to="/users/user/profile" class="flex flex-col items-center justify-center gap-1">
                             <img v-if="user.avatar" :src="user.avatar" alt="Аватар" class="w-10 h-10 rounded-full object-cover border-2 border-blue-100" />
                             <div class="text-surface-900 dark:text-surface-0 font-medium text-sm">
-                                {{ user.displayName }}
+                                <p class="text-center">{{ user.displayName }}</p>
                             </div>
                         </router-link>
                         <Button label="Вихід" as="button" @click="handleLogout" rounded></Button>
                     </div>
                     <div v-else class="flex items-center gap-4">
                         <Button label="Вхід" text as="router-link" to="/auth/login" rounded>
-                            <p class="uppercase text-lg font-bold text-center">Вхід</p>
+                            <p class="uppercase text-lg font-bold text-center tracking-wide uppercase">Вхід</p>
                         </Button>
                         <Button label="Реєстрація" as="router-link" to="/auth/register" rounded>
-                            <p class="uppercase text-lg font-bold text-center">Реєстрація</p>
+                            <p class="uppercase text-lg font-bold text-center tracking-wide uppercase">Реєстрація</p>
                         </Button>
                     </div>
                 </div>

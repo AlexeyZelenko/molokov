@@ -154,7 +154,7 @@ onMounted(async () => {
 </script>
 
 <template>
-    <section class="w-full md:w-1/2 mx-auto">
+    <section class="w-full">
         <h1 class="text-2xl font-semibold mb-2">{{ pageTitle }}</h1>
         <div v-if="showLoader" class="fullscreen-loader h-full">
             <div class="loader"></div>
