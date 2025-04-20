@@ -5,7 +5,7 @@ import HomeSearch from '@/components/forms/BlockSearchHomePage.vue';
 <template>
     <div class="hero-widget relative">
         <div id="hero" class="flex flex-col z-0 relative">
-            <div class="hero-container flex flex-col items-center justify-start text-center pb-96">
+            <div class="hero-container flex flex-col items-center justify-start text-center pb-94">
                 <h1 class="text-4xl font-bold leading-tight md:text-6xl p-2">
                     <span class="font-light block text-white sm-4 md:text-6xl">Сучасний інструмент для рієлторів!</span>
                     <span class="text-3xl font-light block text-white mb-4 md:text-5xl mt-4">Легко знаходьте та керуйте об'єктами!</span>
@@ -40,10 +40,6 @@ import HomeSearch from '@/components/forms/BlockSearchHomePage.vue';
 .hero-search-container {
     padding: 0 important;
     // чтобы HomeSearch красиво "выплыл"
-    margin-top: 10px;
-
-    @media (max-width: 768px) {
-        margin-top: -320px;
-    }
+    margin-top: 10px;   
 }
 </style>

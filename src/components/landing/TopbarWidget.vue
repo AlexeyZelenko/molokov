@@ -145,28 +145,28 @@ onMounted(() => {
             <ul class="list-none p-0 m-0 flex flex-col select-none cursor-pointer gap-6">
                 <li>
                     <a @click="smoothScroll('features')" class="flex items-center px-0 py-3 text-surface-900 dark:text-surface-0 font-medium text-base lg:text-lg hover:text-primary-500 dark:hover:text-primary-400 transition-colors duration-200">
-                        <span>Вибрати нерухомість</span>
+                        <span class="uppercase">Вибрати нерухомість</span>
                     </a>
                 </li>
                 <li>
                     <a @click="smoothScroll('highlights')" class="flex items-center px-0 py-3 text-surface-900 dark:text-surface-0 font-medium text-base lg:text-lg hover:text-primary-500 dark:hover:text-primary-400 transition-colors duration-200">
-                        <span>Про додаток</span>
+                        <span class="uppercase">Про додаток</span>
                     </a>
                 </li>
                 <li>
                     <a @click="navigateTo('/cherkasy-areas')" class="flex items-center px-0 py-3 text-surface-900 dark:text-surface-0 font-medium text-base lg:text-lg hover:text-primary-500 dark:hover:text-primary-400 transition-colors duration-200">
-                        <span>Райони</span>
+                        <span class="uppercase">Райони</span>
                     </a>
                 </li>
                 <li>
                     <a href="https://t.me/sakai_support" target="_blank" class="flex items-center px-0 py-3 text-surface-900 dark:text-surface-0 font-medium text-base lg:text-lg hover:text-primary-500 dark:hover:text-primary-400 transition-colors duration-200 gap-2">
                         <i class="pi pi-telegram text-primary-500 dark:text-primary-400"></i>
-                        <span>Зв'язатися з нами</span>
+                        <span class="uppercase">Зв'язатися з нами</span>
                     </a>
                 </li>
                 <li class="bg-primary-500 dark:bg-primary-400 rounded-full px-4 py-2 hover:bg-primary-600 dark:hover:bg-primary-300 transition-colors duration-200">
-                    <a @click="navigateTo('/add-properties')" class="flex items-center px-0 py-1 text-surface-0 font-medium text-base lg:text-lg">
-                        <span>Додати нерухомість</span>
+                    <a @click="navigateTo('/add-properties')" class="flex items-center justify-center px-0 py-1 text-surface-0 font-medium text-base lg:text-lg">
+                        <p class="uppercase text-lg font-bold text-center">Додати нерухомість</p>
                     </a>
                 </li>
             </ul>
@@ -182,14 +182,14 @@ onMounted(() => {
                     <Button label="Вихід" as="button" @click="handleLogout" rounded class="w-full"></Button>
                 </div>
                 <div v-else class="flex flex-col gap-4">
-                    <Button label="Вхід" as="router-link" to="/auth/login" rounded class="w-full" @click="mobileMenuVisible = false"></Button>
-                    <Button label="Реєстрація" as="router-link" to="/auth/register" rounded class="w-full" @click="mobileMenuVisible = false"></Button>
+                    <Button label="ВХІД" as="router-link" to="/auth/login" rounded class="w-full" @click="mobileMenuVisible = false"></Button>
+                    <Button label="РЕЄСТРАЦІЯ" as="router-link" to="/auth/register" rounded class="w-full" @click="mobileMenuVisible = false"></Button>
                 </div>
                 
                 <div class="flex items-center justify-between mt-6">
                     <button type="button" class="flex items-center gap-2 px-4 py-2 rounded-full border border-surface-200 dark:border-surface-700" @click="toggleDarkMode">
                         <i :class="['pi', { 'pi-moon': isDarkTheme, 'pi-sun': !isDarkTheme }]"></i>
-                        <span>{{ isDarkTheme ? 'Темна тема' : 'Світла тема' }}</span>
+                        <span class="uppercase">{{ isDarkTheme ? 'Темна тема' : 'Світла тема' }}</span>
                     </button>
                 </div>
             </div>

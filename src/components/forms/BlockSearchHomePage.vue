@@ -20,10 +20,10 @@ const regions = apartmentsStore?.dropdowns.regions;
 
 // Status options
 const statusOptions = [
-    { type: 'sell', label: 'Продаж', icon: 'pi pi-home' },
-    { type: 'rent', label: 'Оренда', icon: 'pi pi-key' },
-    { type: 'exchange', label: 'Обмін', icon: 'pi pi-sync' },
-    { type: 'daily', label: 'Подобово', icon: 'pi pi-clock' }
+    { type: 'sell', label: 'ПРОДАЖ', icon: 'pi pi-home' },
+    { type: 'rent', label: 'ОРЕНДА', icon: 'pi pi-key' },
+    { type: 'exchange', label: 'ОБМІН', icon: 'pi pi-sync' },
+    { type: 'daily', label: 'ПОДОБОВО', icon: 'pi pi-clock' }
 ];
 const activeStatus = ref('');
 
@@ -65,7 +65,7 @@ const selectedRooms = computed({
 
 // Budget options
 const budgetOptions = [
-    { label: 'Невибрано', value: '' },
+    { label: 'Любий', value: '' },
     { label: '$5,000', value: 5000 },
     { label: '$10,000', value: 10000 },
     { label: '$20,000', value: 20000 },
@@ -88,7 +88,7 @@ const budgetOptions = [
 ];
 
 const budgetOptionsRent = [
-    { label: 'Невибрано', value: '' },
+    { label: 'Любий', value: '' },
     { label: '1000 грн', value: 1000 },
     { label: '2000 грн', value: 2000 },
     { label: '3000 грн', value: 3000 },
@@ -240,7 +240,7 @@ onMounted(() => {
                         type="button"
                     >
                         <i :class="[status.icon, 'mr-2']"></i>
-                        <span>{{ status.label }}</span>
+                        <span class="uppercase text-base font-bold">{{ status.label }}</span>
                     </button>
                 </div>
 
@@ -248,25 +248,25 @@ onMounted(() => {
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:flex justify-between items-start gap-2">
                         <!-- Property Type -->
                         <div class="w-full flex flex-col">
-                            <label class="mb-2 font-medium text-surface-700 dark:text-surface-300 text-sm sm:text-base"> Тип нерухомості </label>
-                            <Select v-model="selectedTypes" :options="propertyTypes" optionLabel="title" optionValue="key" placeholder="Тип нерухомості" display="chip" class="w-full" :filter="true" @change="showError = false" />
+                            <label class="mb-2 uppercase font-medium text-surface-700 dark:text-surface-300 text-sm sm:text-base"> Тип нерухомості </label>
+                            <Select v-model="selectedTypes" :options="propertyTypes" optionLabel="title" optionValue="key" placeholder="Тип нерухомості" display="chip" class="w-full" @change="showError = false" />
                         </div>
 
                         <!-- Location -->
                         <div class="w-full flex flex-col">
-                            <label class="mb-2 font-medium text-surface-700 dark:text-surface-300 text-sm sm:text-base"> Розташування </label>
+                            <label class="mb-2 uppercase font-medium text-surface-700 dark:text-surface-300 text-sm sm:text-base"> Розташування </label>
                             <Select v-model="selectedRegion" :options="regions.map((i) => ({ name: i.name, value: i.code }))" optionLabel="name" optionValue="value" placeholder="Вибрати область" class="w-full" :filter="true" />
                         </div>
 
                         <!-- Bedrooms -->
                         <div class="w-full flex flex-col">
-                            <label class="mb-2 font-medium text-surface-700 dark:text-surface-300 text-sm sm:text-base"> Кількість кімнат </label>
+                            <label class="mb-2 uppercase font-medium text-surface-700 dark:text-surface-300 text-sm sm:text-base"> Кількість кімнат </label>
                             <Dropdown v-model="selectedRooms" :options="bedroomOptions" optionLabel="label" optionValue="value" placeholder="Кількість кімнат" class="w-full w-max-96" />
                         </div>
 
                         <!-- Budget -->
                         <div class="w-full flex flex-col">
-                            <label class="mb-2 font-medium text-surface-700 dark:text-surface-300 text-sm sm:text-base"> Ваш бюджет {{ isRentCategory ? '(грн)' : '(USD)' }} </label>
+                            <label class="mb-2 uppercase font-medium text-surface-700 dark:text-surface-300 text-sm sm:text-base"> Ваш бюджет {{ isRentCategory ? '(грн)' : '(USD)' }} </label>
                             <div class="flex flex-col sm:flex-row gap-2">
                                 <Dropdown v-model="budgetInputMin" :options="isRentCategory ? budgetOptionsRent : budgetOptions" optionLabel="label" optionValue="value" placeholder="Мін. бюджет" class="w-full" />
                                 <Dropdown v-model="budgetInputMax" :options="isRentCategory ? budgetOptionsRent : budgetOptions" optionLabel="label" optionValue="value" placeholder="Макс. бюджет" class="w-full" />
@@ -286,9 +286,9 @@ onMounted(() => {
                         </div>
 
                         <!-- Search Button -->
-                        <div class="flex items-end gap-2 h-full" style="height: 65px">
+                        <div class="flex items-end justify-between gap-2 h-full" style="height: 65px">
                             <Button icon="pi pi-search" class="w-full p-3 bg-primary-500 hover:bg-primary-600 text-white text-sm sm:text-base" @click="search" />
-                            <Button icon="pi pi-refresh" class="p-3 bg-surface-100 hover:bg-surface-200 text-surface-700 dark:bg-surface-800 dark:hover:bg-surface-700 dark:text-surface-300" @click="resetFilters" v-tooltip="'Скинути фільтри'" />
+                            <Button icon="pi pi-times" class="p-3 bg-surface-100 hover:bg-surface-200 text-surface-700 dark:bg-surface-800 dark:hover:bg-surface-700 dark:text-surface-300" @click="resetFilters" v-tooltip="'Скинути фільтри'" />
                         </div>
                     </div>
 

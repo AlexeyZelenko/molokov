@@ -40,14 +40,18 @@ onMounted(() => {
             </template>
 
             <template #title>
-                <h3 class="text-lg font-semibold text-center">{{ item.title }}</h3>
+                <h3 class="text-[22px] font-semibold text-center uppercase">{{ item.title }}</h3>
             </template>
 
-            <template #content>
+            <template #content v-if="activeMenuId === item.id || isDesktop">
                 <div class="flex flex-col gap-2 mt-2">
-                    <div v-show="activeMenuId === item.id || isDesktop" class="transition-all duration-300 ease-in-out">
+                    <div class="transition-all duration-300 ease-in-out">
                         <router-link v-for="subcategory in item.actions" :key="subcategory.type" :to="`/categories/${item.key}/${subcategory.type}`" class="w-full">
-                            <Button :label="subcategory.label" :icon="subcategory.icon" class="p-button-outlined w-full text-gray-700 border-gray-500 hover:bg-gray-700 hover:text-white my-1" @click="closeOnMobile()" />
+                            <Button
+                             :label="subcategory.label"
+                              :icon="subcategory.icon"
+                               class="p-button-outlined w-full text-gray-700 border-gray-500 hover:bg-gray-700 hover:text-white my-1 uppercase" @click="closeOnMobile()"
+                                />
                         </router-link>
                     </div>
                 </div>
@@ -58,11 +62,14 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .features {
+    width: 100%;
+    padding: 0 20px;
     max-width: 1200px;
     margin: 50px auto 0;
 }
 
 .real-estate-card {
+    width: 100%;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition:

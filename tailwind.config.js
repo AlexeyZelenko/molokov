@@ -1,14 +1,11 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-    content: [
-        "./index.html",
-        "./src/**/*.{vue,js,ts,jsx,tsx}",
-    ],
+    content: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
     darkMode: ['selector', '[class*="app-dark"]'],
     theme: {
         extend: {
             colors: {
-                'surface': {
+                surface: {
                     0: '#ffffff',
                     50: '#f8f9fa',
                     100: '#f3f4f6',
@@ -21,7 +18,7 @@ module.exports = {
                     800: '#1f2937',
                     900: '#111827'
                 },
-                'primary': {
+                primary: {
                     50: '#f0f9ff',
                     100: '#e0f2fe',
                     200: '#bae6fd',
@@ -36,5 +33,5 @@ module.exports = {
             }
         }
     },
-    plugins: [],
+    plugins: []
 };
