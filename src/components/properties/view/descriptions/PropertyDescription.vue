@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import DOMPurify from 'dompurify';
 import { formatFirebaseTimestamp } from '@/utils/dateUtils';
 import PropertyAmenities from '@/components/properties/view/amenities/PropertyAmenities.vue';
@@ -31,6 +31,11 @@ const props = defineProps({
     }
 });
 
+const fontSize = ref(16); // Начальный размер шрифта
+const minFontSize = 12;   // Минимальный размер шрифта
+const maxFontSize = 24;   // Максимальный размер шрифта
+const step = 2;           // Шаг изменения размера
+
 const description = computed(() => {
     const cleanedHtml = props.description.replace(/&nbsp;/g, ' ');
     return DOMPurify.sanitize(cleanedHtml, {
@@ -38,6 +43,22 @@ const description = computed(() => {
         ALLOWED_ATTR: ['href']
     });
 });
+
+const increaseFontSize = () => {
+    if (fontSize.value < maxFontSize) {
+        fontSize.value += step;
+    }
+};
+
+const decreaseFontSize = () => {
+    if (fontSize.value > minFontSize) {
+        fontSize.value -= step;
+    }
+};
+
+const resetFontSize = () => {
+    fontSize.value = 16;
+};
 </script>
 
 <template>
@@ -46,7 +67,9 @@ const description = computed(() => {
             <Accordion value="0">
                 <AccordionPanel>
                     <AccordionHeader>
-                        <span class="font-semibold text-xl">Додадковий опис об'єкта</span>
+                        <div class="flex justify-between items-center w-full">
+                            <span class="font-semibold text-xl">Додадковий опис об'єкта</span>                            
+                        </div>
                     </AccordionHeader>
                     <AccordionContent>
                         <div v-if="facilityReadiness">
@@ -54,16 +77,58 @@ const description = computed(() => {
                             <span>{{ formatFirebaseTimestamp(facilityReadiness) }}</span>
                         </div>
 
-                        <div class="my-2 max-w-full break-words prose" v-html="description"></div>
+                        <div class="flex items-center gap-2">
+                                <Button 
+                                    icon="pi pi-minus"
+                                    label="ТЕКСТ" 
+                                    @click="decreaseFontSize" 
+                                    severity="secondary" 
+                                    size="small"
+                                    :disabled="fontSize <= minFontSize"
+                                    v-tooltip="'Зменшити текст'"
+                                />
+                                <Button 
+                                    icon="pi pi-plus" 
+                                    label="ТЕКСТ" 
+                                    @click="increaseFontSize" 
+                                    severity="secondary" 
+                                    size="small"
+                                    :disabled="fontSize >= maxFontSize"
+                                    v-tooltip="'Збільшити текст'"
+                                />
+                                <Button 
+                                    label="СКИНУТИ" 
+                                    @click="resetFontSize" 
+                                    severity="secondary" 
+                                    size="small"
+                                    v-tooltip="'Скинути розмір тексту'"
+                                />
+                            </div>
+                        <div 
+                            class="my-2 max-w-full break-words prose" 
+                            v-html="description"
+                            :style="{ fontSize: `${fontSize}px` }"
+                        ></div>
 
                         <ParkingDetails v-if="property.parking" :parking="property.parking" />
 
                         <PropertyAmenities class="my-4" :property="property" />
 
-                        <component v-if="property" :is="subcategoryComponentMap[property?.subcategory?.code] || SellApartment" :property="property" />
+                        <component 
+                            v-if="property" 
+                            :is="subcategoryComponentMap[property?.subcategory?.code] || SellApartment" 
+                            :property="property" 
+                        />
                     </AccordionContent>
                 </AccordionPanel>
             </Accordion>
         </div>
     </Fluid>
 </template>
+
+<style scoped>
+.prose {
+    line-height: 1.6;
+    transition: font-size 0.2s ease;
+}
+</style>
