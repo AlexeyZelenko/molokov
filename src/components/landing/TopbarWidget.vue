@@ -68,23 +68,23 @@ onMounted(() => {
         <div class="items-center justify-between hidden lg:flex lg:static w-full left-0 top-full px-12 lg:px-0 z-20 rounded-border">
             <ul class="list-none p-0 m-0 flex lg:items-center select-none flex-col lg:flex-row cursor-pointer gap-8">
                 <li>
-                    <a @click="smoothScroll('features')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium text-lg lg:text-xl hover:text-primary-500 dark:hover:text-primary-400 transition-colors duration-200">
-                        <span>Вибрати нерухомість</span>
+                    <a @click="smoothScroll('features')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium text-lg lg:text-xl hover:text-white dark:hover:text-primary-400 transition-colors duration-200">
+                        <span class="uppercase text-lg font-bold text-center">Вибрати нерухомість</span>
                     </a>
                 </li>
                 <li>
-                    <a @click="smoothScroll('highlights')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium text-lg lg:text-xl hover:text-primary-500 dark:hover:text-primary-400 transition-colors duration-200">
-                        <span>Про додаток</span>
+                    <a @click="smoothScroll('highlights')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium text-lg lg:text-xl hover:text-white dark:hover:text-primary-400 transition-colors duration-200">
+                        <span class="uppercase text-lg font-bold text-center hover:text-white dark:hover:text-primary-400">Про додаток</span>
                     </a>
                 </li>
                 <li>
-                    <a @click="navigateTo('/cherkasy-areas')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium text-lg lg:text-xl hover:text-primary-500 dark:hover:text-primary-400 transition-colors duration-200">
-                        <span>Райони</span>
+                    <a @click="navigateTo('/cherkasy-areas')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium text-lg lg:text-xl hover:text-white dark:hover:text-primary-400 transition-colors duration-200">
+                        <span class="uppercase text-lg font-bold text-center">Райони</span>
                     </a>
                 </li>                
-                <li class="bg-primary-500 dark:bg-primary-400 rounded-full px-4 py-2 hover:bg-primary-600 dark:hover:bg-primary-300 transition-colors duration-200">
-                    <a @click="navigateTo('/add-properties')" class="px-0 py-4 text-surface-0 font-medium text-lg lg:text-xl">
-                        <span>Додати нерухомість</span>
+                <li class="bg-primary-500 dark:bg-primary-400 rounded-full px-4 py-2 hover:bg-primary-300 dark:hover:bg-primary-300 transition-colors duration-200">
+                    <a @click="navigateTo('/add-properties')" class="flex items-center justify-center px-0 text-surface-0 font-medium text-lg lg:text-xl">
+                        <p class="uppercase text-lg font-bold text-center">Додати нерухомість</p>
                     </a>
                 </li>
             </ul>
@@ -100,8 +100,12 @@ onMounted(() => {
                         <Button label="Вихід" as="button" @click="handleLogout" rounded></Button>
                     </div>
                     <div v-else class="flex items-center gap-4">
-                        <Button label="Вхід" text as="router-link" to="/auth/login" rounded></Button>
-                        <Button label="Реєстрація" as="router-link" to="/auth/register" rounded></Button>
+                        <Button label="Вхід" text as="router-link" to="/auth/login" rounded>
+                            <p class="uppercase text-lg font-bold text-center">Вхід</p>
+                        </Button>
+                        <Button label="Реєстрація" as="router-link" to="/auth/register" rounded>
+                            <p class="uppercase text-lg font-bold text-center">Реєстрація</p>
+                        </Button>
                     </div>
                 </div>
 

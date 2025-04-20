@@ -15,7 +15,7 @@ export default {
     <div class="feature-card">
         <div class="feature-gradient">
             <div class="feature-content">
-                <div class="flex items-center justify-between">
+                <div class="flex items-center justify-between mb-4">
                     <div class="feature-icon" :class="iconBg">
                         <i class="pi" :class="['pi-fw', icon, iconColor, '!text-2xl']"></i>
                     </div>
@@ -40,22 +40,22 @@ export default {
 }
 
 .feature-content {
-    @apply p-4 bg-surface-0 dark:bg-surface-900 h-full rounded-lg;
+    @apply p-4 bg-surface-0 dark:bg-surface-900 h-full rounded-lg mt-2;
 }
 
 .feature-icon {
-    @apply flex items-center justify-center mb-4;
+    @apply flex items-center justify-center mr-4;
     width: 3.5rem;
     height: 3.5rem;
     border-radius: 10px;
 }
 
 .feature-title {
-    @apply text-surface-900 dark:text-surface-0 text-xl font-semibold;
+    @apply text-surface-900 dark:text-surface-0 text-[20px] font-semibold;
 }
 
 .feature-description {
-    @apply text-surface-600 dark:text-surface-200 text-lg mt-4;
+    @apply text-surface-600 dark:text-surface-200 text-[18px] mt-6;
     @apply text-surface-600 dark:text-surface-200;
 }
 </style>

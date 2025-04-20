@@ -338,10 +338,10 @@ onMounted(async () => {
     <Tabs value="0">
         <TabList>
             <Tab value="0">
-                <div class="flex justify-between font-semibold text-xl">Фільтри</div>
+                <div class="flex justify-between font-semibold text-xl uppercase">Фільтри</div>
             </Tab>
             <Tab value="1">
-                <div class="flex justify-between font-semibold text-xl">Сортувати</div>
+                <div class="flex justify-between font-semibold text-xl uppercase">Сортувати</div>
             </Tab>
             <Button icon="pi pi-times" severity="help" rounded variant="outlined" aria-label="Cancel" @click="handleClose" />
         </TabList>
@@ -349,14 +349,14 @@ onMounted(async () => {
             <TabPanel value="0">
                 <div class="flex flex-col gap-3 overflow-y-auto">
                     <div class="flex flex-col">
-                        <Button @click="clearFilters" type="button" label="Скинути" :icon="countFilterParams ? 'pi pi-filter' : 'pi pi-filter-slash'" :badge="countFilterParams" badgeSeverity="contrast" variant="outlined" />
-                        <Button :label="allPanelsOpen ? 'Закрити всі фільтри' : 'Відкрити всі фільтри'" @click="toggleAllPanels" class="mt-2" variant="outlined" />
+                        <Button @click="clearFilters" type="button" label="СКИНУТИ ФІЛЬТРИ" :icon="countFilterParams ? 'pi pi-filter' : 'pi pi-filter-slash'" :badge="countFilterParams" badgeSeverity="contrast" variant="outlined" />
+                        <Button :label="allPanelsOpen ? 'ЗАКРИТИ ВСІ ФІЛЬТРИ' : 'ВІДКРИТИ ВСІ ФІЛЬТРИ'" @click="toggleAllPanels" class="mt-2" variant="outlined" />
                     </div>
 
                     <Accordion v-model:value="activePanels" :multiple="true">
                         <AccordionPanel value="selectedFilters">
-                            <AccordionHeader class="font-semibold text-xl mb-4">
-                                Вибрані фільтри
+                            <AccordionHeader>
+                                <span class="font-semibold uppercase">Вибрані фільтри</span>
                                 <OverlayBadge v-if="countFilterParams" :value="countFilterParams">
                                     <i :class="countFilterParams ? 'pi pi-filter' : 'pi pi-filter-slash'" style="font-size: 1.5rem" />
                                 </OverlayBadge>
@@ -370,7 +370,9 @@ onMounted(async () => {
                         </AccordionPanel>
 
                         <AccordionPanel value="location">
-                            <AccordionHeader class="font-semibold text-xl mb-4">Росташування</AccordionHeader>
+                            <AccordionHeader class="font-semibold text-xl mb-4">
+                                <span class="font-semibold uppercase">Росташування</span>
+                            </AccordionHeader>
                             <AccordionContent>
                                 <div class="flex flex-col">
                                     <label>Область</label>
@@ -406,7 +408,9 @@ onMounted(async () => {
                         </AccordionPanel>
 
                         <AccordionPanel value="rooms">
-                            <AccordionHeader class="font-semibold text-xl mb-4">Кількість кімнат</AccordionHeader>
+                            <AccordionHeader class="font-semibold text-xl mb-4">
+                                <span class="font-semibold uppercase">Кількість кімнат</span>
+                            </AccordionHeader>
                             <AccordionContent>
                                 <div v-for="(rooms, key) in roomsAll" :key="key" class="flex flex-col">
                                     <MultiSelect
@@ -424,7 +428,9 @@ onMounted(async () => {
                         </AccordionPanel>
 
                         <AccordionPanel value="area">
-                            <AccordionHeader>Площа</AccordionHeader>
+                            <AccordionHeader>
+                                <span class="font-semibold uppercase">Площа</span>
+                            </AccordionHeader>
                             <AccordionContent>
                                 <div class="flex flex-col">
                                     <label>Площа (загальна)</label>
@@ -453,7 +459,9 @@ onMounted(async () => {
                         </AccordionPanel>
 
                         <AccordionPanel value="building">
-                            <AccordionHeader>Інфо про будинок</AccordionHeader>
+                            <AccordionHeader>
+                                <span class="font-semibold uppercase">Інфо про будинок</span>
+                            </AccordionHeader>
                             <AccordionContent>
                                 <div class="flex flex-col">
                                     <label>Стан будинку</label>
@@ -473,7 +481,9 @@ onMounted(async () => {
                         </AccordionPanel>
 
                         <AccordionPanel value="details">
-                            <AccordionHeader>Детальніше про об'єкт</AccordionHeader>
+                            <AccordionHeader>
+                                <span class="font-semibold uppercase">Детальніше про об'єкт</span>
+                            </AccordionHeader>
                             <AccordionContent>
                                 <div class="flex flex-col">
                                     <label>Стан об'єкта</label>
@@ -506,7 +516,8 @@ onMounted(async () => {
                     </Accordion>
 
                     <div class="flex flex-col">
-                        <label>Ціна</label>
+                        <label class="font-semibold uppercase ml-4 mb-2 text-grey">Ціна</label>                       
+                        
                         <div class="flex flex-col gap-1">
                             <InputNumber
                                 v-model="filters.minPrice"
@@ -565,8 +576,8 @@ onMounted(async () => {
                         <span v-if="filters.maxPrice !== null"> До: {{ formatCurrency(filters.maxPrice) }} </span>
                     </div>
                 </div>
-                <Button label="Застосувати фільтри" icon="pi pi-check" @click="setFilters" class="mt-4" />
-                <Button label="Скинути фільтри" icon="pi pi-check" @click="clearFilters" class="mt-4" />
+                <Button label="ЗАСТОСУВАТИ ФІЛЬТРИ" icon="pi pi-check" @click="setFilters" class="mt-4" />
+                <Button label="СКИНУТИ ФІЛЬТРИ" icon="pi pi-check" @click="clearFilters" class="mt-4" />
             </TabPanel>
             <TabPanel value="1">
                 <div class="flex flex-col gap-4">

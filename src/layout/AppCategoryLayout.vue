@@ -135,7 +135,7 @@ function handleSidebarClick(event) {
         <app-topbar></app-topbar>
         <app-sidebar></app-sidebar>
         <Button
-            label="Фільтри"
+            label="ФІЛЬТРИ"
             raised icon="pi pi-filter"
             :badge="filtersLength"
             class="filters-button p-button"

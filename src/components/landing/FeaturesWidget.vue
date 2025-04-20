@@ -40,18 +40,24 @@ onMounted(() => {
             </template>
 
             <template #title>
-                <h3 class="text-[22px] font-semibold text-center uppercase">{{ item.title }}</h3>
+                <h3 class="text-[22px] font-semibold text-center uppercase tracking-wide">{{ item.title }}</h3>
             </template>
 
             <template #content v-if="activeMenuId === item.id || isDesktop">
                 <div class="flex flex-col gap-2 mt-2">
                     <div class="transition-all duration-300 ease-in-out">
                         <router-link v-for="subcategory in item.actions" :key="subcategory.type" :to="`/categories/${item.key}/${subcategory.type}`" class="w-full">
-                            <Button
-                             :label="subcategory.label"
-                              :icon="subcategory.icon"
-                               class="p-button-outlined w-full text-gray-700 border-gray-500 hover:bg-gray-700 hover:text-white my-1 uppercase" @click="closeOnMobile()"
-                                />
+                            <Button v-slot="slotProps" asChild @click="closeOnMobile()" variant="outlined"">
+                                    <button
+                                        :label="subcategory.label"
+                                        :icon="subcategory.icon"
+                                        v-bind="slotProps.a11yAttrs"                                        
+                                        class="p-button-outlined w-full uppercase text-gray-700 border-gray-500 hover:bg-gray-700 hover:text-white my-2 cursor-pointer p-2 border-2 rounded-lg"
+                                    >
+                                    <i :class="subcategory.icon" class="mr-2"></i>
+                                        <span class="font-semibold tracking-wide">{{ subcategory.label }}</span>
+                                    </button>
+                                </Button>                                
                         </router-link>
                     </div>
                 </div>
@@ -86,5 +92,6 @@ onMounted(() => {
 .p-button {
     transition: all 0.3s ease;
     border-radius: 6px;
+    font-weight: 600;
 }
 </style>
