@@ -150,9 +150,9 @@ if (savedViewMode) {
                     </button>
                 </section>
             </div>
-            <div class="flex flex-wrap">
+            <div class="flex flex-wrap v-full">
                 <!-- Images and location section -->
-                <div :class="['flex flex-col', viewMode === 'single' ? 'w-full' : 'md:w-1/2 md:pr-3']">
+                <div :class="['flex flex-col', viewMode === 'single' ? 'w-full' : 'w-full md:w-1/2 md:pr-3']">
                     <div v-if="property.images?.length">
                         <PropertyGallery :images="property.images" />
                     </div>
@@ -163,7 +163,7 @@ if (savedViewMode) {
                 </div>
 
                 <!-- Details section -->
-                <div :class="['flex flex-col', viewMode === 'single' ? 'w-full' : 'md:w-1/2 md:pl-3']">
+                <div :class="['flex flex-col', viewMode === 'single' ? 'w-full' : 'w-full md:w-1/2 md:pl-3']">
                     <div class="card flex flex-col shadow-lg mt-2">
                         <div class="flex justify-between items-center font-semibold text-xl text-primary-700">
                             <div>{{ property.category?.name }} / {{ property.subcategory?.name }}</div>

@@ -15,7 +15,7 @@ const galleria = ref();
 const activeIndex = ref(0);
 const showThumbnails = ref(false);
 const fullScreen = ref(false);
-const isAutoPlay = ref(true);
+const isAutoPlay = ref(false);
 
 const toggleAutoSlide = () => {
     isAutoPlay.value  = !isAutoPlay.value ;
@@ -92,25 +92,24 @@ const slideButtonIcon = computed(() => {
 });
 
 // Image loading handling
-const onImageLoad = (image) => {
-  // Mark image as loaded immediately when it's actually loaded
-  image.loaded = true;
-};
-const isLoading = ref(false);
-
-// Handle active image change
-const onActiveIndexChange = (index) => {
-  activeIndex.value = index;
-  isLoading.value = true;
+const onImageLoad = (image) => {    
+    isLoading.value = true;
   
   // Reset loading state after a short delay
   setTimeout(() => {
     isLoading.value = false;
-  }, 300);
+    image.loaded = true;
+  }, 200);
+  
 };
+const isLoading = ref(false);
 
 onMounted(() => {    
     bindDocumentListeners();
+});
+
+onBeforeUnmount(() => {
+    unbindDocumentListeners();
 });
 </script>
 
@@ -132,8 +131,7 @@ onMounted(() => {
             :zoomOutDisabled="true"
             :autoPlay="isAutoPlay"
             :transitionInterval="3000"
-            :changeItemOnIndicatorHover="true"
-            @active-index-change="onActiveIndexChange"                                         
+            :changeItemOnIndicatorHover="true"                                                 
             :pt="{
                 root: {
                     class: [{ 'flex flex-col': fullScreen }]
@@ -153,14 +151,14 @@ onMounted(() => {
                 </div>
                 
                 <!-- Image -->
-                <img
+                <img                    
                     @load="onImageLoad(slotProps.item)"
                     :src="slotProps.item.url || slotProps.item"
                     :alt="slotProps.item.title || 'Gallery image'"
                     :style="{ 
                     width: !fullScreen ? '100%' : '',
                     height: fullScreen ? '100%' : '400px',                    
-                    display: !slotProps.item.loaded && isLoading ? 'none' : 'block' 
+                    
                     }"
                     class="galleria-item-image mx-auto"
                 />
@@ -198,9 +196,10 @@ onMounted(() => {
 
 <style scoped>
 .galleria-item-image {
-  object-fit: cover;
-  /* height: 300px;  */
-  /* max-height: 100%; */
+    display: flex;
+    object-fit: cover;
+    /* height: 300px;  */
+    /* max-height: 100%; */
 }
 :deep(.p-galleria-thumbnails-content) {
     display: flex;
