@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps, onMounted, computed } from 'vue'; // Додано computed
+import { defineProps, onMounted } from 'vue'; // Додано computed
 import PropertyActions from './PropertyActions.vue';
 import PropertyUserInfo from './PropertyUserInfo.vue';
 import { formatFirebaseTimestampToTime } from '@/utils/dateUtils';
@@ -8,7 +8,8 @@ import { useUserStore } from '@/store/userStore';
 import { useRoute } from 'vue-router';
 import PropertyImage from './PropertyImage.vue'; // <--- 1. Імпортуємо новий компонент
 
-const props = defineProps({ // Перейменовано props на propsList або залиште items
+const props = defineProps({
+    // Перейменовано props на propsList або залиште items
     items: Array
 });
 
@@ -27,11 +28,10 @@ const shouldShowStatusTag = (item) => {
     // Додано .toString() для порівняння, якщо route.query.user - рядок
 };
 
-
 onMounted(() => {
     // Оптимізація: Завантажуємо користувача, тільки якщо він ще не завантажений
     // і якщо він потрібен для shouldShowStatusTag або інших компонентів
-    if (!user && (props.items.some(item => item?.creator?.id))) {
+    if (!user && props.items.some((item) => item?.creator?.id)) {
         userStore.fetchUser();
     }
     // Або якщо user завжди потрібен, просто: userStore.fetchUser();
@@ -42,13 +42,7 @@ onMounted(() => {
     <div v-if="items.length > 0" class="flex flex-col">
         <div v-for="(item, index) in items" :key="index">
             <div class="property-card flex flex-col sm:flex-row sm:items-center mt-4 p-4 gap-6 shadow-md">
-
-                <PropertyImage
-                    :images="item.images"
-                    :alt-text="item.title"
-                    :is-public="item.isPublic"
-                    :show-status-tag="shouldShowStatusTag(item)"
-                />
+                <PropertyImage :images="item.images" :alt-text="item.title" :is-public="item.isPublic" :show-status-tag="shouldShowStatusTag(item)" />
                 <div class="flex flex-col md:flex-row justify-between md:items-center flex-1 gap-6">
                     <div class="flex flex-col">
                         <div class="text-lg font-medium mb-4">{{ item.title }}</div>
@@ -59,9 +53,7 @@ onMounted(() => {
                             </div>
                             <div class="flex items-center" v-if="item.address?.city?.AreaDescription || item.address?.city?.RegionsDescription">
                                 <i class="pi pi-map-marker mr-2"></i>
-                                <span
-                                    v-if="item.address?.city?.AreaDescription"
-                                >{{ item.address.city.AreaDescription }} обл.</span>
+                                <span v-if="item.address?.city?.AreaDescription">{{ item.address.city.AreaDescription }} обл.</span>
                                 <span v-if="item.address?.city?.RegionsDescription">/{{ item.address.city.RegionsDescription }} р-н</span>
                             </div>
                             <div class="flex items-center">
@@ -71,7 +63,7 @@ onMounted(() => {
                             </div>
                             <div v-if="item.createdAt" class="flex items-center">
                                 <i class="pi pi-calendar mr-2"></i>
-                                <div> {{ formatFirebaseTimestampToTime(item.createdAt) }}</div>
+                                <div>{{ formatFirebaseTimestampToTime(item.createdAt) }}</div>
                             </div>
                             <div class="flex items-center">
                                 <i class="pi pi-verified mr-2"></i>

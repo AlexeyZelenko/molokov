@@ -18,7 +18,7 @@ import Breadcrumb from "@/components/Breadcrumb.vue";
     </div>
 
     <!-- Main Content -->
-    <div class="container mx-auto px-4 py-8">
+    <div class="container mx-auto px-4 py-8 bg-gray-100 min-h-screen max-width[980px]">
         <Breadcrumb />
         <router-view></router-view>
     </div>

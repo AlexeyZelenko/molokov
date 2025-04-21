@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { db } from '@/firebase/config';
-import { collection, query, where, getDocs, orderBy, limit, documentId } from 'firebase/firestore';
+import { collection, query, where, getDocs, orderBy, limit, documentId, collectionGroup } from 'firebase/firestore';
 
 export const usePropertiesStore = defineStore('properties', {
     state: () => ({
@@ -181,6 +181,80 @@ export const usePropertiesStore = defineStore('properties', {
             house: {
                 sell: 'HousesSell',
                 rent: 'HousesRent'
+            }
+        },
+        async getAllPropertiesDataConcurrent() {
+            const allProperties = [];
+
+            // Визначаємо запити для кожного типу транзакції (використовуючи lowercase ID, як у вашому коді)
+            const rentQuery = collectionGroup(db, 'rent');
+            const sellQuery = collectionGroup(db, 'sell');
+            const dailyRentQuery = collectionGroup(db, 'dailyRent');
+            const exchangeQuery = collectionGroup(db, 'exchange');
+
+
+            try {
+                // Виконуємо всі запити паралельно за допомогою Promise.All
+                console.log('Fetching documents from rent, sell, dailyRent, exchange collection groups concurrently...');
+                // *** ВИПРАВЛЕНО: Деструктуризація відповідає кількості промісів (4) ***
+                const [rentSnapshot, sellSnapshot, dailyRentSnapshot, exchangeSnapshot] = await Promise.all([
+                    getDocs(rentQuery),
+                    getDocs(sellQuery),
+                    getDocs(dailyRentQuery),
+                    getDocs(exchangeQuery),
+                ]);
+
+                // Обробляємо результати запиту RENT
+                console.log(`Знайдено ${rentSnapshot.docs.length} документів у підколекції 'rent'.`); // Виправлено лог
+                rentSnapshot.docs.forEach(doc => {
+                    allProperties.push({
+                        id: doc.id,
+                        ...doc.data(),
+                        transactionType: 'RENT', // Можна залишити UPPERCASE для значення типу
+                        typeDocumentId: doc.ref.parent?.parent?.id || null,
+                    });
+                });
+
+                // Обробляємо результати запиту SELL
+                console.log(`Знайдено ${sellSnapshot.docs.length} документів у підколекції 'sell'.`); // Виправлено лог
+                sellSnapshot.docs.forEach(doc => {
+                    allProperties.push({
+                        id: doc.id,
+                        ...doc.data(),
+                        transactionType: 'SELL', // Можна залишити UPPERCASE для значення типу
+                        typeDocumentId: doc.ref.parent?.parent?.id || null,
+                    });
+                });
+
+                // Обробляємо результати запиту DAILY_RENT
+                console.log(`Знайдено ${dailyRentSnapshot.docs.length} документів у підколекції 'dailyRent'.`); // Виправлено лог
+                dailyRentSnapshot.docs.forEach(doc => {
+                    allProperties.push({
+                        id: doc.id,
+                        ...doc.data(),
+                        transactionType: 'DAILY_RENT', // Можна залишити UPPERCASE для значення типу
+                        typeDocumentId: doc.ref.parent?.parent?.id || null,
+                    });
+                });
+
+                // *** ВИПРАВЛЕНО: Додано обробку результату для EXCHANGE ***
+                console.log(`Знайдено ${exchangeSnapshot.docs.length} документів у підколекції 'exchange'.`); // Додано лог
+                exchangeSnapshot.docs.forEach(doc => {
+                    allProperties.push({
+                        id: doc.id,
+                        ...doc.data(),
+                        transactionType: 'EXCHANGE', // Встановлюємо тип транзакції
+                        typeDocumentId: doc.ref.parent?.parent?.id || null,
+                    });
+                });
+
+
+                console.log(`Всього знайдено об'єктів нерухомості: ${allProperties.length}`);
+                return allProperties; // Повертаємо об'єднаний список
+
+            } catch (error) {
+                console.error('Помилка отримання всіх об\'єктів нерухомості паралельно:', error);
+                throw error; // Перекидаємо помилку далі
             }
         },
 

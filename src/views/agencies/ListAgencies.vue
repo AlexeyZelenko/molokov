@@ -89,11 +89,7 @@ const filteredAgencies = computed(() => {
                 <Card v-for="agency in filteredAgencies" :key="agency.id" class="shadow-md hover:shadow-xl transition-shadow duration-300">
                     <template #header>
                         <section class="flex items-center m-4">
-                            <img
-                                :src="agency.logoUrl || 'https://via.placeholder.com/50?text=No+Logo'"
-                                alt="Логотип агентства"
-                                class="h-24 w-24 rounded-full mr-4"
-                            />
+                            <Avatar :image="agency.logoUrl" class="mr-2" size="xlarge" shape="circle" alt="Логотип агентства" />
                             <h2 class="text-xl font-semibold text-blue-700 inline-block">{{ agency.name }}</h2>
                         </section>
                     </template>
@@ -108,9 +104,9 @@ const filteredAgencies = computed(() => {
                     </template>
 
                     <template #footer>
-                        <div class="flex justify-between items-center">
-                            <Tag severity="info" :value="`агентів  ${agency.agents || 0}`" />
-                            <Tag severity="info" :value="`об\'єктів  ${agency.objects || 0}`" />
+                        <div class="flex justify-between items-center mt-4">
+                            <!-- <Tag severity="info" :value="`агентів  ${agency.agents || 0}`" />
+                            <Tag severity="info" :value="`об\'єктів  ${agency.objects || 0}`" /> -->
 
                             <Button label="Деталі" icon="pi pi-info-circle" class="p-button-sm" @click="selectedAgency = agency"/>
                         </div>

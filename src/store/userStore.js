@@ -10,7 +10,8 @@ export const useUserStore = defineStore('user', {
         clients: [],
         loading: false,
         error: null,
-        users: []
+        users: [],
+        selectedAgent: null
     }),
 
     actions: {
@@ -276,6 +277,7 @@ export const useUserStore = defineStore('user', {
                     id: doc.id,
                     ...doc.data()
                 }));
+                return this.users;
             } catch (err) {
                 console.error('Failed to fetch users:', err);
                 this.error = err.message;
@@ -324,6 +326,11 @@ export const useUserStore = defineStore('user', {
             this.user = null;
             this.clients = [];
             this.loading = false;
+        },
+
+        setSelectedAgent(selectedAgent) {
+            console.log('Selected agent:', selectedAgent);
+            this.selectedAgent = selectedAgent;
         }
     }
 });

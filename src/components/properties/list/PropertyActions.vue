@@ -14,8 +14,8 @@ import ProgressSpinner from 'primevue/progressspinner'; // Import PrimeVue Progr
 const props = defineProps({
     item: {
         type: Object,
-        required: true,
-    },
+        required: true
+    }
 });
 
 const router = useRouter();
@@ -47,7 +47,7 @@ const editProperty = () => {
             severity: 'error',
             summary: 'Помилка',
             detail: "Ви не маєте права редагувати цей об'єкт",
-            life: 3000,
+            life: 3000
         });
         return;
     }
@@ -67,11 +67,11 @@ const deleteProperty = (event) => {
         rejectProps: {
             label: 'Відміна',
             severity: 'secondary',
-            outlined: true,
+            outlined: true
         },
         acceptProps: {
             label: 'Видалити',
-            severity: 'danger',
+            severity: 'danger'
         },
         accept: async () => {
             deleting.value = true;
@@ -95,7 +95,7 @@ const deleteProperty = (event) => {
 
                 await store.getProperties({
                     category: props.item.category.code,
-                    subcategory: props.item.subcategory.code,
+                    subcategory: props.item.subcategory.code
                 });
                 deleting.value = false;
 
@@ -103,7 +103,7 @@ const deleteProperty = (event) => {
                     severity: 'success',
                     summary: 'Успішно',
                     detail: "Об'єкт видалено",
-                    life: 3000,
+                    life: 3000
                 });
             } catch (error) {
                 deleting.value = false;
@@ -112,14 +112,14 @@ const deleteProperty = (event) => {
                     severity: 'error',
                     summary: 'Помилка',
                     detail: "Не вдалося видалити об'єкт",
-                    life: 3000,
+                    life: 3000
                 });
             }
         },
         reject: () => {
             deleting.value = false;
             toast.add({ severity: 'error', summary: 'Відхилено', detail: 'Ви відхилили видалення', life: 3000 });
-        },
+        }
     });
 };
 </script>
@@ -138,20 +138,9 @@ const deleteProperty = (event) => {
         <Button label="ПЕРЕГЛЯНУТИ ДЕТАЛІ" class="p-button-warning" @click="showProperty" />
 
         <template v-if="isCreator || isAdmin">
-            <Button
-                icon="pi pi-pencil"
-                class="p-button-warning"
-                @click="editProperty"
-            />
-            <Button
-                v-if="!deleting"
-                icon="pi pi-trash"
-                class="p-button-danger"
-                @click="deleteProperty"
-            ></Button>
-            <ProgressSpinner v-else style="width: 16px; height: 16px; margin-top: 8px" strokeWidth="8" fill="transparent"
-                             animationDuration=".7s" aria-label="Custom ProgressSpinner" />
-
+            <Button icon="pi pi-pencil" class="p-button-warning" @click="editProperty" />
+            <Button v-if="!deleting" icon="pi pi-trash" class="p-button-danger" @click="deleteProperty"></Button>
+            <ProgressSpinner v-else style="width: 16px; height: 16px; margin-top: 8px" strokeWidth="8" fill="transparent" animationDuration=".7s" aria-label="Custom ProgressSpinner" />
         </template>
     </div>
 </template>

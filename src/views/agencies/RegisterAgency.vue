@@ -1,7 +1,6 @@
 <script setup>
-import { ref, reactive, computed, watch } from 'vue';
+import { ref, reactive, computed, watch, onMounted } from "vue";
 import { useAgencyStore } from '@/store/agencyStore';
-// useApartmentsStore та regions імпортуються з прикладу, можливо, вам потрібно інше джерело для regions
 import { useApartmentsStore } from '@/store/apartments';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
@@ -11,19 +10,17 @@ import { required, email, helpers, minLength } from '@vuelidate/validators';
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useToast } from 'primevue/usetoast';
 import { v4 as uuidv4 } from 'uuid';
-
-import VueLeafle from '@/components/maps/VueLeafle.vue'; // Імпортуємо компонент мапи
-
-// Припускаємо, що список областей отримується з apartmentsStore або іншого централізованого місця
-const apartmentsStore = useApartmentsStore();
-const regions = apartmentsStore.dropdowns.regions;
-
-// Припускаємо, що у вас є такий сервіс для пошуку міст
+import { useAuthStore } from '@/store/authFirebase';
+import VueLeafle from '@/components/maps/VueLeafle.vue';
 import { getSettlements } from '@/services/novaPoshtaService';
 
-
+// Store and services setup
+const authStore = useAuthStore();
+const agencyStore = useAgencyStore();
+const apartmentsStore = useApartmentsStore();
 const toast = useToast();
 
+// Props
 const props = defineProps({
     agency: {
         type: Object,
@@ -31,32 +28,32 @@ const props = defineProps({
     }
 });
 
+// Computed and reactive state
 const isEditing = computed(() => !!props.agency);
-const agencyStore = useAgencyStore();
-
-const newPhoneNumber = ref(''); // Для додавання телефонів
-const searchQuery = ref(''); // Для пошуку міст
-const citiesNova = ref([]); // Результати пошуку міст
-
-// Змінна для центрування мапи. Оновлюється при виборі міста.
+const regions = apartmentsStore.dropdowns.regions;
+const currentUser = computed(() => authStore.user);
+const newPhoneNumber = ref('');
+const searchQuery = ref('');
+const citiesNova = ref([]);
 const centerMap = ref(null);
+const isSubmitting = ref(false);
+const logoError = ref(null);
 
-// Форма ініціалізується даними з пропсу agency або пустими значеннями
+// Initialize form with props data or default values
 const form = reactive({
     name: props.agency?.name || '',
-    address: props.agency?.address || '', // Адреса (вулиця, будинок)
-    phone: props.agency?.phone || [], // phone є масивом
+    address: props.agency?.address || '',
+    phone: props.agency?.phone || [],
     email: props.agency?.email || '',
     website: props.agency?.website || '',
     logoUrl: props.agency?.logoUrl || null,
     logoFile: null,
-    region: props.agency?.region || null, // Об'єкт області
-    city: props.agency?.city || null, // Об'єкт міста (нас. пункту НП)
-    // Додано поле для позиції маркера
-    // Припускаємо, що agency.markerPosition є масивом [lat, lng]
+    region: props.agency?.region || null,
+    city: props.agency?.city || null,
     markerPosition: props.agency?.markerPosition || []
 });
 
+// Validation rules
 const rules = computed(() => ({
     name: { required: helpers.withMessage("Назва обов'язкова", required) },
     address: { required: helpers.withMessage("Адреса обов'язкова", required) },
@@ -64,43 +61,39 @@ const rules = computed(() => ({
         required: helpers.withMessage('Потрібен хоча б один телефон', required),
         minLength: helpers.withMessage('Потрібен хоча б один телефон', minLength(1))
     },
-    email: { required: helpers.withMessage("Email обов'язковий", required), email: helpers.withMessage('Невірний формат Email', email) },
+    email: {
+        required: helpers.withMessage("Email обов'язковий", required),
+        email: helpers.withMessage('Невірний формат Email', email)
+    },
     website: { required: helpers.withMessage("Вебсайт обов'язковий", required) },
     region: { required: helpers.withMessage("Область обов'язкова", required) },
     city: {
         required: helpers.withMessage("Місто обов'язкове", required),
-        isObject: helpers.withMessage('Виберіть місто зі списку', (value) => typeof value === 'object' && value !== null && !Array.isArray(value) && value.Description)
+        isObject: helpers.withMessage('Виберіть місто зі списку', (value) =>
+            typeof value === 'object' && value !== null && !Array.isArray(value) && value.Description)
     }
-    // markerPosition можна зробити обов'язковим, якщо потрібно, наприклад:
-    // markerPosition: {
-    //     required: helpers.withMessage("Вкажіть місце на карті", required),
-    //     isNotEmptyArray: helpers.withMessage("Вкажіть місце на карті", (value) => Array.isArray(value) && value.length === 2)
-    // }
 }));
 
 const v$ = useVuelidate(rules, form);
-const isSubmitting = ref(false);
-const logoError = ref(null);
 
+// File handling methods
 const handleLogoChange = (event) => {
     const file = event.target.files[0];
-    if (file) {
-        form.logoFile = file;
-        // form.logoUrl = URL.createObjectURL(file); // Локальний preview
-    } else {
-        form.logoFile = null;
-        // Якщо ви використовуєте локальний URL: URL.revokeObjectURL(form.logoUrl);
-    }
+    form.logoFile = file || null;
 };
 
 const clearSelectedLogoFile = () => {
     form.logoFile = null;
     const fileInput = document.getElementById('logo');
-    if (fileInput) {
-        fileInput.value = '';
-    }
+    if (fileInput) fileInput.value = '';
 };
 
+const clearLogo = () => {
+    form.logoUrl = null;
+    clearSelectedLogoFile();
+};
+
+// Phone number handling
 const addPhoneNumber = () => {
     if (newPhoneNumber.value.trim()) {
         form.phone.push(newPhoneNumber.value.trim());
@@ -114,49 +107,35 @@ const removePhoneNumber = (index) => {
     v$.value.phone.$touch();
 };
 
-// Функція, що викликається при зміні області
+// Location selection methods
 const changeRegion = () => {
-    form.city = null; // Скидаємо вибране місто
-    searchQuery.value = ''; // Скидаємо пошуковий запит
-    citiesNova.value = []; // Очищаємо результати пошуку
-    form.markerPosition = []; // Скидаємо позицію маркера при зміні області
-    centerMap.value = null; // Скидаємо центр мапи
+    form.city = null;
+    searchQuery.value = '';
+    citiesNova.value = [];
+    form.markerPosition = [];
+    centerMap.value = null;
     v$.value.region.$touch();
     v$.value.city.$touch();
-    // Якщо додали валідацію markerPosition, також торкніться її
-    // if (v$.value.markerPosition) v$.value.markerPosition.$touch();
 };
 
-// Функція, що викликається при виборі міста зі списку
 const selectCity = (city) => {
-    console.log('Вибране місто:', city);
-    form.city = city; // Записуємо вибране місто в форму
-    searchQuery.value = ''; // Очищаємо поле пошуку
-    citiesNova.value = []; // Приховуємо список результатів
+    form.city = city;
+    searchQuery.value = '';
+    citiesNova.value = [];
 
-    // Встановлюємо центр мапи на координати вибраного міста
     if (city.Latitude && city.Longitude) {
         centerMap.value = [Number(city.Latitude), Number(city.Longitude)];
-        // Опціонально: скинути маркер на центр міста при виборі міста
-        // form.markerPosition = [Number(city.Latitude), Number(city.Longitude)];
-        // Якщо додали валідацію markerPosition, торкніться її
-        // if (v$.value.markerPosition) v$.value.markerPosition.$touch();
     } else {
-        centerMap.value = null; // Якщо координати відсутні
-        // form.markerPosition = []; // Очистити маркер, якщо координати відсутні
-        // Якщо додали валідацію markerPosition, торкніться її
-        // if (v$.value.markerPosition) v$.value.markerPosition.$touch();
+        centerMap.value = null;
     }
 
     v$.value.city.$touch();
 };
 
-
+// Form submission and reset
 const submitForm = async () => {
     const result = await v$.value.$validate();
     if (!result) {
-        console.error('Validation failed.');
-        console.error('Validation errors:', v$.value.$errors);
         toast.add({
             severity: 'error',
             summary: 'Помилка валідації',
@@ -170,6 +149,7 @@ const submitForm = async () => {
     logoError.value = null;
 
     try {
+        // Handle logo upload
         let logoUrl = form.logoUrl;
         if (form.logoFile) {
             const storage = getStorage();
@@ -177,24 +157,20 @@ const submitForm = async () => {
             const uniqueFileName = `${uuidv4()}.${fileExtension}`;
             const logoRef = storageRef(storage, `agencies/${uniqueFileName}`);
 
-            console.log('Uploading logo to:', `agencies/${uniqueFileName}`);
             await uploadBytes(logoRef, form.logoFile);
             logoUrl = await getDownloadURL(logoRef);
-            console.log('Logo uploaded. URL:', logoUrl);
-
             clearSelectedLogoFile();
-        } else if (form.logoUrl === null && props.agency?.logoUrl) {
-            logoUrl = null; // Користувач очистив існуюче лого
-            // TODO: Реалізувати видалення старого лого з Storage, якщо logoUrl стало null
         }
 
-
-        const agencyData = { ...form, logoUrl };
+        // Prepare agency data
+        const agencyData = {
+            ...form,
+            logoUrl,
+            creator: isEditing.value ? props.agency.creator || null : currentUser.value?.uid || null
+        };
         delete agencyData.logoFile;
-        // Переконайтесь, що store може обробляти agencyData, яка включає region, city та markerPosition
 
-        console.log('Agency data to submit. Is Editing:', isEditing.value, agencyData);
-
+        // Submit to store
         if (isEditing.value) {
             await agencyStore.updateAgency(props.agency.id, agencyData);
             toast.add({
@@ -209,7 +185,7 @@ const submitForm = async () => {
                 summary: 'Агенція створена.',
                 life: 3000
             });
-            clearForm(); // Очищаємо форму після створення
+            clearForm();
         }
     } catch (error) {
         console.error('Error submitting form:', error);
@@ -225,57 +201,58 @@ const submitForm = async () => {
     }
 };
 
-// Watcher для пошукового запиту міст
-watch(searchQuery, async (newValue) => {
-    if (!form.region || !newValue) {
-        citiesNova.value = [];
-        return;
-    }
-    // Опціонально: додати debounce
-    try {
-        const response = await getSettlements({ FindByString: newValue, RegionRef: form.region.Ref });
-        citiesNova.value = response.filter(
-            (city) => city.Description.toLowerCase().includes(newValue.toLowerCase()) &&
-                city.AreaDescription === form.region.name // Фільтруємо за назвою області
-            // Або city.RegionRef === form.region.Ref, якщо API повертає RegionRef
-        );
-        console.log('Знайдено міст:', citiesNova.value);
-    } catch (error) {
-        console.error('Ошибка поиска городов:', error);
-        citiesNova.value = [];
-    }
-});
-
-// Функції скидання форми та лого
 const resetForm = () => {
-    form.name = props.agency?.name || '';
-    form.address = props.agency?.address || '';
-    form.phone = props.agency?.phone || [];
-    form.email = props.agency?.email || '';
-    form.website = props.agency?.website || '';
-    form.logoUrl = props.agency?.logoUrl || null;
-    form.region = props.agency?.region || null;
-    form.city = props.agency?.city || null;
-    form.markerPosition = props.agency?.markerPosition || []; // Скидаємо позицію маркера
+    Object.assign(form, {
+        name: props.agency?.name || '',
+        address: props.agency?.address || '',
+        phone: props.agency?.phone || [],
+        email: props.agency?.email || '',
+        website: props.agency?.website || '',
+        logoUrl: props.agency?.logoUrl || null,
+        logoFile: null,
+        region: props.agency?.region || null,
+        city: props.agency?.city || null,
+        markerPosition: props.agency?.markerPosition || []
+    });
 
     clearSelectedLogoFile();
     newPhoneNumber.value = '';
     searchQuery.value = '';
     citiesNova.value = [];
-    centerMap.value = null; // Скидаємо центр мапи
+    centerMap.value = null;
 
     v$.value.$reset();
 };
 
-const clearLogo = () => {
-    form.logoUrl = null;
-    clearSelectedLogoFile();
-};
+const clearForm = () => resetForm();
 
-const clearForm = () => {
-    resetForm();
-};
+// Watchers
+watch(searchQuery, async (newValue) => {
+    if (!form.region || !newValue) {
+        citiesNova.value = [];
+        return;
+    }
 
+    try {
+        const response = await getSettlements({
+            FindByString: newValue,
+            RegionRef: form.region.Ref
+        });
+
+        citiesNova.value = response.filter(city =>
+            city.Description.toLowerCase().includes(newValue.toLowerCase()) &&
+            city.AreaDescription === form.region.name
+        );
+    } catch (error) {
+        console.error('Помилка пошуку міст:', error);
+        citiesNova.value = [];
+    }
+});
+
+// Lifecycle hooks
+onMounted(() => {
+    authStore.getCurrentUser();
+});
 </script>
 
 <template>
@@ -285,6 +262,7 @@ const clearForm = () => {
         <h2 class="text-2xl font-bold mb-6">{{ isEditing ? 'Редагувати Агенцію' : 'Зареєструвати Агенцію' }}</h2>
 
         <form @submit.prevent="submitForm" class="space-y-4">
+            <!-- Agency Name -->
             <div class="card flex flex-col gap-4 border p-4 rounded-md">
                 <div class="font-semibold text-xl">Назва агенства</div>
                 <InputText
@@ -297,8 +275,10 @@ const clearForm = () => {
                 />
                 <span v-if="v$.name.$error" class="text-red-500 text-sm">{{ v$.name.$errors[0].$message }}</span>
 
+                <!-- Location Section -->
                 <div class="font-semibold text-xl">Розташування</div>
 
+                <!-- Region Selection -->
                 <div>
                     <div class="font-semibold text-md mb-2">
                         <span>Область</span>
@@ -313,11 +293,12 @@ const clearForm = () => {
                         :class="{ 'p-invalid': v$.region.$error }"
                         @change="changeRegion"
                     />
-                    <small class="text-red-500" v-if="v$.region.$error">
+                    <small v-if="v$.region.$error" class="text-red-500">
                         {{ v$.region.$errors[0].$message }}
                     </small>
                 </div>
 
+                <!-- City Selection -->
                 <div>
                     <div class="font-semibold text-md mb-2">
                         <span>Місто</span>
@@ -337,25 +318,41 @@ const clearForm = () => {
                         :disabled="!form.region"
                         @input="v$.city.$touch()"
                     />
-                    <small class="text-red-500" v-if="v$.city.$error && !form.city">
+                    <small v-if="v$.city.$error && !form.city" class="text-red-500">
                         {{ v$.city.$errors[0].$message }}
                     </small>
 
-                    <ul v-if="citiesNova.length > 0 && searchQuery.length > 0" class="mt-2 bg-gray-100 rounded-lg shadow-md divide-y max-h-48 overflow-y-auto">
-                        <li v-for="city in citiesNova" :key="city.Ref" @click="selectCity(city)" class="p-2 cursor-pointer hover:bg-blue-100">
+                    <!-- City Search Results -->
+                    <ul v-if="citiesNova.length > 0 && searchQuery.length > 0"
+                        class="mt-2 bg-gray-100 rounded-lg shadow-md divide-y max-h-48 overflow-y-auto">
+                        <li v-for="city in citiesNova"
+                            :key="city.Ref"
+                            @click="selectCity(city)"
+                            class="p-2 cursor-pointer hover:bg-blue-100">
                             <span>{{ city.Description }}</span>
                             <span v-if="city.RegionsDescription">({{ city.RegionsDescription }} р-н)</span>
                         </li>
                     </ul>
-                    <p v-if="!form.region" class="mt-1 text-gray-600 text-sm">виберіть спочатку область для пошуку міст</p>
-                    <p v-else-if="form.region && searchQuery.length === 0 && form.city === null" class="mt-1 text-gray-600 text-sm">почніть вводити назву міста</p>
-                    <p v-if="form.region && searchQuery.length > 0 && citiesNova.length === 0" class="mt-1 text-gray-600 text-sm">міста не знайдено</p>
 
-                    <small class="text-red-500" v-if="v$.city.$error && form.city && !form.city?.Description">
+                    <!-- Helper Messages -->
+                    <p v-if="!form.region" class="mt-1 text-gray-600 text-sm">
+                        виберіть спочатку область для пошуку міст
+                    </p>
+                    <p v-else-if="form.region && searchQuery.length === 0 && form.city === null"
+                       class="mt-1 text-gray-600 text-sm">
+                        почніть вводити назву міста
+                    </p>
+                    <p v-if="form.region && searchQuery.length > 0 && citiesNova.length === 0"
+                       class="mt-1 text-gray-600 text-sm">
+                        міста не знайдено
+                    </p>
+
+                    <small v-if="v$.city.$error && form.city && !form.city?.Description" class="text-red-500">
                         {{ v$.city.$errors[0].$message }}
                     </small>
                 </div>
 
+                <!-- Map -->
                 <div v-if="form.city" class="map-container mt-4">
                     <div class="font-semibold text-md mb-2">
                         <span>Місце на карті</span>
@@ -363,18 +360,29 @@ const clearForm = () => {
                     <VueLeafle
                         :centerMap="centerMap"
                         v-model:marker="form.markerPosition"
-                        style="height: 300px; width: 100%;" />
+                        style="height: 300px; width: 100%"
+                    />
                 </div>
 
+                <!-- Address -->
                 <div>
-                    <label for="address" class="block text-sm font-medium text-gray-700">Адреса (вулиця, будинок)</label>
-                    <InputText id="address" v-model="form.address" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" :class="{ 'p-invalid': v$.address.$error }" />
-                    <span v-if="v$.address.$error" class="text-red-500 text-sm">{{ v$.address.$errors[0].$message }}</span>
+                    <label for="address" class="block text-sm font-medium text-gray-700">
+                        Адреса (вулиця, будинок)
+                    </label>
+                    <InputText
+                        id="address"
+                        v-model="form.address"
+                        type="text"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        :class="{ 'p-invalid': v$.address.$error }"
+                    />
+                    <span v-if="v$.address.$error" class="text-red-500 text-sm">
+                        {{ v$.address.$errors[0].$message }}
+                    </span>
                 </div>
-
             </div>
 
-
+            <!-- Phone Numbers -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Телефони</label>
 
@@ -383,7 +391,11 @@ const clearForm = () => {
                         <span class="block w-full rounded-md border border-gray-300 shadow-sm px-3 py-2 bg-gray-50 text-gray-700 sm:text-sm break-all">
                             {{ phone }}
                         </span>
-                        <Button icon="pi pi-times" class="p-button-rounded p-button-danger p-button-text flex-shrink-0" @click="removePhoneNumber(index)" />
+                        <Button
+                            icon="pi pi-times"
+                            class="p-button-rounded p-button-danger p-button-text flex-shrink-0"
+                            @click="removePhoneNumber(index)"
+                        />
                     </div>
                 </div>
 
@@ -395,23 +407,49 @@ const clearForm = () => {
                         class="block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                         @keyup.enter="addPhoneNumber"
                     />
-                    <Button label="Додати" icon="pi pi-plus" class="p-button-primary flex-shrink-0" @click="addPhoneNumber" />
+                    <Button
+                        label="Додати"
+                        icon="pi pi-plus"
+                        class="p-button-primary flex-shrink-0"
+                        @click="addPhoneNumber"
+                    />
                 </div>
-                <span v-if="v$.phone.$error" class="text-red-500 text-sm">{{ v$.phone.$errors[0].$message }}</span>
+                <span v-if="v$.phone.$error" class="text-red-500 text-sm">
+                    {{ v$.phone.$errors[0].$message }}
+                </span>
             </div>
 
+            <!-- Email -->
             <div>
                 <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-                <InputText id="email" v-model="form.email" type="email" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" :class="{ 'p-invalid': v$.email.$error }" />
-                <span v-if="v$.email.$error" class="text-red-500 text-sm">{{ v$.email.$errors[0].$message }}</span>
+                <InputText
+                    id="email"
+                    v-model="form.email"
+                    type="email"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    :class="{ 'p-invalid': v$.email.$error }"
+                />
+                <span v-if="v$.email.$error" class="text-red-500 text-sm">
+                    {{ v$.email.$errors[0].$message }}
+                </span>
             </div>
 
+            <!-- Website -->
             <div>
                 <label for="website" class="block text-sm font-medium text-gray-700">Вебсайт</label>
-                <InputText id="website" v-model="form.website" type="url" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" :class="{ 'p-invalid': v$.website.$error }" />
-                <span v-if="v$.website.$error" class="text-red-500 text-sm">{{ v$.website.$errors[0].$message }}</span>
+                <InputText
+                    id="website"
+                    v-model="form.website"
+                    type="url"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    :class="{ 'p-invalid': v$.website.$error }"
+                />
+                <span v-if="v$.website.$error" class="text-red-500 text-sm">
+                    {{ v$.website.$errors[0].$message }}
+                </span>
             </div>
 
+            <!-- Logo Upload -->
             <div>
                 <label for="logo" class="block text-sm font-medium text-gray-700">Логотип</label>
                 <input
@@ -423,17 +461,33 @@ const clearForm = () => {
                 />
                 <span v-if="logoError" class="text-red-500 text-sm">{{ logoError }}</span>
                 <img v-if="form.logoUrl" :src="form.logoUrl" alt="Logo Preview" class="mt-2 max-h-20" />
-                <Button v-if="form.logoUrl || form.logoFile" label="Очистити лого" icon="pi pi-times" class="p-button-text p-button-danger p-button-sm mt-2" @click="clearLogo" />
+                <Button
+                    v-if="form.logoUrl || form.logoFile"
+                    label="Очистити лого"
+                    icon="pi pi-times"
+                    class="p-button-text p-button-danger p-button-sm mt-2"
+                    @click="clearLogo"
+                />
             </div>
 
+            <!-- Form Actions -->
             <div class="flex space-x-4">
-                <Button type="submit" :label="isEditing ? 'Зберегти зміни' : 'Створити Агенцію'" :loading="isSubmitting" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" />
+                <Button
+                    type="submit"
+                    :label="isEditing ? 'Зберегти зміни' : 'Створити Агенцію'"
+                    :loading="isSubmitting"
+                    class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                />
 
-                <Button type="button" label="Скасувати" class="p-button-secondary" @click="clearForm" v-if="isEditing" />
+                <Button
+                    v-if="isEditing"
+                    type="button"
+                    label="Скасувати"
+                    class="p-button-secondary"
+                    @click="clearForm"
+                />
             </div>
-
         </form>
-
     </div>
 </template>
 
@@ -449,14 +503,12 @@ const clearForm = () => {
     background-color: white;
 }
 
-/* Стиль для поля з помилкою від PrimeVue */
 .p-invalid {
-    border-color: #ef4444 !important; /* Червоний колір */
+    border-color: #ef4444 !important;
 }
-/* Додаткові стилі, якщо потрібні для .p-invalid:focus */
 
 .max-h-48 {
-    max-height: 12rem; /* 12 * 16px = 192px */
+    max-height: 12rem;
 }
 
 .flex-shrink-0 {
@@ -464,14 +516,6 @@ const clearForm = () => {
 }
 
 .break-all {
-    word-break: break-all; /* Перенесення довгих номерів телефонів */
-}
-
-/* Стиль для контейнера мапи */
-.map-container {
-    /* Опціональні стилі, якщо потрібен бордер або фон */
-    /* border: 1px solid #ccc; */
-    /* padding: 1rem; */
-    /* border-radius: 0.5rem; */
+    word-break: break-all;
 }
 </style>
