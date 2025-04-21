@@ -14,6 +14,8 @@
         "@primevue/forms": "^4.2.5",
         "@primevue/themes": "^4.2.5",
         "@unhead/vue": "^2.0.0-rc.13",
+        "@vuelidate/core": "^2.0.3",
+        "@vuelidate/validators": "^2.0.4",
         "@vueup/vue-quill": "^1.2.0",
         "2gis-maps": "^3.7.5",
         "animate.css": "^4.1.1",

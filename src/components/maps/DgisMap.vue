@@ -1,17 +1,3 @@
-<template>
-    <div class="map-container">
-        <div ref="mapContainer" style="width: 100%; height: 500px"></div>
-        <div v-if="hasMarker && isDelete" class="controls">
-            <button
-                @click="removeMarker"
-                class="control-button remove-button"
-            >
-                Видалити маркер
-            </button>
-        </div>
-    </div>
-</template>
-
 <script setup>
 import { ref, onMounted, watch, nextTick, computed, onBeforeUnmount } from 'vue';
 import { useAreasStore } from '@/store/areasStore';
@@ -21,7 +7,6 @@ import 'leaflet/dist/leaflet.css';
 const iconUrl = '/leaflet-images/marker-icon.png';
 const iconRetinaUrl = '/leaflet-images/marker-icon-2x.png';
 const shadowUrl = '/leaflet-images/marker-shadow.png';
-
 
 const customIcon = L.icon({
     iconUrl,
@@ -64,7 +49,7 @@ const currentArea = computed(() => {
         const areaCode = props.property?.address?.area?.code;
         if (!areaCode) return null;
 
-        return areasStore.areas.find(area => area.code === areaCode) ?? null;
+        return areasStore.areas.find((area) => area.code === areaCode) ?? null;
     } catch (error) {
         console.error('Error computing current area:', error);
         return null;
@@ -83,7 +68,7 @@ const markerPosition = computed(() => {
 // Функция для создания или обновления маркера
 const updateMarker = (position) => {
     if (!map.value) {
-        console.warn("Карта еще не инициализирована, пропускаем updateMarker");
+        console.warn('Карта еще не инициализирована, пропускаем updateMarker');
         return;
     }
 
@@ -179,7 +164,7 @@ onMounted(async () => {
     await nextTick();
 
     if (!mapContainer.value) {
-        console.error("Контейнер для карты не найден!");
+        console.error('Контейнер для карты не найден!');
         return;
     }
 
@@ -205,7 +190,7 @@ onMounted(async () => {
     // Добавление слоя OpenStreetMap
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
-        attribution: '© OpenStreetMap contributors',
+        attribution: '© OpenStreetMap contributors'
     }).addTo(map.value);
 
     // Добавляем круг района
@@ -236,7 +221,7 @@ watch(
             removeMarker();
         }
     },
-    {deep: true}
+    { deep: true }
 );
 
 // Следим за изменением района
@@ -245,7 +230,7 @@ watch(
     () => {
         updateAreaCircle();
     },
-    {deep: true}
+    { deep: true }
 );
 
 // Очистка при уничтожении компонента
@@ -256,6 +241,15 @@ onBeforeUnmount(() => {
     }
 });
 </script>
+
+<template>
+    <div class="map-container">
+        <div ref="mapContainer" style="width: 100%; height: 500px"></div>
+        <div v-if="hasMarker && isDelete" class="controls">
+            <button @click="removeMarker" class="control-button remove-button">Видалити маркер</button>
+        </div>
+    </div>
+</template>
 
 <style scoped>
 .map-container {

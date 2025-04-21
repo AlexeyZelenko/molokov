@@ -48,6 +48,37 @@ function toggleMobileMenu() {
 onMounted(() => {
     authStore.initializeAuth();
 });
+
+const items = ref([
+    {
+        label: 'Додатково',
+        root: true,
+        items: [
+            [
+                {       
+                    label: 'Агенти та агенства',
+                    items: [                        
+                        { label: 'АГЕНТИ', icon: 'pi pi-users', subtext: 'Агенти зареєстровані в системі', route: '/agents' },
+                        { label: 'АГЕНСТВА', icon: 'pi pi-globe', subtext: 'Агенства зареєстровані в системі', route: '/agencies' },
+                        { label: 'ЗАРЕЄСТРУВАТИ АГЕНСТВО', icon: 'pi pi-user-plus', subtext: 'Зареєструвати агенство в системі', route: '/register-agency' }
+                    ]
+                }
+            ],
+            [
+                {
+                    label: 'Інформація',
+                    items: [
+                        { label: 'РАЙОНИ', icon: 'pi pi-list', subtext: 'міста Черкаси', route: '/cherkasy-areas' },
+                        { label: 'FAQ', icon: 'pi pi-question', subtext: 'Часті запитання', route: '/faq' }                        
+                    ]
+                }
+            ]   
+            
+        ]
+    }    
+]);
+
+const isOriginal = ref(true);
 </script>
 
 <template>
@@ -65,7 +96,7 @@ onMounted(() => {
             <i class="pi pi-bars !text-2xl"></i>
         </Button>
         <!-- Десктопное меню -->
-        <div class="items-center justify-between hidden lg:flex lg:static w-full left-0 top-full px-12 lg:px-0 z-20 rounded-border">
+        <div v-if="isOriginal" class="items-center justify-between hidden lg:flex lg:static w-full left-0 top-full px-12 lg:px-0 z-20 rounded-border">
             <ul class="list-none p-0 m-0 flex lg:items-center select-none flex-col lg:flex-row cursor-pointer gap-8">
                 <li>
                     <a @click="smoothScroll('features')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium text-lg lg:text-xl hover:text-white dark:hover:text-primary-400 transition-colors duration-200">
@@ -77,11 +108,43 @@ onMounted(() => {
                         <span class="uppercase text-lg font-bold text-center hover:text-white dark:hover:text-primary-400">Про додаток</span>
                     </a>
                 </li>
-                <li>
+                <!-- <li>
                     <a @click="navigateTo('/cherkasy-areas')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium text-lg lg:text-xl hover:text-white dark:hover:text-primary-400 transition-colors duration-200">
                         <span class="uppercase text-lg font-bold text-center">Райони</span>
                     </a>
-                </li>                
+                </li> -->
+                <MegaMenu :model="items" class="w-full md:w-2/3 lg:w-auto p-4">            
+                    <template #item="{ item }">
+                        <a v-if="item.root" class="flex items-center cursor-pointer px-4 py-4 overflow-hidden relative font-semibold text-lg uppercase" style="border-radius: 2rem">
+                            <span>{{ item.label }}</span>
+                        </a>
+                        <router-link v-else-if="item.route" v-slot="{ href, navigate }" :to="item.route" custom>
+                            <a v-ripple :href="href" @click="navigate" class="flex items-center p-4 cursor-pointer ml-2 mb-2 gap-4">
+                                <span class="inline-flex items-center justify-center rounded-full bg-primary text-primary-contrast w-12 h-12">
+                                <i :class="[item.icon, 'text-lg']"></i>
+                                </span>
+                                <span class="inline-flex flex-col gap-1">
+                                    <span class="font-bold text-lg">{{ item.label }}</span>
+                                    <span class="whitespace-nowrap">{{ item.subtext }}</span>
+                                </span>
+                            </a>
+                        </router-link>
+                        <a v-else-if="!item.image" class="flex items-center ml-2 p-4 cursor-pointer mb-2 gap-4">
+                            <span class="inline-flex items-center justify-center rounded-full bg-primary text-primary-contrast w-12 h-12">
+                                <i :class="[item.icon, 'text-lg']"></i>
+                            </span>
+                            <span class="inline-flex flex-col gap-1">
+                                <span class="font-bold text-lg">{{ item.label }}</span>
+                                <span class="whitespace-nowrap">{{ item.subtext }}</span>
+                            </span>
+                        </a>
+                        <!-- <div v-else class="flex flex-col items-start gap-4 p-2">
+                            <img alt="megamenu-demo" :src="item.image" class="w-full" />
+                            <span>{{ item.subtext }}</span>
+                            <Button :label="item.label" outlined />
+                        </div> -->
+                    </template>            
+                </MegaMenu>                               
                 <li class="bg-primary-500 dark:bg-primary-400 rounded-full px-4 py-2 hover:bg-primary-300 dark:hover:bg-primary-300 transition-colors duration-200">
                     <a @click="navigateTo('/add-properties')" class="flex items-center justify-center px-0 text-surface-0 font-medium text-lg lg:text-xl">
                         <p class="uppercase text-lg font-bold text-center">Додати нерухомість</p>
@@ -131,6 +194,29 @@ onMounted(() => {
                 <AppConfigurator class="mt-10" />
             </div>
         </div>
+
+        <MegaMenu v-if="!isOriginal" :model="items" class="w-full p-4">            
+            <template #item="{ item }">
+                <a v-if="item.root" class="flex items-center cursor-pointer px-4 py-2 overflow-hidden relative font-semibold text-lg uppercase" style="border-radius: 2rem">
+                    <span>{{ item.label }}</span>
+                </a>
+                <a v-else-if="!item.image" class="flex items-center p-4 cursor-pointer mb-2 gap-3">
+                    <span class="inline-flex items-center justify-center rounded-full bg-primary text-primary-contrast w-12 h-12">
+                        <i :class="[item.icon, 'text-lg']"></i>
+                    </span>
+                    <span class="inline-flex flex-col gap-1">
+                        <span class="font-bold text-lg">{{ item.label }}</span>
+                        <span class="whitespace-nowrap">{{ item.subtext }}</span>
+                    </span>
+                </a>
+                <div v-else class="flex flex-col items-start gap-4 p-2">
+                    <img alt="megamenu-demo" :src="item.image" class="w-full" />
+                    <span>{{ item.subtext }}</span>
+                    <Button :label="item.label" outlined />
+                </div>
+            </template>
+            
+        </MegaMenu>
         
         <!-- Мобильное меню -->
         <div v-if="mobileMenuVisible" 
@@ -200,3 +286,38 @@ onMounted(() => {
         </div>
     </section>
 </template>
+
+<style scoped>
+:deep(.p-megamenu) {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: none;
+    border: none;    
+    color: var(--p-megamenu-color);
+    gap: var(--p-megamenu-gap);
+}
+
+:deep(.p-megamenu-item-active > .p-megamenu-item-content) {
+    color: white !important;
+    background: none;
+}
+
+:deep(.p-megamenu-item > .p-megamenu-item-active) {
+    color: white;
+    background: none;
+}
+
+:deep(.p-megamenu-item:not(.p-disabled) > .p-megamenu-item-content:hover) {
+    color: grey;
+    background: none;
+}
+
+:deep(.p-megamenu-root-list > .p-megamenu-item > .p-megamenu-item-content) {
+    background: none;
+    color: black;
+}
+
+</style>
+
+

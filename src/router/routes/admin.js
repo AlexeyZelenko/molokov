@@ -22,5 +22,5 @@ export default [
                 { name: 'Карта', route: '/pages/users/admin/map' }
             ]
         }
-    },
-]
+    }
+];

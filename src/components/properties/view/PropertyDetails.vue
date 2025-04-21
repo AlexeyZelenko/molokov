@@ -122,14 +122,14 @@ if (savedViewMode) {
         <Skeleton />
     </div>
     <div v-else>
-        <Fluid :class="{
-                    'flex-col': true,
-                    'md:flex-row md:w-3/4 m-auto': viewMode === 'double',
-                    'md:w-2/3 xl:w-1/2 m-auto': viewMode === 'single'
-                }" >
-            <div
-                class="flex flex-col md:flex-row items-start justify-start mb-4"                
-            >
+        <Fluid
+            :class="{
+                'flex-col': true,
+                'md:flex-row md:w-3/4 m-auto': viewMode === 'double',
+                'md:w-2/3 xl:w-1/2 m-auto': viewMode === 'single'
+            }"
+        >
+            <div class="flex flex-col md:flex-row items-start justify-start mb-4">
                 <section>
                     <h1 class="font-semibold text-2xl">{{ property.title }}</h1>
                     <p class="text-sm">{{ property.category?.name }} / {{ property.subcategory?.name }}</p>

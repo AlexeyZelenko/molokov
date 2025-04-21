@@ -1,40 +1,7 @@
-<template>
-    <div style="height:600px; width:100%" class="map-container">
-        <div v-if="markerExists" class="marker-info">
-            Координати маркера: {{ marker[0].toFixed(6) }}, {{ marker[1].toFixed(6) }}
-            <button @click="removeMarker" class="remove-button">Видалити маркер</button>
-        </div>
-        <div v-else class="marker-info">
-            Натисніть на карту, щоб додати маркер
-        </div>
-        <l-map
-            ref="map"
-            :zoom="zoom"
-            :center="center"
-            @click="handleMapClick"
-            @update:zoom="newZoom => zoom = newZoom"
-        >
-            <l-tile-layer
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                layer-type="base"
-                name="OpenStreetMap"
-            ></l-tile-layer>
-
-            <l-marker
-                v-if="markerExists"
-                :lat-lng="marker"
-                draggable
-                @dragend="handleDragEnd"
-            >
-            </l-marker>
-        </l-map>
-    </div>
-</template>
-
 <script setup>
-import "leaflet/dist/leaflet.css";
-import {ref, computed, onUnmounted, onMounted} from 'vue';
-import {LMap, LTileLayer, LMarker} from "@vue-leaflet/vue-leaflet";
+import 'leaflet/dist/leaflet.css';
+import { ref, computed, onUnmounted, onMounted } from 'vue';
+import { LMap, LTileLayer, LMarker } from '@vue-leaflet/vue-leaflet';
 // Исправление импорта - используем импорт всего модуля, а не default export
 import * as Leaflet from 'leaflet';
 
@@ -77,8 +44,7 @@ const center = computed(() => {
     }
 
     // Проверяем centerMap на валидность
-    if (Array.isArray(props.centerMap) && props.centerMap.length === 2 &&
-        typeof props.centerMap[0] === 'number' && typeof props.centerMap[1] === 'number') {
+    if (Array.isArray(props.centerMap) && props.centerMap.length === 2 && typeof props.centerMap[0] === 'number' && typeof props.centerMap[1] === 'number') {
         return props.centerMap;
     }
 
@@ -87,10 +53,7 @@ const center = computed(() => {
 });
 
 const markerExists = computed(() => {
-    return Array.isArray(props.marker) &&
-        props.marker.length === 2 &&
-        !isNaN(props.marker[0]) &&
-        !isNaN(props.marker[1]);
+    return Array.isArray(props.marker) && props.marker.length === 2 && !isNaN(props.marker[0]) && !isNaN(props.marker[1]);
 });
 
 const handleMapClick = (e) => {
@@ -111,6 +74,21 @@ onUnmounted(() => {
     removeMarker();
 });
 </script>
+
+<template>
+    <div style="height: 600px; width: 100%" class="map-container">
+        <div v-if="markerExists" class="marker-info">
+            Координати маркера: {{ marker[0].toFixed(6) }}, {{ marker[1].toFixed(6) }}
+            <button @click="removeMarker" class="remove-button">Видалити маркер</button>
+        </div>
+        <div v-else class="marker-info">Натисніть на карту, щоб додати маркер</div>
+        <l-map ref="map" :zoom="zoom" :center="center" @click="handleMapClick" @update:zoom="(newZoom) => (zoom = newZoom)">
+            <l-tile-layer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" layer-type="base" name="OpenStreetMap"></l-tile-layer>
+
+            <l-marker v-if="markerExists" :lat-lng="marker" draggable @dragend="handleDragEnd"> </l-marker>
+        </l-map>
+    </div>
+</template>
 
 <style scoped>
 .map-container {

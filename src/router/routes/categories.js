@@ -6,7 +6,7 @@ export default [
             {
                 path: '/pages/:category/edit/:subcategory/:id',
                 name: 'editItem',
-                component: ( ) => import('@/views/pages/categories/EditItemView.vue'),
+                component: () => import('@/views/pages/categories/EditItemView.vue'),
                 meta: {
                     requiresAuth: true,
                     breadcrumb: [{ name: 'Головна', route: '/', icon: 'pi pi-home' }, { name: "Редагування об'єкта нерухомості" }]

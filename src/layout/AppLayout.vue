@@ -63,7 +63,7 @@ function isOutsideClicked(event) {
             <div class="layout-main">
                 <Breadcrumb />
                 <router-view></router-view>
-            </div>            
+            </div>
         </div>
         <div class="layout-mask animate-fadein"></div>
     </div>
