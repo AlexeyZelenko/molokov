@@ -8,9 +8,9 @@ const { layoutState, setActiveMenuItem, toggleMenu } = useLayout();
 
 const props = defineProps({
     item: { type: Object, default: () => ({}) },
-    index: {type: Number, default: 0},
-    root: {type: Boolean, default: true},
-    parentItemKey: {type: String, default: null},
+    index: { type: Number, default: 0 },
+    root: { type: Boolean, default: true },
+    parentItemKey: { type: String, default: null },
     user: {
         type: Object,
         default: () => ({ role: 'guest' })
@@ -22,7 +22,7 @@ const itemKey = ref(null);
 
 // 🔹 Фильтрация элементов по ролям
 const isVisible = computed(() => {
-    return !props.item.roles || props.item.roles.includes(props.user?.role);
+    return !props.item.roles || props.item.roles.includes(props.user?.role?.role);
 });
 
 onBeforeMount(() => {
@@ -30,9 +30,12 @@ onBeforeMount(() => {
     isActiveMenu.value = layoutState.activeMenuItem === itemKey.value;
 });
 
-watch(() => layoutState.activeMenuItem, (newVal) => {
-    isActiveMenu.value = newVal === itemKey.value || newVal.startsWith(itemKey.value + '-');
-});
+watch(
+    () => layoutState.activeMenuItem,
+    (newVal) => {
+        isActiveMenu.value = newVal === itemKey.value || newVal.startsWith(itemKey.value + '-');
+    }
+);
 
 function itemClick(event, item) {
     if (item.disabled) {
@@ -45,7 +48,7 @@ function itemClick(event, item) {
     }
 
     if (item.command) {
-        item.command({originalEvent: event, item: item});
+        item.command({ originalEvent: event, item: item });
     }
 
     setActiveMenuItem(item.items ? (isActiveMenu.value ? props.parentItemKey : itemKey) : itemKey.value);
@@ -60,32 +63,20 @@ function checkActiveRoute(item) {
     <li v-if="isVisible" :class="{ 'layout-root-menuitem': root, 'active-menuitem': isActiveMenu }">
         <div v-if="root && item.visible !== false" class="layout-menuitem-root-text uppercase tracking-wide">{{ item.label }}</div>
 
-        <a v-if="(!item.to || item.items) && item.visible !== false" :href="item.url"
-           @click="itemClick($event, item)" :class="item.class" :target="item.target" tabindex="0">
+        <a v-if="(!item.to || item.items) && item.visible !== false" :href="item.url" @click="itemClick($event, item)" :class="item.class" :target="item.target" tabindex="0">
             <i :class="item.icon" class="layout-menuitem-icon"></i>
             <span class="layout-menuitem-text uppercase">{{ item.label }}</span>
             <i class="pi pi-fw pi-angle-down layout-submenu-toggler" v-if="item.items"></i>
         </a>
 
-        <router-link v-if="item?.to && !item.items && item.visible !== false"
-                     @click="itemClick($event, item)"
-                     :class="[item.class, { 'active-route': checkActiveRoute(item) }]"
-                     tabindex="0"
-                     :to="item.to">
+        <router-link v-if="item?.to && !item.items && item.visible !== false" @click="itemClick($event, item)" :class="[item.class, { 'active-route': checkActiveRoute(item) }]" tabindex="0" :to="item.to">
             <i :class="item.icon" class="layout-menuitem-icon"></i>
             <span class="layout-menuitem-text uppercase">{{ item.label }}</span>
         </router-link>
 
         <Transition v-if="item?.items && item.visible !== false" name="layout-submenu">
             <ul v-show="root ? true : isActiveMenu" class="layout-submenu">
-                <app-menu-item v-for="(child, i) in item.items"
-                               :key="i"
-                               :index="i"
-                               :item="child"
-                               :parentItemKey="itemKey"
-                               :user="user"
-                               :root="false">
-                </app-menu-item>
+                <app-menu-item v-for="(child, i) in item.items" :key="i" :index="i" :item="child" :parentItemKey="itemKey" :user="user" :root="false"> </app-menu-item>
             </ul>
         </Transition>
     </li>

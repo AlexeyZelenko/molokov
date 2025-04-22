@@ -13,40 +13,6 @@ const userStore = useUserStore();
 const agent = computed(() => userStore.selectedAgent);
 const router = useRouter();
 
-
-const listings = ref([
-    {
-        id: 1,
-        title: 'Modern Apartment in City Center',
-        price: '245,000',
-        location: 'Київ, Центр',
-        bedrooms: 2,
-        bathrooms: 1,
-        area: 75,
-        image: 'https://picsum.photos/id/1067/300/200'
-    },
-    {
-        id: 2,
-        title: 'Luxury Villa with Pool',
-        price: '495,000',
-        location: 'Одеса, Приморський',
-        bedrooms: 4,
-        bathrooms: 3,
-        area: 220,
-        image: 'https://picsum.photos/id/164/300/200'
-    },
-    {
-        id: 3,
-        title: 'Cozy Family House',
-        price: '320,000',
-        location: 'Львів, Шевченківський',
-        bedrooms: 3,
-        bathrooms: 2,
-        area: 150,
-        image: 'https://picsum.photos/id/871/300/200'
-    }
-]);
-
 const stats = ref({
     activeListings: 12,
     soldLastYear: 24,
@@ -77,7 +43,7 @@ const formatDate = (timestamp) => {
         return new Intl.DateTimeFormat('uk-UA', { // 'uk-UA' для української локалі
             year: 'numeric', // Рік (наприклад, 2023)
             month: 'long',   // Місяць повною назвою (наприклад, квітень)
-            day: 'numeric',    // День місяця (наприклад, 21)            
+            day: 'numeric',    // День місяця (наприклад, 21)
         }).format(date);
     } catch (e) {
         console.error('Помилка форматування дати за допомогою Intl.DateTimeFormat:', e);
@@ -119,7 +85,7 @@ const viewListing = (listing) => {
                                 <Badge :value="stats.customerRating" severity="success" />
                                 <span class="ml-2 text-sm text-gray-600">Оцінка клієнтів</span>
                             </div>
-                        </div>                        
+                        </div>
                     </div>
                 </template>
 
@@ -154,7 +120,7 @@ const viewListing = (listing) => {
                             <div class="space-y-3">
                                 <div class="flex items-center">
                                     <i class="pi pi-user text-blue-600 mr-3"></i>
-                                    <span>Роль: {{ agent.role.charAt(0).toUpperCase() + agent.role.slice(1) }}</span>
+                                    <span>Роль: {{ agent.role.name.charAt(0).toUpperCase() + agent.role.name.slice(1) }}</span>
                                 </div>
                                 <div class="flex items-center">
                                     <i class="pi pi-calendar text-blue-600 mr-3"></i>
@@ -200,40 +166,42 @@ const viewListing = (listing) => {
             </Card>
 
             <!-- Listings -->
-            <h3 class="text-2xl font-bold text-gray-800 mb-6">Поточні списки</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <Card v-for="listing in agent.propertyList" :key="listing.id" class="hover:shadow-lg transition-shadow flex flex-col justify-between h-full">
-                    <template #header>
-                        <img :src="listing.images[0].url" :alt="listing.title" class="w-full h-48 object-cover" />
-                    </template>
-                    <template #title>
-                        <div class="flex justify-between items-start">
-                            <h4 class="text-lg font-semibold text-gray-800">{{ listing.title }}</h4>
-                            <p class="text-xl font-bold text-blue-600">€{{ listing.price }}</p>
-                        </div>
-                        <div class="flex items-center text-sm">                            
-                            <span>{{ listing.category.name }} / {{ listing.subcategory.name }}</span>
-                        </div>
-                    </template>
-                    <template #content>
-                        <div class="space-y-6 text-sm text-gray-600 my-4">                            
-                            <div class="flex justify-between text-gray-600">                                
-                                <div class="flex items-center">
-                                    <i class="pi pi-map-marker mr-1"></i>
-                                    <span>{{ listing.address?.region?.name }} / {{ listing.address?.city?.Description }}</span>                                    
-                                </div>
-                                <div class="flex items-center">
-                                    <i class="fas fa-vector-square mr-1"></i>
-                                    <span>{{ listing.apartmentArea?.totalArea }} m²</span>
+            <section v-if="agent.propertyList.length !== 0">
+                <h3 class="text-2xl font-bold text-gray-800 mb-6">Поточні списки</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <Card v-for="listing in agent.propertyList" :key="listing.id" class="hover:shadow-lg transition-shadow flex flex-col justify-between h-full">
+                        <template #header>
+                            <img :src="listing.images[0].url" :alt="listing.title" class="w-full h-48 object-cover" />
+                        </template>
+                        <template #title>
+                            <div class="flex justify-between items-start">
+                                <h4 class="text-lg font-semibold text-gray-800">{{ listing.title }}</h4>
+                                <p class="text-xl font-bold text-blue-600">€{{ listing.price }}</p>
+                            </div>
+                            <div class="flex items-center text-sm">
+                                <span>{{ listing.category.name }} / {{ listing.subcategory.name }}</span>
+                            </div>
+                        </template>
+                        <template #content>
+                            <div class="space-y-6 text-sm text-gray-600 my-4">
+                                <div class="flex justify-between text-gray-600">
+                                    <div class="flex items-center">
+                                        <i class="pi pi-map-marker mr-1"></i>
+                                        <span>{{ listing.address?.region?.name }} / {{ listing.address?.city?.Description }}</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <i class="fas fa-vector-square mr-1"></i>
+                                        <span>{{ listing.apartmentArea?.totalArea }} m²</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </template>
-                    <template #footer>
-                        <Button @click="viewListing(listing)" label="Деталі" icon="pi pi-eye" class="p-button-outlined ml-2" />                        
-                    </template>
-                </Card>
-            </div>
+                        </template>
+                        <template #footer>
+                            <Button @click="viewListing(listing)" label="Деталі" icon="pi pi-eye" class="p-button-outlined ml-2" />
+                        </template>
+                    </Card>
+                </div>
+            </section>
         </div>
     </div>
 </template>

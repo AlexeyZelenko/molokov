@@ -11,7 +11,119 @@ export const useUserStore = defineStore('user', {
         loading: false,
         error: null,
         users: [],
-        selectedAgent: null
+        selectedAgent: null,
+        userTypes: [
+            {
+                id: 'guest',
+                role: 'guest',
+                name: 'Гість',
+                description: 'Незареєстрований користувач, може переглядати оголошення та залишати заявки.',
+                permissions: ['view_properties', 'send_contact_form'],
+                isDefault: true,
+                isEditable: false,
+                isRemovable: false,
+                showOnRegistration: false
+            },
+            {
+                id: 'buyer',
+                role: 'buyer',
+                name: 'Покупець / Орендар',
+                description: 'Зареєстрований користувач для пошуку та збереження нерухомості.',
+                permissions: ['view_properties', 'save_favorites', 'contact_agent', 'receive_notifications'],
+                isDefault: false,
+                isEditable: false,
+                isRemovable: false,
+                showOnRegistration: true
+            },
+            {
+                id: 'seller',
+                role: 'seller',
+                name: 'Продавець / Орендодавець',
+                description: 'Користувач, який може додавати та керувати власними оголошеннями.',
+                permissions: ['create_listing', 'edit_listing', 'view_listing_stats', 'communicate_with_users'],
+                isDefault: false,
+                isEditable: false,
+                isRemovable: false,
+                showOnRegistration: true
+            },
+            {
+                id: 'agent',
+                role: 'agent',
+                name: 'Агент / Рієлтор',
+                description: 'Представник агентства, який працює з оголошеннями клієнтів.',
+                permissions: ['manage_client_listings', 'chat_with_clients', 'view_analytics'],
+                isDefault: false,
+                isEditable: false,
+                isRemovable: false,
+                showOnRegistration: true
+            },
+            {
+                id: 'agency_owner',
+                role: 'agency_owner',
+                name: 'Власник агентства нерухомості',
+                description: 'Користувач з повним контролем над агентством, його агентами та оголошеннями.',
+                permissions: ['manage_agency_profile', 'add_agents', 'remove_agents', 'view_agency_analytics', 'approve_listings', 'view_all_clients', 'assign_roles', 'manage_payments'],
+                isDefault: false,
+                isEditable: false,
+                isRemovable: false,
+                showOnRegistration: true
+            },
+            {
+                id: 'admin',
+                role: 'admin',
+                name: 'Адміністратор',
+                description: 'Модератор або адміністратор платформи з повним доступом.',
+                permissions: ['manage_users', 'moderate_content', 'view_full_analytics', 'assign_roles'],
+                isDefault: false,
+                isEditable: false,
+                isRemovable: false,
+                showOnRegistration: false
+            },
+            {
+                id: 'developer',
+                role: 'developer',
+                name: 'Розробник',
+                description: 'Технічний користувач для підтримки та розвитку платформи.',
+                permissions: ['access_dev_tools', 'view_logs', 'manage_system'],
+                isDefault: false,
+                isEditable: false,
+                isRemovable: false,
+                showOnRegistration: false
+            },
+            {
+                id: 'super_admin',
+                role: 'super_admin',
+                name: 'Супер адміністратор',
+                description: 'Користувач з повним контролем над усіма аспектами платформи.',
+                permissions: ['manage_all_users', 'access_all_data', 'system_configuration'],
+                isDefault: false,
+                isEditable: false,
+                isRemovable: false,
+                showOnRegistration: false
+            },
+            {
+                id: 'moderator',
+                role: 'moderator',
+                name: 'Модератор',
+                description: 'Користувач, відповідальний за перевірку та модерацію контенту.',
+                permissions: ['moderate_content', 'view_reports'],
+                isDefault: false,
+                isEditable: false,
+                isRemovable: false,
+                showOnRegistration: false
+            },
+            {
+                id: 'blocked',
+                role: 'blocked',
+                name: 'Заблокований',
+                description: 'Користувач, який порушив правила платформи.',
+                permissions: ['view_properties'],
+                isDefault: false,
+                isEditable: false,
+                isRemovable: false,
+                showOnRegistration: false
+            }
+        ]
     }),
 
     actions: {
@@ -26,9 +138,16 @@ export const useUserStore = defineStore('user', {
 
         async updateProfile(data) {
             if (!auth.currentUser || !this.profile) return;
+            console.log('Updating profile with data:', auth.currentUser, data);
 
-            await updateDoc(doc(db, 'users', auth.currentUser.uid), data);
-            this.profile = { ...this.profile, ...data };
+            console.log('Current user:', this.profile.role);
+            if (this.profile?.role?.id === 'admin') {
+                await updateDoc(doc(db, 'users', data.id), data);
+                this.profile = { ...this.profile, ...data };
+            } else {
+                await updateDoc(doc(db, 'users', auth.currentUser.uid), data);
+                this.profile = { ...this.profile, ...data };
+            }
         },
 
         async createPropertyList({ name, client, properties, category, subcategory }) {

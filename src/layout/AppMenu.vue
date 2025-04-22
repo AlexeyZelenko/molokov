@@ -19,8 +19,12 @@ const model = ref([
         label: 'Головна',
         items: [
             { label: 'Головна', icon: 'pi pi-fw pi-home', to: '/landing' },
-            { label: 'Додати нерухомість', icon: 'pi pi-fw pi-plus', to: '/add-properties', roles: ['admin', 'customer'] }
-            // { label: 'Аналітика', icon: 'pi pi-fw pi-chart-line', to: '/dashboard' }
+            {
+                label: 'Додати нерухомість',
+                icon: 'pi pi-fw pi-plus',
+                to: '/add-properties',
+                roles: ['admin', 'agent', 'seller', 'agency_owner', 'developer', 'super_admin', 'moderator']
+            }
         ]
     },
     {
@@ -250,12 +254,12 @@ const model = ref([
     {
         label: 'Профіль',
         icon: 'pi pi-fw pi-user',
-        roles: ['admin', 'customer'],
+        roles: ['admin', 'agent', 'seller', 'agency_owner', 'developer', 'super_admin', 'moderator'],
         items: [
             {
                 label: 'Додати нерухомість',
                 icon: 'pi pi-fw pi-plus',
-                roles: ['admin', 'customer'],
+                roles: ['admin', 'agent', 'seller', 'agency_owner', 'developer', 'super_admin', 'moderator'],
                 items: [
                     {
                         label: 'Квартиру',
@@ -651,7 +655,7 @@ const model = ref([
                         ]
                     }
                 ]
-            },
+            }
             // {
             //     label: 'OLX',
             //     icon: 'pi pi-fw pi-external-link',

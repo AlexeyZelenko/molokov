@@ -93,11 +93,11 @@ const agentsWithCounts = computed(() => {
     console.log('allUsers >>', allUsers);
 
     // 1. Підраховуємо об'єкти для кожного creator.id
-    const propertyCounts = new Map();    
+    const propertyCounts = new Map();
     allProperties.value.forEach((property) => {
         const creatorId = property.creator?.id;
         if (creatorId) {
-            propertyCounts.set(creatorId, (propertyCounts.get(creatorId) || 0) + 1);            
+            propertyCounts.set(creatorId, (propertyCounts.get(creatorId) || 0) + 1);
         }
     });
 
@@ -114,6 +114,21 @@ const agentsWithCounts = computed(() => {
         };
     });
     return agentsList; // Повертаємо збагачений список агентів
+});
+
+const cities = computed(() => {
+    // Перевіряємо, чи агентства завантажені і чи є поле city (яке тепер об'єкт)
+    if (!agentsWithCounts.value || agentsWithCounts.value.length === 0) {
+        return [];
+    }
+    // Витягуємо Description з об'єкта city, фільтруємо null/undefined, отримуємо унікальні
+    const allCities = agentsWithCounts.value
+        .map((a) => a.city?.Description) // Припускаємо, що city - об'єкт з полем Description
+        .filter(Boolean); // Видаляємо null, undefined або порожні рядки
+
+    const uniqueCities = [...new Set(allCities)];
+    // Формуємо опції для Dropdown { label: 'Назва міста', value: 'Назва міста' }
+    return uniqueCities.map((cityDescription) => ({ label: cityDescription, value: cityDescription }));
 });
 
 // *** Computed властивість для загальної кількості агентів (для пагінації) ***
@@ -229,7 +244,8 @@ const closeContactDialog = () => {
 
                 <div class="mt-4 md:mt-0 w-full md:w-auto">
                     <div class="flex flex-col sm:flex-row items-center gap-4">
-                        <div class="p-input-icon-left flex-grow w-full sm:w-auto">
+                        <Dropdown v-model="selectedCity" :options="cities" option-label="label" option-value="value" placeholder="Оберіть місто" class="w-full" show-clear />
+                        <div class="p-input-icon-left flex-grow w-full sm:w-auto min-w-36">
                             <InputText v-model="searchQuery" placeholder="Пошук агентів..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
                         </div>
                         <div class="w-full sm:w-auto"><Dropdown v-model="sortBy" :options="sortOptions" optionLabel="label" placeholder="Сортувати за" class="w-full" /></div>
@@ -263,6 +279,15 @@ const closeContactDialog = () => {
             <div v-for="agent in filteredAgents" :key="agent.id" class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
                 <div class="relative flex flex-col h-full justify-between">
                     <div class="p-6 flex flex-col items-center">
+                        <!-- Бейдж "Рекомендовано" -->
+                        <div v-if="agent.featured" class="absolute top-4 right-4">
+                            <Badge value="Рекомендовано" severity="warning" />
+                        </div>
+
+                        <!-- Бейдж досвіду -->
+                        <div v-if="agent.experience >= 5" class="absolute top-4 left-4">
+                            <Badge :value="`${agent.experience}+ років`" severity="info" />
+                        </div>
                         <Avatar :image="agent.avatar" size="xlarge" shape="circle" class="w-24 h-24 border-4 border-white shadow-md mb-4" />
                         <h3 class="text-xl font-semibold text-center">{{ agent.name || agent.email || agent.id }}</h3>
                         <div v-if="agent.rating !== undefined && agent.rating !== null" class="flex items-center mt-1">
@@ -270,7 +295,7 @@ const closeContactDialog = () => {
                                 <i
                                     v-for="star in 5"
                                     :key="star"
-                                    :class="['text-sm', star <= Math.floor(agent.rating) ? 'fas fa-star text-yellow-400' : star - 0.5 <= agent.rating ? 'fas fa-star-half-alt text-yellow-400' : 'far fa-star text-yellow-400']"
+                                    :class="['text-sm', star <= Math.floor(agent.rating) ? 'pi pi-star-fill text-yellow-400' : star - 0.5 <= agent.rating ? 'pi pi-star text-yellow-400' : 'pi pi-star text-yellow-400']"
                                 ></i>
                             </div>
                             <span v-if="agent.reviews !== undefined && agent.reviews !== null" class="ml-1 text-sm text-gray-600">({{ agent.reviews }})</span>
@@ -314,9 +339,9 @@ const closeContactDialog = () => {
                                 <div class="text-lg font-semibold text-green-700">{{ agent.experience }}</div>
                                 <div class="text-xs text-gray-600">Років досвіду</div>
                             </div>
-                            <div v-if="agent.soldLastYear !== undefined && agent.soldLastYear !== null" class="text-center bg-yellow-50 rounded-md p-2 col-span-1">
-                                <div class="text-lg font-semibold text-yellow-700">{{ agent.soldLastYear }}</div>
-                                <div class="text-xs text-gray-600">Продано за рік</div>
+                            <div v-if="agent.reviews !== undefined && agent.reviews !== null" class="text-center bg-yellow-50 rounded-md p-2 col-span-1">
+                                <div class="text-lg font-semibold text-yellow-700">{{ agent.reviews }}</div>
+                                <div class="text-xs text-gray-600">Відгуків</div>
                             </div>
                         </div>
                     </div>

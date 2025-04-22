@@ -11,6 +11,7 @@ import Toast from 'primevue/toast';
 import ProgressSpinner from 'primevue/progressspinner';
 import Button from 'primevue/button';
 import PropertiesUser from './PropertiesUser.vue';
+import ProfileUser from '@/components/users/ProfileUser.vue';
 
 import { usePropertyStore } from '@/store/propertyStore';
 const propertyStore = usePropertyStore();
@@ -41,14 +42,9 @@ const searchQuery = ref('');
 const expandedRows = ref([]);
 const itemsPerPage = 10;
 
-const roleOptions = [
-    { label: 'Користувач', value: 'user' },
-    { label: 'Адміністратор', value: 'admin' },
-    { label: 'Клієнт', value: 'customer' },
-    { label: 'Менеджер', value: 'manager' },
-    { label: 'Гість', value: 'guest' },
-    { label: 'Заблокований', value: 'blocked' }
-];
+const roleOptions = computed(() => {
+    return usersStore.userTypes
+})
 
 onMounted(async () => {
     try {
@@ -57,6 +53,20 @@ onMounted(async () => {
         showError('Не вдалося завантажити користувачів: ' + err.message);
     }
 });
+
+const reload = async () => {
+    try {
+        await usersStore.fetchUsers();
+        toast.add({
+            severity: 'success',
+            summary: 'Успішно',
+            detail: 'Користувачі оновлені',
+            life: 3000
+        });
+    } catch (err) {
+        showError('Не вдалося перезавантажити користувачів: ' + err.message);
+    }
+};
 
 const filteredUsers = computed(() => {
     return usersStore.users.filter((user) => {
@@ -69,10 +79,12 @@ const getRoleSeverity = (role) => {
     switch (role) {
         case 'admin':
             return 'success';
-        case 'manager':
+        case 'buyer':
             return 'info';
-        case 'customer':
+        case 'agent':
             return 'secondary';
+        case 'seller':
+            return 'warning';
         case 'blocked':
             return 'danger';
         default:
@@ -81,6 +93,7 @@ const getRoleSeverity = (role) => {
 };
 
 const updateRole = async (userId, newRole) => {
+    console.log('Updating role for user:', userId, 'to', newRole);
     try {
         updating.value = true;
         await usersStore.updateUserRole(userId, newRole);
@@ -103,7 +116,7 @@ const formatDate = (timestamp) => {
         const date = new Date(timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000);
         return date.toLocaleString();
     } catch (error) {
-        console.error("Ошибка при форматировании Timestamp:", error);
+        console.error('Ошибка при форматировании Timestamp:', error);
         return 'Невідомо';
     }
 };
@@ -140,7 +153,13 @@ const showError = (message) => {
         >
             <template #header>
                 <div class="flex justify-between items-center">
-                    <h1 class="text-2xl font-bold">Керування користувачами</h1>
+                    <section>
+                        <h1 class="text-2xl font-bold">
+                            Керування користувачами
+                            <span class="ml-2 text-sm cursor-pointer border-gray-500 rounded" @click="reload"><i class="pi pi-replay"/></span></h1>
+                        <p class="text-sm text-gray-500">Ви можете редагувати ролі користувачів та переглядати їх об'єкти.</p>
+                    </section>
+
                     <div class="flex gap-2">
                         <Button icon="pi pi-minus" label="Згорнути всі" @click="collapseAll" class="p-button-text" />
                         <span class="p-input-icon-left">
@@ -169,13 +188,21 @@ const showError = (message) => {
 
             <Column field="role" header="Поточна роль" sortable>
                 <template #body="{ data }">
-                    <Tag :value="data.role" :severity="getRoleSeverity(data.role)" />
+                    <Tag :value="data.role.name" :severity="getRoleSeverity(data.role.role)" />
                 </template>
             </Column>
 
             <Column header="Зміна ролі" style="width: 200px">
                 <template #body="{ data }">
-                    <Dropdown v-model="data.role" :options="roleOptions" optionLabel="label" optionValue="value" @change="updateRole(data.id, $event.value)" :disabled="updating" class="w-full" />
+                    <Dropdown
+                        v-model="data.role"
+                        :options="roleOptions"
+                        optionLabel="name"
+                        :optionValue="undefined"
+                        @change="updateRole(data.id, $event.value)"
+                        :disabled="updating"
+                        class="w-full"
+                        />
                 </template>
             </Column>
 
@@ -210,16 +237,23 @@ const showError = (message) => {
                                     <div v-if="loadingProperties">Завантаження об'єктів користувача...</div>
                                     <div v-else-if="propertyStore.error">{{ usersStore.error }}</div>
                                     <div v-else-if="userProperties.length > 0">
-                                        <PropertiesUser
-                                            :userProperties="userProperties"
-                                            :userId="data.id"
-                                            @updateUserProperties = "fetchPropertiesForUser"
-                                        />
+                                        <PropertiesUser :userProperties="userProperties" :userId="data.id" @updateUserProperties="fetchPropertiesForUser" />
                                     </div>
                                     <div v-else>
                                         <p class="text-gray-500">Цей користувач не має жодного об'єкта.</p>
                                     </div>
                                 </div>
+                            </AccordionContent>
+                        </AccordionPanel>
+                    </Accordion>
+
+                    <Accordion value="0" class="mt-4">
+                        <AccordionPanel value="1">
+                            <AccordionHeader>
+                                <span class="text-xl">Редагувати профіль користувача</span>
+                            </AccordionHeader>
+                            <AccordionContent>
+                                <ProfileUser :user="data" />
                             </AccordionContent>
                         </AccordionPanel>
                     </Accordion>

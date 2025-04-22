@@ -13,9 +13,16 @@ export const useAgencyStore = defineStore('agency', {
         async createAgency(agencyData) {
             this.loading = true;
             this.error = null;
+
             try {
+                // Создаём документ
                 const docRef = await addDoc(collection(db, 'agencies'), agencyData);
                 console.log('Agency created with ID:', docRef.id);
+
+                // Обновляем тот же документ, добавляя ID внутрь
+                await updateDoc(doc(db, 'agencies', docRef.id), {
+                    id: docRef.id
+                });
 
                 return {
                     id: docRef.id,

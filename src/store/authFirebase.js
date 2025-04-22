@@ -21,7 +21,8 @@ export const useAuthStore = defineStore('auth', () => {
         return user.value.role || 'guest';
     });
 
-    async function register({ email, password, name, phones, agency, role = 'customer', remember = false }) {
+    async function register({ email, password, name, phones, agency, role, remember = false, region, city }) {
+        console.log('Registering user:', email, password, name, phones, agency, role, region, city);
         try {
             loading.value = true;
 
@@ -40,6 +41,8 @@ export const useAuthStore = defineStore('auth', () => {
                 role,
                 phones,
                 agency,
+                region,
+                city,
                 id: authUser.uid,
                 createdAt: serverTimestamp(),
                 lastLogin: serverTimestamp()
@@ -53,9 +56,11 @@ export const useAuthStore = defineStore('auth', () => {
                 uid: authUser.uid || null,
                 email: authUser.email || null,
                 displayName: name || null,
-                role: role || 'customer',
+                role: role,
                 phoneNumbers: phones || null,
-                agency: agency || null
+                agency: agency || null,
+                region: region || null,
+                city: city || null,
             };
 
             // Optional: Store some user info in localStorage for persistence
@@ -96,7 +101,7 @@ export const useAuthStore = defineStore('auth', () => {
                 email: authUser.email,
                 displayName: authUser.displayName,
                 emailVerified: authUser.emailVerified,
-                role: userDoc.data().role || 'customer',
+                role: userDoc.data().role,
                 phoneNumbers: userDoc.data().phones || null,
                 avatar: userDoc.data().avatar || null
             };
@@ -144,7 +149,7 @@ export const useAuthStore = defineStore('auth', () => {
                                 email: currentUser.email,
                                 displayName: currentUser.displayName,
                                 emailVerified: currentUser.emailVerified,
-                                role: userDoc.data().role || 'customer',
+                                role: userDoc.data().role,
                                 phones: userDoc.data().phones || null,
                                 avatar: userDoc.data().avatar || null
                             };
@@ -214,7 +219,7 @@ export const useAuthStore = defineStore('auth', () => {
                                 email: currentUser.email,
                                 displayName: currentUser.displayName,
                                 username: currentUser.displayName,
-                                role: userDoc.data().role || 'customer',
+                                role: userDoc.data().role,
                                 phones: userDoc.data().phones || null,
                                 emailVerified: currentUser.emailVerified,
                                 avatar: userDoc.data().avatar || null
@@ -229,7 +234,7 @@ export const useAuthStore = defineStore('auth', () => {
                                 uid: currentUser.uid,
                                 email: currentUser.email,
                                 displayName: currentUser.displayName,
-                                role: 'customer',
+                                role: 'guest',
                                 phones: [],
                                 createdAt: serverTimestamp(),
                                 lastLogin: serverTimestamp()
@@ -280,7 +285,7 @@ export const useAuthStore = defineStore('auth', () => {
                     email: currentUser.email,
                     displayName: currentUser.displayName || '',
                     username: currentUser.displayName || '',
-                    role: userDoc.data().role || 'customer',
+                    role: userDoc.data().role,
                     phones: userDoc.data().phones || [],
                     emailVerified: currentUser.emailVerified
                 };
@@ -294,7 +299,7 @@ export const useAuthStore = defineStore('auth', () => {
                 email: currentUser.email,
                 displayName: currentUser.displayName || '',
                 username: currentUser.displayName || '',
-                role: 'customer',
+                role: 'guest',
                 phones: [],
                 emailVerified: currentUser.emailVerified
             };

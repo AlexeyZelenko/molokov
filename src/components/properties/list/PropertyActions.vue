@@ -32,7 +32,7 @@ const isCreator = computed(() => {
 });
 
 const isAdmin = computed(() => {
-    return userStore.user?.role === 'admin';
+    return userStore.user?.role?.role === 'admin';
 });
 
 const showProperty = () => {

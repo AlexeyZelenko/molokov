@@ -21,7 +21,7 @@ export const authGuard = async (to, from, next) => {
         const isAuthRequired = to.meta?.requiresAuth || to.requiresAuth;
         const isUserAuthenticated = authStore.user;
 
-        if (currentUser && authStore.userRole === 'blocked' && to.path !== '/auth/access' && isAuthRequired) {
+        if (currentUser && authStore.userRole?.role === 'blocked' && to.path !== '/auth/access' && isAuthRequired) {
             finishLoading();
             return next('/auth/access');
         }
@@ -56,7 +56,7 @@ export const authGuard = async (to, from, next) => {
             return next('/auth/login');
         }
 
-        if (to.meta?.requiresAdmin && authStore.userRole !== 'admin') {
+        if (to.meta?.requiresAdmin && authStore.userRole?.role !== 'admin') {
             finishLoading();
             return next('/');
         }
