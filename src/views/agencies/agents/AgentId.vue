@@ -33,17 +33,18 @@ const formatDate = (timestamp) => {
 
     // Перевіряємо, чи перетворення дало коректну дату
     if (isNaN(date.getTime())) {
-         console.warn('Некоректний результат дати з Timestamp:', timestamp);
-         return 'Невірна дата'; // Обробка помилок перетворення
+        console.warn('Некоректний результат дати з Timestamp:', timestamp);
+        return 'Невірна дата'; // Обробка помилок перетворення
     }
 
     // Форматуємо об'єкт Date у рядок
     // Рекомендовано використовувати Intl.DateTimeFormat для локалізованого форматування
     try {
-        return new Intl.DateTimeFormat('uk-UA', { // 'uk-UA' для української локалі
+        return new Intl.DateTimeFormat('uk-UA', {
+            // 'uk-UA' для української локалі
             year: 'numeric', // Рік (наприклад, 2023)
-            month: 'long',   // Місяць повною назвою (наприклад, квітень)
-            day: 'numeric',    // День місяця (наприклад, 21)
+            month: 'long', // Місяць повною назвою (наприклад, квітень)
+            day: 'numeric' // День місяця (наприклад, 21)
         }).format(date);
     } catch (e) {
         console.error('Помилка форматування дати за допомогою Intl.DateTimeFormat:', e);
@@ -65,7 +66,7 @@ const viewListing = (listing) => {
     console.log(`Перегляд оголошення: ${listing}`);
     const category = listing.category.code;
     const subcategory = listing.subcategory.code;
-    router.push(`/pages/${category}/view/${subcategory}/${listing.id}?category=${category}&subcategory=${subcategory}`)
+    router.push(`/pages/${category}/view/${subcategory}/${listing.id}?category=${category}&subcategory=${subcategory}`);
 };
 </script>
 
@@ -176,7 +177,7 @@ const viewListing = (listing) => {
                         <template #title>
                             <div class="flex justify-between items-start">
                                 <h4 class="text-lg font-semibold text-gray-800">{{ listing.title }}</h4>
-                                <p class="text-xl font-bold text-blue-600">€{{ listing.price }}</p>
+                                <p class="text-xl font-bold text-blue-600">${{ listing.price }}</p>
                             </div>
                             <div class="flex items-center text-sm">
                                 <span>{{ listing.category.name }} / {{ listing.subcategory.name }}</span>
