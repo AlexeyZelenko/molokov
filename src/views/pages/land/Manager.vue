@@ -76,7 +76,7 @@ const images = computed({
         }
     }
 });
-const { uploadState, deleteImageFromFirebase  } = usePropertyDirectImageUpload();
+const { uploadState, deleteImageFromFirebase } = usePropertyDirectImageUpload();
 const onFileSelect = (updatedImages) => {
     images.value = updatedImages;
 };
@@ -154,7 +154,7 @@ onMounted(async () => {
 </script>
 
 <template>
-    <section class="w-full">
+    <section class="w-full max-w-3xl mx-auto px-4 py-8">
         <h1 class="text-2xl font-semibold mb-2">{{ pageTitle }}</h1>
         <div v-if="showLoader" class="fullscreen-loader h-full">
             <div class="loader"></div>
@@ -181,13 +181,7 @@ onMounted(async () => {
             <Fluid class="flex flex-col mt-8">
                 <PropertyDescription v-if="property" v-model="property.description" />
 
-                <PropertyImageUpload
-                    :images="images"
-                    :property="property"
-                    @upload="onFileSelect"
-                    @remove="removeImage"
-                    @reorder="handleReorder"
-                />
+                <PropertyImageUpload :images="images" :property="property" @upload="onFileSelect" @remove="removeImage" @reorder="handleReorder" />
             </Fluid>
 
             <Fluid class="flex mt-8">

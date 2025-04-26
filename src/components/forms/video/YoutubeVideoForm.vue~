@@ -1,0 +1,187 @@
+<script>
+import { defineComponent, ref, computed } from 'vue';
+import InputText from 'primevue/inputtext';
+import Button from 'primevue/button';
+import FormSection from "@/components/common/FormSection.vue";
+// Опционально, если хотите использовать компоненты сообщений PrimeVue
+// import Message from 'primevue/message'; // Если будете использовать Message напрямую
+
+export default defineComponent({
+    name: 'YoutubeVideoForm',
+    components: {
+        FormSection,
+        InputText,
+        Button
+        // Message, // Если будете использовать Message напрямую
+    },
+    setup() {
+        const youtubeUrl = ref('');
+        const videoId = ref(null);
+
+        // Вычисляемое свойство для URL встраивания видео
+        const embedUrl = computed(() => {
+            return videoId.value ? `https://www.youtube.com/embed/${videoId.value}` : '';
+        });
+
+        // Вычисляемое свойство для управления видимостью предпросмотра
+        const showPreview = computed(() => {
+            return !!videoId.value;
+        });
+
+        // Функция для извлечения ID видео из различных форматов URL
+        const extractVideoId = (url) => {
+            if (!url) return null;
+
+            try {
+                const urlObj = new URL(url);
+                let id = null;
+
+                // Обработка стандартной ссылки: https://www.youtube.com/watch?v=VIDEO_ID
+                if (urlObj.searchParams.has('v')) {
+                    id = urlObj.searchParams.get('v');
+                }
+                // Обработка сокращенной ссылки: https://youtu.be/VIDEO_ID
+                else if (urlObj.hostname === 'youtu.be') {
+                    id = urlObj.pathname.split('/')[1];
+                }
+                // Обработка ссылки для встраивания: https://www.youtube.com/embed/VIDEO_ID
+                else if (urlObj.pathname.startsWith('/embed/')) {
+                    id = urlObj.pathname.split('/')[2];
+                }
+                // Добавьте другие форматы, если необходимо (например, ссылки плейлистов, которые вы хотите обработать как одно видео)
+
+                // Простая проверка на валидность извлеченного ID
+                if (id && typeof id === 'string' && id.length >= 5) {
+                    // ID видео обычно длиннее
+                    return id;
+                }
+
+                return null; // Вернуть null, если ID не был найден или кажется некорректным
+            } catch (e) {
+                console.error('Ошибка при парсинге URL:', e);
+                return null; // Вернуть null в случае ошибки парсинга
+            }
+        };
+
+        // Функция, вызываемая при нажатии кнопки или Enter
+        const previewVideo = () => {
+            videoId.value = extractVideoId(youtubeUrl.value);
+        };
+
+        return {
+            youtubeUrl,
+            videoId,
+            embedUrl,
+            showPreview,
+            previewVideo
+        };
+    }
+});
+</script>
+
+<template>
+    <div class="p-fluid gap-2 youtube-video-form">
+        <FormSection v-if="property" title="Відео" v-model="property.videoUrl" :options="dropdowns.videoUrl" type="text" />
+
+        <div class="p-field">
+            <label for="youtubeUrl">Посилання на YouTube відео:</label>
+            <InputText id="youtubeUrl" type="text" v-model="youtubeUrl" @keyup.enter="previewVideo" aria-describedby="youtubeUrl-help" />
+            <small id="youtubeUrl-help" class="p-d-block"> Введіть повне посилання на відео з YouTube (наприклад, https://www.youtube.com/watch?v=VIDEO_ID). </small>
+        </div>
+
+        <div class="p-field">
+            <Button label="Показати відео" icon="pi pi-eye" @click="previewVideo" :disabled="!youtubeUrl" />
+        </div>
+
+        <div v-if="showPreview" class="video-preview p-mt-3">
+            <h4>Відео:</h4>
+            <div class="iframe-container">
+                <iframe :src="embedUrl" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
+
+        <div v-else-if="youtubeUrl && videoId === null" class="p-message p-message-warn p-mt-3">
+            <div class="p-message-icon pi pi-exclamation-triangle"></div>
+            <div class="p-message-wrapper">
+                <div class="p-message-text">Неправильний формат посилання на YouTube відео чи відео не знайдено. Будь ласка, перевірте посилання.</div>
+            </div>
+        </div>
+
+        <div v-else-if="!youtubeUrl && videoId === null" class="p-message p-message-info p-mt-3">
+            <div class="p-message-icon pi pi-info-circle"></div>
+            <div class="p-message-wrapper">
+                <div class="p-message-text">Введіть посилання на YouTube відео для перегляду.</div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<style scoped>
+:root {
+    --blue-100: #e0f7fa;
+    --blue-300: #4dd0e1;
+    --blue-700: #0097a7;
+    --orange-100: #fff3e0;
+    --orange-300: #ffb74d;
+    --orange-700: #f57c00;
+    --border-radius: 0.25rem; /* Пример радиуса границы */
+}
+/* Стили для формы */
+.youtube-video-form {
+    max-width: 600px; /* Максимальная ширина формы */
+    margin: 0 auto; /* Центрирование формы */
+}
+/* Опциональные стили для iframe контейнера, чтобы сделать его адаптивным */
+.iframe-container {
+    position: relative;
+    width: 100%;
+    /* Соотношение сторон 16:9 */
+    padding-bottom: 56.25%;
+    height: 0;
+    overflow: hidden;
+    max-width: 100%; /* Убедимся, что контейнер не выходит за пределы родителя */
+    background: #000; /* Черный фон, пока видео не загрузилось */
+}
+
+.iframe-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* Стили для PrimeVue p-message, чтобы они выглядели как в примере */
+.p-message {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    margin-bottom: 1rem;
+}
+
+.p-message-icon {
+    font-size: 1.5rem;
+    margin-right: 0.5rem;
+}
+
+.p-message-wrapper {
+    flex-grow: 1;
+}
+
+.p-message-text {
+    font-size: 1rem;
+}
+
+.p-message-info {
+    background-color: var(--blue-100);
+    color: var(--blue-700);
+    border: 1px solid var(--blue-300);
+}
+
+.p-message-warn {
+    background-color: var(--orange-100);
+    color: var(--orange-700);
+    border: 1px solid var(--orange-300);
+}
+</style>

@@ -154,7 +154,7 @@ onMounted(async () => {
 </script>
 
 <template>
-    <section class="w-full">
+    <section class="w-full max-w-3xl mx-auto px-4 py-8">
         <h1 class="text-2xl font-semibold mb-2">{{ pageTitle }}</h1>
         <FullscreenLoader v-if="showLoader" />
         <Form v-show="!showLoader" @submit="saveProperty">
