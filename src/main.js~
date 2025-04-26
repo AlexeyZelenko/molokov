@@ -28,6 +28,7 @@ const themeConfig = {
     }
 };
 
+
 async function initializeApp() {
     const app = createApp(App);
     const pinia = createPinia();
@@ -44,8 +45,10 @@ async function initializeApp() {
         }
     };
 
+
     // Включение режима разработки
     const isDev = typeof process !== 'undefined' && process.env.NODE_ENV === 'development';
+
 
     // Регистрация плагинов
     app.use(head);
@@ -61,6 +64,7 @@ async function initializeApp() {
         if (typeof window !== 'undefined') {
             await router.isReady();
         }
+
 
         // Настройка навигации и хлебных крошек
         router.afterEach((to) => {
@@ -85,6 +89,6 @@ async function initializeApp() {
 }
 
 // Запуск приложения
-initializeApp().catch((error) => {
+initializeApp().catch(error => {
     console.error('Critical initialization error:', error);
 });
