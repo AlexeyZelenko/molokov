@@ -174,10 +174,10 @@ if (savedViewMode) {
                     </div>
 
                     <component v-if="property" :is="categoryComponentMap[category] || PropertyOther" :property="property" />
-
-                    <PropertyDescription :property="property" :facilityReadiness="property.facilityReadiness" :description="property.description" class="mb-4" />
                 </div>
             </div>
+
+            <PropertyDescription :property="property" :facilityReadiness="property.facilityReadiness" :description="property.description" class="mb-4" />
 
             <DgisMap
                 :property="property"
