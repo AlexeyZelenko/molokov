@@ -17,7 +17,6 @@ export const useAgencyStore = defineStore('agency', {
             try {
                 // Создаём документ
                 const docRef = await addDoc(collection(db, 'agencies'), agencyData);
-                console.log('Agency created with ID:', docRef.id);
 
                 // Обновляем тот же документ, добавляя ID внутрь
                 await updateDoc(doc(db, 'agencies', docRef.id), {
@@ -42,7 +41,6 @@ export const useAgencyStore = defineStore('agency', {
             try {
                 const agencyDocRef = doc(db, 'agencies', agencyId);
                 await updateDoc(agencyDocRef, agencyData);
-                console.log('Agency updated:', agencyId);
             } catch (error) {
                 this.error = error.message;
                 console.error('Error updating agency:', error);
@@ -76,10 +74,8 @@ export const useAgencyStore = defineStore('agency', {
                                 const encodedPath = imageUrl.substring(pathStartIndex + 3, pathEndIndex);
                                 const filePath = decodeURIComponent(encodedPath);
 
-                                console.log('Attempting to delete image from Storage:', filePath);
                                 const imageRef = storageRef(storage, filePath);
                                 await deleteObject(imageRef);
-                                console.log('Image successfully deleted from Storage.');
 
                             } else {
                                 // Цей блок буде виконано, якщо bucketName undefined або URL не відповідає очікуваному формату
@@ -133,7 +129,6 @@ export const useAgencyStore = defineStore('agency', {
             return this.agencies.find((agency) => agency.id === id);
         },
         async fetchAgencyById(id) {
-            console.log(`Fetching agency by ID: ${id}`);
             this.isLoading = true;
             this.error = null;
             try {

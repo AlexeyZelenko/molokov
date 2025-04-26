@@ -68,7 +68,6 @@ const deleteProperty = (property) => {
                 if (property.images?.length > 0) {
                     await Promise.allSettled(
                         property.images.map(async (image) => {
-                            console.log('видалення image2', image);
                             try {
                                 const imagePath = image.url || image;
                                 const imageRef = storageRef(storage, imagePath);

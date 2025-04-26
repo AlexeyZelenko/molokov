@@ -195,8 +195,6 @@ export const usePropertiesStore = defineStore('properties', {
 
             try {
                 // Виконуємо всі запити паралельно за допомогою Promise.All
-                console.log('Fetching documents from rent, sell, dailyRent, exchange collection groups concurrently...');
-                // *** ВИПРАВЛЕНО: Деструктуризація відповідає кількості промісів (4) ***
                 const [rentSnapshot, sellSnapshot, dailyRentSnapshot, exchangeSnapshot] = await Promise.all([
                     getDocs(rentQuery),
                     getDocs(sellQuery),
@@ -205,7 +203,6 @@ export const usePropertiesStore = defineStore('properties', {
                 ]);
 
                 // Обробляємо результати запиту RENT
-                console.log(`Знайдено ${rentSnapshot.docs.length} документів у підколекції 'rent'.`); // Виправлено лог
                 rentSnapshot.docs.forEach(doc => {
                     allProperties.push({
                         id: doc.id,
@@ -216,7 +213,6 @@ export const usePropertiesStore = defineStore('properties', {
                 });
 
                 // Обробляємо результати запиту SELL
-                console.log(`Знайдено ${sellSnapshot.docs.length} документів у підколекції 'sell'.`); // Виправлено лог
                 sellSnapshot.docs.forEach(doc => {
                     allProperties.push({
                         id: doc.id,
@@ -227,7 +223,6 @@ export const usePropertiesStore = defineStore('properties', {
                 });
 
                 // Обробляємо результати запиту DAILY_RENT
-                console.log(`Знайдено ${dailyRentSnapshot.docs.length} документів у підколекції 'dailyRent'.`); // Виправлено лог
                 dailyRentSnapshot.docs.forEach(doc => {
                     allProperties.push({
                         id: doc.id,
@@ -237,8 +232,6 @@ export const usePropertiesStore = defineStore('properties', {
                     });
                 });
 
-                // *** ВИПРАВЛЕНО: Додано обробку результату для EXCHANGE ***
-                console.log(`Знайдено ${exchangeSnapshot.docs.length} документів у підколекції 'exchange'.`); // Додано лог
                 exchangeSnapshot.docs.forEach(doc => {
                     allProperties.push({
                         id: doc.id,
@@ -247,9 +240,6 @@ export const usePropertiesStore = defineStore('properties', {
                         typeDocumentId: doc.ref.parent?.parent?.id || null,
                     });
                 });
-
-
-                console.log(`Всього знайдено об'єктів нерухомості: ${allProperties.length}`);
                 return allProperties; // Повертаємо об'єднаний список
 
             } catch (error) {
@@ -280,11 +270,9 @@ export const usePropertiesStore = defineStore('properties', {
 
             // Check for exact match and nested access
             const component = componentMap[normalizedCategory]?.[normalizedSubcategory];
-            console.log(`Category: ${normalizedCategory}, Subcategory: ${normalizedSubcategory}, Component: ${component}`);
 
             if (component) {
                 this.currentComponent = component;
-                console.log(`Component determined: ${component}`);
                 return component;
             }
 
@@ -437,14 +425,11 @@ export const usePropertiesStore = defineStore('properties', {
 
             try {
                 const collectionPath = `properties/${category}/${subcategory}`;
-                console.log(`🔍 Поиск в коллекции: ${collectionPath}`);
-
                 const q = query(collection(db, collectionPath), where('idProperty', '==', Number(id)));
                 const querySnapshot = await getDocs(q);
 
                 if (!querySnapshot.empty) {
                     const doc = querySnapshot.docs[0];
-                    console.log('✅ Продукт найден:', doc.id, doc.data());
                     this.loading = false;
                     return { id: doc.id, ...doc.data() };
                 }

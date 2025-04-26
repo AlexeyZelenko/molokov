@@ -27,10 +27,6 @@ export default {
             init() {
                 if (!this.isAvailable) return false;
 
-                console.log('✅ Telegram WebApp:', this.webApp);
-                console.log('📌 User Data:', this.webApp.initDataUnsafe);
-                console.log('🌍 Platform:', this.webApp.platform);
-
                 // Сообщаем Telegram, что приложение готово
                 this.webApp.ready();
 
@@ -125,8 +121,6 @@ export default {
 
             // Поделиться контентом через Telegram
             shareContent(text, url) {
-                console.log('📤 Share content request:', { text, url });
-
                 // Проверка наличия текста
                 if (!text) {
                     console.warn('❗ Text is required for sharing.');

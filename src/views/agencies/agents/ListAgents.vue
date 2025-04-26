@@ -64,7 +64,6 @@ const contactForm = ref({
 // *** Завантажуємо дані при монтуванні компонента ***
 const allProperties = ref([]);
 onMounted(async () => {
-    console.log("Завантаження даних (користувачів та об'єктів нерухомості)...");
     await Promise.all([
         userStore.fetchUsers(), // Завантажує користувачів
         (allProperties.value = await propertiesStore.getAllPropertiesDataConcurrent()) // Завантажує об'єкти
@@ -84,13 +83,10 @@ const agentsWithCounts = computed(() => {
     // Отримуємо списки користувачів та об'єктів нерухомості зі стану Store
     const allUsers = userStore.users; // Список усіх користувачів (включаючи агентів)
 
-    console.log('allUsers >>', allUsers);
-    console.log('allProperties >>', allProperties.value);
     // Повертаємо порожній масив, якщо дані ще не завантажені або порожні
     if (!allUsers || allUsers.length === 0 || !allProperties.value || allProperties.value.length === 0) {
         return [];
     }
-    console.log('allUsers >>', allUsers);
 
     // 1. Підраховуємо об'єкти для кожного creator.id
     const propertyCounts = new Map();
@@ -138,11 +134,9 @@ const totalAgents = computed(() => agentsWithCounts.value.length);
 // *** Computed властивість для фінального списку агентів після фільтрації, сортування та пагінації ***
 const filteredAgents = computed(() => {
     let result = [...agentsWithCounts.value]; // Працюємо зі збагаченим списком агентів
-    console.log('result', result);
 
     // Застосування фільтрів
     const activeFilters = filters.value.filter((f) => f.active).map((f) => f.value);
-    console.log('activeFilters', activeFilters);
 
     // Якщо активний фільтр "Усі агенти" або немає активних фільтрів, показуємо всіх
     if (!activeFilters.includes('all') && activeFilters.length > 0) {
@@ -221,7 +215,6 @@ const onPageChange = (event) => {
 };
 
 const viewAgentProfile = (agent) => {
-    console.log(`Перегляд профілю агента: ${agent}`);
     userStore.setSelectedAgent(agent);
     router.push('/agents/' + agent.id); // Маршрут до профілю агента
 };

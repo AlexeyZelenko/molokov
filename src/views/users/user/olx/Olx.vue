@@ -61,10 +61,7 @@ export default {
 
             error.value = null;
             try {
-                console.log('>>>', selectedRegionId.value);
                 const response = await fetchOlxCities(26900);
-
-                console.log('>>>', response);
                 cities[selectedRegionId.value] = response.filter((city) => city.region_id == Number(selectedRegionId.value));
             } catch (err) {
                 error.value = err.message || 'Сталася помилка під час завантаження міст';
@@ -78,7 +75,6 @@ export default {
             currentLoadingCityId.value = cityId;
             error.value = null;
             try {
-                console.log('>>>', cityId);
                 cityDetails.value = await fetchOlxCityDetails(cityId);
             } catch (err) {
                 error.value = err.message || 'Сталася помилка під час завантаження деталей міста';
@@ -114,7 +110,6 @@ export default {
         onMounted(async () => {
             try {
                 areas.value = await getAreas();
-                console.log('areas', areas.value);
             } catch (error) {
                 // Обработка ошибки
                 console.error('Ошибка при получении областей', error);

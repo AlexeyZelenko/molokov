@@ -16,7 +16,6 @@ export const getAreas = async () => {
 
     try {
         const response = await novaPoshtaApi.post('', payload);
-        console.log('Полученные области:', response.data.data);
         return response.data.data;
     } catch (error) {
         console.error('Помилка при отриманні областей:', error);

@@ -23,9 +23,10 @@ import { usePropertyDirectImageUpload } from '@/composables/additionManagerPrope
 //forms
 import PropertyAddress from '@/components/forms/PropertyAddress.vue';
 import PropertyBasicInfo from '@/components/forms/PropertyBasicInfo.vue';
-import GaragesAreaDetails from '@/components/forms/garages/GaragesAreaDetails.vue';
-import GaragesPropertyFloors from '@/components/forms/garages/GaragesPropertyFloors.vue';
-import GaragesPropertyCondition from '@/components/forms/garages/GaragesPropertyCondition.vue';
+import PropertyAreaDetails from '@/components/forms/PropertyAreaDetails.vue';
+import PropertyFloors from '@/components/forms/PropertyFloors.vue';
+import PropertyRooms from '@/components/forms/PropertyRooms.vue';
+import PropertyCondition from '@/components/forms/PropertyCondition.vue';
 import FormDetails from '@/components/forms/FormDetails.vue';
 import MyContacts from '@/components/forms/MyContacts.vue';
 import PropertyDescription from '@/components/forms/PropertyDescription.vue';
@@ -129,6 +130,7 @@ onBeforeRouteLeave(async () => {
                 await deleteImageFromFirebase(image);
             }
             property.value.images = [];
+            console.log('Всі зображення видалені успішно');
         } catch (error) {
             console.error('Помилка при видаленні зображень:', error);
         }
@@ -154,41 +156,43 @@ onMounted(async () => {
 <template>
     <section class="w-full max-w-3xl mx-auto px-4 py-8">
         <h1 class="text-2xl font-semibold mb-2">{{ pageTitle }}</h1>
-        <FullscreenLoader v-if="showLoader" />
+        <div v-if="showLoader" class="fullscreen-loader h-full">
+            <div class="loader"></div>
+        </div>
         <Form v-show="!showLoader" @submit="saveProperty">
-            <Fluid class="flex flex-col gap-8">
+            <Fluid class="flex flex-col w-full gap-8">
                 <div class="w-full">
-                    <PropertyBasicInfo ref="basicInfoForm" v-model="property" :dropdowns="dropdowns" @validation-change="handleValidation('basicInfo', $event)" :selectedCategoryName="selectedCategoryName" />
+                    <PropertyBasicInfo v-if="property" ref="basicInfoForm" v-model="property" :dropdowns="dropdowns" @validation-change="handleValidation('basicInfo', $event)" :selectedCategoryName="selectedCategoryName" />
 
-                    <PropertyAddress v-model="property.address" :property="property" :dropdowns="dropdowns" />
+                    <PropertyAddress v-if="property && property.address" v-model="property.address" :property="property" :dropdowns="dropdowns" />
 
-                    <GaragesAreaDetails ref="areaDetailsForm" v-model="property.apartmentArea" @validation-change="handleValidation('area', $event)" />
+                    <PropertyAppointment v-if="property && property.appointment" v-model="property.appointment" :property="property" :dropdowns="dropdowns" />
                 </div>
 
                 <div class="w-full">
-                    <GaragesPropertyFloors ref="floorsForm" v-model="property.floors" @validation-change="handleValidation('floors', $event)" />
+                    <LandAreaDetails v-if="property && property.apartmentArea" ref="areaDetailsForm" v-model="property.apartmentArea" @validation-change="handleValidation('area', $event)" />
 
-                    <GaragesPropertyCondition ref="conditionForm" v-model="property" :dropdowns="dropdowns" @validation-change="handleValidation('condition', $event)" />
+                    <FormDetails v-if="property" ref="detailsForm" v-model="property" />
 
-                    <FormDetails ref="detailsForm" v-model="property" />
-
-                    <FormSection title="Готовність об'єкта" v-model="property.facilityReadiness" type="date" />
+                    <FormSection v-if="property" title="Готовність об'єкта" v-model="property.facilityReadiness" type="date" />
                 </div>
             </Fluid>
 
             <Fluid class="flex flex-col mt-8">
-                <PropertyDescription v-model="property.description" />
+                <PropertyDescription v-if="property" v-model="property.description" />
 
                 <PropertyImageUpload :images="images" :property="property" @upload="onFileSelect" @remove="removeImage" @reorder="handleReorder" />
             </Fluid>
 
             <Fluid class="flex mt-8">
-                <PublishToggle v-model="property.isPublic" />
+                <PublishToggle v-if="property" v-model="property.isPublic" />
             </Fluid>
 
             <Fluid class="grid grid-cols-1 md:grid-cols-1 gap-6 mt-8">
                 <MyContacts v-model="property" :contacts="contacts" />
+            </Fluid>
 
+            <Fluid class="flex my-8">
                 <Button type="submit" label="Зберегти" icon="pi pi-check" :loading="saving" />
 
                 <Toast />
@@ -198,21 +202,38 @@ onMounted(async () => {
                 </div>
             </Fluid>
         </Form>
-
-        <Toast position="bottom-center" group="property-action" @close="onClose">
-            <template #message="slotProps">
-                <div class="flex flex-col items-start flex-auto">
-                    <div class="flex items-center gap-2">
-                        <i class="pi pi-check-circle text-green-500 text-2xl"></i>
-                        <span class="font-bold text-lg">{{ slotProps.message.summary }}</span>
-                    </div>
-                    <div class="font-medium my-4">{{ slotProps.message.detail }}</div>
-                    <div class="flex gap-2">
-                        <Button v-if="!isEditMode" size="small" label="Додати ще оголошення" severity="secondary" @click="resetForm()"></Button>
-                        <Button size="small" label="Перейти до оголошення" severity="success" @click="onViewProperty()"></Button>
-                    </div>
-                </div>
-            </template>
-        </Toast>
     </section>
 </template>
+
+<style scoped>
+.fullscreen-loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.8);
+    z-index: 9999;
+
+    .loader {
+        width: 50px;
+        height: 50px;
+        border: 5px solid #ccc;
+        border-top-color: #007bff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+</style>

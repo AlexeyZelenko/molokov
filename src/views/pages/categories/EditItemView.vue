@@ -28,7 +28,6 @@ function getFirstSubcategory(categoryCode) {
 
 // Динамическая загрузка компонентов
 const getComponentPath = (category, subcategory) => {
-    console.log(category, subcategory)
     return defineAsyncComponent(() =>
         import(`@/views/pages/${category}/Manager.vue`)
             .catch(() => import('@/views/pages/NotFound.vue'))

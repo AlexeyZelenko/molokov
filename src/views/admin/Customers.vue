@@ -93,7 +93,6 @@ const getRoleSeverity = (role) => {
 };
 
 const updateRole = async (userId, newRole) => {
-    console.log('Updating role for user:', userId, 'to', newRole);
     try {
         updating.value = true;
         await usersStore.updateUserRole(userId, newRole);

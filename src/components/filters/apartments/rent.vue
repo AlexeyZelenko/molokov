@@ -477,7 +477,6 @@ onMounted(async () => {
     if (filters.value.minPrice && filters.value.minPrice !== null) {
         minPriceUAH.value = Math.round(await convertFromUSD(filters.value.minPrice, 'UAH'));
     }
-    console.log('filters.value.minPrice', filters.value.minPrice);
     if (filters.value.maxPrice && filters.value.maxPrice !== null) {
         maxPriceUAH.value = Math.round(await convertFromUSD(filters.value.maxPrice, 'UAH'));
     }

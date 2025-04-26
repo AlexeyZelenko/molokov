@@ -45,7 +45,6 @@ export default {
             try {
                 const foundProduct = await propertiesStore.findPropertyById(category, subcategory, id);
                 if (foundProduct) {
-                    console.log('Продукт найден:', foundProduct);
                     product.value = foundProduct;
                     await router.push({
                         path: `/pages/${foundProduct.category.code}/view/${foundProduct.subcategory.code}/${foundProduct.id}`,
@@ -68,7 +67,6 @@ export default {
 
         // Автоматически ищем продукт при загрузке компонента, если ID есть в URL
         onMounted(() => {
-            console.log('ID продукта:', id, category, subcategory);
             if (id) {
                 findProduct(id);
             }

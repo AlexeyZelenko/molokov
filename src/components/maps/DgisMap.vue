@@ -114,8 +114,6 @@ const removeMarker = () => {
         if (props.editable) {
             updatePropertyMarker(null);
         }
-
-        console.log('Маркер удален');
     }
 };
 

@@ -23,9 +23,10 @@ import { usePropertyDirectImageUpload } from '@/composables/additionManagerPrope
 //forms
 import PropertyAddress from '@/components/forms/PropertyAddress.vue';
 import PropertyBasicInfo from '@/components/forms/PropertyBasicInfo.vue';
-import GaragesAreaDetails from '@/components/forms/garages/GaragesAreaDetails.vue';
-import GaragesPropertyFloors from '@/components/forms/garages/GaragesPropertyFloors.vue';
-import GaragesPropertyCondition from '@/components/forms/garages/GaragesPropertyCondition.vue';
+import PropertyAreaDetails from '@/components/forms/PropertyAreaDetails.vue';
+import PropertyFloors from '@/components/forms/PropertyFloors.vue';
+import PropertyRooms from '@/components/forms/PropertyRooms.vue';
+import PropertyCondition from '@/components/forms/PropertyCondition.vue';
 import FormDetails from '@/components/forms/FormDetails.vue';
 import MyContacts from '@/components/forms/MyContacts.vue';
 import PropertyDescription from '@/components/forms/PropertyDescription.vue';
@@ -129,6 +130,7 @@ onBeforeRouteLeave(async () => {
                 await deleteImageFromFirebase(image);
             }
             property.value.images = [];
+            console.log('Всі зображення видалені успішно');
         } catch (error) {
             console.error('Помилка при видаленні зображень:', error);
         }
@@ -159,37 +161,75 @@ onMounted(async () => {
             <Fluid class="flex flex-col gap-8">
                 <div class="w-full">
                     <PropertyBasicInfo ref="basicInfoForm" v-model="property" :dropdowns="dropdowns" @validation-change="handleValidation('basicInfo', $event)" :selectedCategoryName="selectedCategoryName" />
-
-                    <PropertyAddress v-model="property.address" :property="property" :dropdowns="dropdowns" />
-
-                    <GaragesAreaDetails ref="areaDetailsForm" v-model="property.apartmentArea" @validation-change="handleValidation('area', $event)" />
+                    <PropertyAddress v-if="property" v-model="property.address" :property="property" :dropdowns="dropdowns" />
+                    <PropertyAreaDetails v-if="property" ref="areaDetailsForm" v-model="property.apartmentArea" @validation-change="handleValidation('area', $event)" />
                 </div>
 
                 <div class="w-full">
-                    <GaragesPropertyFloors ref="floorsForm" v-model="property.floors" @validation-change="handleValidation('floors', $event)" />
-
-                    <GaragesPropertyCondition ref="conditionForm" v-model="property" :dropdowns="dropdowns" @validation-change="handleValidation('condition', $event)" />
-
+                    <PropertyFloors v-if="property" ref="floorsForm" v-model="property.floors" @validation-change="handleValidation('floors', $event)" />
+                    <PropertyRooms v-if="property" ref="roomsForm" v-model="property" :dropdowns="dropdowns" @validation-change="handleValidation('rooms', $event)" />
+                    <PropertyCondition v-if="property" ref="conditionForm" v-model="property" :dropdowns="dropdowns" @validation-change="handleValidation('condition', $event)" />
                     <FormDetails ref="detailsForm" v-model="property" />
-
-                    <FormSection title="Готовність об'єкта" v-model="property.facilityReadiness" type="date" />
+                    <FormSection v-if="property" title="Готовність об'єкта" v-model="property.facilityReadiness" type="date" />
                 </div>
             </Fluid>
 
-            <Fluid class="flex flex-col mt-8">
-                <PropertyDescription v-model="property.description" />
+            <Fluid v-if="showRentSection" class="w-full flex flex-col gap-8 mt-4">
+                <div class="w-full">
+                    <div v-if="property" class="card flex flex-col gap-4">
+                        <div class="font-semibold text-xl">Комунальні послуги</div>
+                        <MultiSelect v-model="property.utilities" :options="dropdowns.utilities" optionLabel="name" placeholder="Комунальні послуги" :filter="true">
+                            <template #value="slotProps">
+                                <div class="inline-flex items-center py-1 px-2 bg-primary text-primary-contrast rounded-border mr-2" v-for="option of slotProps.value" :key="option.code">
+                                    <div>{{ option.name }}</div>
+                                </div>
+                                <template v-if="!slotProps.value || slotProps.value.length === 0">
+                                    <div class="p-1">Вибрати комунальні послуги</div>
+                                </template>
+                            </template>
+                            <template #option="slotProps">
+                                <div class="flex items-center">
+                                    <span :class="'mr-2' + slotProps.option.code.toLowerCase()" style="width: 18px; height: 12px" />
+                                    <div>{{ slotProps.option.name }}</div>
+                                </div>
+                            </template>
+                        </MultiSelect>
+                    </div>
 
+                    <FormSection v-if="property" title="Тип опалення" v-model="property.heatingType" :options="dropdowns.heatingTypes" />
+
+                    <FormSection v-if="property" title="Меблі" v-model="property.furniture" :options="dropdowns.furniture" />
+                </div>
+
+                <div class="md:w-1/2">
+                    <FormSection v-if="property" title="Паркування" v-model="property.parking" :options="dropdowns.parking" />
+
+                    <FormSection v-if="property" title="Балкон / Тераса" v-model="property.balconyTerrace" :options="dropdowns.balconyTerrace" />
+
+                    <FormSection v-if="property" title="Проживання тварин" v-model="property.animal" type="toggle" />
+                </div>
+            </Fluid>
+
+            <Fluid v-if="property" class="flex flex-col mt-8">
+                <PropertyDescription v-model="property.description" />
                 <PropertyImageUpload :images="images" :property="property" @upload="onFileSelect" @remove="removeImage" @reorder="handleReorder" />
             </Fluid>
 
-            <Fluid class="flex mt-8">
+            <Fluid v-if="property" class="flex mt-8">
                 <PublishToggle v-model="property.isPublic" />
             </Fluid>
 
             <Fluid class="grid grid-cols-1 md:grid-cols-1 gap-6 mt-8">
                 <MyContacts v-model="property" :contacts="contacts" />
 
-                <Button type="submit" label="Зберегти" icon="pi pi-check" :loading="saving" />
+                <Button type="submit" label="ЗБЕРЕГТИ" icon="pi pi-check" :loading="saving" raised class="w-full" style="letter-spacing: 2px" />
+
+                <Button v-if="!isEditMode" label="ОЧИСТИТИ ФОРМУ" @click="resetForm" icon="pi pi-refresh" raised severity="help" class="w-full" style="letter-spacing: 2px" />
+
+                <section>
+                    <span class="text-red-500 mr-2 text-2xl">*</span>
+                    <span>Поля з зірочкою, обов'язкові для заповнення!</span>
+                </section>
 
                 <Toast />
 

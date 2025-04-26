@@ -22,7 +22,6 @@ export const useAuthStore = defineStore('auth', () => {
     });
 
     async function register({ email, password, name, phones, agency, role, remember = false, region, city }) {
-        console.log('Registering user:', email, password, name, phones, agency, role, region, city);
         try {
             loading.value = true;
 
@@ -173,7 +172,6 @@ export const useAuthStore = defineStore('auth', () => {
 
             userStore.clearUserData();
 
-            console.log('logout');
             // window.location.reload(true);
         } catch (err) {
             const errorMessage = getFirebaseErrorMessage(err.message);

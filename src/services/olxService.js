@@ -8,7 +8,6 @@ let isLoading = false;
 
 async function getOlxToken() {
     try {
-        console.log('Fetching OLX access token...');
         const tokenResponse = await axios.get(olxTokenUrl);
         return tokenResponse.data.access_token;
     } catch (error) {
@@ -21,13 +20,11 @@ export async function fetchOlxRegions() {
     isLoading = true;
     try {
         const accessToken = await getOlxToken();
-        console.log('Fetching OLX regions...');
         const regionsResponse = await axios.get(olxApiRegions, {
             headers: {
                 Authorization: `Bearer ${accessToken}`
             }
         });
-        console.log('OLX regions response:', regionsResponse.data);
         return regionsResponse.data.data;
     } catch (error) {
         console.error('Error fetching OLX regions:', error);
@@ -41,13 +38,11 @@ export async function fetchOlxCities(offset) {
     isLoading = true;
     try {
         const accessToken = await getOlxToken();
-        console.log(`Fetching OLX cities for region ${offset}...`);
         const citiesResponse = await axios.get(`${olxApiCities}?offset=${offset}`, {
             headers: {
                 Authorization: `Bearer ${accessToken}`
             }
         });
-        console.log('OLX cities response:', citiesResponse.data);
         return citiesResponse.data.data;
     } catch (error) {
         console.error('Error fetching OLX cities:', error);
@@ -61,13 +56,11 @@ export async function fetchOlxCityDetails(cityId) {
     isLoading = true;
     try {
         const accessToken = await getOlxToken();
-        console.log(`Fetching OLX city details for city ${cityId}...`);
         const cityDetailsResponse = await axios.get(`${olxApiCityDetails}?cityId=${cityId}`, {
             headers: {
                 Authorization: `Bearer ${accessToken}`
             }
         });
-        console.log('OLX city details response:', cityDetailsResponse.data);
         return cityDetailsResponse.data.data;
     } catch (error) {
         console.error('Error fetching OLX city details:', error);

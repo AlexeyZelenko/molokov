@@ -156,7 +156,6 @@ const handleRegister = async () => {
             city: form.value.city,
             role: form.value.role
         });
-        console.log('Реєстрація успішна!');
 
         showTemplate();
     } catch (err) {

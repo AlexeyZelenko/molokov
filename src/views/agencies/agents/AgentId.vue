@@ -63,7 +63,6 @@ const formatDate = (timestamp) => {
 };
 
 const viewListing = (listing) => {
-    console.log(`Перегляд оголошення: ${listing}`);
     const category = listing.category.code;
     const subcategory = listing.subcategory.code;
     router.push(`/pages/${category}/view/${subcategory}/${listing.id}?category=${category}&subcategory=${subcategory}`);

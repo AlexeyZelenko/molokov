@@ -45,7 +45,6 @@ const selectedSettlement = ref(null);
 const citiesNova = ref([]);
 const centerMap = ref(null);
 const selectCity = (city) => {
-    console.log(city);
     centerMap.value = [Number(city.Latitude), Number(city.Longitude)];
     props.modelValue.city = city;
     selectedSettlement.value = city;

@@ -80,7 +80,6 @@ watch(() => store.properties, () => {
 
 // Загрузка данных при монтировании компонента
 onMounted(() => {
-    console.log('route.query >>>>>>>', route.query);
     // Проверяем, есть ли параметр listId в query
     if (!route.query.listId) {
         loadPage();
@@ -101,7 +100,6 @@ const deleteProperty = (property) => {
                 // Delete images from storage
                 if (property.images && property.images.length > 0) {
                     const deleteImagePromises = property.images.map(async (image) => {
-                        console.log('видалення image3', image);
                         try {
                             const imagePath = image.url || image;
                             const imageRef = storageRef(storage, imagePath);

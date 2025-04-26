@@ -175,7 +175,6 @@ export class PropertyManager {
 
     uploadImagesNew(images) {
         this.property.images.push(...images);
-        console.log('Зображення завантажено:', this.property.images);
     }
 
     getFormattedDescription() {

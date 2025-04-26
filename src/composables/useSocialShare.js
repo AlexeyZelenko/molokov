@@ -87,7 +87,6 @@ export function useSocialShare(props, toast) {
 
     // Telegram specific share
     const shareProductTelegramWebApp = () => {
-        console.log('Share product');
         const property = props.property;
 
         const descriptionParts = [

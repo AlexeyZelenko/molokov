@@ -17,7 +17,6 @@ const agencyStore = useAgencyStore();
 
 // Завантажуємо агентства при монтуванні компонента
 onMounted(async () => {
-    console.log('Fetching agencies on mount');
     await agencyStore.fetchAgencies();
 });
 

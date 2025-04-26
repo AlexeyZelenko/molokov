@@ -130,7 +130,6 @@ onBeforeRouteLeave(async () => {
                 await deleteImageFromFirebase(image);
             }
             property.value.images = [];
-            console.log('Всі зображення видалені успішно');
         } catch (error) {
             console.error('Помилка при видаленні зображень:', error);
         }

@@ -138,9 +138,6 @@ export const useUserStore = defineStore('user', {
 
         async updateProfile(data) {
             if (!auth.currentUser || !this.profile) return;
-            console.log('Updating profile with data:', auth.currentUser, data);
-
-            console.log('Current user:', this.profile.role);
             if (this.profile?.role?.id === 'admin') {
                 await updateDoc(doc(db, 'users', data.id), data);
                 this.profile = { ...this.profile, ...data };
@@ -168,7 +165,6 @@ export const useUserStore = defineStore('user', {
         },
 
         async deletePropertyList(listId) {
-            console.log('listId:', listId);
             try {
                 const listRef = doc(db, 'propertyLists', listId);
                 await deleteDoc(listRef);
@@ -319,7 +315,6 @@ export const useUserStore = defineStore('user', {
                 const updatedClients = this.clients.map((client) => (client.id === clientId ? { ...client, ...updatedData } : client));
 
                 this.clients = updatedClients; // Оновлюємо локальний стан
-                console.log('Клієнт успішно оновлено. Оновлені клієнти:', updatedClients);
             } catch (error) {
                 console.error('Помилка при оновленні клієнта:', error);
                 throw error; // Передаємо помилку далі для обробки
@@ -339,8 +334,6 @@ export const useUserStore = defineStore('user', {
                 // Оновлюємо локальний стан клієнтів
                 const updatedClients = this.clients.filter((client) => client.id !== clientId);
                 this.clients = updatedClients; // Оновлюємо локальний стан
-
-                console.log('Клієнт успішно видалено. Оновлені клієнти:', updatedClients);
             } catch (error) {
                 console.error('Помилка при видаленні клієнта:', error);
                 throw error; // Передаємо помилку далі для обробки
@@ -362,7 +355,6 @@ export const useUserStore = defineStore('user', {
         },
 
         async addAdToPropertyList(listId, propertyId, ad) {
-            console.log('listId:', listId, 'ad:', ad);
             const listRef = doc(db, 'propertyLists', listId);
             const listDoc = await getDoc(listRef);
 
@@ -448,7 +440,6 @@ export const useUserStore = defineStore('user', {
         },
 
         setSelectedAgent(selectedAgent) {
-            console.log('Selected agent:', selectedAgent);
             this.selectedAgent = selectedAgent;
         }
     }
