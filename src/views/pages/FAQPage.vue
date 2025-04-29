@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-// Нет логики, только UI
+import SupportForm from '@/components/SupportForm.vue';
 </script>
 
 <template>
@@ -27,13 +27,11 @@
                 <p class="text-gray-700">На сторінці об'єкта ви побачите контакти агента.</p>
             </AccordionTab>
 
-<!--            <AccordionTab header="Чи можу я зберегти улюблені об'єкти?">-->
-<!--                <p class="text-gray-700">Так, після входу в обліковий запис ви можете додавати об'єкти до списку обраного для швидкого доступу.</p>-->
-<!--            </AccordionTab>-->
+            <!--            <AccordionTab header="Чи можу я зберегти улюблені об'єкти?">-->
+            <!--                <p class="text-gray-700">Так, після входу в обліковий запис ви можете додавати об'єкти до списку обраного для швидкого доступу.</p>-->
+            <!--            </AccordionTab>-->
         </Accordion>
+
+        <SupportForm />
     </div>
 </template>
-
-<style scoped>
-/* Дополнительные стили можно добавить при необходимости */
-</style>
