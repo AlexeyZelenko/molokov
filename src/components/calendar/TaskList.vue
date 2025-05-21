@@ -243,20 +243,24 @@ const toggleTaskCompletion = async (task) => {
     console.log('[COMPONENT] Task ID:', task.id);
     console.log('[COMPONENT] Current task completed status:', task.completed);
 
+    // Зберігаємо оригінальний статус для відновлення у випадку помилки
     const originalStatus = task.completed;
-
+    
+    // Важливо: скидаємо локальну зміну, щоб уникнути конфлікту зі змінами від сховища
+    task.completed = originalStatus;
+    
     try {
-        // Явно передаем ID задачи в виде строки для согласованности типов
+        // Явно передаємо ID задачі у вигляді рядка для узгодженості типів
         console.log('[COMPONENT] Calling store method with ID:', task.id);
         await calendarStore.toggleTaskCompletion(task.id);
         console.log('[COMPONENT] Store method completed successfully');
+        
+        // Оновлюємо локальний стан після успішного оновлення в сховищі
+        // Це гарантує, що UI відображає актуальний стан з бази даних
+        await calendarStore.fetchTasks();
     } catch (error) {
         console.error('[COMPONENT] Error occurred:', error);
         showErrorToast('Не вдалося оновити статус задачі');
-
-        // Отмена изменения интерфейса: восстановление предыдущего состояния
-        console.log('[COMPONENT] Reverting UI state to:', originalStatus);
-        task.completed = originalStatus;
     }
 };
 
@@ -392,8 +396,8 @@ onMounted(async () => {
             <div v-else class="task-items">
                 <div v-for="task in pendingTasks" :key="task.id" class="task-item bg-white rounded-lg p-3 mb-2 shadow-sm border-l-4" :class="[getPriorityClass(task.priority)]">
                     <div class="flex items-start">
-                        <Checkbox v-model="task.completed" :binary="true" class="mt-1"
-                                  @change="() => { console.log('Checkbox clicked for task ID:', task.id); toggleTaskCompletion(task); }" />
+                        <Checkbox :modelValue="task.completed" :binary="true" class="mt-1"
+                                  @click="toggleTaskCompletion(task)" />
 
                         <div class="ml-3 flex-grow">
                             <div class="flex justify-between items-start">
@@ -438,8 +442,8 @@ onMounted(async () => {
             <div class="task-items">
                 <div v-for="task in completedTasks.slice(0, 5)" :key="task.id" class="task-item bg-white rounded-lg p-3 mb-2 shadow-sm border-l-4 opacity-70">
                     <div class="flex items-start">
-                        <Checkbox v-model="task.completed" :binary="true" class="mt-1"
-                                  @change="() => { console.log('Completed task checkbox clicked for task ID:', task.id); toggleTaskCompletion(task); }" />
+                        <Checkbox :modelValue="task.completed" :binary="true" class="mt-1"
+                                  @click="toggleTaskCompletion(task)" />
 
                         <div class="ml-3 flex-grow">
                             <div class="flex justify-between items-start">
