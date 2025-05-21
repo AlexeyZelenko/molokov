@@ -123,6 +123,26 @@ export const useUserStore = defineStore('user', {
                 isRemovable: false,
                 showOnRegistration: false
             }
+        ],
+        // Добавляем сегменты клиентов
+        clientSegments: [
+            { id: 'vip', name: 'VIP', description: 'Клиенты с высоким бюджетом и приоритетом' },
+            { id: 'regular', name: 'Постоянный', description: 'Регулярные клиенты' },
+            { id: 'new', name: 'Новый', description: 'Новые клиенты, требующие внимания' },
+            { id: 'inactive', name: 'Неактивный', description: 'Клиенты без активности' }
+        ],
+        // Добавляем статусы клиентов
+        clientStatuses: [
+            { id: 'active', name: 'Активный', color: 'success' },
+            { id: 'pending', name: 'В ожидании', color: 'warning' },
+            { id: 'closed', name: 'Сделка закрыта', color: 'info' },
+            { id: 'rejected', name: 'Отказался', color: 'danger' }
+        ],
+        // Добавляем приоритеты клиентов
+        clientPriorities: [
+            { id: 'high', name: 'Высокий', color: 'danger' },
+            { id: 'medium', name: 'Средний', color: 'warning' },
+            { id: 'low', name: 'Низкий', color: 'success' }
         ]
     }),
 

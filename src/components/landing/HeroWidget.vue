@@ -40,6 +40,6 @@ import HomeSearch from '@/components/forms/BlockSearchHomePage.vue';
 .hero-search-container {
     padding: 0 important;
     // чтобы HomeSearch красиво "выплыл"
-    margin-top: 10px;   
+    margin-top: 10px;
 }
 </style>

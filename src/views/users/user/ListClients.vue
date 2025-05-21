@@ -5,13 +5,22 @@
         <div>
             <div class="flex justify-between items-center mb-6">
                 <h1 class="text-2xl font-bold text-gray-800">Клієнти</h1>
-                <Button
-                    label="Додати клієнта"
-                    icon="pi pi-plus"
-                    @click="openAddDialog"
-                    class="p-button-raised p-button-primary shadow-md hover:shadow-lg transition-shadow duration-200"
-                    iconClass="mr-2"
-                />
+                <div class="flex gap-2">
+                    <Button
+                        label="Сегментация"
+                        icon="pi pi-filter"
+                        @click="displaySegmentationDialog = true"
+                        class="p-button-raised p-button-secondary shadow-md hover:shadow-lg transition-shadow duration-200"
+                        iconClass="mr-2"
+                    />
+                    <Button
+                        label="Додати клієнта"
+                        icon="pi pi-plus"
+                        @click="openAddDialog"
+                        class="p-button-raised p-button-primary shadow-md hover:shadow-lg transition-shadow duration-200"
+                        iconClass="mr-2"
+                    />
+                </div>
             </div>
         </div>
 
@@ -34,7 +43,7 @@
                 <div class="text-gray-500 p-4">Нічого не знайдено.</div>
             </template>
             <Column :expander="true" headerStyle="width: 3rem" />
-            <Column field="name" header="Name" style="min-width: 12rem">
+            <Column field="name" header="Имя" style="min-width: 12rem">
                 <template #body="{ data }">
                     <span class="font-medium">{{ data.name }}</span>
                 </template>
@@ -43,8 +52,56 @@
                         v-model="filterModel.value"
                         type="text"
                         @input="filterCallback()"
-                        placeholder="Search by name"
+                        placeholder="Поиск по имени"
                         class="p-inputtext-sm w-full"
+                    />
+                </template>
+            </Column>
+            <Column field="segment" header="Сегмент" sortable>
+                <template #body="{ data }">
+                    <Tag :value="getSegmentName(data.segment)" severity="info" />
+                </template>
+                <template #filter="{ filterModel, filterCallback }">
+                    <Dropdown
+                        v-model="filterModel.value"
+                        :options="userStore.clientSegments"
+                        optionLabel="name"
+                        optionValue="id"
+                        placeholder="Все сегменты"
+                        class="p-column-filter"
+                        @change="filterCallback()"
+                    />
+                </template>
+            </Column>
+            <Column field="status" header="Статус" sortable>
+                <template #body="{ data }">
+                    <Tag :value="getStatusName(data.status)" :severity="getStatusSeverity(data.status)" />
+                </template>
+                <template #filter="{ filterModel, filterCallback }">
+                    <Dropdown
+                        v-model="filterModel.value"
+                        :options="userStore.clientStatuses"
+                        optionLabel="name"
+                        optionValue="id"
+                        placeholder="Все статусы"
+                        class="p-column-filter"
+                        @change="filterCallback()"
+                    />
+                </template>
+            </Column>
+            <Column field="priority" header="Приоритет" sortable>
+                <template #body="{ data }">
+                    <Tag :value="getPriorityName(data.priority)" :severity="getPrioritySeverity(data.priority)" />
+                </template>
+                <template #filter="{ filterModel, filterCallback }">
+                    <Dropdown
+                        v-model="filterModel.value"
+                        :options="userStore.clientPriorities"
+                        optionLabel="name"
+                        optionValue="id"
+                        placeholder="Все приоритеты"
+                        class="p-column-filter"
+                        @change="filterCallback()"
                     />
                 </template>
             </Column>
@@ -247,6 +304,41 @@
                         <InputNumber id="rooms" v-model="newClient.wishes.rooms" class="p-inputnumber-sm" />
                     </div>
                 </Panel>
+                <Panel header="Сегментация" :toggleable="true">
+                    <div class="field flex flex-col">
+                        <label for="segment">Сегмент</label>
+                        <Dropdown
+                            id="segment"
+                            v-model="newClient.segment"
+                            :options="userStore.clientSegments"
+                            optionLabel="name"
+                            optionValue="id"
+                            class="p-dropdown-sm"
+                        />
+                    </div>
+                    <div class="field flex flex-col">
+                        <label for="status">Статус</label>
+                        <Dropdown
+                            id="status"
+                            v-model="newClient.status"
+                            :options="userStore.clientStatuses"
+                            optionLabel="name"
+                            optionValue="id"
+                            class="p-dropdown-sm"
+                        />
+                    </div>
+                    <div class="field flex flex-col">
+                        <label for="priority">Приоритет</label>
+                        <Dropdown
+                            id="priority"
+                            v-model="newClient.priority"
+                            :options="userStore.clientPriorities"
+                            optionLabel="name"
+                            optionValue="id"
+                            class="p-dropdown-sm"
+                        />
+                    </div>
+                </Panel>
             </div>
             <template #footer>
                 <Button label="Скасувати" icon="pi pi-times" @click="closeAddDialog" class="p-button-text p-button-danger" />
@@ -306,6 +398,41 @@
                         <InputNumber id="rooms" v-model="selectedClient.wishes.rooms" class="p-inputnumber-sm" />
                     </div>
                 </Panel>
+                <Panel header="Сегментация" :toggleable="true">
+                    <div class="field flex flex-col">
+                        <label for="segment">Сегмент</label>
+                        <Dropdown
+                            id="segment"
+                            v-model="selectedClient.segment"
+                            :options="userStore.clientSegments"
+                            optionLabel="name"
+                            optionValue="id"
+                            class="p-dropdown-sm"
+                        />
+                    </div>
+                    <div class="field flex flex-col">
+                        <label for="status">Статус</label>
+                        <Dropdown
+                            id="status"
+                            v-model="selectedClient.status"
+                            :options="userStore.clientStatuses"
+                            optionLabel="name"
+                            optionValue="id"
+                            class="p-dropdown-sm"
+                        />
+                    </div>
+                    <div class="field flex flex-col">
+                        <label for="priority">Приоритет</label>
+                        <Dropdown
+                            id="priority"
+                            v-model="selectedClient.priority"
+                            :options="userStore.clientPriorities"
+                            optionLabel="name"
+                            optionValue="id"
+                            class="p-dropdown-sm"
+                        />
+                    </div>
+                </Panel>
             </div>
             <template #footer>
                 <Button label="Скасувати" icon="pi pi-times" @click="closeEditDialog" class="p-button-text p-button-danger" />
@@ -314,11 +441,106 @@
         </Dialog>
 
         <ConfirmDialog />
+        
+        <!-- Диалог сегментации клиентов -->
+        <Dialog
+            v-model:visible="displaySegmentationDialog"
+            :style="{ width: '90vw', maxWidth: '800px' }"
+            header="Сегментация клиентов"
+            :modal="true"
+            class="p-dialog-lg"
+        >
+            <div class="p-fluid flex flex-col gap-4">
+                <DataTable
+                    v-model:selection="selectedClients"
+                    :value="clients"
+                    dataKey="id"
+                    stripedRows
+                    paginator
+                    :rows="10"
+                    :rowsPerPageOptions="[5, 10, 20]"
+                    tableStyle="min-width: 50rem"
+                    class="p-datatable-hoverable-rows shadow-sm rounded-lg"
+                >
+                    <Column selectionMode="multiple" headerStyle="width: 3rem" />
+                    <Column field="name" header="Имя" sortable />
+                    <Column field="segment" header="Сегмент" sortable>
+                        <template #body="{ data }">
+                            <Tag :value="getSegmentName(data.segment)" severity="info" />
+                        </template>
+                    </Column>
+                    <Column field="status" header="Статус" sortable>
+                        <template #body="{ data }">
+                            <Tag :value="getStatusName(data.status)" :severity="getStatusSeverity(data.status)" />
+                        </template>
+                    </Column>
+                    <Column field="priority" header="Приоритет" sortable>
+                        <template #body="{ data }">
+                            <Tag :value="getPriorityName(data.priority)" :severity="getPrioritySeverity(data.priority)" />
+                        </template>
+                    </Column>
+                </DataTable>
+                
+                <div class="flex flex-col gap-4 mt-4">
+                    <div class="text-lg font-semibold">Массовое обновление выбранных клиентов</div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="field flex flex-col">
+                            <label for="bulkSegment">Сегмент</label>
+                            <Dropdown
+                                id="bulkSegment"
+                                v-model="bulkUpdate.segment"
+                                :options="userStore.clientSegments"
+                                optionLabel="name"
+                                optionValue="id"
+                                placeholder="Выберите сегмент"
+                                class="p-dropdown-sm"
+                            />
+                        </div>
+                        <div class="field flex flex-col">
+                            <label for="bulkStatus">Статус</label>
+                            <Dropdown
+                                id="bulkStatus"
+                                v-model="bulkUpdate.status"
+                                :options="userStore.clientStatuses"
+                                optionLabel="name"
+                                optionValue="id"
+                                placeholder="Выберите статус"
+                                class="p-dropdown-sm"
+                            />
+                        </div>
+                        <div class="field flex flex-col">
+                            <label for="bulkPriority">Приоритет</label>
+                            <Dropdown
+                                id="bulkPriority"
+                                v-model="bulkUpdate.priority"
+                                :options="userStore.clientPriorities"
+                                optionLabel="name"
+                                optionValue="id"
+                                placeholder="Выберите приоритет"
+                                class="p-dropdown-sm"
+                            />
+                        </div>
+                    </div>
+                    <div class="flex justify-end">
+                        <Button
+                            label="Обновить выбранных клиентов"
+                            icon="pi pi-check"
+                            @click="updateSelectedClients"
+                            :disabled="selectedClients.length === 0 || (!bulkUpdate.segment && !bulkUpdate.status && !bulkUpdate.priority)"
+                            class="p-button-success"
+                        />
+                    </div>
+                </div>
+            </div>
+            <template #footer>
+                <Button label="Закрыть" icon="pi pi-times" @click="displaySegmentationDialog = false" class="p-button-text" />
+            </template>
+        </Dialog>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, reactive } from 'vue';
 import { useUserStore } from '@/store/userStore';
 import { useToast } from 'primevue/usetoast';
 import { useConfirm } from 'primevue/useconfirm';
@@ -344,16 +566,24 @@ const clients = ref([]);
 const loading = ref(false);
 const displayAddDialog = ref(false);
 const displayEditDialog = ref(false);
+const displaySegmentationDialog = ref(false);
 const expandedRows = ref({});
+const selectedClients = ref([]);
 
 const filters = ref({
     name: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+    segment: { value: null, matchMode: FilterMatchMode.EQUALS },
+    status: { value: null, matchMode: FilterMatchMode.EQUALS },
+    priority: { value: null, matchMode: FilterMatchMode.EQUALS }
 });
 
 const emptyClient = {
     name: '',
     contacts: { phones: [''], telegram: '' },
-    wishes: { text: '', propertyType: '', priceRange: { from: 0, to: 0 }, rooms: 0 }
+    wishes: { text: '', propertyType: '', priceRange: { from: 0, to: 0 }, rooms: 0 },
+    segment: 'new',
+    priority: 'medium',
+    status: 'active'
 };
 
 const newClient = ref({ ...emptyClient });
@@ -367,6 +597,31 @@ const getPropertyTypeSeverity = (type: string) => {
         'земля': 'help'
     };
     return map[type] || 'info';
+};
+
+const getSegmentName = (segmentId: string) => {
+    const segment = userStore.clientSegments.find(s => s.id === segmentId);
+    return segment ? segment.name : segmentId;
+};
+
+const getStatusName = (statusId: string) => {
+    const status = userStore.clientStatuses.find(s => s.id === statusId);
+    return status ? status.name : statusId;
+};
+
+const getStatusSeverity = (statusId: string) => {
+    const status = userStore.clientStatuses.find(s => s.id === statusId);
+    return status ? status.color : 'info';
+};
+
+const getPriorityName = (priorityId: string) => {
+    const priority = userStore.clientPriorities.find(p => p.id === priorityId);
+    return priority ? priority.name : priorityId;
+};
+
+const getPrioritySeverity = (priorityId: string) => {
+    const priority = userStore.clientPriorities.find(p => p.id === priorityId);
+    return priority ? priority.color : 'info';
 };
 
 const getSeverity = (rooms: number) => {
@@ -491,6 +746,50 @@ const deleteClient = async (id: string) => {
         clients.value = userStore.clients;
     } catch (error) {
         toast.add({ severity: 'error', summary: 'Помилка', detail: 'Не вдалося видалити клієнта', life: 3000 });
+    } finally {
+        loading.value = false;
+    }
+};
+
+// Массовое обновление клиентов
+const bulkUpdate = reactive({
+    segment: null,
+    status: null,
+    priority: null
+});
+
+const updateSelectedClients = async () => {
+    if (selectedClients.value.length === 0) return;
+    
+    try {
+        loading.value = true;
+        const updates = {};
+        
+        if (bulkUpdate.segment) updates.segment = bulkUpdate.segment;
+        if (bulkUpdate.status) updates.status = bulkUpdate.status;
+        if (bulkUpdate.priority) updates.priority = bulkUpdate.priority;
+        
+        // Обновляем каждого выбранного клиента
+        for (const client of selectedClients.value) {
+            await userStore.updateClient(client.id, updates);
+        }
+        
+        toast.add({ severity: 'success', summary: 'Успішно', detail: `Оновлено ${selectedClients.value.length} клієнтів`, life: 3000 });
+        
+        // Обновляем список клиентов
+        await userStore.fetchUserAndClients();
+        clients.value = userStore.clients;
+        
+        // Сбрасываем выбранных клиентов и значения массового обновления
+        selectedClients.value = [];
+        bulkUpdate.segment = null;
+        bulkUpdate.status = null;
+        bulkUpdate.priority = null;
+        
+        // Закрываем диалог
+        displaySegmentationDialog.value = false;
+    } catch (error) {
+        toast.add({ severity: 'error', summary: 'Помилка', detail: 'Не вдалося оновити клієнтів', life: 3000 });
     } finally {
         loading.value = false;
     }
