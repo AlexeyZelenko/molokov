@@ -6,6 +6,7 @@ import profileRoutes from './profile';
 import adminRoutes from './admin';
 import agenciesRoutes from './agencies';
 import pagesRoutes from './pages';
+import calendarRoutes from './calendar';
 
 export default [
     {
@@ -26,6 +27,7 @@ export default [
     ...authRoutes,
     ...agenciesRoutes,
     ...pagesRoutes,
+    ...calendarRoutes,
     {
         path: '/:pathMatch(.*)*',
         name: 'notfound',

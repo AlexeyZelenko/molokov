@@ -441,7 +441,7 @@
         </Dialog>
 
         <ConfirmDialog />
-        
+
         <!-- Диалог сегментации клиентов -->
         <Dialog
             v-model:visible="displaySegmentationDialog"
@@ -480,7 +480,7 @@
                         </template>
                     </Column>
                 </DataTable>
-                
+
                 <div class="flex flex-col gap-4 mt-4">
                     <div class="text-lg font-semibold">Массовое обновление выбранных клиентов</div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -760,32 +760,32 @@ const bulkUpdate = reactive({
 
 const updateSelectedClients = async () => {
     if (selectedClients.value.length === 0) return;
-    
+
     try {
         loading.value = true;
         const updates = {};
-        
+
         if (bulkUpdate.segment) updates.segment = bulkUpdate.segment;
         if (bulkUpdate.status) updates.status = bulkUpdate.status;
         if (bulkUpdate.priority) updates.priority = bulkUpdate.priority;
-        
+
         // Обновляем каждого выбранного клиента
         for (const client of selectedClients.value) {
             await userStore.updateClient(client.id, updates);
         }
-        
+
         toast.add({ severity: 'success', summary: 'Успішно', detail: `Оновлено ${selectedClients.value.length} клієнтів`, life: 3000 });
-        
+
         // Обновляем список клиентов
         await userStore.fetchUserAndClients();
         clients.value = userStore.clients;
-        
+
         // Сбрасываем выбранных клиентов и значения массового обновления
         selectedClients.value = [];
         bulkUpdate.segment = null;
         bulkUpdate.status = null;
         bulkUpdate.priority = null;
-        
+
         // Закрываем диалог
         displaySegmentationDialog.value = false;
     } catch (error) {

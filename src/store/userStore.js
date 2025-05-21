@@ -305,6 +305,7 @@ export const useUserStore = defineStore('user', {
 
                 const clientWithMetadata = {
                     ...client,
+                    interactions: [], // Добавляем пустой массив для истории взаимодействий
                     createdAt: serverTimestamp(),
                     updatedAt: serverTimestamp()
                 };
@@ -470,6 +471,146 @@ export const useUserStore = defineStore('user', {
         setSelectedAgent(selectedAgent) {
             console.log('Selected agent:', selectedAgent);
             this.selectedAgent = selectedAgent;
+        },
+        
+        // Функции для работы с историей взаимодействий клиента
+        async addInteraction(clientId, interaction) {
+            const userId = auth.currentUser?.uid;
+            const clientRef = doc(db, 'users', userId, 'clients', clientId);
+            
+            try {
+                // Получаем текущие данные клиента
+                const clientDoc = await getDoc(clientRef);
+                if (!clientDoc.exists()) {
+                    throw new Error('Клиент не найден');
+                }
+                
+                const clientData = clientDoc.data();
+                const interactions = clientData.interactions || [];
+                
+                // Создаем новую запись взаимодействия
+                const newInteraction = {
+                    id: Date.now().toString(), // Уникальный ID на основе времени
+                    ...interaction,
+                    createdAt: serverTimestamp()
+                };
+                
+                // Добавляем новое взаимодействие в массив
+                const updatedInteractions = [newInteraction, ...interactions];
+                
+                // Обновляем документ клиента
+                await updateDoc(clientRef, {
+                    interactions: updatedInteractions,
+                    updatedAt: serverTimestamp()
+                });
+                
+                // Обновляем локальный стан
+                this.clients = this.clients.map(client => {
+                    if (client.id === clientId) {
+                        return {
+                            ...client,
+                            interactions: updatedInteractions
+                        };
+                    }
+                    return client;
+                });
+                
+                return newInteraction;
+            } catch (error) {
+                console.error('Ошибка при добавлении взаимодействия:', error);
+                throw error;
+            }
+        },
+        
+        async updateInteraction(clientId, interactionId, updatedData) {
+            const userId = auth.currentUser?.uid;
+            const clientRef = doc(db, 'users', userId, 'clients', clientId);
+            
+            try {
+                // Получаем текущие данные клиента
+                const clientDoc = await getDoc(clientRef);
+                if (!clientDoc.exists()) {
+                    throw new Error('Клиент не найден');
+                }
+                
+                const clientData = clientDoc.data();
+                const interactions = clientData.interactions || [];
+                
+                // Обновляем взаимодействие
+                const updatedInteractions = interactions.map(interaction => {
+                    if (interaction.id === interactionId) {
+                        return {
+                            ...interaction,
+                            ...updatedData,
+                            updatedAt: serverTimestamp()
+                        };
+                    }
+                    return interaction;
+                });
+                
+                // Обновляем документ клиента
+                await updateDoc(clientRef, {
+                    interactions: updatedInteractions,
+                    updatedAt: serverTimestamp()
+                });
+                
+                // Обновляем локальный стан
+                this.clients = this.clients.map(client => {
+                    if (client.id === clientId) {
+                        return {
+                            ...client,
+                            interactions: updatedInteractions
+                        };
+                    }
+                    return client;
+                });
+                
+                return updatedInteractions.find(i => i.id === interactionId);
+            } catch (error) {
+                console.error('Ошибка при обновлении взаимодействия:', error);
+                throw error;
+            }
+        },
+        
+        async deleteInteraction(clientId, interactionId) {
+            const userId = auth.currentUser?.uid;
+            const clientRef = doc(db, 'users', userId, 'clients', clientId);
+            
+            try {
+                // Получаем текущие данные клиента
+                const clientDoc = await getDoc(clientRef);
+                if (!clientDoc.exists()) {
+                    throw new Error('Клиент не найден');
+                }
+                
+                const clientData = clientDoc.data();
+                const interactions = clientData.interactions || [];
+                
+                // Удаляем взаимодействие
+                const updatedInteractions = interactions.filter(interaction => interaction.id !== interactionId);
+                
+                // Обновляем документ клиента
+                await updateDoc(clientRef, {
+                    interactions: updatedInteractions,
+                    updatedAt: serverTimestamp()
+                });
+                
+                // Обновляем локальный стан
+                this.clients = this.clients.map(client => {
+                    if (client.id === clientId) {
+                        return {
+                            ...client,
+                            interactions: updatedInteractions
+                        };
+                    }
+                    return client;
+                });
+                
+                return true;
+            } catch (error) {
+                console.error('Ошибка при удалении взаимодействия:', error);
+                throw error;
+            }
         }
     }
 });

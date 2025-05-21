@@ -24,6 +24,12 @@ const model = ref([
                 icon: 'pi pi-fw pi-plus',
                 to: '/add-properties',
                 roles: ['admin', 'agent', 'seller', 'agency_owner', 'developer', 'super_admin', 'moderator']
+            },
+            {
+                label: 'Календар і задачі',
+                icon: 'pi pi-fw pi-calendar',
+                to: '/calendar',
+                roles: ['admin', 'agent', 'agency_owner', 'super_admin', 'moderator']
             }
         ]
     },

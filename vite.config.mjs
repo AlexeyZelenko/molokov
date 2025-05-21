@@ -33,7 +33,9 @@ export default defineConfig({
     ],
     resolve: {
         alias: {
-            '@': fileURLToPath(new URL('./src', import.meta.url))
+            '@': fileURLToPath(new URL('./src', import.meta.url)),
+            'uuid-random': fileURLToPath(new URL('./src/utils/uuid-random.js', import.meta.url)),
+            'fs': fileURLToPath(new URL('./src/utils/fs-shim.js', import.meta.url))
         }
     },
     build: {
