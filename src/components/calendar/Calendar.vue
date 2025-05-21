@@ -33,11 +33,11 @@ const eventForm = ref({
 
 // Типы событий
 const eventTypes = ref([
-    { name: 'Встреча', value: 'appointment' },
+    { name: 'Зустріч', value: 'appointment' },
     { name: 'Показ', value: 'showing' },
-    { name: 'Звонок', value: 'call' },
-    { name: 'Напоминание', value: 'reminder' },
-    { name: 'Встреча с клиентом', value: 'client' }
+    { name: 'Дзвінок', value: 'call' },
+    { name: 'Нагадування', value: 'reminder' },
+    { name: 'Зустріч з клиєнтом', value: 'client' }
 ]);
 
 // Вычисляемые свойства
