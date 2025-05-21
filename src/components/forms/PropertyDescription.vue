@@ -1,10 +1,16 @@
 <script setup>
 import { computed } from 'vue';
+import PropertyAIDescription from './PropertyAIDescription.vue';
 
 const props = defineProps({
     modelValue: {
         type: String,
         default: ''
+    },
+    property: {
+        type: Object,
+        required: false,
+        default: () => ({})
     }
 });
 
@@ -14,10 +20,23 @@ const description = computed({
     get: () => props.modelValue,
     set: (value) => emit('update:modelValue', value)
 });
+
+// Обработчик генерации описания с помощью AI
+const handleGeneratedDescription = (generatedText) => {
+    // Устанавливаем сгенерированное описание в редактор
+    emit('update:modelValue', generatedText);
+};
 </script>
 
 <template>
     <div class="card flex flex-col items-center gap-4 w-full">
+        <!-- AI-генератор описаний -->
+        <PropertyAIDescription 
+            v-if="property" 
+            :property="property" 
+            @generate-description="handleGeneratedDescription" 
+        />
+        
         <div class="font-semibold text-xl">Додатковий опис об'єкта</div>
         <div class="w-full flex flex-col">
             <Editor v-model="description" class="w-full" editorStyle="height: 320px">

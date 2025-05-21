@@ -211,7 +211,7 @@ onMounted(async () => {
             </Fluid>
 
             <Fluid v-if="property" class="flex flex-col mt-8">
-                <PropertyDescription v-model="property.description" />
+                <PropertyDescription v-model="property.description" :property="property" />
                 <PropertyImageUpload :images="images" :property="property" @upload="onFileSelect" @remove="removeImage" @reorder="handleReorder" />
             </Fluid>
 
