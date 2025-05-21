@@ -57,16 +57,16 @@ const generateCalendarDays = () => {
     const endDate = monthEnd;
 
     const days = eachDayOfInterval({ start: startDate, end: endDate });
-    
+
     // Получаем первый день недели (0 - воскресенье, 1 - понедельник, и т.д.)
     const firstDayOfMonth = getDay(monthStart);
-    
+
     // Добавляем пустые ячейки перед первым днём месяца
     const previousMonthDays = [];
     for (let i = 0; i < firstDayOfMonth; i++) {
         previousMonthDays.push(null);
     }
-    
+
     calendarDays.value = [...previousMonthDays, ...days];
 };
 
@@ -84,10 +84,10 @@ const goToToday = () => {
 
 const getEventsForDay = (day) => {
     if (!day) return [];
-    return calendarStore.events.filter(event => {
+    return calendarStore.events.filter((event) => {
         const eventStart = parseISO(event.start);
         const eventEnd = event.end ? parseISO(event.end) : eventStart;
-        
+
         // Проверяем, находится ли день в интервале события
         return isWithinInterval(day, {
             start: new Date(eventStart.getFullYear(), eventStart.getMonth(), eventStart.getDate()),
@@ -131,7 +131,7 @@ const saveEvent = async () => {
         // Показать ошибку
         return;
     }
-    
+
     const eventData = {
         title: eventForm.value.title.trim(),
         description: eventForm.value.description,
@@ -141,13 +141,13 @@ const saveEvent = async () => {
         color: eventForm.value.color,
         type: eventForm.value.type
     };
-    
+
     if (eventDialogMode.value === 'add') {
         await calendarStore.addEvent(eventData);
     } else {
         await calendarStore.updateEvent(selectedEvent.value.id, eventData);
     }
-    
+
     showEventDialog.value = false;
     selectedEvent.value = null;
 };
@@ -162,12 +162,18 @@ const deleteEvent = async () => {
 
 const getTagSeverity = (type) => {
     switch (type) {
-        case 'appointment': return 'info';
-        case 'showing': return 'success';
-        case 'call': return 'warning';
-        case 'reminder': return 'secondary';
-        case 'client': return 'primary';
-        default: return 'info';
+        case 'appointment':
+            return 'info';
+        case 'showing':
+            return 'success';
+        case 'call':
+            return 'warning';
+        case 'reminder':
+            return 'secondary';
+        case 'client':
+            return 'primary';
+        default:
+            return 'info';
     }
 };
 
@@ -203,55 +209,54 @@ onMounted(async () => {
                     {{ day }}
                 </div>
             </div>
-            
+
             <!-- Календарные дни -->
             <div class="grid grid-cols-7 gap-1">
-                <div v-for="(day, index) in calendarDays" :key="index" 
+                <div
+                    v-for="(day, index) in calendarDays"
+                    :key="index"
                     class="calendar-day p-2 min-h-[100px] border border-gray-200 rounded relative"
-                    :class="{ 
-                        'bg-gray-100': !day, 
-                        'today': day && isToday(day),
+                    :class="{
+                        'bg-gray-100': !day,
+                        today: day && isToday(day),
                         'cursor-pointer': day
                     }"
-                    @click="day && openAddEventDialog(day)">
+                    @click="day && openAddEventDialog(day)"
+                >
                     <div v-if="day" class="day-header flex justify-between items-center">
                         <span class="day-number" :class="{ 'text-blue-600 font-bold': isToday(day) }">
                             {{ format(day, 'd') }}
                         </span>
                     </div>
-                    
+
                     <!-- События дня -->
                     <div v-if="day" class="day-events mt-1">
-                        <div v-for="event in getEventsForDay(day)" :key="event.id" 
-                            class="event p-1 rounded mb-1 text-xs truncate cursor-pointer"
-                            :style="{ backgroundColor: event.color, color: '#fff' }"
-                            @click.stop="openEditEventDialog(event)">
+                        <div v-for="event in getEventsForDay(day)" :key="event.id" class="event p-1 rounded mb-1 text-xs truncate cursor-pointer" :style="{ backgroundColor: event.color, color: '#fff' }" @click.stop="openEditEventDialog(event)">
                             {{ event.title }}
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <!-- Диалог создания/редактирования события -->
-        <Dialog v-model:visible="showEventDialog" :header="eventDialogMode === 'add' ? 'Додати подію' : 'Редагувати подію'" 
-            :style="{ width: '500px' }" :modal="true">
+        <Dialog v-model:visible="showEventDialog" :header="eventDialogMode === 'add' ? 'Додати подію' : 'Редагувати подію'" :style="{ width: '500px' }" :modal="true">
             <div class="p-fluid">
                 <div class="field mb-4">
                     <label for="title">Назва події</label>
                     <InputText id="title" v-model="eventForm.title" required />
                 </div>
-                
+
                 <div class="field mb-4">
                     <label for="type">Тип події</label>
                     <Dropdown id="type" v-model="eventForm.type" :options="eventTypes" optionLabel="name" optionValue="value" placeholder="Виберіть тип" />
                 </div>
-                
+
                 <div class="field mb-4">
                     <label>Кольор</label>
                     <ColorPicker v-model="eventForm.color" />
                 </div>
-                
+
                 <div class="field-row grid mb-4">
                     <div class="col-6">
                         <label for="start">Початок</label>
@@ -262,13 +267,13 @@ onMounted(async () => {
                         <Calendar id="end" v-model="eventForm.end" showTime hourFormat="24" />
                     </div>
                 </div>
-                
+
                 <div class="field mb-4">
                     <label for="description">Опис</label>
                     <Editor v-model="eventForm.description" editorStyle="height: 150px" />
                 </div>
             </div>
-            
+
             <template #footer>
                 <Button label="Відміна" icon="pi pi-times" @click="showEventDialog = false" class="p-button-text" />
                 <Button v-if="eventDialogMode === 'edit'" label="Видалити" icon="pi pi-trash" @click="deleteEvent" class="p-button-danger p-button-text" />
@@ -283,7 +288,9 @@ onMounted(async () => {
     background-color: white;
     border-radius: 8px;
     padding: 20px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    box-shadow:
+        0 4px 6px -1px rgba(0, 0, 0, 0.1),
+        0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .today {
@@ -308,4 +315,4 @@ onMounted(async () => {
     background-color: #3f83f8;
     color: white !important;
 }
-</style> 
+</style>
