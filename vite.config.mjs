@@ -8,7 +8,6 @@ import vueDevTools from 'vite-plugin-vue-devtools';
 import commonjs from 'vite-plugin-commonjs';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 
-
 export default defineConfig({
     base: '/',
     optimizeDeps: {
@@ -33,7 +32,8 @@ export default defineConfig({
     ],
     resolve: {
         alias: {
-            '@': fileURLToPath(new URL('./src', import.meta.url))
+            '@': fileURLToPath(new URL('./src', import.meta.url)),
+            process: 'process/browser',
         }
     },
     build: {
@@ -60,8 +60,8 @@ export default defineConfig({
                     }
                 }
             }
-        },
-    },
+        }
+    }
     // server: {
     //     host: '0.0.0.0',
     //     port: 5173,
@@ -71,5 +71,4 @@ export default defineConfig({
     //     },
     //     allowedHosts: ['.ngrok-free.app'],
     // }
-
 });

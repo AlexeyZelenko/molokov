@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import FeaturesWidget from '@/components/landing/FeaturesWidget.vue';
-import FooterWidget from '@/components/landing/FooterWidget.vue';
 import HeroWidget from '@/components/landing/HeroWidget.vue';
 import HighlightsWidget from '@/components/landing/HighlightsWidget.vue';
 import HighlightsWidget2 from '@/components/landing/HighlightsWidget2.vue';
 import TopbarWidget from '@/components/landing/TopbarWidget.vue';
 import AppFooter from '@/layout/AppFooter.vue';
+import Contentful from '@/components/contentful/index.vue';
 </script>
 
 <template>
@@ -22,6 +22,11 @@ import AppFooter from '@/layout/AppFooter.vue';
                 <HighlightsWidget />
                 <HighlightsWidget2 />
             </section>
+
+            <section class="py-6 px-6 mx-0 md:mx-12 lg:mx-20 lg:px-20">
+                <Contentful />
+            </section>
+
             <app-footer></app-footer>
         </div>
     </div>

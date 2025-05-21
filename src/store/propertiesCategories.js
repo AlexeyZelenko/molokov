@@ -192,58 +192,51 @@ export const usePropertiesStore = defineStore('properties', {
             const dailyRentQuery = collectionGroup(db, 'dailyRent');
             const exchangeQuery = collectionGroup(db, 'exchange');
 
-
             try {
                 // Виконуємо всі запити паралельно за допомогою Promise.All
-                const [rentSnapshot, sellSnapshot, dailyRentSnapshot, exchangeSnapshot] = await Promise.all([
-                    getDocs(rentQuery),
-                    getDocs(sellQuery),
-                    getDocs(dailyRentQuery),
-                    getDocs(exchangeQuery),
-                ]);
+                const [rentSnapshot, sellSnapshot, dailyRentSnapshot, exchangeSnapshot] = await Promise.all([getDocs(rentQuery), getDocs(sellQuery), getDocs(dailyRentQuery), getDocs(exchangeQuery)]);
 
                 // Обробляємо результати запиту RENT
-                rentSnapshot.docs.forEach(doc => {
+                rentSnapshot.docs.forEach((doc) => {
                     allProperties.push({
                         id: doc.id,
                         ...doc.data(),
                         transactionType: 'RENT', // Можна залишити UPPERCASE для значення типу
-                        typeDocumentId: doc.ref.parent?.parent?.id || null,
+                        typeDocumentId: doc.ref.parent?.parent?.id || null
                     });
                 });
 
                 // Обробляємо результати запиту SELL
-                sellSnapshot.docs.forEach(doc => {
+                sellSnapshot.docs.forEach((doc) => {
                     allProperties.push({
                         id: doc.id,
                         ...doc.data(),
                         transactionType: 'SELL', // Можна залишити UPPERCASE для значення типу
-                        typeDocumentId: doc.ref.parent?.parent?.id || null,
+                        typeDocumentId: doc.ref.parent?.parent?.id || null
                     });
                 });
 
                 // Обробляємо результати запиту DAILY_RENT
-                dailyRentSnapshot.docs.forEach(doc => {
+                dailyRentSnapshot.docs.forEach((doc) => {
                     allProperties.push({
                         id: doc.id,
                         ...doc.data(),
                         transactionType: 'DAILY_RENT', // Можна залишити UPPERCASE для значення типу
-                        typeDocumentId: doc.ref.parent?.parent?.id || null,
+                        typeDocumentId: doc.ref.parent?.parent?.id || null
                     });
                 });
 
-                exchangeSnapshot.docs.forEach(doc => {
+                exchangeSnapshot.docs.forEach((doc) => {
                     allProperties.push({
                         id: doc.id,
                         ...doc.data(),
                         transactionType: 'EXCHANGE', // Встановлюємо тип транзакції
-                        typeDocumentId: doc.ref.parent?.parent?.id || null,
+                        typeDocumentId: doc.ref.parent?.parent?.id || null
                     });
                 });
                 return allProperties; // Повертаємо об'єднаний список
-
             } catch (error) {
-                console.error('Помилка отримання всіх об\'єктів нерухомості паралельно:', error);
+                console.error("Помилка отримання всіх об'єктів нерухомості паралельно:", error);
                 throw error; // Перекидаємо помилку далі
             }
         },

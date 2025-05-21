@@ -42,4 +42,4 @@ export const formatDateFromTimestamp = (createdAt, locale = undefined, options =
     }
 
     return date.toLocaleDateString(locale, options);
-}
+};

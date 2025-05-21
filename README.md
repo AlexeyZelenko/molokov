@@ -1,3 +1,85 @@
-Sakai is an application template for Vue based on the [create-vue](https://github.com/vuejs/create-vue), the recommended way to start a Vite-powered Vue projects.
+# Нерухомість
 
-Visit the [documentation](https://sakai.primevue.org/documentation) to get started.
+## О проекте
+
+Данный проект основан на шаблоне Sakai для Vue, построенном с использованием [create-vue](https://github.com/vuejs/create-vue) - рекомендуемого способа создания проектов Vue с Vite. Текущая версия проекта: 4.2.0.
+
+## Технологии
+
+Проект использует следующие основные технологии:
+
+- **Vue 3** - прогрессивный JavaScript-фреймворк для создания пользовательских интерфейсов
+- **Vite** - современный инструмент сборки для быстрой разработки
+- **PrimeVue 4.2.5** - библиотека UI-компонентов для Vue
+- **Firebase** - платформа для разработки мобильных и веб-приложений
+- **Pinia** - хранилище состояний для Vue приложений
+- **Vue Router** - официальная библиотека маршрутизации для Vue.js
+- **Chart.js** - библиотека для создания графиков
+- **2GIS Maps** - API для работы с картами
+- **Google Maps** - API для работы с картами Google
+
+## Установка
+
+```bash
+# Клонирование репозитория
+git clone <url-репозитория>
+cd sakai-vue
+
+# Установка зависимостей
+npm install
+```
+
+## Запуск проекта
+
+### Режим разработки
+
+```bash
+npm run dev
+```
+
+Приложение будет доступно по адресу: `http://localhost:5173/`
+
+### Сборка для продакшена
+
+```bash
+npm run build
+```
+
+### Предпросмотр сборки
+
+```bash
+npm run preview
+```
+
+### Линтинг
+
+```bash
+npm run lint
+```
+
+### Деплой на Firebase
+
+```bash
+npm run deploy
+```
+
+## Структура проекта
+
+- `/src` - исходный код приложения
+  - `/assets` - статические ресурсы (изображения, стили)
+  - `/components` - компоненты Vue
+  - `/views` - компоненты страниц
+  - `/router` - настройки маршрутизации
+  - `/store` - хранилище состояний (Pinia)
+  - `/services` - сервисы для работы с API
+  - `/firebase` - конфигурация и сервисы Firebase
+- `/public` - публичные статические файлы
+- `/functions` - серверные функции Firebase
+
+## Лицензия
+
+См. файл [LICENSE.md](LICENSE.md) для получения информации о лицензии.
+
+## Изменения
+
+Информацию о последних изменениях можно найти в файле [CHANGELOG.md](CHANGELOG.md).
