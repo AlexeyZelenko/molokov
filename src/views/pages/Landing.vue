@@ -5,6 +5,7 @@ import HeroWidget from '@/components/landing/HeroWidget.vue';
 import HighlightsWidget from '@/components/landing/HighlightsWidget.vue';
 import HighlightsWidget2 from '@/components/landing/HighlightsWidget2.vue';
 import TopbarWidget from '@/components/landing/TopbarWidget.vue';
+// import AIPropertyMatchWidget from '@/components/landing/AIPropertyMatchWidget.vue';
 import AppFooter from '@/layout/AppFooter.vue';
 </script>
 
@@ -21,6 +22,7 @@ import AppFooter from '@/layout/AppFooter.vue';
                 <FeaturesWidget />
                 <HighlightsWidget />
                 <HighlightsWidget2 />
+                <!-- <AIPropertyMatchWidget /> -->
             </section>
             <app-footer></app-footer>
         </div>
