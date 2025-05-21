@@ -75,10 +75,10 @@ const handleExport = async () => {
     <div class="calendar-dashboard">
         <div class="flex justify-between items-center mb-4">
             <h1 class="text-3xl font-bold">Планування роботи</h1>
-            <div class="buttons">
-                <Button label="Синхронізувати з Google" icon="pi pi-google" class="p-button-outlined mr-2" @click="handleSyncWithGoogle" :loading="isSyncing" />
-                <Button label="Експортувати iCal" icon="pi pi-download" class="p-button-outlined" @click="handleExport" :loading="isExporting" />
-            </div>
+<!--            <div class="buttons">-->
+<!--                <Button label="Синхронізувати з Google" icon="pi pi-google" class="p-button-outlined mr-2" @click="handleSyncWithGoogle" :loading="isSyncing" />-->
+<!--                <Button label="Експортувати iCal" icon="pi pi-download" class="p-button-outlined" @click="handleExport" :loading="isExporting" />-->
+<!--            </div>-->
         </div>
 
         <div class="mb-4">
